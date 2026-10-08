@@ -182,8 +182,7 @@ const Quote = () => {
     return !hasErrors;
   };
 
-  const handleSubmit = protectSubmission("submit", async (event: FormEvent) => {
-    event.preventDefault();
+  const submit = protectSubmission("submit", async () => {
     if (status === "submitting") return;
     const submittedSourcePath = `${window.location.pathname}${window.location.search}`;
     if (!validate()) {
@@ -221,6 +220,10 @@ const Quote = () => {
       setStatus("error");
     }
   });
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void submit();
+  };
 
   if (status === "success") {
     return (
@@ -321,7 +324,7 @@ const Quote = () => {
               )}
 
               {lastSavedForm.current && status === "idle" ? <p role="status" className="mb-4 rounded-lg border border-border bg-background p-3 text-sm">{interactionText[language].savedWhileEditing}</p> : null}
-                    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                    <form method="post" onSubmit={handleSubmit} className="space-y-4" noValidate>
                 {status === "error" && (
                   <div id="quote-submit-error" role="alert" aria-live="assertive" tabIndex={-1} className="mb-6 flex items-start gap-3 rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm focus:outline-none">
                     <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />

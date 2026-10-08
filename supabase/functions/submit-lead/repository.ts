@@ -10,41 +10,20 @@ export async function findSubmittedTest(client: SubmitLeadClient, type: "contact
 const getServiceRoleKey = () =>
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
 
-export async function countRecentAttemptsByIp(client: SubmitLeadClient, ipHash: string, sinceIso: string) {
-  const { count, error } = await client
-    .from("form_submission_attempts")
-    .select("id", { count: "exact", head: true })
-    .eq("ip_hash", ipHash)
-    .gte("created_at", sinceIso);
-
-  if (error) throw error;
-  return count ?? 0;
-}
-
-export async function countRecentAttemptsByPhone(client: SubmitLeadClient, phoneHash: string, sinceIso: string) {
-  const { count, error } = await client
-    .from("form_submission_attempts")
-    .select("id", { count: "exact", head: true })
-    .eq("phone_hash", phoneHash)
-    .gte("created_at", sinceIso);
-
-  if (error) throw error;
-  return count ?? 0;
-}
-
-export async function recordSubmissionAttempt(
+export async function consumeSubmissionAttempt(
   client: SubmitLeadClient,
   formType: ContactBody["type"] | QuoteBody["type"],
   ipHash: string,
   phoneHash: string | null,
-) {
-  const { error } = await client.from("form_submission_attempts").insert({
-    form_type: formType,
-    ip_hash: ipHash,
-    phone_hash: phoneHash,
+): Promise<"accepted" | "ip_limit" | "phone_limit"> {
+  const { data, error } = await client.rpc("consume_form_submission_attempt", {
+    p_form_type: formType, p_ip_hash: ipHash, p_phone_hash: phoneHash,
   });
-
   if (error) throw error;
+  if (data !== "accepted" && data !== "ip_limit" && data !== "phone_limit") {
+    throw new Error("Submission limit could not be verified");
+  }
+  return data;
 }
 
 export async function createContactLead(

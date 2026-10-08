@@ -34,6 +34,7 @@ export const adminQuoteDetailText = {
   followupPlaceholder: { en: "Follow-up record...", zh: "跟进记录..." },
   saving: { en: "Saving...", zh: "保存中..." },
   saveFollowup: { en: "Save follow-up", zh: "保存跟进" },
+  retryFollowupSync: { en: "Retry date sync", zh: "重试同步跟进日期" },
   timeline: { en: "Timeline", zh: "时间线" },
   nextFollowUpAt: { en: "Next follow-up: {time}", zh: "下次跟进：{time}" },
 } as const;

@@ -6,6 +6,8 @@ import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { isServiceConceptImage } from "../src/lib/serviceMedia";
 import { quotePageText } from "../src/i18n/quotePageText";
+import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText } from "../src/i18n/furnitureText";
+import { furnitureListingPagePath, furnitureProductPath, localizeFurnitureProduct, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
@@ -26,6 +28,26 @@ export function buildReadableHomeFaqBody(key: string, faqs: readonly { question:
   return `<main lang="${lang}">${overview}<section data-flashcast-readable-home-faq><h2>${title}</h2>${faqs.map(faq => `<h3>${escape(faq.question)}</h3><p>${escape(faq.answer)}</p>`).join("")}</section></main>`;
 }
 const plain = (v: unknown) => decode(text(v).replace(/<[^>]*>/g, "")).trim();
+
+export function buildReadableFurnitureListingBody(key: string, listing: ReturnType<typeof getFurnitureListingPage> | null) {
+  if (!listing?.validSelection || !listing.category) return "";
+  const lang = key.startsWith("/zh/") ? "zh" : "en";
+  const copy = furnitureText[lang];
+  const categoryCopy = furnitureCategoryPageCopy(listing.category.key, lang, listing.subcategory?.key);
+  const title = categoryCopy?.h1 || (listing.subcategory
+    ? furnitureSubcategoryName(listing.subcategory.key, lang, listing.subcategory.name)
+    : listing.category.key === "new" ? copy.title : furnitureCategoryName(listing.category.key, lang));
+  const pageHref = (page: number) => `/${lang}${furnitureListingPagePath(listing.currentPath, page)}`;
+  const cards = listing.visibleProducts.map((source) => {
+    const product = localizeFurnitureProduct(source, lang);
+    const description = (product.shortDescription || product.description || copy.listingDescriptionUnavailable).replace(/\s+/g, " ");
+    return `<li><h2><a href="${escape(`/${lang}${furnitureProductPath(product)}`)}">${escape(product.name)}</a></h2><p>${escape(description)}</p><p>${escape(product.price || copy.priceOnRequest)}</p></li>`;
+  }).join("");
+  const label = copy.page.replace("{page}", String(listing.page)).replace("{total}", String(listing.totalPages));
+  const navigation = listing.totalPages > 1
+    ? `<nav aria-label="${escape(label)}"><a href="${escape(pageHref(1))}">${escape(copy.allProducts)}</a>${listing.page > 1 ? `<a href="${escape(pageHref(listing.page - 1))}">${escape(copy.previous)}</a>` : ""}<span>${escape(label)}</span>${listing.page < listing.totalPages ? `<a href="${escape(pageHref(listing.page + 1))}">${escape(copy.next)}</a>` : ""}</nav>` : "";
+  return `<section data-flashcast-readable-furniture-listing lang="${lang === "zh" ? "zh-CN" : "en"}"><h1>${escape(title)}</h1><p>${escape(categoryCopy?.intro || copy.intro)}</p>${cards ? `<ul>${cards}</ul>` : `<p>${escape(copy.noProducts)}</p>`}${navigation}</section>`;
+}
 
 function publicHref(raw: string, lang: "en" | "zh") {
   const href = decode(raw).trim();

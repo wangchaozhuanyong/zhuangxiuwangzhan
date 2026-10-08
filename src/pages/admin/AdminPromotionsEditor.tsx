@@ -30,8 +30,7 @@ const normalizeOffers = (value: unknown): Offer[] =>
       title: toText(item.title),
       description: toText(item.description),
       terms: toText(item.terms),
-    }))
-    .filter((item) => item.title || item.description || item.terms);
+    }));
 
 const cleanOffers = (items: Offer[]) =>
   items

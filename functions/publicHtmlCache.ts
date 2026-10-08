@@ -1,3 +1,5 @@
+import { getFurnitureListingRoute, normalizeFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
+
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
 const PUBLIC_HTML_FRESHNESS_TTL_SECONDS = 60;
 const PUBLIC_HTML_CACHE_VERSION = "20260821-public-browser-revalidate-v5";
@@ -116,7 +118,10 @@ export const getPublicHtmlCacheRequest = (
   contentRevision?: string | null,
 ) => {
   const cacheUrl = new URL(request.url);
+  const furniturePage = getFurnitureListingRoute(cacheUrl.pathname)
+    ? normalizeFurnitureListingPage(cacheUrl.searchParams.get("page")) : 1;
   cacheUrl.search = "";
+  if (furniturePage > 1) cacheUrl.searchParams.set("page", String(furniturePage));
   cacheUrl.searchParams.set("__flashcast_html_v", PUBLIC_HTML_CACHE_VERSION);
   cacheUrl.searchParams.set("__flashcast_deploy_v", getPublicHtmlDeploymentVersion(env));
   cacheUrl.searchParams.set("__flashcast_content_v", contentRevision?.trim() || "unknown");

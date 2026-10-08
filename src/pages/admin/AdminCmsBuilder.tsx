@@ -3,7 +3,8 @@ import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, ArrowDown, ArrowUp, ExternalLink, Globe2, GripVertical, Info, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,12 +64,16 @@ const formatA = (key: AdminCmsBuilderTextKey, values: Record<string, string>) =>
 export default function AdminCmsBuilder() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  const requestedPageId = searchParams.get("page");
+  const requestedSectionId = searchParams.get("section");
+  const appliedDeepLink = useRef<string | null>(null);
   const adminLang = getAdminLang();
   const mobileText = adminMobileCmsText[adminLang];
   const readText = interactionText[adminLang];
   const [message, setMessage] = useState("");
   const [sectionDirectoryOpen, setSectionDirectoryOpen] = useState(false);
-  const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
+  const [selectedPageId, setSelectedPageId] = useState<string | null>(requestedPageId);
   const pageForm = useAdminFormState<CmsPage>(undefined, { initial: emptyPage });
   const { state: pageDraft, setForm: setPageDraft, isDirty: isPageDirty, applyRemote: applyPageRemote } = pageForm;
   const sectionForm = useAdminFormState(undefined, { initial: { sectionDraft: null as CmsSection | null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" } });
@@ -170,6 +175,15 @@ export default function AdminCmsBuilder() {
     setSectionOrder(sections.map((section) => section.id).filter(Boolean) as string[]);
   }, [sections]);
 
+  useEffect(() => {
+    const key = `${requestedPageId || ""}:${requestedSectionId || ""}`;
+    if (!requestedPageId || !requestedSectionId || appliedDeepLink.current === key || sectionForm.isDirty()) return;
+    const target = sections.find((section) => section.id === requestedSectionId && section.page_id === requestedPageId);
+    if (!target) return;
+    sectionForm.applyRemote({ sectionDraft: target, contentZhText: prettyJson(target.content_zh), contentEnText: prettyJson(target.content_en), settingsText: prettyJson(target.settings) });
+    appliedDeepLink.current = key;
+  }, [requestedPageId, requestedSectionId, sections, sectionForm]);
+
   const selectSection = async (section: CmsSection) => {
     if (sectionForm.isDirty() && !await confirmProtectedNavigation()) return;
     sectionForm.applyRemote({ sectionDraft: section, contentZhText: prettyJson(section.content_zh), contentEnText: prettyJson(section.content_en), settingsText: prettyJson(section.settings) });
@@ -222,6 +236,7 @@ export default function AdminCmsBuilder() {
   };
 
   const savePage = protectSubmission("savePage", async () => {
+    if (selectedPageId && !selectedPage) return;
     if (saving) return;
     setSaving(true);
     try {
@@ -260,9 +275,9 @@ export default function AdminCmsBuilder() {
       if (!sectionDraft.section_type.trim()) throw new Error(A("sectionTypeRequiredError"));
       const payload = {
         ...sectionDraft,
-        content_zh: parseJson(contentZhText, A("zhContentJsonLabel")),
-        content_en: parseJson(contentEnText, A("enContentJsonLabel")),
-        settings: parseJson(settingsText, A("settingsJsonLabel")),
+        content_zh: parseJson(contentZhText, A("zhContentJsonLabel"), formatA("sectionJsonInvalid", { label: A("zhContentJsonLabel") })),
+        content_en: parseJson(contentEnText, A("enContentJsonLabel"), formatA("sectionJsonInvalid", { label: A("enContentJsonLabel") })),
+        settings: parseJson(settingsText, A("settingsJsonLabel"), formatA("sectionJsonInvalid", { label: A("settingsJsonLabel") })),
       };
       const saved = await saveAdminRecord<CmsSection>({
         table: "cms_sections",
@@ -633,7 +648,7 @@ export default function AdminCmsBuilder() {
             </div>
           </div>
           <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
-            <AdminActionButton action="content.write" type="button" disabled={saving} onClick={() => void savePage()}>{saving ? A("saving") : A("savePageButton")}</AdminActionButton>
+            <AdminActionButton action="content.write" type="button" disabled={saving || Boolean(selectedPageId && !selectedPage)} onClick={() => void savePage()}>{saving ? A("saving") : A("savePageButton")}</AdminActionButton>
             {pageDraft.path && (
               <Button asChild type="button" variant="outline">
                 <a href={zhPreviewPath} target="_blank" rel="noreferrer">

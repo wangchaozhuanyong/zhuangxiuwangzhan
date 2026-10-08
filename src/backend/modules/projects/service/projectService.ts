@@ -1,3 +1,4 @@
+import { generateAdminEnglishContent } from "@/backend/modules/system";
 import { completePublicSync } from "@/lib/publicSyncRecovery";
 import type { QueryClient } from "@tanstack/react-query";
 import { requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
@@ -10,7 +11,6 @@ import {
   fetchAdminProjectList,
   fetchAdminProjectRows,
   findProjectIdsBySlug,
-  invokeProjectEnglishGeneration,
   resetProjectCoverRecords,
   updateProjectImageRecord,
   type AdminProjectListInput,
@@ -101,7 +101,7 @@ export async function saveAdminProject(input: SaveAdminProjectInput) {
 }
 
 export function generateAdminProjectEnglish(projectId: string, force: boolean) {
-  return invokeProjectEnglishGeneration(projectId, force);
+  return generateAdminEnglishContent({ table: "projects", id: projectId, force });
 }
 
 export async function addAdminProjectImage(projectId: string, draft: AdminProjectImageDraft) {

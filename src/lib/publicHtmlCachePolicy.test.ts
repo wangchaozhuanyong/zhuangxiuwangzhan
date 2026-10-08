@@ -32,6 +32,21 @@ describe("isolated public HTML cache policy", () => {
     expect(new URL(getPublicHtmlFreshnessRequest(first).url).searchParams.get("__flashcast_html_fresh")).toBe("1");
   });
 
+  it.each(["/en/furniture", "/zh/furniture/bedroom", "/en/furniture/bedroom/bed-frame"])("isolates listing page cache entries and strips tracking queries for %s", (path) => {
+    const cacheKey = (search: string) => getPublicHtmlCacheRequest(new Request(`https://fixture.example${path}${search}`), {}).url;
+    expect(cacheKey("?page=3&utm_source=test")).toBe(cacheKey("?page=03"));
+    expect(cacheKey("?page=3")).not.toBe(cacheKey("?page=9"));
+    expect(cacheKey("?page=1")).toBe(cacheKey(""));
+    for (const value of ["0", "-2", "1.5", "not-a-page", "Infinity", "9007199254740992"]) {
+      expect(cacheKey(`?page=${value}`)).toBe(cacheKey(""));
+    }
+  });
+
+  it.each(["/en/furniture/product/a-chair", "/en/furniture/not-a-category", "/zh/projects"])("does not add a page identity to %s", (path) => {
+    const cacheKey = (search: string) => getPublicHtmlCacheRequest(new Request(`https://fixture.example${path}${search}`), {}).url;
+    expect(cacheKey("?page=3&utm_source=test")).toBe(cacheKey(""));
+  });
+
   it("honors weak/list ETags before Last-Modified and keeps browser HTML revalidation", async () => {
     const matched = createPublicHtmlBrowserResponse(htmlResponse(), new Request("https://fixture.example/zh", {
       headers: { "if-none-match": '"other", W/"known-version"' },

@@ -1,5 +1,5 @@
 import PublicReadError from "@/components/PublicReadError";
-import { lazy, useMemo } from "react";
+import { lazy, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import Link from "@/components/LocalizedLink";
@@ -29,6 +29,7 @@ const relatedServiceSlugs: Record<string, readonly string[]> = {
 };
 
 export default function ServiceDetail() {
+  const repairContentMounted = useRef(false);
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const copy = serviceDetailPageText[language];
@@ -38,12 +39,19 @@ export default function ServiceDetail() {
   const services = cmsServices?.length ? cmsServices : fallbackServices;
   const service = cmsService || services.find((item) => item.slug === slug);
 
+  if (slug !== "surface-repair") repairContentMounted.current = false;
+  // A language query may briefly have no CMS data. Retain the existing repair
+  // form while localized data arrives, rather than replacing it with a loader.
+  if (slug === "surface-repair" && service && (cmsService || !isLoading || repairContentMounted.current)) {
+    repairContentMounted.current = true;
+    return <SurfaceRepairContent service={service} />;
+  }
+
   if (isLoading && (!service || ((slug === "design" || slug === "surface-repair") && !cmsService))) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState variant="loading">{copy.loadingDescription}</SchemeAContentState></main>;
   if (isInitialError && !service) return <PublicReadError onRetry={() => void refetch()} />;
   if (!service) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/services" noIndex /><SchemeAContentState action={<Link to="/services">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   if (slug === "design") return <DesignServiceContent key={language} service={service} />;
-  if (slug === "surface-repair") return <SurfaceRepairContent key={language} service={service} />;
 
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
   const title = display(service.title);

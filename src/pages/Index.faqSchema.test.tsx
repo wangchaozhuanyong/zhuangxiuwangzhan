@@ -9,6 +9,7 @@ const state = vi.hoisted(() => ({
   faqs: [{ question: "Published question", answer: "Published answer" }],
 }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: state.language }) }));
+vi.mock("@/config/site", () => ({ siteConfig: { url: "https://faq-schema.test" } }));
 vi.mock("@/hooks/usePublishedContent", () => ({
   usePublishedHomeContentBundle: () => ({
     data: { source: state.source, data: { pageContent: null, faqs: state.faqs } },
@@ -73,7 +74,7 @@ describe("published home FAQ and edge schema after a browser refetch", () => {
     state.faqs = [{ question: "已发布问题", answer: "已发布回答" }];
     await render();
     expect(container.textContent).toBe("已发布问题: 已发布回答");
-    expect(faqNode()["@id"]).toBe("https://flashcast.com.my/zh#faq");
+    expect(faqNode()["@id"]).toBe("https://faq-schema.test/zh#faq");
     expect(faqNode().mainEntity[0].acceptedAnswer.text).toBe("已发布回答");
   });
   it("preserves the server graph while a local fallback is used", async () => {

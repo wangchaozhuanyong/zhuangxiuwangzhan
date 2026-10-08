@@ -21,7 +21,7 @@ type EdgeSupabaseClient = {
   from(table: string): {
     select(columns: string): {
       eq(column: string, value: unknown): {
-        maybeSingle(): Promise<{
+        maybeSingle(): PromiseLike<{
           data: { active?: boolean | null; role?: string | null } | null;
           error: { message: string } | null;
         }>;

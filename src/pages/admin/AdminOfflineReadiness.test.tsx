@@ -1,8 +1,9 @@
 import { act, type ComponentProps, type ComponentType } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider, onlineManager } from "@tanstack/react-query";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { createMemoryRouter, MemoryRouter, Outlet, Route, RouterProvider, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import NavigationProtectionProvider from "@/components/NavigationProtectionProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { NotificationSettings } from "@/lib/adminEditorData";
 import { adminPromotionsEditorText } from "@/i18n/adminPromotionsEditorText";
@@ -10,14 +11,14 @@ import AdminContentEditor from "./AdminContentEditor";
 import AdminPromotionsEditor from "./AdminPromotionsEditor";
 import AdminNotificationSettings from "./AdminNotificationSettings";
 
-const mocks = vi.hoisted(() => ({ readEditor: vi.fn(), readPages: vi.fn(), readNotifications: vi.fn(), save: vi.fn(), saveNotifications: vi.fn(), testTelegram: vi.fn(), testMaintenance: vi.fn(), toast: vi.fn() }));
+const mocks = vi.hoisted(() => ({ readEditor: vi.fn(), readContent: vi.fn(), confirmNavigation: vi.fn(), readPages: vi.fn(), readNotifications: vi.fn(), save: vi.fn(), saveNotifications: vi.fn(), testTelegram: vi.fn(), testMaintenance: vi.fn(), toast: vi.fn() }));
 vi.mock("@/lib/supabase", () => ({ isSupabaseConfigured: true, supabase: {} }));
-vi.mock("@/backend/modules/cms/service/cmsService", () => ({ loadAdminEditorRows: mocks.readEditor, loadAdminSimpleCmsRows: mocks.readPages, generateAdminContentEnglish: vi.fn(async () => null) }));
+vi.mock("@/backend/modules/cms/service/cmsService", () => ({ loadAdminEditorRows: mocks.readEditor, loadAdminContentRecord: mocks.readContent, loadAdminSimpleCmsRows: mocks.readPages, generateAdminContentEnglish: vi.fn(async () => null) }));
 vi.mock("@/lib/adminEditorData", () => ({ fetchNotificationSettings: mocks.readNotifications, fetchAdminUsers: vi.fn(), fetchTranslationJobs: vi.fn() }));
 vi.mock("@/lib/adminMutation", () => ({ saveAdminRecord: mocks.save, formatAdminMutationError: () => "Synthetic save failure" }));
 vi.mock("@/backend/modules/settings/service/notificationSettingsService", () => ({ saveAdminNotificationSettings: mocks.saveNotifications, testAdminTelegramNotification: mocks.testTelegram, testAdminMaintenanceReminder: mocks.testMaintenance }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: mocks.toast }) }));
-vi.mock("@/hooks/useUnsavedChangesWarning", () => ({ useUnsavedChangesWarning: () => {} }));
+vi.mock("@/lib/navigationProtection", async (original) => ({ ...await original<typeof import("@/lib/navigationProtection")>(), confirmProtectedNavigation: mocks.confirmNavigation }));
 vi.mock("@/components/admin/AdminPageHeader", () => ({ default: () => null }));
 vi.mock("@/components/admin/AdminHomeSectionVisibility", () => ({ default: () => null }));
 vi.mock("./AdminImageUpload", () => ({ default: () => null, getAdminImagePreviewVariant: () => "cover" }));
@@ -44,7 +45,7 @@ async function render(Page: ComponentType, path = "/admin/isolated") {
     <Route path="/admin/isolated" element={<Page />} />
   </Routes></TooltipProvider></MemoryRouter></QueryClientProvider>)); await settle();
 }
-function button(label: string) { return Array.from(node.querySelectorAll<HTMLButtonElement>("button")).find((item) => item.textContent?.trim() === label)!; }
+function button(label: string) { return Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find((item) => item.textContent?.trim() === label)!; }
 function input(value: string) { return Array.from(node.querySelectorAll<HTMLInputElement>("input")).find((item) => item.value === value)!; }
 function edit(element: HTMLInputElement, value: string) {
   act(() => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(element, value); element.dispatchEvent(new Event("input", { bubbles: true })); });
@@ -52,7 +53,7 @@ function edit(element: HTMLInputElement, value: string) {
 beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true); onlineManager.setOnline(true);
   Object.values(mocks).forEach((mock) => mock.mockReset());
-  mocks.readEditor.mockResolvedValue([row]); mocks.readPages.mockResolvedValue([promotion]); mocks.readNotifications.mockResolvedValue(notification);
+  mocks.confirmNavigation.mockResolvedValue(true); mocks.readContent.mockResolvedValue(row); mocks.readEditor.mockResolvedValue([row]); mocks.readPages.mockResolvedValue([promotion]); mocks.readNotifications.mockResolvedValue(notification);
   mocks.save.mockImplementation(async (args) => ({ ...args.payload, id: args.id || "created-fixture", updated_at: row.updated_at }));
   mocks.saveNotifications.mockResolvedValue(notification);
   client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -85,15 +86,71 @@ describe("content editor confirmed initial read", () => {
     expect(mocks.save.mock.calls[0]![0]).toMatchObject({ id: row.id, payload: { customer_name: "Cached draft" } });
   });
 
-  it("distinguishes a confirmed empty collection from an unconfirmed or failed read", async () => {
+  it("permits an independent new draft even when the recent-row directory fails", async () => {
     mocks.readEditor.mockRejectedValueOnce(new Error("Synthetic initial failure"));
     await render(AdminContentEditor, "/admin/content/testimonials");
-    expect(node.querySelector("fieldset")).toBeDisabled(); await act(async () => button("保存").click()); expect(mocks.save).not.toHaveBeenCalled();
-    mocks.readEditor.mockResolvedValueOnce([]); await act(async () => { await client.refetchQueries({ queryKey: contentKey }); }); await settle();
-    expect(node.querySelector("fieldset")).not.toBeDisabled(); await act(async () => button("新建记录").click());
+    expect(node.querySelector("fieldset")).not.toBeDisabled();
+    await act(async () => button("新建记录").click());
     await act(async () => button("保存").click()); expect(mocks.save).toHaveBeenCalledOnce();
     expect(mocks.save.mock.calls[0]![0]).toMatchObject({ id: undefined, payload: { status: "draft" } });
   });
+  it("loads an existing ID outside the fifty recent records", async () => {
+    mocks.readEditor.mockResolvedValue([]);
+    await render(AdminContentEditor, `/admin/content/testimonials/${row.id}`);
+    expect(input(row.customer_name)).not.toBeDisabled();
+    await act(async () => button("保存").click());
+    expect(mocks.readContent).toHaveBeenCalledWith("testimonials", row.id, expect.any(AbortSignal));
+    expect(mocks.save.mock.calls[0][0]).toMatchObject({ id: row.id, expectedUpdatedAt: row.updated_at });
+  });
+
+  it("never inserts a replacement after an existing-ID detail read fails", async () => {
+    mocks.readEditor.mockResolvedValue([]); mocks.readContent.mockRejectedValue(new Error("Missing detail"));
+    await render(AdminContentEditor, `/admin/content/testimonials/${row.id}`);
+    expect(node.querySelector("fieldset")).toBeDisabled();
+    await act(async () => button("保存").click()); expect(mocks.save).not.toHaveBeenCalled();
+  });
+
+  it("confirms row switches and retains the current draft when cancelled", async () => {
+    const other = { ...row, id: "other-record", customer_name: "Other record", updated_at: "other-version" };
+    mocks.readEditor.mockResolvedValue([row, other]); mocks.readContent.mockImplementation(async (_table, id) => id === other.id ? other : row);
+    await render(AdminContentEditor, `/admin/content/testimonials/${row.id}`);
+    edit(input(row.customer_name), "Keep this draft");
+    mocks.confirmNavigation.mockResolvedValueOnce(false);
+    await settle();
+    const directoryButtons = node.querySelectorAll<HTMLButtonElement>("button.block.w-full");
+    expect(directoryButtons).toHaveLength(2);
+    const directoryButton = directoryButtons[1];
+    await act(async () => directoryButton.click()); await settle();
+    expect(input("Keep this draft")).toBeDefined();
+    expect(mocks.confirmNavigation).toHaveBeenCalledOnce();
+    await act(async () => directoryButton.click()); await settle();
+    expect(input("Other record")).toBeDefined();
+    await act(async () => button("保存").click());
+    expect(mocks.save.mock.calls[0][0]).toMatchObject({ id: other.id, expectedUpdatedAt: other.updated_at });
+  });
+
+  it("uses the real protection layer once for row switches and new-record navigation", async () => {
+    const protection = await vi.importActual<typeof import("@/lib/navigationProtection")>("@/lib/navigationProtection");
+    mocks.confirmNavigation.mockImplementation(protection.confirmProtectedNavigation);
+    const other = { ...row, id: "other-record", customer_name: "Other record", updated_at: "other-version" };
+    mocks.readEditor.mockResolvedValue([row, other]); mocks.readContent.mockImplementation(async (_table, id) => id === other.id ? other : row);
+    const router = createMemoryRouter([{ element: <NavigationProtectionProvider><Outlet /></NavigationProtectionProvider>, children: [{ path: "/admin/content/:type/:id?", element: <AdminContentEditor /> }] }], { initialEntries: [`/admin/content/testimonials/${row.id}`] });
+    await act(async () => root.render(<QueryClientProvider client={client}><TooltipProvider><RouterProvider router={router} /></TooltipProvider></QueryClientProvider>)); await settle(); await settle();
+    edit(input(row.customer_name), "Unsaved protected draft");
+    await act(async () => node.querySelectorAll<HTMLButtonElement>("button.block.w-full")[1]!.click()); await settle();
+    expect(document.querySelectorAll('dialog[open]')).toHaveLength(1);
+    await act(async () => button("放弃修改并离开").click()); await settle();
+    expect(router.state.location.pathname).toBe(`/admin/content/testimonials/${other.id}`);
+    expect(document.querySelectorAll('dialog[open]')).toHaveLength(0);
+    edit(input(other.customer_name), "Another protected draft");
+    await act(async () => button("新建记录").click()); await settle();
+    expect(document.querySelectorAll('dialog[open]')).toHaveLength(1);
+    await act(async () => button("放弃修改并离开").click()); await settle();
+    expect(router.state.location.pathname).toBe("/admin/content/testimonials");
+    expect(document.querySelectorAll('dialog[open]')).toHaveLength(0);
+    router.dispose();
+  });
+
 });
 
 describe("promotions confirmed initial read", () => {
@@ -123,6 +180,18 @@ describe("promotions confirmed initial read", () => {
     await act(async () => button(adminPromotionsEditorText.zh.save).click()); await settle();
     expect(mocks.save.mock.calls[0]![0]).toMatchObject({ id: promotion.id, payload: { title_zh: "缓存优惠草稿" } });
   });
+  it("keeps a newly added empty offer editable and cleans it only on save", async () => {
+    await render(AdminPromotionsEditor);
+    const add = Array.from(node.querySelectorAll<HTMLButtonElement>("button")).find(item => item.textContent?.includes(adminPromotionsEditorText.zh.addOffer))!;
+    await act(async () => add.click()); await settle();
+    const offerInput = node.querySelector<HTMLInputElement>(`input[aria-label="${adminPromotionsEditorText.zh.offerTitle}"]`)!;
+    expect(offerInput).not.toBeNull();
+    edit(offerInput, "Offer draft"); edit(offerInput, "");
+    expect(node.querySelectorAll(`input[aria-label="${adminPromotionsEditorText.zh.offerTitle}"]`)).toHaveLength(1);
+    await act(async () => button(adminPromotionsEditorText.zh.save).click());
+    expect(mocks.save.mock.calls[0][0].payload.items_zh).toEqual([]);
+  });
+
 });
 
 describe("notification settings confirmed initial read", () => {

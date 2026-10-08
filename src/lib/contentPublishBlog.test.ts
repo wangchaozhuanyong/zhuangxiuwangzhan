@@ -67,7 +67,7 @@ function createMockContentClient(initialTables: Tables) {
         return builder;
       },
       maybeSingle() {
-        return Promise.resolve({ data: filteredRows()[0] || null, error: null });
+        return Promise.resolve({ data: resolveRows()[0] || null, error: null });
       },
       single() {
         return Promise.resolve({ data: resolveRows()[0] || null, error: null });

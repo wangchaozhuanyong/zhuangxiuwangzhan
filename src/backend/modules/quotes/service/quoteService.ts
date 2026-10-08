@@ -1,9 +1,9 @@
+import { AdminMutationError, persistAdminRecord } from "@/backend/modules/system";
 import { addQuoteFollowup } from "@/backend/modules/followups";
 import {
   fetchAdminQuoteDetail,
   fetchAdminQuoteList,
   fetchAdminQuoteReportRows,
-  updateQuoteRecord,
   type AdminQuoteListRepositoryInput,
   type QuoteUpdatePatch,
 } from "@/backend/modules/quotes/repository/quoteRepository";
@@ -13,14 +13,18 @@ export type AddAdminQuoteFollowupInput = {
   followupType: string;
   content: string;
   nextFollowUpAt?: string | null;
+  expectedUpdatedAt?: string | null;
 };
 
 export type QuoteFollowupSyncResult = {
   syncError?: unknown;
+  record?: Record<string, unknown>;
 };
 
-export function updateAdminQuote(quoteRequestId: string, patch: QuoteUpdatePatch) {
-  return updateQuoteRecord(quoteRequestId, patch);
+export async function updateAdminQuote(quoteRequestId: string, patch: QuoteUpdatePatch, expectedUpdatedAt: string | null | undefined) {
+  if (!expectedUpdatedAt) throw new AdminMutationError("conflict", "An editing version is required.", "validation", { reason: "stale", operation: "save" });
+  const result = await persistAdminRecord({ table: "quote_requests", id: quoteRequestId, payload: patch, expectedUpdatedAt });
+  return result.record;
 }
 
 export function loadAdminQuotes<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput, signal?: AbortSignal) {
@@ -48,8 +52,8 @@ export async function addAdminQuoteFollowup(input: AddAdminQuoteFollowupInput): 
   if (!nextFollowUpAt) return {};
 
   try {
-    await updateQuoteRecord(input.quoteRequestId, { next_follow_up_at: nextFollowUpAt });
-    return {};
+    const record = await updateAdminQuote(input.quoteRequestId, { next_follow_up_at: nextFollowUpAt }, input.expectedUpdatedAt);
+    return { record };
   } catch (syncError) {
     return { syncError };
   }

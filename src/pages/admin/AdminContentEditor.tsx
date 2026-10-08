@@ -1,15 +1,16 @@
+import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
 import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
 import { interactionText } from "@/i18n/interactionText";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
-import { confirmProtectedNavigation } from "@/lib/navigationProtection";
+import { confirmProtectedNavigation, navigateAfterSave } from "@/lib/navigationProtection";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useCallback, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { useAdminEditorRows } from "@/lib/adminCmsQueries";
-import { useParams } from "react-router-dom";
+import { useAdminContentRecord, useAdminEditorRows } from "@/lib/adminCmsQueries";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,22 +40,24 @@ const AdminContentEditor = () => {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const lang = getAdminLang();
   const t = copy[lang];
   const canEdit = editableTables.has(type);
   const rowsQuery = useAdminEditorRows(type, canEdit);
   const { data: rows = [], isFetching, isLoading: isInitialLoading, isInitialError, refetch } = rowsQuery;
-  const hasConfirmedRows = rowsQuery.data !== undefined;
-  const { state: record, setForm: setRecord, applyRemote, dirty: recordDirty } = useAdminFormState<AdminContentRecord>(id ? rows.find((item) => item.id === id) : undefined, { initial: {}, resetKey: `${type}:${id || ""}` });
+  const detailQuery = useAdminContentRecord(type, id, canEdit, rows.find((item) => String(item.id) === id));
+  const hasConfirmedRecord = !id || Boolean(detailQuery.data && String(detailQuery.data.id) === id);
+  const { state: record, setForm: setRecord, applyRemote, isDirty, dirty: recordDirty } = useAdminFormState<AdminContentRecord>(id ? detailQuery.data ?? undefined : undefined, { initial: { status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 }, resetKey: `${type}:${id || ""}` });
   const [status, setStatus] = useState("");
   const { search, setSearch, deferredSearch, filter, setFilter } = useAdminListingState();
   const statusFilter = filter("status");
   const setStatusFilter = (value: string) => setFilter("status", value);
 
   const setRecordField = useCallback((patch: AdminContentRecord | ((prev: AdminContentRecord) => AdminContentRecord)) => {
-    if (!hasConfirmedRows) return;
+    if (!hasConfirmedRecord) return;
     setRecord((prev) => (typeof patch === "function" ? patch(prev) : { ...prev, ...patch }));
-  }, [hasConfirmedRows, setRecord]);
+  }, [hasConfirmedRecord, setRecord]);
   useUnsavedChangesWarning((recordDirty) || isSubmitting);
   const isLoading = isInitialLoading || (isFetching && !rows.length);
 
@@ -76,7 +79,7 @@ const AdminContentEditor = () => {
 
 
   const save = protectSubmission("save", async () => {
-    if (!hasConfirmedRows || isInitialError || isLoading) return;
+    if (!hasConfirmedRecord || (id && String(record.id) !== id)) return;
     setStatus(t.saving);
     const payload = { ...record };
     for (const field of Object.keys(payload)) {
@@ -102,18 +105,19 @@ const AdminContentEditor = () => {
     const hasChineseContent = Object.keys(payload).some((field) => field.endsWith("_zh") && payload[field]);
     if (autoTranslateTables.has(type) && hasChineseContent) {
       setStatus(t.generatingEnglish);
-      let translatedRecord: AdminContentRecord | null;
+      let translation: Awaited<ReturnType<typeof generateAdminContentEnglish<AdminContentRecord>>>;
       try {
-        translatedRecord = await generateAdminContentEnglish<AdminContentRecord>(type, String(savedRecord.id), false);
+        translation = await completeAdminTranslationDelivery({ table: type, id: String(savedRecord.id), force: false },
+          () => generateAdminContentEnglish<AdminContentRecord>(type, String(savedRecord.id), false));
       } catch (error) {
         setStatus(t.generationFailed(formatGenerationError(error, lang)));
         return;
       }
 
-      if (translatedRecord) {
-        applyRemote(translatedRecord, savedRecord);
+      if (translation?.record) {
+        applyRemote(translation.record, savedRecord);
       }
-      setStatus(t.generated);
+      setStatus(translation?.publicSyncPending ? `${t.generated} ${interactionText[lang].savedSyncPending}` : t.generated);
       await invalidateAdminResource(queryClient, type);
       return;
     }
@@ -129,18 +133,19 @@ const AdminContentEditor = () => {
     }
 
     setStatus(t.generating);
-    let translatedRecord: AdminContentRecord | null;
+    let translation: Awaited<ReturnType<typeof generateAdminContentEnglish<AdminContentRecord>>>;
     try {
-      translatedRecord = await generateAdminContentEnglish<AdminContentRecord>(type, String(recordId), true);
+      translation = await completeAdminTranslationDelivery({ table: type, id: String(recordId), force: true },
+        () => generateAdminContentEnglish<AdminContentRecord>(type, String(recordId), true));
     } catch (error) {
       setStatus(formatGenerationError(error, lang));
       return;
     }
 
-    if (translatedRecord) {
-      applyRemote(translatedRecord, record);
+    if (translation?.record) {
+      applyRemote(translation.record, record);
     }
-    setStatus(t.regenerated);
+    setStatus(translation?.publicSyncPending ? `${t.regenerated} ${interactionText[lang].savedSyncPending}` : t.regenerated);
     await invalidateAdminResource(queryClient, type);
   });
 
@@ -155,14 +160,16 @@ const AdminContentEditor = () => {
         <div className="min-w-0 rounded-xl border border-border bg-card p-4">
           <h1 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h1>
           {isInitialError && <p role="alert" className="mb-3 text-sm admin-text-error">{interactionText[lang].loadingFailed}</p>}
+          {id && detailQuery.isInitialError && <p role="alert" className="mb-3 text-sm admin-text-error">{interactionText[lang].loadingFailed} <Button variant="outline" onClick={() => void detailQuery.refetch()}>{t.refresh}</Button></p>}
           <p className="mb-3 text-xs leading-5 text-muted-foreground">{getAdminTableHelp(type)}</p>
           {!readOnlyTables.has(type) && (
             <Button
               className="mb-4 w-full"
-              disabled={!hasConfirmedRows}
+              disabled={isSubmitting}
               onClick={async () => {
                 if (!await confirmProtectedNavigation()) return;
                 applyRemote({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 });
+                navigateAfterSave(isDirty, () => navigate(`/admin/content/${type}`));
               }}
             >
               {t.createRecord}
@@ -197,10 +204,10 @@ const AdminContentEditor = () => {
               <button
                 key={String(row.id)}
                 className="block w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted"
-                onClick={() => {
-
-
-                  setRecord(row);
+                onClick={async () => {
+                  if (!await confirmProtectedNavigation()) return;
+                  applyRemote(row);
+                  navigateAfterSave(isDirty, () => navigate(`/admin/content/${type}/${encodeURIComponent(String(row.id))}`));
                 }}
               >
                 <span className="font-medium">{getRecordLabel(row, type, lang)}</span>
@@ -209,7 +216,7 @@ const AdminContentEditor = () => {
             ))}
           </div>
         </div>
-        <fieldset disabled={!hasConfirmedRows} className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6" aria-label={t.bilingualTitle}>
+        <fieldset disabled={!hasConfirmedRecord} className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6" aria-label={t.bilingualTitle}>
           <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h2 className="font-display text-xl font-bold">{t.bilingualTitle}</h2>

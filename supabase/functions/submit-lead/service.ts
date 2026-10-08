@@ -1,19 +1,15 @@
 import {
-  countRecentAttemptsByIp,
-  countRecentAttemptsByPhone,
+  consumeSubmissionAttempt,
   createContactLead,
   createQuoteRequest,
   findSubmittedTest,
   notifySubmittedLead,
-  recordSubmissionAttempt,
 } from "./repository.ts";
 import type { SubmitBody, SubmitLeadClient, SubmitLeadResult } from "./types.ts";
 import { requireAdminAccess, requireSuperAdminAccess } from "../_shared/admin-auth.ts";
 import { readLeadTest } from "../_shared/lead-test-contract.ts";
 
 const MIN_SUBMIT_MS = 3000;
-const MAX_PER_IP_HOUR = 8;
-const MAX_PER_PHONE_DAY = 5;
 const NOTIFICATION_WAIT_TIMEOUT_MS = 2_500;
 
 const clean = (value: unknown, max = 500) => String(value ?? "").trim().slice(0, max);
@@ -43,22 +39,13 @@ const checkRateLimit = async (
   ipHash: string,
   phoneHash: string | null,
 ) => {
-  const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
-  const ipCount = await countRecentAttemptsByIp(client, ipHash, hourAgo);
-  if (ipCount >= MAX_PER_IP_HOUR) {
+  const outcome = await consumeSubmissionAttempt(client, formType, ipHash, phoneHash);
+  if (outcome === "ip_limit") {
     return { ok: false as const, message: "Too many submissions. Please try again later." };
   }
-
-  if (phoneHash) {
-    const phoneCount = await countRecentAttemptsByPhone(client, phoneHash, dayAgo);
-    if (phoneCount >= MAX_PER_PHONE_DAY) {
-      return { ok: false as const, message: "This phone number has reached the daily submission limit." };
-    }
+  if (outcome === "phone_limit") {
+    return { ok: false as const, message: "This phone number has reached the daily submission limit." };
   }
-
-  await recordSubmissionAttempt(client, formType, ipHash, phoneHash);
   return { ok: true as const };
 };
 
@@ -144,12 +131,16 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
   const ipHash = await hashText(getClientIp(req));
   const phone = clean(body.phone, 40);
   if (!phoneOk(phone)) return errorResult("Invalid phone number");
-  const phoneHash = await hashText(phone);
+  const phoneHash = await hashText(phone.replace(/[+\s-]/g, ""));
   const email = clean(body.email, 200);
   if (email && !emailOk(email)) return errorResult("Invalid email");
 
-  const rate = await checkRateLimit(client, body.type, ipHash, phoneHash);
-  if (!rate.ok) return errorResult(rate.message, 429);
+  try {
+    const rate = await checkRateLimit(client, body.type, ipHash, phoneHash);
+    if (!rate.ok) return errorResult(rate.message, 429);
+  } catch {
+    return errorResult(saveFailedError, 500);
+  }
 
   if (body.type === "contact") {
     const name = clean(body.name, 120);

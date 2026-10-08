@@ -1,8 +1,8 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-type Theme = "dark";
+type Theme = "warm-stone";
 
-const themes: Theme[] = ["dark"];
+const themes: Theme[] = ["warm-stone"];
 const viewports = [
   { name: "mobile", width: 390, height: 844 },
   { name: "desktop", width: 1440, height: 1000 },
@@ -89,7 +89,7 @@ test.describe("public text readability", () => {
     }
   });
 
-  test("blog topic cards keep readable dark-theme contrast", async ({ page }) => {
+  test("blog topic cards keep readable warm-stone contrast", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/zh/blog", { waitUntil: "domcontentloaded" });
 
@@ -271,7 +271,7 @@ test.describe("public text readability", () => {
 
   for (const viewport of viewports) {
     for (const theme of themes) {
-      test(`${viewport.name} ${theme} immersive header remains readable over the hero`, async ({ page }) => {
+      test(`${viewport.name} ${theme} header keeps readable controls above the split hero`, async ({ page }) => {
         await page.setViewportSize(viewport);
         await setPublicTheme(page, theme);
         await page.goto("/zh", { waitUntil: "domcontentloaded" });
@@ -291,7 +291,7 @@ test.describe("public text readability", () => {
         await expect.poll(async () => {
           const headerBottom = await header.evaluate((element) => element.getBoundingClientRect().bottom);
           const heroTop = await hero.evaluate((element) => element.getBoundingClientRect().top);
-          return heroTop < headerBottom;
+          return heroTop >= headerBottom;
         }).toBe(true);
         const result = await header.evaluate((element) => {
           const surface = getComputedStyle(element);
@@ -313,7 +313,13 @@ test.describe("public text readability", () => {
         } else {
           expect(result.surfaceImage).toContain("linear-gradient");
         }
-        expect(result.heroTop).toBeLessThan(result.headerBottom);
+        expect(result.heroTop).toBeGreaterThanOrEqual(result.headerBottom);
+        const controls = header.locator("a:visible, button:visible");
+        expect(await controls.count()).toBeGreaterThan(0);
+        for (let index = 0; index < await controls.count(); index += 1) {
+          const control = controls.nth(index);
+          expect((await readContrast(control)).contrast, `header control ${index + 1} contrast`).toBeGreaterThanOrEqual(4.5);
+        }
       });
     }
   }

@@ -52,12 +52,17 @@ const ALLOWED_ATTRS: Record<string, Set<string>> = {
   img: new Set(["src", "alt", "width", "height", "loading", "decoding"]),
 };
 
-const isSafeUrl = (value: string) => {
-  const trimmed = value.trim().toLowerCase();
-  if (!trimmed) return false;
-  if (trimmed.startsWith("javascript:")) return false;
-  if (trimmed.startsWith("data:")) return false;
-  return true;
+export const isSafeContentUrl = (value: string, image = false) => {
+  if (!value.trim()) return false;
+  try {
+    // The DOM has decoded entities. The browser URL parser also removes tabs
+    // and newlines before deciding the scheme, unlike a string prefix check.
+    const protocol = new URL(value, "https://cms-content.invalid/").protocol;
+    return protocol === "https:" || protocol === "http:"
+      || (!image && (protocol === "mailto:" || protocol === "tel:"));
+  } catch {
+    return false;
+  }
 };
 
 const replaceElementTag = (el: HTMLElement, tagName: string) => {
@@ -119,7 +124,7 @@ const cleanNode = (node: Node) => {
       }
 
       if ((tag === "a" && name === "href") || (tag === "img" && name === "src")) {
-        if (!isSafeUrl(attr.value)) {
+        if (!isSafeContentUrl(attr.value, tag === "img")) {
           el.removeAttribute(attr.name);
         }
       }
@@ -127,7 +132,7 @@ const cleanNode = (node: Node) => {
 
     if (tag === "img") {
       const src = el.getAttribute("src");
-      if (src && isSafeUrl(src)) {
+      if (src && isSafeContentUrl(src, true)) {
         el.setAttribute("src", optimizeContentImageSrc(src));
         if (!el.getAttribute("loading")) el.setAttribute("loading", "lazy");
         if (!el.getAttribute("decoding")) el.setAttribute("decoding", "async");

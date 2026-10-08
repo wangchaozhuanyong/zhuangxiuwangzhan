@@ -1,3 +1,4 @@
+import { generateAdminEnglishContent } from "@/backend/modules/system";
 import type { QueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { previewAdminContent, requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
@@ -9,7 +10,6 @@ import {
   fetchAdminServiceList,
   fetchAdminServiceRows,
   findServiceIdsBySlug,
-  invokeServiceEnglishGeneration,
   publishServiceRecord,
   type AdminServiceListInput,
 } from "@/backend/modules/services/repository/serviceRepository";
@@ -214,7 +214,7 @@ export async function publishAdminService(input: SaveAdminServiceInput & { appro
 }
 
 export function generateAdminServiceEnglish(serviceId: string, force: boolean) {
-  return invokeServiceEnglishGeneration(serviceId, force);
+  return generateAdminEnglishContent({ table: "services", id: serviceId, force });
 }
 
 export function loadAdminServiceList<T extends Record<string, unknown>>(input: AdminServiceListInput, signal?: AbortSignal) {

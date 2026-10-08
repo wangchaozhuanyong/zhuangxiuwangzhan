@@ -1,3 +1,4 @@
+import { generateAdminEnglishContent } from "@/backend/modules/system";
 import type { QueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { previewAdminContent, saveAdminRecord } from "@/lib/adminMutation";
@@ -6,7 +7,6 @@ import {
   fetchAdminBlogPostList,
   fetchAdminBlogPostRows,
   findBlogPostIdsBySlug,
-  invokeBlogPostEnglishGeneration,
   type AdminBlogListInput,
 } from "@/backend/modules/blog/repository/blogRepository";
 
@@ -91,7 +91,7 @@ export async function saveAdminBlogPost(input: SaveAdminBlogPostInput) {
 }
 
 export function generateAdminBlogEnglish(blogPostId: string, force: boolean) {
-  return invokeBlogPostEnglishGeneration(blogPostId, force);
+  return generateAdminEnglishContent({ table: "blog_posts", id: blogPostId, force });
 }
 
 export function loadAdminBlogPostList<T extends Record<string, unknown>>(input: AdminBlogListInput, signal?: AbortSignal) {

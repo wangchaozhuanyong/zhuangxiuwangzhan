@@ -1,4 +1,7 @@
 export const adminMaterialEditorText = {
+  reloadRecord: { en: "Reload record", zh: "重新读取" },
+  reloadTitle: { en: "Reload the latest material?", zh: "重新读取最新材料？" },
+  reloadDescription: { en: "This discards your current unsaved changes and reads the latest saved material. Cancel to keep editing your draft.", zh: "这会放弃当前尚未保存的修改，并读取最新已保存材料。取消可继续保留草稿。" },
   loadFailed: { en: "Load failed", zh: "加载失败" },
   slugTaken: { en: "This slug is already in use. Please choose another one.", zh: "链接标识已被占用，请更换" },
   slugRequired: { en: "Fill in the slug or Chinese title first", zh: "请填写链接标识或中文标题" },

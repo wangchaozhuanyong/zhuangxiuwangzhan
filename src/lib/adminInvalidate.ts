@@ -35,7 +35,7 @@ export function invalidateAdminContentDetail(qc: QueryClient, table: string, id:
 /** A resource write invalidates its lists, records, dependent aggregates and delivery. */
 export async function invalidateAdminResource(qc: QueryClient, table: string, published = true) {
   const aliases: Record<string, string[]> = {
-    blog_posts: ["blog_posts", "blog"], quote_requests: ["quotes"], leads: ["leads"],
+    blog_posts: ["blog_posts", "blog"], quote_requests: ["quotes", "lead-report"], leads: ["leads", "lead-report"],
     home_sections: ["home", "home_editor"], about_sections: ["about", "about_editor"],
     cms_sections: ["cms_sections", "cms_pages", "cms_revisions"],
     project_images: ["projects", "project_images"], material_images: ["materials", "material_images"],

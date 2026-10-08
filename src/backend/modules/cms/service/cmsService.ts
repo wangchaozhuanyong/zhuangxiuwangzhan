@@ -1,3 +1,4 @@
+import { generateAdminEnglishContent } from "@/backend/modules/system";
 import type { CmsSection } from "@/lib/adminCmsBuilderModel";
 import {
   fetchAdminCmsPages,
@@ -7,7 +8,6 @@ import {
   fetchAdminContentRecord,
   fetchAdminEditorRows,
   fetchAdminSimpleCmsRows,
-  invokeAdminContentEnglishGeneration,
 } from "@/backend/modules/cms/repository/cmsRepository";
 
 export function loadAdminCmsPages(signal?: AbortSignal) {
@@ -40,6 +40,6 @@ export function loadAdminContentRecord<T extends Record<string, unknown>>(table:
 }
 
 export async function generateAdminContentEnglish<T extends Record<string, unknown>>(table: string, id: string, force: boolean) {
-  await invokeAdminContentEnglishGeneration(table, id, force);
-  return fetchAdminContentRecord<T>(table, id);
+  const translation = await generateAdminEnglishContent({ table, id, force });
+  return { ...translation, record: await fetchAdminContentRecord<T>(table, id) };
 }

@@ -1,5 +1,5 @@
 import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
-import { loadAdminEditorRows, loadAdminSimpleCmsRows } from "@/backend/modules/cms/service/cmsService";
+import { loadAdminContentRecord, loadAdminEditorRows, loadAdminSimpleCmsRows } from "@/backend/modules/cms/service/cmsService";
 import { fetchAdminAboutEditorData, fetchAdminHomeEditorData } from "@/lib/adminEditorData";
 import { ADMIN_LIST_STALE_TIME, ADMIN_QUERY_GC_TIME, adminQueriesEnabled } from "@/lib/adminQueryCore";
 
@@ -38,5 +38,15 @@ export function useAdminAboutEditorData() {
     queryKey: ["admin", "about_editor"],
     enabled: adminQueriesEnabled,
     queryFn: ({ signal }) => fetchAdminAboutEditorData(signal),
+  });
+}
+
+/** Detail identity is independent of the recent-row directory. */
+export function useAdminContentRecord(type: string, id?: string, canLoad = true, cachedRecord?: Record<string, unknown>) {
+  return useQuery({
+    queryKey: ["admin", type, "detail", id],
+    enabled: adminQueriesEnabled && canLoad && Boolean(id),
+    initialData: cachedRecord,
+    queryFn: ({ signal }) => loadAdminContentRecord<Record<string, unknown>>(type, id!, signal),
   });
 }

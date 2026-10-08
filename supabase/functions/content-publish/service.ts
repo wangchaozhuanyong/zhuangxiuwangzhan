@@ -2,7 +2,6 @@ import { publishMediaContent } from "./mediaPublishing.ts";
 import { cleanText, errorResult } from "./publishValues.ts";
 import { dispatchContentPublish } from "./dispatch.ts";
 import {
-  archiveRecordsByField,
   fetchRecordByField,
   fetchRecordsByField,
   fetchServiceById,
@@ -10,10 +9,10 @@ import {
   insertContentRecord,
   insertAdminAuditLog,
   insertServiceRecord,
-  replaceMaterialGallery,
-  updateContentRecord,
   updateContentRecordAtVersion,
-  updateServiceRecord,
+  publishMaterialAtomic,
+  publishHomepageAtomic,
+  PublicationConflictError,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus, PublishContext } from "./types.ts";
 import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
@@ -341,12 +340,6 @@ const cleanFaqs = (value: unknown) =>
         .filter((item) => item.q || item.a)
         .slice(0, 30)
     : [];
-
-const normalizeDate = (value?: unknown) => {
-  if (!value) return "";
-  const time = new Date(String(value)).getTime();
-  return Number.isNaN(time) ? String(value) : String(time);
-};
 
 const hasMediaPlaceholder = (value: unknown) => JSON.stringify(value).includes("NEEDS_MEDIA_UPLOAD:");
 
@@ -993,6 +986,7 @@ function cleanStandaloneSitePagePayload(record: Record<string, unknown>, nextSta
 }
 
 type HomepageTablePayload = {
+  expectedUpdatedAt: string;
   key: string;
   payload: Record<string, unknown>;
 };
@@ -1081,7 +1075,7 @@ function cleanSitePage(input: unknown, nextStatus: ContentStatus, warnings: stri
   if (!isSafeImageUrl(payload.image_url)) throw new Error("sitePage.image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
   assertPublishedWebpImage(payload.image_url, payload.status, "sitePage.image_url");
 
-  return { key: pageKey, payload };
+  return { key: pageKey, payload, expectedUpdatedAt: typeof record.updated_at === "string" ? record.updated_at : "" };
 }
 
 function cleanCtaBlock(input: unknown, nextStatus: ContentStatus, warnings: string[]): HomepageTablePayload {
@@ -1102,7 +1096,7 @@ function cleanCtaBlock(input: unknown, nextStatus: ContentStatus, warnings: stri
   }
   if (!isSafeImageUrl(payload.image_url)) throw new Error("ctaBlock.image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
   assertPublishedWebpImage(payload.image_url, payload.status, "ctaBlock.image_url");
-  return { key: blockKey, payload };
+  return { key: blockKey, payload, expectedUpdatedAt: typeof record.updated_at === "string" ? record.updated_at : "" };
 }
 
 function cleanHomeSection(input: unknown, nextStatus: ContentStatus, warnings: string[]): HomepageTablePayload {
@@ -1127,7 +1121,7 @@ function cleanHomeSection(input: unknown, nextStatus: ContentStatus, warnings: s
   if (!isSafeActionUrl(payload.button_url)) throw new Error("homeSection.button_url must be empty, site-relative, HTTPS, mailto, or tel links.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("homeSection.image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
   assertPublishedWebpImage(payload.image_url, payload.status, "homeSection.image_url");
-  return { key: sectionKey, payload };
+  return { key: sectionKey, payload, expectedUpdatedAt: typeof record.updated_at === "string" ? record.updated_at : "" };
 }
 
 function cleanHomepageFaqs(input: unknown, nextStatus: ContentStatus) {
@@ -1290,9 +1284,7 @@ async function publishBlogContent(
   if (managedBlog && (nextStatus !== "published" || existing?.status !== "published")) {
     return errorResult("Managed Blog must preserve its published status.", 403);
   }
-  if (existing && expectedUpdatedAt && (isManagedExisting
-    ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
-    : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
+  if (existing && expectedUpdatedAt && !samePgTimestamp(existing.updated_at, expectedUpdatedAt)) {
     return errorResult("This blog post was changed by someone else. Refresh before publishing.", 409, {
       currentUpdatedAt: existing.updated_at || null,
     });
@@ -1340,7 +1332,7 @@ async function publishBlogContent(
     saved = managedBlog
       ? await updateContentRecordAtVersion(client, "blog_posts", existingId, expectedUpdatedAt, writePayload)
       : existingId
-      ? await updateContentRecord(client, "blog_posts", existingId, cleaned.payload)
+      ? await updateContentRecordAtVersion(client, "blog_posts", existingId, expectedUpdatedAt, cleaned.payload)
       : await insertContentRecord(client, "blog_posts", cleaned.payload);
   } catch (error) {
     if (managedBlog && input.managedPermit) {
@@ -1422,7 +1414,7 @@ async function publishMaterialContent(
       currentUpdatedAt: existing.updated_at || null,
     });
   }
-  if (existing && expectedUpdatedAt && normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt)) {
+  if (existing && expectedUpdatedAt && !samePgTimestamp(existing.updated_at, expectedUpdatedAt)) {
     return errorResult("This material was changed by someone else. Refresh before publishing.", 409, {
       currentUpdatedAt: existing.updated_at || null,
     });
@@ -1465,51 +1457,29 @@ async function publishMaterialContent(
     };
   }
 
-  const saved = existingId
-    ? await updateContentRecord(client, "materials", existingId, cleaned.payload)
-    : await insertContentRecord(client, "materials", cleaned.payload);
-  const materialId = String(saved.id || existingId || "");
-  const previousGallery = cleaned.requiresMaterialSchema && materialId
-    ? await fetchRecordsByField(client, "material_images", "material_id", materialId)
-    : [];
-  const insertedGallery: ContentRow[] = [];
-
-  if (cleaned.gallery.length) {
-    insertedGallery.push(...await replaceMaterialGallery(client, materialId, cleaned.gallery));
-  }
-
-  const auditWarnings: string[] = [];
+  let committed: Record<string, unknown>;
   try {
-    await insertAdminAuditLog(client, {
-      adminUserId: context.adminUserId || null,
-      action,
-      tableName: "materials",
-      recordId: materialId,
-      oldValue: existing,
-      newValue: saved,
+    committed = await publishMaterialAtomic(client, {
+      p_material_id: existingId || null,
+      p_expected_updated_at: expectedUpdatedAt || null,
+      p_payload: cleaned.payload,
+      p_images: cleaned.gallery.length ? cleaned.gallery : null,
+      p_admin_user_id: context.adminUserId || null,
+      p_action: action,
     });
-    if (cleaned.gallery.length) {
-      await insertAdminAuditLog(client, {
-        adminUserId: context.adminUserId || null,
-        action: "replace_material_gallery",
-        tableName: "material_images",
-        recordId: materialId,
-        oldValue: previousGallery,
-        newValue: insertedGallery,
-      });
-    }
   } catch (error) {
-    auditWarnings.push(error instanceof Error ? error.message : "Audit log failed");
+    if (error instanceof PublicationConflictError) return errorResult(error.message, 409);
+    throw error;
   }
-
+  const saved = committed.saved as ContentRow;
   return {
     body: {
       ...commonBody,
-      saved_id: materialId,
+      saved_id: saved.id,
       saved_updated_at: saved.updated_at || null,
-      gallery_count: insertedGallery.length,
-      gallery_archived_count: previousGallery.filter((row) => row.is_active !== false).length,
-      warnings: [...cleaned.warnings, ...auditWarnings.map((warning) => `Audit warning: ${warning}`)],
+      gallery_count: committed.gallery_count,
+      gallery_archived_count: committed.gallery_archived_count,
+      public_revision: committed.public_revision,
     },
   };
 }
@@ -1565,9 +1535,7 @@ async function publishSingleRecordContent(
       input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined))
     : undefined;
   if (isManagedArea && !managedArea) return errorResult("Managed service area requires an exact locked target.", 403);
-  if (existing && expectedUpdatedAt && (managedArea
-    ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
-    : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
+  if (existing && expectedUpdatedAt && !samePgTimestamp(existing.updated_at, expectedUpdatedAt)) {
     return errorResult(`This ${config.contentType} was changed by someone else. Refresh before publishing.`, 409, {
       currentUpdatedAt: existing.updated_at || null,
     });
@@ -1613,7 +1581,7 @@ async function publishSingleRecordContent(
     saved = managedArea
       ? await updateContentRecordAtVersion(client, config.table, existingId, expectedUpdatedAt, writePayload)
       : existingId
-      ? await updateContentRecord(client, config.table, existingId, cleaned.payload)
+      ? await updateContentRecordAtVersion(client, config.table, existingId, expectedUpdatedAt, cleaned.payload)
       : await insertContentRecord(client, config.table, cleaned.payload);
   } catch (error) {
     if (managedArea && input.managedPermit) await finishManagedCmsWrite(client, context, input.managedPermit.permitId, null);
@@ -1649,27 +1617,6 @@ async function publishSingleRecordContent(
   };
 }
 
-const upsertByKey = async (
-  client: ContentPublishClient,
-  table: string,
-  keyField: string,
-  item: HomepageTablePayload,
-) => {
-  const existing = await fetchRecordByField(client, table, keyField, item.key);
-  const payload = { ...item.payload };
-  delete payload.id;
-  const saved = existing?.id
-    ? await updateContentRecord(client, table, String(existing.id), payload)
-    : await insertContentRecord(client, table, payload);
-  return {
-    table,
-    key: item.key,
-    action: existing ? "update" : "insert",
-    existing,
-    saved,
-  };
-};
-
 async function publishHomepageContent(
   input: ContentPublishRequest,
   client: ContentPublishClient,
@@ -1694,11 +1641,29 @@ async function publishHomepageContent(
   const existingCtaBlocks = await Promise.all(cleaned.ctaBlocks.map((item) => fetchRecordByField(client, "cta_blocks", "block_key", item.key)));
   const existingHomeSections = await Promise.all(cleaned.homeSections.map((item) => fetchRecordByField(client, "home_sections", "section_key", item.key)));
 
-  const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record?.updated_at === "string" ? input.record.updated_at : "");
-  if (existingSitePage && expectedUpdatedAt && normalizeDate(existingSitePage.updated_at) !== normalizeDate(expectedUpdatedAt)) {
-    return errorResult("This homepage site page was changed by someone else. Refresh before publishing.", 409, {
-      currentUpdatedAt: existingSitePage.updated_at || null,
-    });
+  const sitePageVersion = input.expectedUpdatedAt || cleaned.sitePage?.expectedUpdatedAt
+    || (typeof input.record?.updated_at === "string" ? input.record.updated_at : "");
+  const versionedRows = [
+    ...(cleaned.sitePage ? [{ row: existingSitePage, version: sitePageVersion }] : []),
+    ...cleaned.ctaBlocks.map((item, index) => ({ row: existingCtaBlocks[index], version: item.expectedUpdatedAt })),
+    ...cleaned.homeSections.map((item, index) => ({ row: existingHomeSections[index], version: item.expectedUpdatedAt })),
+  ];
+  for (const { row, version } of versionedRows) {
+    if (row && ((mode === "publish" && !version) || (version && !samePgTimestamp(row.updated_at, version)))) {
+      return errorResult("Every existing homepage record requires its unchanged updated_at version. Refresh before publishing.", 409);
+    }
+  }
+  const expectedFaqs = input.record?.expectedFaqs;
+  if (mode === "publish" && cleaned.replaceFaqs && cleaned.faqs.length) {
+    if (!Array.isArray(expectedFaqs) || expectedFaqs.some((value) => !value || typeof value !== "object"
+      || typeof value.id !== "string" || typeof value.updated_at !== "string")) {
+      return errorResult("Replacing homepage FAQs requires expectedFaqs with every published row ID and updated_at.", 409);
+    }
+    const published = existingFaqs.filter((row) => row.status === "published");
+    if (published.length !== expectedFaqs.length || published.some((row) => !expectedFaqs.some((value) =>
+      value.id === row.id && samePgTimestamp(row.updated_at, value.updated_at)))) {
+      return errorResult("The homepage FAQ set changed. Refresh before publishing.", 409);
+    }
   }
 
   const commonBody = {
@@ -1722,6 +1687,12 @@ async function publishHomepageContent(
     return {
       body: {
         ...commonBody,
+        expected_versions: {
+          site_page: existingSitePage ? { id: existingSitePage.id, updated_at: existingSitePage.updated_at } : null,
+          cta_blocks: existingCtaBlocks.filter(Boolean).map((row) => ({ id: row!.id, updated_at: row!.updated_at })),
+          home_sections: existingHomeSections.filter(Boolean).map((row) => ({ id: row!.id, updated_at: row!.updated_at })),
+          faqs: existingFaqs.filter((row) => row.status === "published").map((row) => ({ id: row.id, updated_at: row.updated_at })),
+        },
         payload_preview: {
           site_page: cleaned.sitePage
             ? {
@@ -1747,69 +1718,25 @@ async function publishHomepageContent(
     };
   }
 
-  const savedRecords: Array<Record<string, unknown>> = [];
-  const auditWarnings: string[] = [];
-  const audit = async (
-    tableName: string,
-    action: string,
-    recordId: string | null,
-    oldValue: ContentRow | ContentRow[] | null,
-    newValue: ContentRow | ContentRow[] | null,
-  ) => {
-    try {
-      await insertAdminAuditLog(client, {
-        adminUserId: context.adminUserId || null,
-        action,
-        tableName,
-        recordId,
-        oldValue,
-        newValue,
-      });
-    } catch (error) {
-      auditWarnings.push(error instanceof Error ? error.message : "Audit log failed");
-    }
-  };
-
-  if (cleaned.sitePage) {
-    const result = await upsertByKey(client, "site_pages", "page_key", cleaned.sitePage);
-    savedRecords.push({ table: result.table, key: result.key, action: result.action, saved_id: result.saved.id || null });
-    await audit("site_pages", `homepage_${result.action}`, String(result.saved.id || result.existing?.id || ""), result.existing, result.saved);
+  let committed: Record<string, unknown>;
+  try {
+    committed = await publishHomepageAtomic(client, {
+      p_site_page: cleaned.sitePage ? { ...cleaned.sitePage,
+        expectedId: existingSitePage?.id || null, expectedUpdatedAt: sitePageVersion || null } : null,
+      p_cta_blocks: cleaned.ctaBlocks.map((item, index) => ({ ...item,
+        expectedId: existingCtaBlocks[index]?.id || null, expectedUpdatedAt: item.expectedUpdatedAt || null })),
+      p_home_sections: cleaned.homeSections.map((item, index) => ({ ...item,
+        expectedId: existingHomeSections[index]?.id || null, expectedUpdatedAt: item.expectedUpdatedAt || null })),
+      p_faqs: cleaned.faqs,
+      p_replace_faqs: cleaned.replaceFaqs,
+      p_expected_faqs: expectedFaqs || [],
+      p_admin_user_id: context.adminUserId || null,
+    });
+  } catch (error) {
+    if (error instanceof PublicationConflictError) return errorResult(error.message, 409);
+    throw error;
   }
-
-  for (const item of cleaned.ctaBlocks) {
-    const result = await upsertByKey(client, "cta_blocks", "block_key", item);
-    savedRecords.push({ table: result.table, key: result.key, action: result.action, saved_id: result.saved.id || null });
-    await audit("cta_blocks", `homepage_${result.action}`, String(result.saved.id || result.existing?.id || ""), result.existing, result.saved);
-  }
-
-  for (const item of cleaned.homeSections) {
-    const result = await upsertByKey(client, "home_sections", "section_key", item);
-    savedRecords.push({ table: result.table, key: result.key, action: result.action, saved_id: result.saved.id || null });
-    await audit("home_sections", `homepage_${result.action}`, String(result.saved.id || result.existing?.id || ""), result.existing, result.saved);
-  }
-
-  if (cleaned.faqs.length) {
-    let archived: ContentRow[] = [];
-    if (cleaned.replaceFaqs) {
-      archived = await archiveRecordsByField(client, "faqs", "page_key", "home");
-      savedRecords.push({ table: "faqs", key: "home", action: "archive_existing", archived_count: archived.length });
-      await audit("faqs", "homepage_archive_existing_faqs", null, existingFaqs, archived);
-    }
-    const insertedFaqs: ContentRow[] = [];
-    for (const faq of cleaned.faqs) {
-      insertedFaqs.push(await insertContentRecord(client, "faqs", faq));
-    }
-    savedRecords.push({ table: "faqs", key: "home", action: "insert", inserted_count: insertedFaqs.length });
-    await audit("faqs", "homepage_insert_faqs", null, archived.length ? archived : null, insertedFaqs);
-  }
-
-  return {
-    body: {
-      ...commonBody,
-      saved_records: savedRecords,
-      warnings: [...cleaned.warnings, ...auditWarnings.map((warning) => `Audit warning: ${warning}`)],
-    },
-  };
+  return { body: { ...commonBody, saved_records: committed.saved_records, public_revision: committed.public_revision } };
 }
 
 const managedRecordKey = (input: ContentPublishRequest): string => input.contentType === "faq"
@@ -1967,7 +1894,7 @@ export async function publishContent(
 
   const nextStatus = input.nextStatus || (input.record.status as ContentStatus | undefined) || "draft";
   if (!VALID_STATUSES.has(nextStatus)) return errorResult("Invalid nextStatus.");
-  if (mode === "publish" && (!input.ownerApproved || !input.explicitExecution)) {
+  if (mode === "publish" && (input.ownerApproved !== true || input.explicitExecution !== true)) {
     return errorResult("Publishing requires ownerApproved=true and explicitExecution=true.", 403);
   }
   if (exact && (ORG020_V7_TARGETS.includes(exact)
@@ -2049,13 +1976,16 @@ export async function publishContent(
     input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined));
   if (isManagedExisting && !managedService) return errorResult("Managed service requires an exact locked target.", 403);
   const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record.updated_at === "string" ? input.record.updated_at : "");
+  if (existing && mode === "publish" && !expectedUpdatedAt) {
+    return errorResult("expectedUpdatedAt is required when updating an existing service.", 409, {
+      currentUpdatedAt: existing.updated_at || null,
+    });
+  }
   if (managedService && (!existing || existing.id !== managedService.id || cleaned.slug !== managedService.slug
       || input.record.id !== managedService.id || !expectedUpdatedAt)) {
     return errorResult("Managed service requires its exact existing row and version.", 403);
   }
-  if (existing && expectedUpdatedAt && (isManagedExisting
-    ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
-    : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
+  if (existing && expectedUpdatedAt && !samePgTimestamp(existing.updated_at, expectedUpdatedAt)) {
     return errorResult("This service was changed by someone else. Refresh before publishing.", 409, {
       currentUpdatedAt: existing.updated_at || null,
     });
@@ -2111,9 +2041,7 @@ export async function publishContent(
   let saved: ContentRow | null;
   try {
     saved = existingId
-      ? managedService?.changedFields
-        ? await updateContentRecordAtVersion(client, "services", existingId, expectedUpdatedAt, writePayload)
-        : await updateServiceRecord(client, existingId, cleaned.payload)
+      ? await updateContentRecordAtVersion(client, "services", existingId, expectedUpdatedAt, writePayload)
       : await insertServiceRecord(client, cleaned.payload);
   } catch (error) {
     if (managedService && input.managedPermit) {

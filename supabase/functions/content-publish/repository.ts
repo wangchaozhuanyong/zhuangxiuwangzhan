@@ -85,28 +85,38 @@ export async function updateContentRecordAtVersion(
   return data as ContentRow | null;
 }
 
-export async function replaceMaterialGallery(
+// These RPCs commit the complete publication, audit, and public revision together.
+// A missing migration or a database failure must never fall back to partial writes.
+export class PublicationConflictError extends Error {}
+
+async function atomicPublication(
   client: ContentPublishClient,
-  materialId: string,
-  images: Record<string, unknown>[],
-): Promise<ContentRow[]> {
-  const { data, error } = await client.rpc("replace_material_gallery", {
-    p_material_id: materialId,
-    p_images: images,
-  });
-  if (error) throw new Error(error.message);
-  return (data as ContentRow[] | null) || [];
+  name: "publish_material_atomic" | "publish_homepage_atomic",
+  args: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const { data, error } = await client.rpc(name, args);
+  if (error) {
+    if (error.code === "40001" || error.code === "23505") {
+      throw new PublicationConflictError("Content changed during publication. Refresh before publishing.");
+    }
+    if (error.code === "PGRST202" || error.code === "42883") {
+      throw new PublicationConflictError("The atomic publication migration is required before publishing.");
+    }
+    throw new Error("Atomic publication could not be confirmed. Read back before retrying.");
+  }
+  const result = data as unknown;
+  if (!result || typeof result !== "object" || Array.isArray(result)) {
+    throw new Error("Atomic publication returned an invalid result. Read back before retrying.");
+  }
+  return result as Record<string, unknown>;
 }
 
-export async function archiveRecordsByField(
-  client: ContentPublishClient,
-  table: string,
-  field: string,
-  value: string,
-): Promise<ContentRow[]> {
-  const { data, error } = await client.from(table).update({ status: "archived" }).eq(field, value).eq("status", "published").select("*");
-  if (error) throw new Error(error.message);
-  return (data as ContentRow[] | null) || [];
+export function publishMaterialAtomic(client: ContentPublishClient, args: Record<string, unknown>) {
+  return atomicPublication(client, "publish_material_atomic", args);
+}
+
+export function publishHomepageAtomic(client: ContentPublishClient, args: Record<string, unknown>) {
+  return atomicPublication(client, "publish_homepage_atomic", args);
 }
 
 export async function insertAdminAuditLog(

@@ -9,3 +9,5 @@ export {
 } from "./service/adminMutationService";
 export { requestPublicContentInvalidation } from "./repository/adminMutationRepository";
 export type { AdminMutationDbRecord, PublicContentInvalidationResult } from "./repository/adminMutationRepository";
+export { generateAdminEnglishContent, type AdminTranslationResult } from "./service/translationService";
+export type { GenerateEnglishContentRequest, GenerateEnglishContentResponse } from "./repository/translationRepository";
