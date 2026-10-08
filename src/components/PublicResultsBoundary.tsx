@@ -11,7 +11,7 @@ type ResultsQuery = {
 };
 
 /** Initial errors are distinct from empty results. Refreshes keep successful
- * content; RouteReadFeedback owns the shared refreshing/error announcement. */
+ * content and aria-busy; RouteReadFeedback owns shared failure recovery. */
 export default function PublicResultsBoundary({ query, children, summary, loading, error, empty, isEmpty = false, keepFallback = false }: {
   query: ResultsQuery;
   children: ReactNode;

@@ -12,7 +12,7 @@ const loadTurnstileScript = () => {
   if (window.turnstile) return Promise.resolve();
   if (scriptPromise) return scriptPromise;
 
-  scriptPromise = new Promise((resolve, reject) => {
+  scriptPromise = new Promise<void>((resolve, reject) => {
     const existing = document.getElementById(TURNSTILE_SCRIPT_ID) as HTMLScriptElement | null;
     let timeoutId = 0;
     let settled = false;
@@ -31,19 +31,17 @@ const loadTurnstileScript = () => {
       callback();
     };
 
-    const onLoad = () => settle(resolve);
+    const fail = (message: string) => settle(() => {
+      if (!window.turnstile) script?.remove();
+      reject(new Error(message));
+    });
+
+    const onLoad = () => window.turnstile ? settle(resolve) : fail("Turnstile is not available");
     const onError = () =>
-      settle(() => {
-        scriptPromise = null;
-        reject(new Error("Turnstile could not be loaded"));
-      });
+      fail("Turnstile could not be loaded");
 
     timeoutId = window.setTimeout(() => {
-      settle(() => {
-        if (!window.turnstile && script?.parentNode) script.parentNode.removeChild(script);
-        scriptPromise = null;
-        reject(new Error("Turnstile load timed out"));
-      });
+      fail("Turnstile load timed out");
     }, SCRIPT_LOAD_TIMEOUT_MS);
 
     if (existing) {
@@ -60,6 +58,9 @@ const loadTurnstileScript = () => {
     script.addEventListener("load", onLoad, { once: true });
     script.addEventListener("error", onError, { once: true });
     document.head.appendChild(script);
+  }).catch((error: unknown) => {
+    scriptPromise = null;
+    throw error;
   });
 
   return scriptPromise;
@@ -79,38 +80,61 @@ export const getTurnstileToken = async (action: "contact" | "quote") => {
 
   return new Promise<string>((resolve, reject) => {
     const container = document.createElement("div");
-    container.style.display = "none";
+    // Let the SDK size its invisible widget while keeping it out of page flow.
+    // Hiding or moving the parent offscreen disrupts iframe initialization.
+    Object.assign(container.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      pointerEvents: "none",
+    });
+    container.setAttribute("aria-hidden", "true");
     document.body.appendChild(container);
 
-    let widgetId = "";
+    let widgetId: string | undefined;
+    let settled = false;
+    let cleanupScheduled = false;
     const cleanup = () => {
       window.clearTimeout(timeoutId);
-      if (widgetId) turnstile.remove(widgetId);
-      container.remove();
+      if (cleanupScheduled) return;
+      cleanupScheduled = true;
+      // Let the SDK finish its callback/message handler before removing its iframe.
+      // A synchronous render callback also needs time for the widget ID to return.
+      window.setTimeout(() => {
+        try {
+          if (widgetId !== undefined) turnstile.remove(widgetId);
+        } catch {
+          // Cleanup must retain the original verification result if the SDK has
+          // already discarded its widget; our container still needs removing.
+        } finally {
+          container.remove();
+        }
+      }, 0);
     };
-    const timeoutId = window.setTimeout(() => {
+    const finish = (result: string | Error) => {
+      if (settled) return;
+      settled = true;
       cleanup();
-      reject(new Error("Turnstile verification timed out"));
-    }, TOKEN_TIMEOUT_MS);
+      if (typeof result === "string") resolve(result);
+      else reject(result);
+    };
+    const timeoutId = window.setTimeout(() => finish(new Error("Turnstile verification timed out")), TOKEN_TIMEOUT_MS);
 
-    widgetId = turnstile.render(container, {
-      sitekey: siteKey,
-      size: "invisible",
-      action,
-      callback: (token: string) => {
-        cleanup();
-        resolve(token);
-      },
-      "error-callback": () => {
-        cleanup();
-        reject(new Error("Turnstile verification failed"));
-      },
-      "expired-callback": () => {
-        cleanup();
-        reject(new Error("Turnstile verification expired"));
-      },
-    });
+    try {
+      widgetId = turnstile.render(container, {
+        sitekey: siteKey,
+        size: "invisible",
+        execution: "execute",
+        action,
+        callback: (token: string) => finish(token),
+        "error-callback": () => finish(new Error("Turnstile verification failed")),
+        "expired-callback": () => finish(new Error("Turnstile verification expired")),
+        "timeout-callback": () => finish(new Error("Turnstile verification timed out")),
+      });
 
-    turnstile.execute(widgetId);
+      if (!settled) turnstile.execute(widgetId);
+    } catch (error) {
+      finish(error instanceof Error ? error : new Error("Turnstile verification failed"));
+    }
   });
 };
