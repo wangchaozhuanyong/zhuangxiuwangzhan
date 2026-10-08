@@ -26,6 +26,8 @@ import { Button } from "@/components/ui/button";
 import LanguageRouteLink from "@/components/LanguageRouteLink";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import TikTokIcon from "@/components/TikTokIcon";
+import RednoteIcon from "@/components/RednoteIcon";
 import {
   primaryPublicNavigationItems,
   publicNavigationGroups,
@@ -588,8 +590,16 @@ export const SchemeAFooter = () => {
   const settings = useSiteSettings();
   const instagramUrl = safeSocialProfileUrl(settings.instagram_url, "instagram");
   const facebookUrl = safeSocialProfileUrl(settings.facebook_url, "facebook");
+  const tiktokUrl = safeSocialProfileUrl(settings.tiktok_url, "tiktok");
+  const xiaohongshuUrl = safeSocialProfileUrl(settings.xiaohongshu_url, "xiaohongshu");
   const t = schemeAChromeText[language];
   const footer = footerCopy[language];
+  const socialProfiles = [
+    { url: facebookUrl, label: "Facebook", accessibleLabel: "Facebook", Icon: Facebook },
+    { url: instagramUrl, label: "Instagram", accessibleLabel: "Instagram", Icon: Instagram },
+    { url: tiktokUrl, label: "TikTok", accessibleLabel: "TikTok", Icon: TikTokIcon },
+    { url: xiaohongshuUrl, label: t.xiaohongshuShort, accessibleLabel: t.xiaohongshu, Icon: RednoteIcon },
+  ].filter(({ url }) => url);
   const navText = navbarText[language];
   const areas = footerLocationLinks[language];
   const nextLanguage = language === "zh" ? "en" : "zh";
@@ -623,9 +633,16 @@ export const SchemeAFooter = () => {
                   </Button>
                 </div>
               </div>
-              {instagramUrl || facebookUrl ? <div className="scheme-a-footer__socials">
-                {instagramUrl ? <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
-                {facebookUrl ? <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}
+              {socialProfiles.length > 0 ? <div className="scheme-a-footer__social-group">
+                <h3>{t.followUs}</h3>
+                <div className="scheme-a-footer__socials">
+                  {socialProfiles.map(({ url, label, accessibleLabel, Icon }) => (
+                    <a key={url} href={url} target="_blank" rel="noopener noreferrer" aria-label={accessibleLabel}>
+                      <Icon aria-hidden="true" />
+                      <span>{label}</span>
+                    </a>
+                  ))}
+                </div>
               </div> : null}
             </section>
             <nav className="scheme-a-footer__directory" aria-label={t.navigationTitle}>

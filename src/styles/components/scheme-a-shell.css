@@ -1030,21 +1030,66 @@
     display: contents;
   }
 
+  .scheme-a-footer__social-group {
+    container-type: inline-size;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(123 135 117 / 0.24);
+  }
+
+  .scheme-a-footer__social-group h3 {
+    margin: 0 0 0.75rem;
+    color: #3F4E42;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
   .scheme-a-footer__socials {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.6rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem;
   }
 
   .scheme-a-footer__socials a {
-    display: grid;
-    width: 38px;
-    height: 38px;
-    place-items: center;
-    border: 0;
-    border-radius: 2px;
+    display: flex;
+    min-width: 0;
+    min-height: 60px;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    border: 1px solid rgb(123 135 117 / 0.3);
+    border-radius: 10px;
     background: #F7F6F2;
+    color: #3F4E42;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
     box-shadow: none;
+    transition: background var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease);
+  }
+
+  .scheme-a-footer__socials a:hover,
+  .scheme-a-footer__socials a:active {
+    background: #E4E8DE;
+    border-color: #7B8775;
+  }
+
+  .scheme-a-footer__socials a:focus-visible {
+    outline: 2px solid #3F4E42;
+    outline-offset: 3px;
+  }
+
+  .scheme-a-footer__socials a svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  @container (max-width: 279px) {
+    .scheme-a-footer__socials {
+      grid-template-columns: 1fr;
+    }
   }
 
   .scheme-a-footer__directory {
@@ -1462,33 +1507,6 @@
     .scheme-a-footer__studio address {
       width: 100%;
       margin: 0;
-    }
-
-    .scheme-a-footer__studio .scheme-a-footer__socials {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.2rem;
-      width: 100%;
-    }
-
-    .scheme-a-footer__studio .scheme-a-footer__socials a {
-      display: grid;
-      width: 38px;
-      height: 38px;
-      place-items: center;
-      border-radius: 8px;
-      background: rgb(253 252 250 / 0.03);
-      border: 1px solid rgb(212 217 207 / 0.08);
-      box-shadow: none;
-      color: #626A60;
-      transition: background 160ms var(--motion-ease), border-color 160ms var(--motion-ease), color 160ms var(--motion-ease);
-    }
-
-    .scheme-a-footer__studio .scheme-a-footer__socials a:hover,
-    .scheme-a-footer__studio .scheme-a-footer__socials a:active {
-      background: rgb(228 232 222 / 0.12);
-      border-color: rgb(123 135 117 / 0.3);
-      color: #292E29;
     }
 
     .scheme-a-footer__studio > a {

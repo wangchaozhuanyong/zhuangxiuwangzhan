@@ -18,6 +18,7 @@ import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
 import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
+import { getSocialProfileUrls } from "../src/lib/socialProfiles";
 import {
   PUBLIC_LANGUAGE_COOKIE,
   readCookieValue,
@@ -67,6 +68,10 @@ type SiteSettingsHead = {
   address_zh?: string | null;
   map_latitude?: string | null;
   map_longitude?: string | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  tiktok_url?: string | null;
+  xiaohongshu_url?: string | null;
   updated_at?: string | null;
 };
 
@@ -715,6 +720,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         name: siteName,
         alternateName: siteSettings?.brand_name || "FLASH CAST",
         url: origin,
+        sameAs: getSocialProfileUrls(siteSettings),
         logo,
         image,
         telephone: siteSettings?.phone_e164 || DEFAULT_PHONE,
@@ -852,7 +858,7 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
 
   try {
     const response = await fetchWithEdgeTimeout(
-      `${supabaseUrl}/rest/v1/site_settings?select=company_name,brand_name,logo_url,favicon_url,og_image_url,phone_e164,email,address_en,address_zh,map_latitude,map_longitude,updated_at&id=eq.default&limit=1`,
+      `${supabaseUrl}/rest/v1/site_settings?select=company_name,brand_name,logo_url,favicon_url,og_image_url,phone_e164,email,address_en,address_zh,map_latitude,map_longitude,facebook_url,instagram_url,tiktok_url,xiaohongshu_url,updated_at&id=eq.default&limit=1`,
       {
         headers: {
           apikey: supabaseAnonKey,
