@@ -1,3 +1,4 @@
+import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
 import { navigateAfterSave } from "@/lib/navigationProtection";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
@@ -235,8 +236,9 @@ export default function AdminProjectEditor() {
 
     if (generateEnglish) {
       try {
-        await generateAdminProjectEnglish(savedId, Boolean(forceEnglish));
-        toast({ title: A("savedGenerateSuccess") });
+        const translation = await completeAdminTranslationDelivery({ table: "projects", id: savedId, force: Boolean(forceEnglish) },
+          () => generateAdminProjectEnglish(savedId, Boolean(forceEnglish)));
+        toast({ title: A("savedGenerateSuccess"), description: translation?.publicSyncPending ? interactionText[language].savedSyncPending : undefined });
         void invalidateAdminContentDetail(queryClient, "projects", savedId);
       } catch (translationError) {
         const description = formatUserFacingError(translationError, language);

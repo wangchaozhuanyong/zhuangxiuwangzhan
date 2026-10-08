@@ -1,6 +1,7 @@
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -108,10 +109,11 @@ const cleanAboutItems = (sectionKey: string, value: unknown[]) => {
 export default function AdminAboutEditor() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
   const editorQuery = useAdminAboutEditorData();
   const { data: bundle, isFetching, refetch } = editorQuery;
   const [editorInitialized, setEditorInitialized] = useState(false);
-  const [activeTab, setActiveTab] = useState<SectionKey | "cta">("hero");
+  const [activeTab, setActiveTab] = useState<SectionKey | "cta">(() => toTabValue(searchParams.get("section") || "hero"));
   const loading = isFetching && !bundle;
 
   const remoteForm = useMemo(() => {

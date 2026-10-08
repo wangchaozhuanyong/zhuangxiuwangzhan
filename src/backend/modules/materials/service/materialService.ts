@@ -1,3 +1,4 @@
+import { generateAdminEnglishContent } from "@/backend/modules/system";
 import { completePublicSync } from "@/lib/publicSyncRecovery";
 import type { QueryClient } from "@tanstack/react-query";
 import { requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
@@ -8,7 +9,6 @@ import {
   fetchAdminMaterialRows,
   fetchAdminMaterialImages,
   findMaterialIdsBySlug,
-  invokeMaterialEnglishGeneration,
   createMaterialImageRecord,
   updateMaterialImageRecord,
   archiveMaterialImageRecord,
@@ -149,7 +149,7 @@ export async function saveAdminMaterial(input: SaveAdminMaterialInput) {
 }
 
 export function generateAdminMaterialEnglish(materialId: string, force: boolean) {
-  return invokeMaterialEnglishGeneration(materialId, force);
+  return generateAdminEnglishContent({ table: "materials", id: materialId, force });
 }
 
 export function loadAdminMaterialList<T extends Record<string, unknown>>(input: AdminMaterialListInput, signal?: AbortSignal) {

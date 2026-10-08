@@ -1,8 +1,12 @@
+import { isProtectedContentRecord } from "../_shared/managed-targets.ts";
+import { syncPublicContent } from "../_shared/public-content-sync.ts";
 import {
   createTranslationJob,
   fetchTranslationRecord,
   requireAdmin,
   updateTranslationRecord,
+  TranslationConflictError,
+  createTranslationRecordGuard,
 } from "./repository.ts";
 import { isBlankValue, translateValue } from "./translator.ts";
 import type { GenerateEnglishClient, GenerateEnglishRequest, GenerateEnglishResult } from "./types.ts";
@@ -35,6 +39,9 @@ export async function generateEnglishContent(
   client: GenerateEnglishClient,
 ): Promise<GenerateEnglishResult> {
   const { table, id, force = false } = input;
+  if (typeof table !== "string" || typeof id !== "string" || !id || typeof force !== "boolean") {
+    return errorResult("Invalid translation request");
+  }
 
   const adminCheck = await requireAdmin(req, client);
   if (!adminCheck.ok) {
@@ -52,6 +59,13 @@ export async function generateEnglishContent(
     return errorResult(error instanceof Error ? error.message : String(error));
   }
 
+  if (isProtectedContentRecord(table, record)) {
+    return errorResult("This content requires the approved content publishing workflow.", 403);
+  }
+  const guard = createTranslationRecordGuard(table, record);
+  if (!guard) {
+    return errorResult("Content version is unavailable. Reload before translating.", 409);
+  }
   await createTranslationJob(client, table, id, "processing");
 
   const translatable = Object.fromEntries(
@@ -87,13 +101,20 @@ export async function generateEnglishContent(
   }
 
   try {
-    await updateTranslationRecord(client, table, id, translated);
+    await updateTranslationRecord(client, table, id, translated, guard);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     await createTranslationJob(client, table, id, "failed", message);
-    return errorResult(message);
+    return errorResult(message, error instanceof TranslationConflictError ? 409 : 500);
   }
 
   await createTranslationJob(client, table, id, "completed");
+  // Child records have no status, so they may belong to a published parent.
+  if (record.status === "published" || !("status" in record)) {
+    const sync = await syncPublicContent(client, {
+      apiToken: Deno.env.get("CLOUDFLARE_API_TOKEN"), zoneId: Deno.env.get("CLOUDFLARE_ZONE_ID"),
+    });
+    return { body: { ok: true, translated, ...sync } };
+  }
   return { body: { ok: true, translated } };
 }

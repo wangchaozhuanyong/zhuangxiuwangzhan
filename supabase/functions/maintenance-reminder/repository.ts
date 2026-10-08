@@ -1,6 +1,8 @@
+import { FORMAL_LEAD_SOURCE_FILTER } from "../_shared/lead-test-contract.ts";
 import type { MaintenanceClient, MaintenanceMetrics, ReminderItem, TelegramSettings } from "./types.ts";
 
 type CountQuery = PromiseLike<{ count: number | null; error: { message?: string } | null }> & {
+  or(filter: string): CountQuery;
   eq(column: string, value: unknown): CountQuery;
   lt(column: string, value: unknown): CountQuery;
   gte(column: string, value: unknown): CountQuery;
@@ -31,7 +33,11 @@ export async function fetchReminderItems(client: MaintenanceClient, includeMonth
 }
 
 const countRows = async (client: MaintenanceClient, table: string, configure?: (query: CountQuery) => CountQuery) => {
-  let query = client.from(table).select("id", { count: "exact", head: true }) as CountQuery;
+  const countClient = client as unknown as {
+    from(table: string): { select(column: string, options: { count: "exact"; head: true }): CountQuery };
+  };
+  let query = countClient.from(table).select("id", { count: "exact", head: true });
+  if (table === "leads" || table === "quote_requests") query = query.or(FORMAL_LEAD_SOURCE_FILTER);
   if (configure) query = configure(query);
   const { count, error } = await query;
   if (error) return null;

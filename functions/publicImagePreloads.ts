@@ -2,8 +2,10 @@ import {
   buildLocalResponsiveSrcSet,
   isLocalResponsiveImageCandidate,
   normalizeLocalResponsiveImageWidths,
+  resolveLocalCoverSizes,
   toLocalResponsiveImageSrc,
 } from "../src/lib/localResponsiveImage";
+import { getFurnitureListingRoute } from "../src/lib/furnitureCatalogPresentation";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 
 type ProjectSummaryRow = Record<string, unknown>;
@@ -324,6 +326,19 @@ export const getDynamicImagePreloads = (
   projectDetail: ProjectDetailRow | null,
   route: { isHomePage: boolean; projectDetailSlug: string | null; topLevelPublicPageKey: string | null },
 ) => {
+  if (getFurnitureListingRoute(key)) {
+    // The current listing hero is discovered only after its route chunk loads.
+    // Match SchemeARouteHero's candidates and cover sizes to reuse one request.
+    const hero = "/images/heroes/v20261007/furniture-showcase-wide.webp";
+    return [{
+      ...buildImagePreload(hero, [560, 720, 960, 1200, 1600], {
+        height: 720,
+        sizes: resolveLocalCoverSizes(hero, "(min-width: 1536px) 1440px, (min-width: 1024px) 94vw, 100vw", { width: 3, height: 1 }),
+      }),
+      fetchPriority: "high" as const,
+    }];
+  }
+
   if (route.isHomePage) {
     const heroImageUrl = getHomeHeroImageUrl(homeContentBundle, key);
     if (normalizePreloadImageUrl(heroImageUrl).split(/[?#]/, 1)[0].endsWith("/hero-luxury-living.webp")) {

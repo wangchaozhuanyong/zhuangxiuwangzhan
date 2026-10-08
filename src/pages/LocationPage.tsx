@@ -85,25 +85,6 @@ export default function LocationPage() {
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbLocations, url: "/locations" }, { name: location.name, url: `/locations/${location.slug}` }]} />
       {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "LocalBusiness", name: settings.company_name, description: location.description, address: settings.address, areaServed: location.name, url: `${siteConfig.url}${withLanguagePrefix(`/locations/${location.slug}`, language)}` }) }} />
-      {faqs.length ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: faqs.map((faq) => ({
-                "@type": "Question",
-                name: faq.question,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: faq.answer,
-                },
-              })),
-            }),
-          }}
-        />
-      ) : null}
       <SchemeARouteHero
         kind="detail"
         image={pageHeroImages.locations.desktop}

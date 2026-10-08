@@ -35,6 +35,17 @@ describe("publish dispatch remains behind the existing entry guards", () => {
     },
   );
 
+  it.each(["false", "true", 1, {}, [], null, false])("rejects truthy/non-boolean approval %j before any access", async (value) => {
+    const { client, from, rpc } = clientWithForbiddenWrites();
+    for (const field of ["ownerApproved", "explicitExecution"]) {
+      const result = await publishContent({ contentType: "blog", mode: "publish", record: {},
+        ownerApproved: true, explicitExecution: true, [field]: value } as unknown as ContentPublishRequest, client, { role: "content_editor" });
+      expect(result.status).toBe(403);
+    }
+    expect(from).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
   it("retains cache invalidation as its existing separate zero-content-write path", async () => {
     const { client, from, rpc, storageFrom } = clientWithForbiddenWrites();
     const result = await publishContent({ contentType: "cache_invalidation", record: {} }, client, { role: "content_editor" });

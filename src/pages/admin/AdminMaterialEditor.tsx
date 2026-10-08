@@ -1,3 +1,4 @@
+import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
 import { navigateAfterSave } from "@/lib/navigationProtection";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
@@ -6,6 +7,7 @@ import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
 import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +29,7 @@ import { furnitureCatalog, getFurnitureProduct } from "@/lib/furnitureCatalog";
 import { invalidateAdminContentDetail } from "@/lib/adminInvalidate";
 import { useAdminMaterialDetail } from "@/lib/adminBusinessContentQueries";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
-import { formatAdminMutationError } from "@/lib/adminMutation";
+import { AdminMutationError, formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
 import { interactionText } from "@/i18n/interactionText";
@@ -165,6 +167,32 @@ const toPriceMode = (value: unknown): MaterialRecord["price_mode"] =>
 const toPriceUnit = (value: unknown): MaterialRecord["price_unit"] =>
   value === "sqft" || value === "foot_run" || value === "unit" || value === "set" || value === "panel" || value === "scope" ? value : "none";
 
+const normalizeLoadedMaterial = (loadedRecordData: Partial<MaterialRecord>): MaterialRecord => {
+  return {
+      ...empty,
+      ...loadedRecordData,
+      suitable_spaces_zh: toStringArray(loadedRecordData.suitable_spaces_zh),
+      suitable_spaces_en: toStringArray(loadedRecordData.suitable_spaces_en),
+      pros_zh: toStringArray(loadedRecordData.pros_zh),
+      pros_en: toStringArray(loadedRecordData.pros_en),
+      cons_zh: toStringArray(loadedRecordData.cons_zh),
+      cons_en: toStringArray(loadedRecordData.cons_en),
+      recommended_pairing_zh: toText(loadedRecordData.recommended_pairing_zh),
+      recommended_pairing_en: toText(loadedRecordData.recommended_pairing_en),
+      note_zh: toText(loadedRecordData.note_zh),
+      note_en: toText(loadedRecordData.note_en),
+      price_mode: toPriceMode(loadedRecordData.price_mode),
+      price_min: toPriceInput(loadedRecordData.price_min),
+      price_max: toPriceInput(loadedRecordData.price_max),
+      price_currency: toText(loadedRecordData.price_currency) || "MYR",
+      price_unit: toPriceUnit(loadedRecordData.price_unit),
+      price_scope_zh: toText(loadedRecordData.price_scope_zh),
+      price_scope_en: toText(loadedRecordData.price_scope_en),
+      price_note_zh: toText(loadedRecordData.price_note_zh),
+      price_note_en: toText(loadedRecordData.price_note_en),
+    };
+};
+
 export default function AdminMaterialEditor({ furnitureMode = false }: { furnitureMode?: boolean }) {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
@@ -190,33 +218,10 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
 
   const loadedRecord = useMemo<MaterialRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? initialRecord : undefined;
-    const loadedRecordData = loaded as Partial<MaterialRecord>;
-    return {
-      ...empty,
-      ...loadedRecordData,
-      suitable_spaces_zh: toStringArray(loadedRecordData.suitable_spaces_zh),
-      suitable_spaces_en: toStringArray(loadedRecordData.suitable_spaces_en),
-      pros_zh: toStringArray(loadedRecordData.pros_zh),
-      pros_en: toStringArray(loadedRecordData.pros_en),
-      cons_zh: toStringArray(loadedRecordData.cons_zh),
-      cons_en: toStringArray(loadedRecordData.cons_en),
-      recommended_pairing_zh: toText(loadedRecordData.recommended_pairing_zh),
-      recommended_pairing_en: toText(loadedRecordData.recommended_pairing_en),
-      note_zh: toText(loadedRecordData.note_zh),
-      note_en: toText(loadedRecordData.note_en),
-      price_mode: toPriceMode(loadedRecordData.price_mode),
-      price_min: toPriceInput(loadedRecordData.price_min),
-      price_max: toPriceInput(loadedRecordData.price_max),
-      price_currency: toText(loadedRecordData.price_currency) || "MYR",
-      price_unit: toPriceUnit(loadedRecordData.price_unit),
-      price_scope_zh: toText(loadedRecordData.price_scope_zh),
-      price_scope_en: toText(loadedRecordData.price_scope_en),
-      price_note_zh: toText(loadedRecordData.price_note_zh),
-      price_note_en: toText(loadedRecordData.price_note_en),
-    };
+    return normalizeLoadedMaterial(loaded as Partial<MaterialRecord>);
   }, [initialRecord, isNew, loaded]);
 
-  const { state: record, setForm: setRecord, applyRemote, dirty, isDirty } = useAdminFormState<MaterialRecord>(loadedRecord, {
+  const { state: record, setForm: setRecord, applyRemote, dirty, isDirty, getCurrent } = useAdminFormState<MaterialRecord>(loadedRecord, {
     resetKey: `${furnitureMode ? "furniture" : "material"}-${id ?? "new"}`,
     initial: initialRecord,
   });
@@ -267,6 +272,28 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
     return isFurniture ? `/${lang}/furniture/product/${slug}` : `/${lang}/materials/${slug}`;
   }, [isFurniture, record.slug]);
 
+  const reloadConflictedRecord = protectSubmission("save", async () => {
+    if (isNew || !id || saveBusy) return;
+    if (isDirty() && !await adminConfirm({
+      title: A("reloadTitle"), description: A("reloadDescription"), confirmLabel: A("reloadRecord"),
+    })) return;
+    const beforeRead = getCurrent();
+    setSaveBusy(true);
+    try {
+      const refreshed = await refetchLoaded();
+      if (refreshed.isError || !refreshed.data || refreshed.data.id !== id) {
+        toast({ title: A("loadFailed"), description: formatUserFacingError(refreshed.error, language), variant: "destructive" });
+        return;
+      }
+      // Explicitly approved discard; preserve input typed after the read began.
+      applyRemote(normalizeLoadedMaterial(refreshed.data as Partial<MaterialRecord>), beforeRead);
+    } catch (error) {
+      toast({ title: A("loadFailed"), description: formatUserFacingError(error, language), variant: "destructive" });
+    } finally {
+      setSaveBusy(false);
+    }
+  });
+
   const save = protectSubmission("save", async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!recordReady) return;
     if (!hasMaterialBackendConfig() || saveBusy) return;
@@ -310,7 +337,11 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
         queryClient,
       });
     } catch (error) {
-      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error, language), variant: "destructive",
+        ...(error instanceof AdminMutationError && error.code === "conflict" ? {
+          action: <ToastAction altText={A("reloadRecord")} onClick={() => void reloadConflictedRecord()}>{A("reloadRecord")}</ToastAction>,
+        } : {}),
+      });
       setSaveBusy(false);
       return;
     }
@@ -324,8 +355,9 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
 
     if (generateEnglish) {
       try {
-        await generateAdminMaterialEnglish(savedId, Boolean(forceEnglish));
-        toast({ title: A("savedGenerateSuccess") });
+        const translation = await completeAdminTranslationDelivery({ table: "materials", id: savedId, force: Boolean(forceEnglish) },
+          () => generateAdminMaterialEnglish(savedId, Boolean(forceEnglish)));
+        toast({ title: A("savedGenerateSuccess"), description: translation?.publicSyncPending ? interactionText[language].savedSyncPending : undefined });
         void invalidateAdminContentDetail(queryClient, "materials", savedId);
       } catch (translationError) {
         const description = formatUserFacingError(translationError, language);

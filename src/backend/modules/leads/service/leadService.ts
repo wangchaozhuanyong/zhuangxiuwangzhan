@@ -1,10 +1,10 @@
+import { AdminMutationError, persistAdminRecord } from "@/backend/modules/system";
 import { addLeadFollowup } from "@/backend/modules/followups";
 import {
   fetchAdminLeadDetail,
   fetchAdminLeadList,
   fetchAdminLeadReportRows,
   invokeSubmitLeadFunction,
-  updateLeadRecord,
   type AdminLeadListRepositoryInput,
   type LeadUpdatePatch,
 } from "@/backend/modules/leads/repository/leadRepository";
@@ -16,10 +16,12 @@ export type AddAdminLeadFollowupInput = {
   followupType: string;
   content: string;
   nextFollowUpAt?: string | null;
+  expectedUpdatedAt?: string | null;
 };
 
 export type FollowupSyncResult = {
   syncError?: unknown;
+  record?: Record<string, unknown>;
 };
 
 export interface ContactSubmission {
@@ -49,8 +51,10 @@ const currentPathWithSearch = () => {
   return `${window.location.pathname}${window.location.search}`;
 };
 
-export function updateAdminLead(leadId: string, patch: LeadUpdatePatch) {
-  return updateLeadRecord(leadId, patch);
+export async function updateAdminLead(leadId: string, patch: LeadUpdatePatch, expectedUpdatedAt: string | null | undefined) {
+  if (!expectedUpdatedAt) throw new AdminMutationError("conflict", "An editing version is required.", "validation", { reason: "stale", operation: "save" });
+  const result = await persistAdminRecord({ table: "leads", id: leadId, payload: patch, expectedUpdatedAt });
+  return result.record;
 }
 
 export function loadAdminLeads<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput, signal?: AbortSignal) {
@@ -120,8 +124,8 @@ export async function addAdminLeadFollowup(input: AddAdminLeadFollowupInput): Pr
   if (!nextFollowUpAt) return {};
 
   try {
-    await updateLeadRecord(input.leadId, { next_follow_up_at: nextFollowUpAt });
-    return {};
+    const record = await updateAdminLead(input.leadId, { next_follow_up_at: nextFollowUpAt }, input.expectedUpdatedAt);
+    return { record };
   } catch (syncError) {
     return { syncError };
   }

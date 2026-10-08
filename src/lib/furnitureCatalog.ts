@@ -17,6 +17,9 @@ export {
   getManagedFurnitureProductsForCategory,
   mapFurnitureCatalogSeed,
   getFurnitureCatalogProductsForCategory,
+  getFurnitureListingPage,
+  furnitureListingPagePath,
+  normalizeFurnitureListingPage,
   furnitureProductPath,
   getFurnitureProductCategory,
 } from "./furnitureCatalogPresentation";

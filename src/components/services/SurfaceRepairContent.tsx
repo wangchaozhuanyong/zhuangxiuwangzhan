@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { usePageConsultation } from "@/contexts/PublicChromeContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { surfaceRepairPageText } from "@/i18n/surfaceRepairPageText";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
@@ -48,6 +49,7 @@ export default function SurfaceRepairContent({ service }: { service: PublishedSe
   const [generated, setGenerated] = useState("");
   const [replaceWarning, setReplaceWarning] = useState(false);
   const [status, setStatus] = useState<Status>("generatedLabel");
+  useUnsavedChangesWarning(Boolean(category || region.trim() || description.trim() || risk || message !== null));
   const title = stripHtml(service.title);
   const summary = stripHtml(service.summary);
   const seoTitle = stripHtml(service.seoTitle || service.title);

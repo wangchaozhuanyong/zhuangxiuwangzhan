@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SurfaceRepairContent from "./SurfaceRepairContent";
 import { surfaceRepairServiceForLanguage } from "@/data/surfaceRepairService";
 import { surfaceRepairPageText } from "@/i18n/surfaceRepairPageText";
+import { confirmProtectedNavigation, hasProtectedChanges, NAVIGATION_CONFIRM_EVENT, type NavigationConfirmRequest } from "@/lib/navigationProtection";
 
 const state = vi.hoisted(() => ({ language: "zh" as "zh" | "en" }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: state.language }) }));
@@ -38,6 +39,25 @@ async function input(selector: string, value: string) {
 async function generate() { await click(".generate"); }
 
 describe("Repair service interactions", () => {
+  it("keeps the focused draft, risk and edited message through language changes and a cancelled exit", async () => {
+    await render(); await input("#repair-region", "KL"); await input("#repair-description", "My authored description");
+    await click(".check input"); await generate(); await input("#repair-message", "My authored message");
+    await act(async () => { await new Promise<void>(resolve => requestAnimationFrame(() => resolve())); });
+    const region = query<HTMLInputElement>("#repair-region"); region.focus();
+    state.language = "en";
+    await act(async () => root.render(<MemoryRouter><SurfaceRepairContent service={surfaceRepairServiceForLanguage("en")} /></MemoryRouter>));
+    expect(query("#repair-region")).toBe(region); expect(document.activeElement).toBe(region);
+    expect(region.value).toBe("KL"); expect(query<HTMLTextAreaElement>("#repair-description").value).toBe("My authored description");
+    expect(query<HTMLInputElement>(".check input").checked).toBe(true);
+    expect(query<HTMLTextAreaElement>("#repair-message").value).toBe("My authored message");
+    expect(hasProtectedChanges()).toBe(true);
+    window.addEventListener(NAVIGATION_CONFIRM_EVENT, event => (event as CustomEvent<NavigationConfirmRequest>).detail.resolve(false), { once: true });
+    expect(await confirmProtectedNavigation()).toBe(false);
+    expect(query<HTMLTextAreaElement>("#repair-message").value).toBe("My authored message");
+    state.language = "zh";
+    await act(async () => root.render(<MemoryRouter><SurfaceRepairContent service={surfaceRepairServiceForLanguage("zh")} /></MemoryRouter>));
+    expect(query<HTMLTextAreaElement>("#repair-message").value).toBe("My authored message");
+  });
   for (const lang of ["zh", "en"] as const) {
     it(`${lang}: shows all eight categories without a parent collapse control and uses published content`, async () => {
       state.language = lang; await render();

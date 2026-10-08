@@ -139,6 +139,48 @@ export const getFurnitureCatalogProductsForCategory = (products: FurnitureProduc
     : urls.has(product.sourceUrl));
 };
 
+export const FURNITURE_LISTING_PAGE_SIZE = 18;
+
+export const normalizeFurnitureListingPage = (value: string | null | undefined, totalPages?: number) => {
+  const requested = Number(value || 1);
+  const page = Number.isSafeInteger(requested) ? Math.max(1, requested) : 1;
+  return totalPages === undefined ? page : Math.min(Math.max(1, totalPages), page);
+};
+
+export const furnitureListingPagePath = (path: string, page: number) =>
+  `${path}${page > 1 ? `?page=${page}` : ""}`;
+
+export const getFurnitureListingRoute = (pathname: string) => {
+  const match = pathname.replace(/\/+$/, "").match(/^\/(en|zh)\/furniture(?:\/([^/]+)(?:\/([^/]+))?)?$/);
+  if (!match || match[2] === "product") return null;
+  const categoryKey = match[2] || "new";
+  const category = getFurnitureCategory(categoryKey);
+  if (!category || (match[3] && !getFurnitureSubcategory(category, match[3]))) return null;
+  return { language: match[1] as Language, categoryKey, subcategoryKey: match[3] };
+};
+
+// Shared by the React listing and its Edge HTML projection, after published overrides.
+export const getFurnitureListingPage = (
+  catalogProducts: FurnitureProduct[],
+  categoryKey: string | undefined,
+  subcategoryKey: string | undefined,
+  requestedPage: string | null,
+) => {
+  const category = getFurnitureCategory(categoryKey || "new");
+  const subcategory = category && subcategoryKey ? getFurnitureSubcategory(category, subcategoryKey) : undefined;
+  const validSelection = Boolean(category && (!subcategoryKey || subcategory));
+  const products = validSelection ? getFurnitureCatalogProductsForCategory(catalogProducts, category!.key, subcategory?.key) : [];
+  const totalPages = Math.max(1, Math.ceil(products.length / FURNITURE_LISTING_PAGE_SIZE));
+  const page = normalizeFurnitureListingPage(requestedPage, totalPages);
+  const currentPath = subcategory ? `/furniture/${category!.key}/${subcategory.key}`
+    : category && category.key !== "new" ? `/furniture/${category.key}` : "/furniture";
+  return {
+    category, subcategory, validSelection, products, totalPages, page, currentPath,
+    visibleProducts: products.slice((page - 1) * FURNITURE_LISTING_PAGE_SIZE, page * FURNITURE_LISTING_PAGE_SIZE),
+    canonicalPath: furnitureListingPagePath(currentPath, page),
+  };
+};
+
 export const furnitureProductPath = (product: FurnitureProduct) =>
   `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`;
 

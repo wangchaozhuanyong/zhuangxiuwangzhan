@@ -1,6 +1,6 @@
 type ContentPublishQueryResult<T = unknown> = {
   data: T;
-  error: { message: string } | null;
+  error: { message: string; code?: string } | null;
 };
 
 type ContentPublishQueryBuilder = PromiseLike<ContentPublishQueryResult<unknown[]>> & {

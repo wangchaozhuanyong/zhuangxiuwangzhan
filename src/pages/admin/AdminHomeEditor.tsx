@@ -4,7 +4,7 @@ import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,10 +65,11 @@ const mergeSectionItems = (itemsZh?: unknown, itemsEn?: unknown): HomeSectionIte
 export default function AdminHomeEditor() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
   const editorQuery = useAdminHomeEditorData();
   const { data: bundle, isFetching, refetch } = editorQuery;
   const [editorInitialized, setEditorInitialized] = useState(false);
-  const [activeTab, setActiveTab] = useState("hero");
+  const [activeTab, setActiveTab] = useState(() => ['hero', 'stats', 'why', 'brands', 'process', 'beforeAfter', 'testimonials', 'faq', 'cta'].includes(searchParams.get("section") || "") ? searchParams.get("section")! : "hero");
   const [manualRefreshing, setManualRefreshing] = useState(false);
   const initialLoading = !bundle && isFetching;
 

@@ -1,3 +1,36 @@
+import { generateAdminEnglishContent as generateEnglishContent, requestPublicContentInvalidation,
+  type GenerateEnglishContentRequest, type GenerateEnglishContentResponse } from "@/backend/modules/system";
+import { getPublicSyncIssues, registerPublicSyncIssue, resolvePublicSyncIssue, type PublicSyncIssue } from "@/lib/publicSyncRecovery";
+
+/** Browser delivery adapter. A retry never repeats an already saved translation. */
+export async function completeAdminTranslationDelivery<T extends GenerateEnglishContentResponse>(
+  input: GenerateEnglishContentRequest, generate: () => Promise<T>,
+): Promise<T & { publicSyncPending: boolean }> {
+  const { table, id } = input;
+  const key = `translation:${table}:${id}`;
+  const previousIssue = getPublicSyncIssues().find((issue) => issue.key === key) || null;
+  const result = await generate();
+  const delivery = result?.cache_invalidation;
+  const publicSyncPending = Boolean(delivery && (delivery.ok !== true || delivery.edge_purge_requested?.ok !== true));
+  if (publicSyncPending) {
+    const issue: PublicSyncIssue = { key, retry: async () => {
+      const synced = await requestPublicContentInvalidation({ table, id, action: "translation" });
+      if (synced.cache_invalidation?.edge_purge_requested?.ok !== true) {
+        throw new Error("Public website update is still pending.");
+      }
+      resolvePublicSyncIssue(key, issue);
+    } };
+    registerPublicSyncIssue(issue);
+  } else if (delivery) {
+    resolvePublicSyncIssue(key, previousIssue);
+  }
+  return { ...result, publicSyncPending };
+}
+
+export function generateAdminEnglishContent(input: GenerateEnglishContentRequest) {
+  return completeAdminTranslationDelivery(input, () => generateEnglishContent(input));
+}
+
 export const translationEnabledTables = [
   "services",
   "projects",

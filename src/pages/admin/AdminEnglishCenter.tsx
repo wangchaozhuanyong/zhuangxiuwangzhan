@@ -18,7 +18,7 @@ import { getAdminLang } from "@/lib/adminLocale";
 import { useAdminTranslationJobs } from "@/lib/adminSystemQueries";
 import { friendlyTranslationError, translationEnabledTables } from "@/lib/adminTranslation";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { generateAdminEnglishContent } from "@/backend/modules/system/service/translationService";
+import { generateAdminEnglishContent } from "@/lib/adminTranslation";
 
 type BatchProgress = {
   total: number;
@@ -90,9 +90,9 @@ export default function AdminEnglishCenter() {
     const key = `${table}:${id}`;
     setBusyId(key);
     try {
-      await generateAdminEnglishContent({ table, id, force });
+      const translation = await generateAdminEnglishContent({ table, id, force });
       setBusyId(null);
-      toast({ title: force ? A("forcedRegenerated") : A("generationStarted") });
+      toast({ title: force ? A("forcedRegenerated") : A("generationStarted"), description: translation?.publicSyncPending ? readText.savedSyncPending : undefined });
       await refreshTranslationData();
       return true;
     } catch (error) {
@@ -110,12 +110,14 @@ export default function AdminEnglishCenter() {
     setBatchProgress({ total: targets.length, done: 0, success: 0, failed: 0, currentTitle: targets[0]?.title || "", failures: [] });
     let successCount = 0;
     let failedCount = 0;
+    let publicSyncPending = false;
 
     for (const item of targets) {
       setBatchProgress((current) => current ? { ...current, currentTitle: item.title } : current);
       let failureReason = "";
       try {
-        await generateAdminEnglishContent({ table: item.table, id: item.id, force: false });
+        const translation = await generateAdminEnglishContent({ table: item.table, id: item.id, force: false });
+        publicSyncPending ||= Boolean(translation?.publicSyncPending);
         successCount += 1;
       } catch (error) {
         failedCount += 1;
@@ -134,7 +136,7 @@ export default function AdminEnglishCenter() {
       });
     }
     setBatchBusy(false);
-    toast({ title: formatA("batchCompleted", { success: String(successCount), failed: String(failedCount) }) });
+    toast({ title: formatA("batchCompleted", { success: String(successCount), failed: String(failedCount) }), description: publicSyncPending ? readText.savedSyncPending : undefined });
     await refreshTranslationData();
   });
 

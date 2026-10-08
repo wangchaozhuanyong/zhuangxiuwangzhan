@@ -1,5 +1,5 @@
 import PublicReadError from "@/components/PublicReadError";
-import { useMemo } from "react";
+import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowRight, CheckCircle, MapPin } from "lucide-react";
 import Link from "@/components/LocalizedLink";
@@ -32,10 +32,17 @@ const LandingPage = () => {
   const t = landingPageText[language];
   const fallbackPage = slug ? landingPages[slug] : undefined;
   const { data: cmsPage, isPending: pagePending, isInitialError, refetch } = usePublishedLandingPageBySlug(slug, language);
-  const page = useMemo(() => cmsPage ?? fallbackPage ?? null, [cmsPage, fallbackPage]);
+  const confirmedPage = useRef<{ slug: string | undefined; page: NonNullable<typeof cmsPage> } | null>(null);
+  if (confirmedPage.current?.slug !== slug) confirmedPage.current = null;
+  if (cmsPage) confirmedPage.current = { slug, page: cmsPage };
+  else if (!pagePending && !isInitialError && cmsPage === null) confirmedPage.current = null;
+  // A language query must not unmount an already displayed campaign form.
+  // Retain only this slug's confirmed content while the new read is pending or
+  // failed; a successful missing record still follows the existing not-found path.
+  const page = cmsPage ?? fallbackPage ?? ((pagePending || isInitialError) ? confirmedPage.current?.page : null) ?? null;
   const displayText = (value: string) => translateDisplayText(value, language);
 
-  if (pagePending && !fallbackPage) {
+  if (pagePending && !page) {
     return <PublicLoadingState label="FLASH CAST" title={t.loadingTitle} description={t.loadingDescription} />;
   }
 

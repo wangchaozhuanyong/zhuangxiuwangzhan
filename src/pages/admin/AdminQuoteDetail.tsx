@@ -57,12 +57,13 @@ const AdminQuoteDetail = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { data, error, isLoading } = useAdminQuote(id);
-  const { state: quote, setForm: setQuote, dirty, applyPatchRemote } = useAdminFormState<AdminQuoteDetailRow | null>(data?.quote, { initial: null, resetKey: id });
+  const { state: quote, setForm: setQuote, dirty, applyPatchRemote, getCurrent } = useAdminFormState<AdminQuoteDetailRow | null>(data?.quote, { initial: null, resetKey: id });
   const [content, setContent] = useState("");
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
   const [savingFollowup, setSavingFollowup] = useState(false);
+  const [pendingSync, setPendingSync] = useState<{ recordId: string; nextFollowUpAt: string; expectedUpdatedAt: string | null } | null>(null);
   const [savingField, setSavingField] = useState<string | null>(null);
   const leadWritePermission = useAdminPermission("lead.write");
   const canWriteLead = leadWritePermission.allowed;
@@ -85,12 +86,14 @@ const AdminQuoteDetail = () => {
     setSavingField(label);
     setMessage(formatA("savingField", { label }));
     try {
-      await updateAdminQuote(id, patch);
-      applyPatchRemote(patch, patch);
+      const currentVersion = getCurrent()?.updated_at;
+      const saved = await updateAdminQuote(id, patch, typeof currentVersion === "string" ? currentVersion : null);
+      const savedPatch = Object.fromEntries([...Object.keys(patch), "updated_at"].map((key) => [key, saved[key]]));
+      applyPatchRemote(savedPatch, { ...patch, updated_at: currentVersion });
       setMessage(formatA("savedField", { label }));
       await refresh();
     } catch (updateError) {
-      setMessage(formatA("saveFieldFailed", { label, reason: formatAdminMutationError(updateError) }));
+      setMessage(formatA("saveFieldFailed", { label, reason: formatAdminMutationError(updateError, lang) }));
     } finally {
       setSavingField(null);
     }
@@ -107,6 +110,8 @@ const AdminQuoteDetail = () => {
       setMessage(A("followupContentRequired"));
       return;
     }
+    const submittedRecord = getCurrent();
+    const expectedUpdatedAt = typeof submittedRecord?.updated_at === "string" ? submittedRecord.updated_at : null;
     setSavingFollowup(true);
     setMessage("");
     try {
@@ -115,19 +120,39 @@ const AdminQuoteDetail = () => {
         followupType,
         content,
         nextFollowUpAt,
+        expectedUpdatedAt,
       });
       setContent((current) => current === content ? "" : current);
       setNextFollowUpAt((current) => current === nextFollowUpAt ? "" : current);
       if (result.syncError) {
-        setMessage(formatA("followupSavedSyncFailed", { reason: formatAdminMutationError(result.syncError) }));
+        setPendingSync({ recordId: id, nextFollowUpAt, expectedUpdatedAt });
+        await refresh();
+        setMessage(formatA("followupSavedSyncFailed", { reason: formatAdminMutationError(result.syncError, lang) }));
         return;
       }
+      if (result.record) applyPatchRemote({ next_follow_up_at: typeof result.record.next_follow_up_at === "string" ? result.record.next_follow_up_at : null, updated_at: result.record.updated_at }, { next_follow_up_at: submittedRecord?.next_follow_up_at, updated_at: expectedUpdatedAt });
+      setPendingSync(null);
       setMessage(A("followupSaved"));
       await refresh();
     } catch (error) {
-      setMessage(formatAdminMutationError(error));
+      setMessage(formatAdminMutationError(error, lang));
     } finally {
       setSavingFollowup(false);
+    }
+  });
+
+  const retryFollowupSync = protectSubmission("retryFollowupSync", async () => {
+    if (!id || !pendingSync || pendingSync.recordId !== id || !canWriteLead) return;
+    try {
+      const confirmed = getCurrent();
+      const version = typeof confirmed?.updated_at === "string" ? confirmed.updated_at : pendingSync.expectedUpdatedAt;
+      const saved = await updateAdminQuote(id, { next_follow_up_at: pendingSync.nextFollowUpAt }, version);
+      applyPatchRemote({ next_follow_up_at: typeof saved.next_follow_up_at === "string" ? saved.next_follow_up_at : null, updated_at: saved.updated_at }, { next_follow_up_at: confirmed?.next_follow_up_at, updated_at: version });
+      setPendingSync(null);
+      setMessage(A("followupSaved"));
+      await refresh();
+    } catch (syncError) {
+      setMessage(formatA("followupSavedSyncFailed", { reason: formatAdminMutationError(syncError, lang) }));
     }
   });
 
@@ -141,7 +166,7 @@ const AdminQuoteDetail = () => {
         />
         {!canWriteLead && <AdminReadOnlyNotice />}
 
-        {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
+        {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}{pendingSync && pendingSync.recordId === id && <Button type="button" variant="outline" size="sm" className="ml-3" disabled={isSubmitting} onClick={() => void retryFollowupSync()}>{A("retryFollowupSync")}</Button>}</div>}
         {isLoading && <AdminPageSkeleton mode="form" />}
         {quote && (
           <>

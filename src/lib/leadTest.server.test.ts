@@ -4,7 +4,7 @@ import type { ContactBody, QuoteBody, SubmitBody, SubmitLeadClient } from "../..
 import { LEAD_TESTS } from "../../supabase/functions/_shared/lead-test-contract";
 
 const repository = vi.hoisted(() => ({
-  countRecentAttemptsByIp: vi.fn(), countRecentAttemptsByPhone: vi.fn(), recordSubmissionAttempt: vi.fn(),
+  consumeSubmissionAttempt: vi.fn(),
   createContactLead: vi.fn(), createQuoteRequest: vi.fn(), findSubmittedTest: vi.fn(), notifySubmittedLead: vi.fn(),
 }));
 vi.mock("../../supabase/functions/submit-lead/repository.ts", () => repository);
@@ -36,8 +36,7 @@ function payload(type: "quote" | "contact", test = true): SubmitBody {
 beforeEach(() => {
   vi.resetAllMocks();
   vi.stubGlobal("crypto", webcrypto);
-  repository.countRecentAttemptsByIp.mockResolvedValue(0);
-  repository.countRecentAttemptsByPhone.mockResolvedValue(0);
+  repository.consumeSubmissionAttempt.mockResolvedValue("accepted");
   repository.findSubmittedTest.mockResolvedValue(null);
   repository.createContactLead.mockResolvedValue(undefined);
   repository.createQuoteRequest.mockResolvedValue(undefined);
@@ -46,12 +45,37 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("submit-lead TEST isolation", () => {
+  it.each(["quote", "contact"] as const)("shares the %s phone allowance across accepted display formats", async (type) => {
+    const { client } = actor();
+    const forms = ["+60 12-345 6789", "60123456789", "+6012 345-6789"];
+    for (const phone of forms) {
+      expect((await submitLead(new Request("https://fixture.invalid"), { ...payload(type, false), phone }, client)).body.ok).toBe(true);
+    }
+    const hashes = repository.consumeSubmissionAttempt.mock.calls.map((call) => call[3]);
+    expect(new Set(hashes).size).toBe(1);
+    const save = type === "quote" ? repository.createQuoteRequest : repository.createContactLead;
+    expect(save.mock.calls.map((call) => call[1].phone)).toEqual(forms);
+  });
+  it.each(["ip_limit", "phone_limit"])("rejects %s without saving or notifying", async (outcome) => {
+    repository.consumeSubmissionAttempt.mockResolvedValue(outcome);
+    const { client } = actor();
+    expect((await submitLead(new Request("https://fixture.invalid"), payload("contact", false), client)).status).toBe(429);
+    expect(repository.createContactLead).not.toHaveBeenCalled();
+    expect(repository.notifySubmittedLead).not.toHaveBeenCalled();
+  });
+  it("fails closed if the atomic limiter is unavailable", async () => {
+    repository.consumeSubmissionAttempt.mockRejectedValue(new Error("fixture unavailable"));
+    const { client } = actor();
+    expect((await submitLead(new Request("https://fixture.invalid"), payload("quote", false), client)).status).toBe(500);
+    expect(repository.createQuoteRequest).not.toHaveBeenCalled();
+    expect(repository.notifySubmittedLead).not.toHaveBeenCalled();
+  });
   it("rejects anonymous TEST before writing or notifying", async () => {
     const { client } = actor();
     const result = await submitLead(new Request("https://flashcast.invalid"), payload("quote"), client);
     expect(result.status).toBe(401);
     expect(repository.createQuoteRequest).not.toHaveBeenCalled();
-    expect(repository.recordSubmissionAttempt).not.toHaveBeenCalled();
+    expect(repository.consumeSubmissionAttempt).not.toHaveBeenCalled();
     expect(repository.notifySubmittedLead).not.toHaveBeenCalled();
   });
   it.each([["super_admin", false, "aal2"], ["super_admin", true, "aal1"], ["editor", true, "aal2"], [null, true, "aal2"]] as const)(

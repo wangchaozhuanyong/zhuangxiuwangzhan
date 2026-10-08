@@ -7,10 +7,18 @@ import {
   isValidCmsPageKey,
   normalizeCmsPageKey,
   normalizeCmsPagePath,
+  parseJson,
   shouldAutoSelectFirstCmsPage,
 } from "@/lib/adminCmsBuilderModel";
 
 describe("adminCmsBuilderModel", () => {
+  it.each(["null", "[]", "7", '"text"', '{"items":null}', '{"items":[null]}', '{"items":[[]]}', '{"items":[7]}'])("rejects unusable section JSON without returning a draft: %s", (value) => {
+    expect(() => parseJson(value, "Content", "Content must be an object with valid items")).toThrow("Content must be an object with valid items");
+  });
+  it("accepts section objects and text/object list entries", () => {
+    expect(parseJson('{"items":["Text",{}, {"question":"Q","answer":"A"}]}', "Content")).toEqual({ items: ["Text", {}, { question: "Q", answer: "A" }] });
+    expect(parseJson("", "Content")).toEqual({});
+  });
   it("normalizes CMS page keys and paths", () => {
     expect(isCmsPathHandledByStaticRoute("/furniture")).toBe(true);
     expect(isCmsPathHandledByStaticRoute("/furniture/product/chair")).toBe(true);

@@ -28,7 +28,7 @@ async function renderRoute() {
   container = document.createElement("div"); document.body.appendChild(container);
   root = createRoot(container);
   await act(async () => { root.render(tree()); });
-  if (!state.loading) await vi.waitFor(() => expect(container.querySelector("h1")).not.toBeNull());
+  if (!state.loading) await vi.waitFor(() => expect(container.querySelector("h1")).not.toBeNull(), { timeout: 5_000 });
 }
 const meta = () => container.querySelector('[data-testid="meta"]');
 const faqSchema = () => JSON.parse(container.querySelector('[data-testid="faq-schema"]')?.textContent || "[]");

@@ -1,3 +1,4 @@
+import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
 import { navigateAfterSave } from "@/lib/navigationProtection";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
@@ -259,8 +260,9 @@ export default function AdminServiceEditor() {
 
     if (generateEnglish) {
       try {
-        await generateAdminServiceEnglish(savedId, Boolean(forceEnglish));
-        toast({ title: A("savedGenerateSuccess") });
+        const translation = await completeAdminTranslationDelivery({ table: "services", id: savedId, force: Boolean(forceEnglish) },
+          () => generateAdminServiceEnglish(savedId, Boolean(forceEnglish)));
+        toast({ title: A("savedGenerateSuccess"), description: translation?.publicSyncPending ? interactionText[language].savedSyncPending : undefined });
         void invalidateAdminContentDetail(queryClient, "services", savedId);
       } catch (translationError) {
         const description = formatUserFacingError(translationError, language);

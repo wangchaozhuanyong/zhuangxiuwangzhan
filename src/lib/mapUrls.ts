@@ -3,6 +3,9 @@ import { siteConfig } from "@/config/site";
 const officeAddress = siteConfig.address;
 
 export const hasValidMapCoordinates = (latitude?: string | number | null, longitude?: string | number | null) => {
+  if (latitude === null || latitude === undefined || longitude === null || longitude === undefined
+    || (typeof latitude === "string" && !latitude.trim())
+    || (typeof longitude === "string" && !longitude.trim())) return false;
   const lat = Number(latitude);
   const lng = Number(longitude);
   return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;

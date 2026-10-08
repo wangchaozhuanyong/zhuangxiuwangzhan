@@ -23,14 +23,6 @@ export type AdminListPage<T> = {
   pageSize: number;
 };
 
-export async function updateQuoteRecord(quoteRequestId: string, patch: QuoteUpdatePatch) {
-  const supabase = requireSupabase();
-  const { error } = await supabase.from("quote_requests").update(patch).eq("id", quoteRequestId);
-  if (error) throw error;
-
-  return true;
-}
-
 export async function fetchAdminQuoteList<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput, signal?: AbortSignal): Promise<AdminListPage<T>> {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
@@ -69,27 +61,32 @@ export async function fetchAdminQuoteList<T extends Record<string, unknown>>(inp
 
 export async function fetchAdminQuoteDetail(quoteRequestId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const [{ data: quote, error: quoteError }, { data: followups }] = await withReadSignal(Promise.all([
-    supabase.from("quote_requests").select("*").eq("id", quoteRequestId).single(),
-    supabase.from("lead_followups").select("*").eq("quote_request_id", quoteRequestId).order("created_at", { ascending: false }),
-  ]), signal);
+  const [{ data: quote, error: quoteError }, { data: followups, error: followupError }] = await Promise.all([
+    withReadSignal(supabase.from("quote_requests").select("*").eq("id", quoteRequestId).single(), signal),
+    withReadSignal(supabase.from("lead_followups").select("*").eq("quote_request_id", quoteRequestId).order("created_at", { ascending: false }), signal),
+  ]);
 
   if (quoteError) throw quoteError;
+  if (followupError) throw followupError;
   return { quote, followups: followups ?? [] };
 }
 
 export async function fetchAdminQuoteReportRows(startIso?: string | null, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  let query = supabase
-    .from("quote_requests")
-    .select("id,customer_name,status,source_path,project_type,location,quoted_amount,created_at")
-    .or(FORMAL_LEAD_SOURCE_FILTER)
-    .order("created_at", { ascending: false })
-    .limit(1000);
-
-  if (startIso) query = query.gte("created_at", startIso);
-
-  const { data, error } = await withReadSignal(query, signal);
-  if (error) throw error;
-  return data || [];
+  const pageSize = 500;
+  const readUntil = new Date().toISOString();
+  const rows = [];
+  for (let offset = 0; ; offset += pageSize) {
+    let query = supabase.from("quote_requests")
+      .select("id,customer_name,status,source_path,project_type,location,quoted_amount,created_at")
+      .or(FORMAL_LEAD_SOURCE_FILTER)
+      .lte("created_at", readUntil)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false });
+    if (startIso) query = query.gte("created_at", startIso);
+    const { data, error } = await withReadSignal(query.range(offset, offset + pageSize - 1), signal);
+    if (error) throw error;
+    rows.push(...(data || []));
+    if (!data || data.length < pageSize) return rows;
+  }
 }

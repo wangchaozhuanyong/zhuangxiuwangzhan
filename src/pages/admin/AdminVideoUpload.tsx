@@ -1,6 +1,6 @@
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -120,6 +120,7 @@ async function prepareVideo(file: File, text: AdminVideoUploadText): Promise<Pre
 }
 
 const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadProps) => {
+  const fileInput = useRef<HTMLInputElement>(null);
   const { protectSubmission } = useSubmissionLock();
   const text = adminVideoUploadText[getAdminLang()];
   const [uploading, setUploading] = useState(false);
@@ -190,8 +191,8 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
   return (
     <div className="space-y-2">
       <div data-admin-filter-bar className="flex flex-col gap-2 sm:flex-row">
-        <Input type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(event) => upload(event.target.files?.[0])} disabled={uploading} />
-        <Button type="button" variant="outline" className="w-full sm:w-auto" disabled={uploading}>
+        <Input ref={fileInput} type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; void upload(file); }} disabled={uploading} />
+        <Button type="button" variant="outline" className="w-full sm:w-auto" disabled={uploading} onClick={() => fileInput.current?.click()}>
           {uploading ? text.uploading : text.upload}
         </Button>
       </div>

@@ -38,6 +38,10 @@ export const adminCmsBuilderText = {
   zhContentJsonLabel: { en: "Chinese content JSON", zh: "中文内容 JSON" },
   enContentJsonLabel: { en: "English content JSON", zh: "英文内容 JSON" },
   settingsJsonLabel: { en: "Section settings JSON", zh: "模块设置 JSON" },
+  sectionJsonInvalid: {
+    en: "{label} must be a valid JSON object. If items is present, it must be a list of text or objects.",
+    zh: "{label} 必须是合法 JSON 对象；items 如存在，必须是文字或对象组成的列表。",
+  },
   sectionSavedMessage: { en: "Section saved.", zh: "模块已保存。" },
   sectionOrderSaved: {
     en: "Section order saved. The public page will read the new order.",

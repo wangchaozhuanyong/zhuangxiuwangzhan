@@ -1,3 +1,4 @@
+import { interactionText } from "@/i18n/interactionText";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
@@ -15,10 +16,12 @@ import { translateStatusLabel } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
 import { getAdminLang } from "@/lib/adminLocale";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { buildTranslationRecordEditHref, translationTargetNeedsRecord } from "@/lib/adminTranslationEditLinks";
+import { useAdminContentRecord } from "@/lib/adminCmsQueries";
 import { useAdminTranslationJobs } from "@/lib/adminSystemQueries";
 import { toast } from "@/hooks/use-toast";
 import { classifyTranslationFailure, friendlyTranslationError, translationTableLabels } from "@/lib/adminTranslation";
-import { generateAdminEnglishContent } from "@/backend/modules/system/service/translationService";
+import { generateAdminEnglishContent } from "@/lib/adminTranslation";
 import { formatUserFacingError } from "@/lib/userFacingText";
 
 const statuses = ["queued", "processing", "completed", "failed"];
@@ -41,16 +44,10 @@ const getTableLabel = (table: string | null, language: Language) => {
   return table.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-const buildRecordEditHref = (table: string | null, id: string | null) => {
-  if (!table || !id) return null;
-  const directRoutes: Record<string, string> = {
-    services: "/admin/services",
-    projects: "/admin/projects",
-    materials: "/admin/materials",
-    blog_posts: "/admin/blog",
-  };
-  const base = directRoutes[table] || `/admin/content/${table}`;
-  return `${base}/${id}`;
+const TranslationRecordEditLink = ({ table, id, label }: { table: string | null; id: string | null; label: string }) => {
+  const target = useAdminContentRecord(table || "", id || undefined, translationTargetNeedsRecord(table));
+  const href = buildTranslationRecordEditHref(table, id, target.data);
+  return href ? <Button asChild type="button" variant="ghost" size="sm"><Link to={href}>{label}</Link></Button> : null;
 };
 
 const AdminTranslationJobs = () => {
@@ -120,9 +117,9 @@ const AdminTranslationJobs = () => {
     }
     setRetryingId(job.id);
     try {
-      await generateAdminEnglishContent({ table: job.table_name, id: job.record_id, force: true });
+      const translation = await generateAdminEnglishContent({ table: job.table_name, id: job.record_id, force: true });
       setRetryingId(null);
-      toast({ title: t.retryOk });
+      toast({ title: t.retryOk, description: translation?.publicSyncPending ? interactionText[lang].savedSyncPending : undefined });
       await refreshJobs();
     } catch (retryError) {
       setRetryingId(null);
@@ -149,16 +146,18 @@ const AdminTranslationJobs = () => {
     setRetryAllBusy(true);
     setRetryAllProgress({ total: targets.length, done: 0, failed: 0 });
     let failed = 0;
+    let publicSyncPending = false;
     for (const job of targets) {
       try {
-        await generateAdminEnglishContent({ table: job.table_name!, id: job.record_id!, force: true });
+        const translation = await generateAdminEnglishContent({ table: job.table_name!, id: job.record_id!, force: true });
+        publicSyncPending ||= Boolean(translation?.publicSyncPending);
       } catch {
         failed += 1;
       }
       setRetryAllProgress((current) => current ? { ...current, done: current.done + 1, failed } : current);
     }
     setRetryAllBusy(false);
-    toast({ title: formatText(t.retryAllFinished, { success: targets.length - failed, failed }) });
+    toast({ title: formatText(t.retryAllFinished, { success: targets.length - failed, failed }), description: publicSyncPending ? interactionText[lang].savedSyncPending : undefined });
     await refreshJobs();
   });
 
@@ -248,7 +247,6 @@ const AdminTranslationJobs = () => {
 
       <div className="space-y-3">
         {filteredJobs.map((job) => {
-          const editHref = buildRecordEditHref(job.table_name, job.record_id);
           const failureGroup = classifyTranslationFailure(job.error_message);
           return (
             <article key={job.id} className="rounded-xl border border-border bg-card p-4">
@@ -268,11 +266,7 @@ const AdminTranslationJobs = () => {
                   <p>{t.updated}: {formatDateTime(job.updated_at, "-")}</p>
                   <p>{t.regenerated}: {formatDateTime(job.regenerated_at, t.notRegenerated)}</p>
                   <div data-admin-card-actions className="flex flex-wrap gap-2 md:justify-end">
-                    {editHref && (
-                      <Button asChild type="button" variant="ghost" size="sm">
-                        <Link to={editHref}>{t.editContent}</Link>
-                      </Button>
-                    )}
+                    <TranslationRecordEditLink table={job.table_name} id={job.record_id} label={t.editContent} />
                     <Button
                       type="button"
                       variant="outline"

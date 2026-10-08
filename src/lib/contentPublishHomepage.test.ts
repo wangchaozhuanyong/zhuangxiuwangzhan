@@ -1,168 +1,74 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
-import type { ContentPublishClient } from "../../supabase/functions/content-publish/types.ts";
+import type { ContentPublishClient, ContentPublishRequest } from "../../supabase/functions/content-publish/types.ts";
 
-type Row = Record<string, unknown> & { id?: string; status?: string };
-type Tables = Record<string, Row[]>;
-
-const cloneRow = (row: Row): Row => ({ ...row });
-
-function createMockContentClient(initialTables: Tables) {
-  const tables: Tables = Object.fromEntries(
-    Object.entries(initialTables).map(([table, rows]) => [table, rows.map(cloneRow)]),
-  );
-  let nextId = 1;
-
-  const ensureTable = (table: string) => {
-    tables[table] ||= [];
-    return tables[table];
-  };
-
-  const matchFilters = (row: Row, filters: Array<[string, unknown]>) =>
-    filters.every(([field, value]) => row[field] === value);
-
-  const createBuilder = (table: string) => {
+const version = "2026-10-08T01:00:00.000001Z";
+const tables: Record<string, Record<string, unknown>[]> = {
+  site_pages: [{ id: "site-home", page_key: "home", path: "/", status: "published", updated_at: version }],
+  faqs: [{ id: "faq-old", page_key: "home", status: "published", updated_at: version }],
+  cta_blocks: [{ id: "cta-home", block_key: "home_final", status: "published", updated_at: version }],
+};
+const request: ContentPublishRequest = {
+  contentType: "homepage", mode: "publish", nextStatus: "published", ownerApproved: true, explicitExecution: true,
+  record: {
+    sitePage: { page_key: "home", path: "/", updated_at: version, seo_title_en: "Approved homepage" },
+    ctaBlocks: [{ block_key: "home_final", updated_at: version, title_en: "Planning a renovation?", primary_url: "/quote" }],
+    replaceFaqs: true, expectedFaqs: [{ id: "faq-old", updated_at: version }],
+    faqs: [{ question_en: "What do you handle?", answer_en: "Owner-approved services only." }],
+  },
+};
+function fixture(rpcError: { code: string; message: string } | null = null) {
+  const rpc = vi.fn(async () => ({ data: { saved_records: [{ table: "site_pages", saved_id: "site-home" }], public_revision: version }, error: rpcError }));
+  const directWrite = vi.fn(() => { throw new Error("Partial publication is forbidden"); });
+  const client = { from(table: string) {
     const filters: Array<[string, unknown]> = [];
-    let operation: "select" | "insert" | "update" = "select";
-    let payload: Row | Row[] | null = null;
-
-    const filteredRows = () => ensureTable(table).filter((row) => matchFilters(row, filters));
-    const insertRows = () => {
-      const rows = Array.isArray(payload) ? payload : payload ? [payload] : [];
-      return rows.map((row) => {
-        const saved = { ...row, id: row.id || `${table}-${nextId++}` };
-        ensureTable(table).push(saved);
-        return saved;
-      });
+    const rows = () => (tables[table] || []).filter((row) => filters.every(([key, value]) => row[key] === value));
+    const builder = { select() { return builder; }, eq(key: string, value: unknown) { filters.push([key, value]); return builder; },
+      maybeSingle: async () => ({ data: rows()[0] || null, error: null }),
+      then(resolve: (value: unknown) => unknown) { return Promise.resolve({ data: rows(), error: null }).then(resolve); },
+      update: directWrite, insert: directWrite,
     };
-    const updateRows = () => {
-      const rows = filteredRows();
-      rows.forEach((row) => Object.assign(row, payload || {}));
-      return rows;
-    };
-    const resolveRows = () => {
-      if (operation === "insert") return insertRows();
-      if (operation === "update") return updateRows();
-      return filteredRows();
-    };
-
-    const builder = {
-      select() {
-        return builder;
-      },
-      eq(field: string, value: unknown) {
-        filters.push([field, value]);
-        return builder;
-      },
-      maybeSingle() {
-        return Promise.resolve({ data: filteredRows()[0] || null, error: null });
-      },
-      single() {
-        return Promise.resolve({ data: resolveRows()[0] || null, error: null });
-      },
-      insert(nextPayload: Row | Row[]) {
-        operation = "insert";
-        payload = nextPayload;
-        return builder;
-      },
-      update(nextPayload: Row) {
-        operation = "update";
-        payload = nextPayload;
-        return builder;
-      },
-      then(resolve: (value: { data: Row[]; error: null }) => unknown, reject?: (reason: unknown) => unknown) {
-        return Promise.resolve({ data: resolveRows(), error: null }).then(resolve, reject);
-      },
-    };
-
     return builder;
-  };
-
-  return {
-    tables,
-    client: {
-      from(table: string) {
-        return createBuilder(table);
-      },
-    },
-  };
+  }, rpc } as unknown as ContentPublishClient;
+  return { client, rpc, directWrite };
 }
 
-describe("content-publish homepage", () => {
-  it("returns a dry-run preview without writing homepage CMS records", async () => {
-    const { client, tables } = createMockContentClient({
-      site_pages: [{ id: "site-home", page_key: "home", path: "/", status: "published" }],
-      faqs: [{ id: "faq-old", page_key: "home", status: "published" }],
-      cta_blocks: [{ id: "cta-home", block_key: "home_final", status: "published" }],
-    });
-
-    const result = await publishContent(
-      {
-        contentType: "homepage",
-        mode: "dry-run",
-        nextStatus: "published",
-        record: {
-          sitePage: {
-            page_key: "home",
-            path: "/",
-            seo_title_en: "Renovation Company Kuala Lumpur | FLASH CAST",
-            unsupported_field: "ignored",
-          },
-          replaceFaqs: true,
-          faqs: [{ question_en: "What do you handle?", answer_en: "Owner-approved services only." }],
-          ctaBlocks: [{ block_key: "home_final", title_en: "Planning a renovation?", primary_url: "/quote" }],
-        },
-      },
-      client as unknown as ContentPublishClient,
-      { role: "content_editor", authMode: "cron" },
-    );
-
-    expect(result.body.ok).toBe(true);
-    expect(result.body.dry_run).toBe(true);
-    expect(result.body.content_type).toBe("homepage");
-    expect((result.body.payload_preview as { site_page: { action: string } }).site_page.action).toBe("update");
-    expect(tables.site_pages[0].seo_title_en).toBeUndefined();
-    expect(tables.faqs).toHaveLength(1);
-    expect(result.body.warnings).toContain("Ignored unsupported site_page field: unsupported_field");
+describe("content-publish homepage transaction contract", () => {
+  it("previews every baseline version without any publication call", async () => {
+    const { client, rpc, directWrite } = fixture();
+    const result = await publishContent({ ...request, mode: "dry-run" }, client, { role: "content_editor" });
+    expect(result.body).toMatchObject({ ok: true, dry_run: true, expected_versions: {
+      site_page: { id: "site-home", updated_at: version }, faqs: [{ id: "faq-old", updated_at: version }],
+    } });
+    expect(rpc).not.toHaveBeenCalled();
+    expect(directWrite).not.toHaveBeenCalled();
   });
-
-  it("archives old homepage FAQs and writes approved homepage payload on publish", async () => {
-    const { client, tables } = createMockContentClient({
-      site_pages: [{ id: "site-home", page_key: "home", path: "/", status: "published" }],
-      faqs: [{ id: "faq-old", page_key: "home", status: "published", question_en: "Old FAQ" }],
-      cta_blocks: [{ id: "cta-home", block_key: "home_final", status: "published" }],
-      admin_audit_logs: [],
-    });
-
-    const result = await publishContent(
-      {
-        contentType: "homepage",
-        mode: "publish",
-        nextStatus: "published",
-        ownerApproved: true,
-        explicitExecution: true,
-        record: {
-          sitePage: {
-            page_key: "home",
-            path: "/",
-            seo_title_zh: "吉隆坡装修公司 | FLASH CAST",
-            seo_title_en: "Renovation Company Kuala Lumpur | FLASH CAST",
-          },
-          replaceFaqs: true,
-          faqs: [{ question_zh: "主要做什么？", question_en: "What do you handle?", answer_zh: "住宅和商业装修。", answer_en: "Home and commercial renovation." }],
-          ctaBlocks: [{ block_key: "home_final", title_zh: "计划装修？", title_en: "Planning a renovation?", primary_url: "/quote" }],
-        },
-      },
-      client as unknown as ContentPublishClient,
-      { adminUserId: "admin-1", role: "content_editor", authMode: "cron" },
-    );
-
-    expect(result.body.ok).toBe(true);
-    expect(result.body.dry_run).toBe(false);
-    expect(tables.site_pages[0].seo_title_en).toBe("Renovation Company Kuala Lumpur | FLASH CAST");
-    expect(tables.cta_blocks[0].title_en).toBe("Planning a renovation?");
-    expect(tables.faqs.find((row) => row.id === "faq-old")?.status).toBe("archived");
-    expect(tables.faqs.some((row) => row.question_en === "What do you handle?" && row.status === "published")).toBe(true);
-    expect(tables.admin_audit_logs.length).toBeGreaterThan(0);
+  it("passes the whole approved homepage and exact caller versions into one transaction", async () => {
+    const { client, rpc, directWrite } = fixture();
+    const result = await publishContent(request, client, { role: "content_editor" });
+    expect(result.body).toMatchObject({ ok: true, dry_run: false, public_revision: version });
+    expect(rpc).toHaveBeenCalledExactlyOnceWith("publish_homepage_atomic", expect.objectContaining({
+      p_site_page: expect.objectContaining({ expectedId: "site-home", expectedUpdatedAt: version }),
+      p_cta_blocks: [expect.objectContaining({ expectedId: "cta-home", expectedUpdatedAt: version })],
+      p_expected_faqs: [{ id: "faq-old", updated_at: version }], p_replace_faqs: true,
+    }));
+    expect(directWrite).not.toHaveBeenCalled();
+  });
+  it.each(["missing CTA version", "changed CTA version", "missing FAQ set", "changed FAQ set"])("rejects %s before writing", async (kind) => {
+    const { client, rpc } = fixture();
+    const record = structuredClone(request.record!);
+    if (kind.includes("CTA")) (record.ctaBlocks as Record<string, unknown>[])[0].updated_at = kind.startsWith("missing") ? "" : "2026-10-08T01:00:00.000002Z";
+    else record.expectedFaqs = kind.startsWith("missing") ? undefined : [];
+    const result = await publishContent({ ...request, record }, client, { role: "content_editor" });
+    expect(result.status).toBe(409);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+  it.each(["40001", "PGRST202"])("does not fall back to partial writes on transaction error %s", async (code) => {
+    const { client, rpc, directWrite } = fixture({ code, message: "test-only" });
+    const result = await publishContent(request, client, { role: "content_editor" });
+    expect(result.status).toBe(409);
+    expect(result.body.ok).toBe(false);
+    expect(rpc).toHaveBeenCalledOnce();
+    expect(directWrite).not.toHaveBeenCalled();
   });
 });

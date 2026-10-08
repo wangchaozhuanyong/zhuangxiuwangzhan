@@ -1,12 +1,15 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFormGuard } from "@/hooks/useFormGuard";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { landingPageText } from "@/i18n/landingPageText";
+import { interactionText } from "@/i18n/interactionText";
 import { trackQuoteFormSubmit } from "@/lib/analytics";
 import { submitQuoteRequest } from "@/lib/leadApi";
-import { isValidLeadPhone } from "@/lib/leadValidation";
+import { isValidLeadPhone, localizeLeadFormErrors } from "@/lib/leadValidation";
 import { preloadTurnstile } from "@/lib/turnstile";
 
 const projectTypes = [
@@ -20,7 +23,7 @@ type LandingQuoteFormProps = {
   landingTitle: string;
 };
 
-type FieldErrors = Partial<Record<"name" | "phone" | "projectType" | "location", string>>;
+type FieldErrors = Partial<Record<"name" | "phone" | "projectType" | "location", "formRequired" | "formPhoneInvalid">>;
 
 const fieldIds = {
   name: "landing-quote-name",
@@ -33,28 +36,36 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
   const { language } = useLanguage();
   const t = landingPageText[language];
   const formGuard = useFormGuard();
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const [form, setForm] = useState({ name: "", phone: "", projectType: "", location: "" });
+  const currentForm = useRef(form); currentForm.current = form;
+  const lastSavedForm = useRef<typeof form | null>(null);
   const [honeypot, setHoneypot] = useState("");
-  const [errors, setErrors] = useState<FieldErrors>({});
+  const [errorKeys, setErrors] = useState<FieldErrors>({});
+  const errors = localizeLeadFormErrors(errorKeys, t);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  useUnsavedChangesWarning(isSubmitting || status === "submitting"
+    || Object.values(form).some((value) => value.trim() !== "") && JSON.stringify(form) !== JSON.stringify(lastSavedForm.current));
 
   useEffect(() => {
     void preloadTurnstile().catch(() => undefined);
   }, []);
 
   const updateField = (field: keyof typeof form, value: string) => {
-    setForm((current) => ({ ...current, [field]: value }));
+    const next = { ...currentForm.current, [field]: value };
+    currentForm.current = next;
+    setForm(next);
     setErrors((current) => ({ ...current, [field]: undefined }));
     if (status === "error") setStatus("idle");
   };
 
-  const validate = () => {
+  const validate = (submitted: typeof form) => {
     const next: FieldErrors = {};
-    if (!form.name.trim()) next.name = t.formRequired;
-    if (!form.phone.trim()) next.phone = t.formRequired;
-    else if (!isValidLeadPhone(form.phone)) next.phone = t.formPhoneInvalid;
-    if (!form.projectType) next.projectType = t.formRequired;
-    if (!form.location.trim()) next.location = t.formRequired;
+    if (!submitted.name.trim()) next.name = "formRequired";
+    if (!submitted.phone.trim()) next.phone = "formRequired";
+    else if (!isValidLeadPhone(submitted.phone)) next.phone = "formPhoneInvalid";
+    if (!submitted.projectType) next.projectType = "formRequired";
+    if (!submitted.location.trim()) next.location = "formRequired";
     setErrors(next);
 
     const firstError = Object.keys(next)[0] as keyof FieldErrors | undefined;
@@ -66,9 +77,9 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (status === "submitting" || !validate()) {
+  const submit = protectSubmission("submit", async () => {
+    const submitted = { ...currentForm.current };
+    if (status === "submitting" || !validate(submitted)) {
       if (status !== "submitting") trackQuoteFormSubmit("validation_error");
       return;
     }
@@ -76,21 +87,26 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
     setStatus("submitting");
     try {
       await submitQuoteRequest({
-        name: form.name,
-        phone: form.phone,
-        projectType: form.projectType,
-        location: form.location,
+        name: submitted.name,
+        phone: submitted.phone,
+        projectType: submitted.projectType,
+        location: submitted.location,
         details: language === "zh" ? `推广页面咨询：${landingTitle}` : `Campaign enquiry: ${landingTitle}`,
         sourcePath: `${window.location.pathname}${window.location.search}`,
         website: honeypot,
         startedAt: formGuard.startedAt,
       });
       trackQuoteFormSubmit("success");
-      setStatus("success");
+      lastSavedForm.current = submitted;
+      setStatus(JSON.stringify(currentForm.current) === JSON.stringify(submitted) ? "success" : "idle");
     } catch {
       trackQuoteFormSubmit("error");
       setStatus("error");
     }
+  });
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void submit();
   };
 
   if (status === "success") {
@@ -110,8 +126,11 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
         <p>{t.formSubtitle}</p>
       </header>
 
-      {status === "error" ? (
-        <p className="landing-quote-card__status" role="alert"><AlertCircle aria-hidden="true" />{t.formError}</p>
+      {status === "error" || (status === "idle" && lastSavedForm.current) ? (
+        <p className="landing-quote-card__status" role={status === "error" ? "alert" : "status"}>
+          {status === "error" ? <AlertCircle aria-hidden="true" /> : <CheckCircle2 aria-hidden="true" />}
+          {status === "error" ? t.formError : interactionText[language].savedWhileEditing}
+        </p>
       ) : null}
 
       <form onSubmit={handleSubmit} noValidate>

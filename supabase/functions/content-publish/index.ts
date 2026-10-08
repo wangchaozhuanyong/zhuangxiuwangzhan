@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getServiceRoleKey, requireAdminAccess } from "../_shared/admin-auth.ts";
 import { corsHeadersFor, handleCorsPreflight, isAllowedCorsOrigin } from "../_shared/cors.ts";
 import { BodyTooLargeError, readJsonBody } from "../_shared/request-body.ts";
-import { purgePublicHtmlCache } from "./cache-invalidation.ts";
+import { syncPublicContent } from "../_shared/public-content-sync.ts";
 import { verifyGithubOidcToken } from "./github-oidc.ts";
 import { issueManagedPermit, readManagedPermit, revokeManagedPermit } from "./permit-issuer.ts";
 import type { ManagedPermitIssue } from "./permit-issuer.ts";
@@ -101,38 +101,19 @@ serve(async (req) => {
       managedIdentity,
     });
     if (result.body.ok === true && result.body.dry_run === false) {
-      const revision = new Date().toISOString();
-      const { data: revisionRow, error: revisionError } = await client
-        .from("site_settings")
-        .update({ updated_at: revision })
-        .eq("id", "default")
-        .select("updated_at")
-        .maybeSingle();
-      // The existing BEFORE UPDATE trigger owns the actual timestamp/precision.
-      const confirmedRevision = typeof revisionRow?.updated_at === "string" && revisionRow.updated_at
-        ? revisionRow.updated_at : null;
-      const edgePurge = await purgePublicHtmlCache({
+      const committedRevision = typeof result.body.public_revision === "string" ? result.body.public_revision : null;
+      const delivery = await syncPublicContent(client, {
+        advanceRevision: committedRevision === null,
+        revision: committedRevision,
         apiToken: Deno.env.get("CLOUDFLARE_API_TOKEN"),
         zoneId: Deno.env.get("CLOUDFLARE_ZONE_ID"),
       });
-      result.body.cache_invalidation = {
-        ok: !revisionError && confirmedRevision !== null,
-        strategy: "content-revision",
-        revision: revisionError ? null : confirmedRevision,
-        edge_purge_requested: edgePurge,
-      };
+      result.body.cache_invalidation = delivery.cache_invalidation;
       const warnings = Array.isArray(result.body.warnings)
         ? result.body.warnings.filter((warning): warning is string => typeof warning === "string")
         : [];
-      if (revisionError || !confirmedRevision) {
-        warnings.push(`Cache revision warning: ${revisionError?.message || "Site settings revision was not returned."}`);
-      }
-      if (!edgePurge.ok) {
-        warnings.push(`Cloudflare cache purge warning: ${edgePurge.error}`);
-      }
-      if (warnings.length) {
-        result.body.warnings = warnings;
-      }
+      warnings.push(...(delivery.warnings || []));
+      if (warnings.length) result.body.warnings = warnings;
     }
     return json(req, result.body, result.status || 200);
   } catch (error) {

@@ -94,8 +94,7 @@ const Contact = () => {
     return !hasErrors;
   };
 
-  const handleSubmit = protectSubmission("submit", async (e: FormEvent) => {
-    e.preventDefault();
+  const submit = protectSubmission("submit", async () => {
     if (status === "submitting") return;
     const submittedSourcePath = `${window.location.pathname}${window.location.search}`;
     if (!validate()) {
@@ -130,6 +129,10 @@ const Contact = () => {
       setStatus("error");
     }
   });
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void submit();
+  };
 
   const mapAddress = settings.address || t.addressText;
   const navigationLinks = [
@@ -319,7 +322,7 @@ const Contact = () => {
                     )}
 
                     {lastSavedForm.current && status === "idle" ? <p role="status" className="mb-4 rounded-lg border border-border bg-background p-3 text-sm">{interactionText[language].savedWhileEditing}</p> : null}
-                    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+                    <form method="post" className="space-y-4" onSubmit={handleSubmit} noValidate>
                       <div>
                         <label htmlFor="contact-name" className="block text-sm font-medium mb-1.5">{t.name} <span className="text-destructive">*</span></label>
                         <Input

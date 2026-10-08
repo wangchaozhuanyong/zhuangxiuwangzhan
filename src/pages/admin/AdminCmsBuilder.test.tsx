@@ -1,5 +1,6 @@
 import { act, type ButtonHTMLAttributes } from "react";
 import { createRoot } from "react-dom/client";
+import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -70,7 +71,7 @@ vi.mock("@/components/admin/AdminPermission", () => ({
     <button {...props} data-action={action}>{children}</button>,
 }));
 
-async function mountBuilder() {
+async function mountBuilder(initialPath = "/admin/cms") {
   const notices: QueryInvalidationNotice[] = [];
   const receive = (event: Event) => notices.push((event as CustomEvent<QueryInvalidationNotice>).detail);
   window.addEventListener(QUERY_INVALIDATION_EVENT, receive);
@@ -79,7 +80,7 @@ async function mountBuilder() {
   const root = createRoot(container);
   const client = new QueryClient();
   await act(async () => root.render(
-    <QueryClientProvider client={client}><TooltipProvider><AdminCmsBuilder /></TooltipProvider></QueryClientProvider>,
+    <QueryClientProvider client={client}><MemoryRouter initialEntries={[initialPath]}><TooltipProvider><AdminCmsBuilder /></TooltipProvider></MemoryRouter></QueryClientProvider>,
   ));
   return {
     container,
@@ -315,5 +316,20 @@ describe("CMS compact mobile selectors", () => {
         payload: expect.objectContaining({ status: "archived", settings: { newInput: true } }),
       }));
     } finally { await view.cleanup(); }
+  });
+});
+
+
+describe("CMS translation deep links", () => {
+  it("selects the requested page and exact section without replacing the layout", async () => {
+    const mounted = await mountBuilder("/admin/cms?page=page-a&section=section-b");
+    expect(mounted.container.querySelector<HTMLInputElement>("#cms-page-title_zh")!.value).toBe("页面甲");
+    expect(mounted.container.querySelector<HTMLInputElement>("#cms-section-title_zh")!.value).toBe("模块乙");
+    await mounted.cleanup();
+  });
+  it("selects another real page instead of silently falling back to the first", async () => {
+    const mounted = await mountBuilder("/admin/cms?page=page-b");
+    expect(mounted.container.querySelector<HTMLInputElement>("#cms-page-title_zh")!.value).toBe("页面乙");
+    await mounted.cleanup();
   });
 });

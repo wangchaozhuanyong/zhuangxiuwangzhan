@@ -8,7 +8,7 @@ vi.mock("@/lib/supabase", () => ({ requireSupabase: () => ({ from: (table: strin
   const result = Promise.resolve({ data: [], error: null, count: 0 });
   const builder = Object.assign(result, {
     select: () => builder, eq: () => builder, gte: () => builder, lt: () => builder,
-    not: () => builder, lte: () => builder, in: () => builder, order: () => builder, limit: () => builder,
+    not: () => builder, lte: () => builder, in: () => builder, order: () => builder, limit: () => builder, range: () => builder,
     or: (filter: string) => { entry.filters.push(filter); return builder; },
   });
   return builder;

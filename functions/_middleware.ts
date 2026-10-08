@@ -1,5 +1,5 @@
 import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
-import type { FurnitureMaterialRow } from "../src/lib/furnitureCatalogPresentation";
+import { getFurnitureListingPage, getFurnitureListingRoute, furnitureListingPagePath, mapFurnitureCatalogSeed, normalizeFurnitureListingPage, type FurnitureMaterialRow } from "../src/lib/furnitureCatalogPresentation";
 import {
   HOME_JOURNAL_SELECT, HOME_JOURNAL_LIMIT, HOME_JOURNAL_ORDER,
   HOME_SERVICE_AREAS_SELECT, HOME_SERVICE_AREAS_LIMIT, HOME_SERVICE_AREAS_ORDER,
@@ -10,7 +10,7 @@ import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreload
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
+import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
 import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
 import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
@@ -18,6 +18,8 @@ import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
 import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
+import { translateDisplayText } from "../src/i18n/displayLabels";
+import { stripHtml } from "../src/lib/text";
 import { getSocialProfileUrls } from "../src/lib/socialProfiles";
 import {
   PUBLIC_LANGUAGE_COOKIE,
@@ -1173,10 +1175,12 @@ const buildDynamicSeoEntry = (
     ? row.tags.filter((item): item is string => typeof item === "string" && Boolean(item.trim())).map((item) => item.trim())
     : [];
   const faqRows = readRecordArray(row[`faqs_${lang}`]);
+  const displayFaqText = (value: string) => kind === "service_area"
+    ? stripHtml(translateDisplayText(value, lang)) : value;
   const faqs = faqRows
     .map((faq) => ({
-      question: readString(faq, "q") || readString(faq, "question"),
-      answer: readString(faq, "a") || readString(faq, "answer"),
+      question: displayFaqText(readString(faq, "q") || readString(faq, "question")),
+      answer: displayFaqText(readString(faq, "a") || readString(faq, "answer")),
     }))
     .filter((faq) => faq.question && faq.answer);
   const imageUrl =
@@ -1196,7 +1200,7 @@ const buildDynamicSeoEntry = (
     title: boundProjectMetadata?.title || sanitizePublicDraftMarkers(stripMarkup(title)).slice(0, 180),
     description: boundProjectMetadata?.description || sanitizePublicDraftMarkers(stripMarkup(rawDescription)).slice(0, 300),
     keywords: tags.length ? tags.join(", ") : keywordValue || fallback?.keywords,
-    faqs: faqs.length ? faqs : fallback?.faqs,
+    faqs: kind === "service_area" ? faqs : faqs.length ? faqs : fallback?.faqs,
     canonical: `${PUBLIC_SITE_URL}${canonicalPath}`,
     hreflang: {
       en: `${PUBLIC_SITE_URL}${enPath}`,
@@ -2151,12 +2155,29 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectHomeBundle ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),
   ]);
 
+  const furnitureListingRoute = getFurnitureListingRoute(key);
+  const furnitureListing = furnitureListingRoute && furniturePreload
+    ? getFurnitureListingPage(
+        mapFurnitureCatalogSeed(furniturePreload.materials as FurnitureMaterialRow[], furniturePreload.setting, furnitureListingRoute.language),
+        furnitureListingRoute.categoryKey, furnitureListingRoute.subcategoryKey, url.searchParams.get("page"),
+      ) : null;
+  if (meta && furnitureListingRoute) {
+    // Only the listing page parameter belongs to its identity; tracking queries do not.
+    const listingPath = furnitureListing?.canonicalPath || furnitureListingPagePath(
+      new URL(meta.canonical).pathname.replace(/^\/(?:en|zh)/, ""),
+      normalizeFurnitureListingPage(url.searchParams.get("page")),
+    );
+    meta = { ...meta, canonical: `${PUBLIC_SITE_URL}/${furnitureListingRoute.language}${listingPath}`, hreflang: {
+      en: `${PUBLIC_SITE_URL}/en${listingPath}`, zh: `${PUBLIC_SITE_URL}/zh${listingPath}`, xDefault: `${PUBLIC_SITE_URL}/en${listingPath}`,
+    } };
+  }
   const homeFaqs = shouldInjectHomeBundle
     ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
     : [];
   if (shouldInjectHomeBundle && meta) meta = { ...meta, faqs: homeFaqs };
   const html = await response.text();
-  const readableBody = buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
+  const readableBody = buildReadableFurnitureListingBody(key, furnitureListing)
+    || buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);

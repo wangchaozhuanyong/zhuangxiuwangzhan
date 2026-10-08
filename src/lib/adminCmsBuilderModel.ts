@@ -1,3 +1,5 @@
+import { isRecord } from "@/lib/recordUtils";
+
 export type CmsPage = {
   id?: string;
   page_key: string;
@@ -122,12 +124,20 @@ export const shouldAutoSelectFirstCmsPage = (selectedPageId: string | null, dirt
 
 export const prettyJson = (value: unknown) => JSON.stringify(value || {}, null, 2);
 
-export const parseJson = (value: string, label: string) => {
+export const parseJson = (value: string, label: string, errorMessage?: string): Record<string, unknown> => {
+  let parsed: unknown;
   try {
-    return value.trim() ? JSON.parse(value) : {};
+    parsed = value.trim() ? JSON.parse(value) : {};
   } catch {
-    throw new Error(`${label} 不是合法 JSON，请检查逗号、引号和括号。`);
+    throw new Error(errorMessage || `${label} 不是合法 JSON，请检查逗号、引号和括号。`);
   }
+  // Content/settings must be objects; an optional list contains only supported
+  // text or object items. Leave the original draft untouched when rejected.
+  if (!isRecord(parsed) || ("items" in parsed && (!Array.isArray(parsed.items)
+    || parsed.items.some((item: unknown) => typeof item !== "string" && !isRecord(item))))) {
+    throw new Error(errorMessage || `${label} 必须是 JSON 对象，items 必须是文字或对象组成的列表。`);
+  }
+  return parsed;
 };
 
 export const makeSectionKey = (type: string) => `${type.toLowerCase().replace(/[^a-z0-9]+/g, "_")}_${Date.now().toString().slice(-6)}`;

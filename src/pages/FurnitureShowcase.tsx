@@ -9,11 +9,9 @@ import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedFurnitureCatalog } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
-import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureSubcategory, getFurnitureCatalogProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCatalogProductsForCategory, getFurnitureListingPage, furnitureListingPagePath, normalizeFurnitureListingPage, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import { rememberFurnitureNavigationScroll } from "@/lib/publicScrollRestoration";
 import { withLanguagePrefix } from "@/i18n/routes";
-
-const pageSize = 18;
 
 const keepFurnitureScrollPosition = (event: MouseEvent<HTMLAnchorElement>) => {
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -37,26 +35,17 @@ export default function FurnitureShowcase() {
   const categoryCopy = furnitureCategoryPageCopy(categoryKey, language, subcategoryKey);
   const managedQuery = usePublishedFurnitureCatalog(language);
   const managedProducts = managedQuery.data || [];
-  const category = getFurnitureCategory(categoryKey || "new");
-  const subcategory = category && subcategoryKey ? getFurnitureSubcategory(category, subcategoryKey) : undefined;
-  const validSelection = Boolean(category && (!subcategoryKey || subcategory));
-  const products = validSelection
-    ? getFurnitureCatalogProductsForCategory(managedProducts, category!.key, subcategory?.key)
-    : [];
-  const totalPages = Math.max(1, Math.ceil(products.length / pageSize));
-  const requestedPage = Number(searchParams.get("page") || 1);
-  const page = Number.isInteger(requestedPage) ? Math.min(totalPages, Math.max(1, requestedPage)) : 1;
-  const visibleProducts = products.slice((page - 1) * pageSize, page * pageSize);
+  const { category, subcategory, validSelection, products, totalPages, page, visibleProducts, currentPath, canonicalPath: resolvedCanonicalPath } =
+    getFurnitureListingPage(managedProducts, categoryKey, subcategoryKey, searchParams.get("page"));
+  const canonicalPath = managedQuery.data === undefined
+    ? furnitureListingPagePath(currentPath, normalizeFurnitureListingPage(searchParams.get("page"))) : resolvedCanonicalPath;
   const categoryLabel = category ? furnitureCategoryName(category.key, language) : copy.title;
   const subcategoryLabel = subcategory ? furnitureSubcategoryName(subcategory.key, language, subcategory.name) : "";
-  const currentPath = subcategory
-    ? `/furniture/${category?.key}/${subcategory.key}`
-    : category && category.key !== "new" ? `/furniture/${category.key}` : "/furniture";
-  const pagePath = (number: number) => `${currentPath}${number > 1 ? `?page=${number}` : ""}`;
+  const pagePath = (number: number) => furnitureListingPagePath(currentPath, number);
 
   return (
     <main className="fc-route-page fc-furniture-page" data-route-pending={managedQuery.isLoading || undefined}>
-      <PageMeta title={categoryCopy?.title || [subcategoryLabel, categoryKey ? categoryLabel : copy.title].filter(Boolean).join(" | ")} description={categoryCopy?.description || copy.metaDescription} canonicalPath={currentPath} noIndex={!validSelection} />
+      <PageMeta title={categoryCopy?.title || [subcategoryLabel, categoryKey ? categoryLabel : copy.title].filter(Boolean).join(" | ")} description={categoryCopy?.description || copy.metaDescription} canonicalPath={canonicalPath} noIndex={!validSelection} />
       <JsonLdBreadcrumb items={[
         { name: copy.home, url: "/" },
         { name: copy.title, url: "/furniture" },

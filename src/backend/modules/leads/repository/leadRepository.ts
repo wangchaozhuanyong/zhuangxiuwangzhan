@@ -23,14 +23,6 @@ export type AdminListPage<T> = {
   pageSize: number;
 };
 
-export async function updateLeadRecord(leadId: string, patch: LeadUpdatePatch) {
-  const supabase = requireSupabase();
-  const { error } = await supabase.from("leads").update(patch).eq("id", leadId);
-  if (error) throw error;
-
-  return true;
-}
-
 export async function invokeSubmitLeadFunction(body: Record<string, unknown>) {
   const supabase = requireSupabase();
   const { data, error } = await supabase.functions.invoke("submit-lead", { body });
@@ -79,27 +71,32 @@ export async function fetchAdminLeadList<T extends Record<string, unknown>>(inpu
 
 export async function fetchAdminLeadDetail(leadId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const [{ data: lead, error: leadError }, { data: followups }] = await withReadSignal(Promise.all([
-    supabase.from("leads").select("*").eq("id", leadId).single(),
-    supabase.from("lead_followups").select("*").eq("lead_id", leadId).order("created_at", { ascending: false }),
-  ]), signal);
+  const [{ data: lead, error: leadError }, { data: followups, error: followupError }] = await Promise.all([
+    withReadSignal(supabase.from("leads").select("*").eq("id", leadId).single(), signal),
+    withReadSignal(supabase.from("lead_followups").select("*").eq("lead_id", leadId).order("created_at", { ascending: false }), signal),
+  ]);
 
   if (leadError) throw leadError;
+  if (followupError) throw followupError;
   return { lead, followups: followups ?? [] };
 }
 
 export async function fetchAdminLeadReportRows(startIso?: string | null, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  let query = supabase
-    .from("leads")
-    .select("id,name,status,source,source_path,project_type,location,deal_value,created_at")
-    .or(FORMAL_LEAD_SOURCE_FILTER)
-    .order("created_at", { ascending: false })
-    .limit(1000);
-
-  if (startIso) query = query.gte("created_at", startIso);
-
-  const { data, error } = await withReadSignal(query, signal);
-  if (error) throw error;
-  return data || [];
+  const pageSize = 500;
+  const readUntil = new Date().toISOString();
+  const rows = [];
+  for (let offset = 0; ; offset += pageSize) {
+    let query = supabase.from("leads")
+      .select("id,name,status,source,source_path,project_type,location,deal_value,created_at")
+      .or(FORMAL_LEAD_SOURCE_FILTER)
+      .lte("created_at", readUntil)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false });
+    if (startIso) query = query.gte("created_at", startIso);
+    const { data, error } = await withReadSignal(query.range(offset, offset + pageSize - 1), signal);
+    if (error) throw error;
+    rows.push(...(data || []));
+    if (!data || data.length < pageSize) return rows;
+  }
 }

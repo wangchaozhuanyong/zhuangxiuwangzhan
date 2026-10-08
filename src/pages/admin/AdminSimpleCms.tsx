@@ -2,6 +2,7 @@ import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisib
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminSimpleCmsRows } from "@/lib/adminCmsQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -135,9 +136,11 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const configText = adminSimpleCmsConfigText[language][module];
   const config = configs[module];
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedRecordId = searchParams.get("record");
   const { data: loadedRows, error, isLoading, isFetching } = useAdminSimpleCmsRows(config.table);
   const rows = loadedRows ?? [];
-  const { state: record, setForm: setRecord, applyRemote, dirty: recordDirty, isDirty } = useAdminFormState<SimpleCmsRecord>(undefined, { initial: emptyRecord, resetKey: module });
+  const { state: record, setForm: setRecord, applyRemote, dirty: recordDirty, isDirty } = useAdminFormState<SimpleCmsRecord>(requestedRecordId ? rows.find((row) => String(row.id) === requestedRecordId) : undefined, { initial: emptyRecord, resetKey: `${module}:${requestedRecordId || ""}` });
   const [message, setMessage] = useState(error ? formatAdminError(module, error, language) : "");
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -178,15 +181,17 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const loadRecord = async (row: SimpleCmsRecord) => {
     if (!(await confirmDiscardUnsaved())) return;
     applyRemote(row);
+    setSearchParams((current) => { const next = new URLSearchParams(current); next.set("record", String(row.id)); return next; });
   };
 
   const resetRecord = async () => {
     if (!(await confirmDiscardUnsaved())) return;
     applyRemote({ ...emptyRecord });
+    setSearchParams((current) => { const next = new URLSearchParams(current); next.delete("record"); return next; });
   };
 
   const save = protectSubmission("save", async () => {
-    if (!isSupabaseConfigured || saving) return;
+    if (!isSupabaseConfigured || saving || (requestedRecordId && String(record.id) !== requestedRecordId)) return;
     setSaving(true);
     const payload = { ...record };
     for (const field of config.fields) {
@@ -341,7 +346,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
               <Input type="number" value={toInputValue(record.sort_order || 0)} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
             </div>
           </div>
-          <Button type="button" className="mt-5 w-full" disabled={saving} onClick={() => void save()}>
+          <Button type="button" className="mt-5 w-full" disabled={saving || Boolean(requestedRecordId && String(record.id) !== requestedRecordId)} onClick={() => void save()}>
             {saving ? t.saving : t.save}
           </Button>
         </section>

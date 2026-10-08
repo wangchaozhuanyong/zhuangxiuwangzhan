@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType } from "react";
-import { Navigate, Route, useParams } from "react-router-dom";
+import { Navigate, Route, useLocation, useParams } from "react-router-dom";
 import { LanguageRouteSync, LegacyLanguageRedirect, ProductsToMaterialsRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 import BlogArticleLoading from "@/components/blocks/BlogArticleLoading";
 
@@ -69,9 +69,10 @@ const withLanguageSync = (page: JSX.Element) => (
 
 const LandingPageRoute = () => {
   const { lang, slug } = useParams<{ lang: string; slug: string }>();
+  const location = useLocation();
   const serviceSlug = slug ? landingToServiceSlugs[slug] : null;
   if (serviceSlug && (lang === "en" || lang === "zh")) {
-    return <Navigate to={`/${lang}/services/${serviceSlug}`} replace />;
+    return <Navigate to={{ pathname: `/${lang}/services/${serviceSlug}`, search: location.search, hash: location.hash }} replace />;
   }
   return withLanguageSync(<LandingPage />);
 };

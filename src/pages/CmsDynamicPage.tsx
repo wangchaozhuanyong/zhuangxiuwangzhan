@@ -10,8 +10,8 @@ import { SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeAR
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { PublishedCmsSection } from "@/lib/homeContentApi";
 import { publicContentQueries } from "@/lib/publicContentQueries";
-import { toText } from "@/lib/recordUtils";
-import { sanitizeHtml } from "@/lib/sanitizeHtml";
+import { isRecord, toRecord, toText } from "@/lib/recordUtils";
+import { isSafeContentUrl, sanitizeHtml } from "@/lib/sanitizeHtml";
 import NotFound from "@/pages/NotFound";
 import { pageHeroImages } from "@/lib/pageHeroImages";
 
@@ -41,27 +41,55 @@ const copy = {
 const cmsPathFromSplat = (splat = "") => `/${splat.replace(/^\/+/, "").replace(/\/+$/, "")}`;
 
 const getSectionBody = (section: PublishedCmsSection) => {
-  const content = section.content || {};
+  const content = toRecord(section.content);
   if (typeof content.content === "string") return content.content;
   if (typeof content.description === "string") return content.description;
   if (typeof content.text === "string") return content.text;
+  if (typeof content.body === "string") return content.body;
   return "";
 };
 
 const renderCmsBody = (body: string) => sanitizeHtml(body.includes("<") ? body : `<p>${body}</p>`);
 
-const renderList = (items: unknown[]) => {
+const firstText = (...values: unknown[]) => values.find((value): value is string => typeof value === "string" && Boolean(value.trim())) || "";
+
+const safeCmsHref = (value: unknown) => {
+  if (typeof value !== "string" || !isSafeContentUrl(value)) return undefined;
+  const url = new URL(value, "https://cms-content.invalid/");
+  const normalized = value.trim().replace(/[\t\r\n]/g, "");
+  if (url.origin === "https://cms-content.invalid" && !/^[a-z][a-z\d+.-]*:/i.test(normalized) && !normalized.startsWith("//")) {
+    if (normalized.startsWith("#")) return url.hash;
+    if (normalized.startsWith("?")) return `${url.search}${url.hash}`;
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
+  return url.href;
+};
+
+const CmsActionLink = ({ href, label }: { href?: string; label: string }) => href
+  ? <Link to={href}>{label}</Link>
+  : <a aria-disabled="true">{label}</a>;
+
+const renderList = (items: unknown[], type: string) => {
   if (!items.length) return null;
   return (
     <div className="fc-route-cms-list">
       {items.map((item, index) => {
-        const value = typeof item === "string" ? { title: item } : (item as Record<string, unknown>);
-        const title = String(value.title || value.name || `Item ${index + 1}`);
-        const description = String(value.description || value.content || value.text || "");
+        if (typeof item !== "string" && !isRecord(item)) return null;
+        const value = typeof item === "string" ? { title: item } : item;
+        const title = type === "faq"
+          ? firstText(value.question, value.title, value.name)
+          : type === "testimonials"
+            ? [firstText(value.name, value.title), firstText(value.role)].filter(Boolean).join(" · ")
+            : firstText(value.title, value.name, value.heading);
+        const description = type === "faq"
+          ? firstText(value.answer, value.description, value.content, value.text)
+          : firstText(value.quote, value.description, value.content, value.text, value.body);
+        if (!title && !description) return null;
+        const href = safeCmsHref(value.url);
         return (
           <div key={`${title}-${index}`}>
             <span>{String(index + 1).padStart(2, "0")}</span>
-            <h3>{title}</h3>
+            {title && <h3>{href ? <Link to={href} style={{ font: "inherit", color: "inherit", textDecoration: "inherit" }}>{title}</Link> : title}</h3>}
             {description && <p>{description}</p>}
           </div>
         );
@@ -74,8 +102,8 @@ const CmsSection = ({ section, pageBody }: { section: PublishedCmsSection; pageB
   const type = section.section_type.toLowerCase();
   if (type.includes("hero")) return null;
 
-  const content = section.content || {};
-  const title = section.title || String(content.title || "");
+  const content = toRecord(section.content);
+  const title = section.title || firstText(content.title, content.heading);
   const body = getSectionBody(section);
   // The CMS mapper exposes its first rich-text section as page.content too.
   // Keep the section's title and list, but show identical body text only once.
@@ -93,7 +121,7 @@ const CmsSection = ({ section, pageBody }: { section: PublishedCmsSection; pageB
             dangerouslySetInnerHTML={{ __html: visibleBody }}
           />
         )}
-        {renderList(items)}
+        {renderList(items, type)}
     </SchemeASection>
   );
 };
@@ -147,6 +175,12 @@ export default function CmsDynamicPage() {
   const heroImage = page.image_url || toText(sectionHeroImage);
   const heroAlt = page.alt || page.title;
   const sections = page.sections || [];
+  const cta = toRecord(sections.find((section) => section.section_type.trim().toLowerCase() === "cta")?.content);
+  const ctaTitle = firstText(cta.title, page.cta_title, t.quote);
+  const primaryLabel = firstText(cta.primary_label, page.cta_title, t.quote);
+  const secondaryLabel = firstText(cta.secondary_label, t.fallbackDescription);
+  const primaryHref = safeCmsHref(firstText(cta.primary_url, "/quote#quote-form"));
+  const secondaryHref = safeCmsHref(firstText(cta.secondary_url, "/contact"));
 
   return (
     <main className="fc-route-page">
@@ -166,7 +200,7 @@ export default function CmsDynamicPage() {
               className="fc-route-cms-copy prose prose-neutral"
               dangerouslySetInnerHTML={{ __html: renderCmsBody(page.content) }}
             />
-            <div className="fc-route-action-panel"><h2>{page.cta_title || t.quote}</h2><div><Link to="/quote#quote-form">{page.cta_title || t.quote}</Link><Link to="/contact">{t.fallbackDescription}</Link></div></div>
+            <div className="fc-route-action-panel"><h2>{ctaTitle}</h2><div><CmsActionLink href={primaryHref} label={primaryLabel} /><CmsActionLink href={secondaryHref} label={secondaryLabel} /></div></div>
         </SchemeASection>
       )}
 
