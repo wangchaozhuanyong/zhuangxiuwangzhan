@@ -1048,6 +1048,10 @@
     line-height: 1.5;
   }
 
+  .scheme-a-footer__social-heading {
+    text-align: center;
+  }
+
   .scheme-a-footer__socials,
   .scheme-a-directory__socials {
     display: grid;
