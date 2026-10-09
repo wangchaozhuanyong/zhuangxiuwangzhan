@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "task_id": "fc-unified-release-continuation-20261009",
+  "action_id": "publish-bathroom-body-step-unified-20261009-v1",
+  "candidate_version": "bathroom-body-step-unified-20261009-v1",
+  "scope": "flashcast.com.my:services:0f294e6d-2e2c-4f13-a93f-096728ccc6af:content_en,content_zh,process_steps_en,process_steps_zh",
+  "record_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+  "slug": "bathroom",
+  "expected_updated_at": "2026-09-24T14:58:51.371384+00:00",
+  "changed_fields": [
+    "content_en",
+    "content_zh",
+    "process_steps_en",
+    "process_steps_zh"
+  ],
+  "allowed_leaf_effects": [
+    "content_en",
+    "content_zh",
+    "process_steps_en[0].desc",
+    "process_steps_zh[0].desc"
+  ],
+  "desired_fields": {
+    "content_zh": "<p>浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。</p><h2>拆改、防水和洁具怎样分别确认范围？</h2><p>先提供现有漏水或使用问题、浴室照片及希望保留或更换的项目。现场核对排水、水管、地漏、墙地面、防水、洁具和浴室柜之间的衔接，再把拆除、维修、新装和恢复工程分开列入报价。具体检查、施工及验收要求以现场条件和确认范围为准。</p><h2>施工期间的日常使用安排要先确认什么？</h2><p>说明住宅是否有人居住、是否有其他可用浴室、进出场和物业施工时段限制。与团队确认材料搬运、相邻区域保护、清运和各工序衔接，以及哪些时段可能影响浴室使用；实际安排需按现场和施工范围确认。</p><h2>怎样比较浴室装修的材料与报价项目？</h2><p>对照需要保留与更换的墙地砖、洁具、淋浴屏、浴室柜和其他项目，核对规格、数量、给排水调整、防水和恢复工程是否包含。把待检查事项与可选升级分开记录，按书面范围比较，而不是只比较照片或总价。</p><p>继续了解：<a href=\"/zh/services/renovation\">住宅装修范围</a>；<a href=\"/zh/materials\">材料库</a>；<a href=\"/zh/quote\">浴室装修报价咨询</a></p>",
+    "content_en": "<p>A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.</p><h2>How should demolition, waterproofing and fittings be scoped separately?</h2><p>Share current leakage or usability issues, bathroom photos and the items you want to retain or replace. Review drainage, pipes, floor traps, wall and floor finishes, waterproofing, fittings and vanity coordination on site, then distinguish removal, repairs, new installation and reinstatement in the quotation. Inspection, work and acceptance requirements follow the site and agreed scope.</p><h2>What daily-use arrangements should be discussed before bathroom work?</h2><p>Explain whether the home is occupied, whether another bathroom is available, and any access or building work-hour restrictions. Discuss material delivery, protection of adjacent areas, removal of waste, work dependencies and periods that may affect bathroom use. Actual arrangements depend on the site and agreed work.</p><h2>How can bathroom materials and quotation items be compared?</h2><p>List wall and floor tiles, fittings, shower screens, vanity units and other items to retain or replace. Check specifications, quantities and whether plumbing changes, waterproofing and reinstatement are included. Record inspection-dependent items and optional upgrades separately, and compare the written scope rather than images or totals alone.</p><p>Continue planning: <a href=\"/en/services/renovation\">Residential renovation</a>; <a href=\"/en/materials\">Material library</a>; <a href=\"/en/quote\">Bathroom renovation enquiry</a></p>",
+    "process_steps_en": [
+      {
+        "desc": "Check leakage signs, floor slope, floor trap, drainage pipes, hollow tiles, existing fittings, water heater, electrical points, ventilation, and management requirements. Before the visit, mark the area that sounds hollow on a simple sketch and note when you first noticed it. Photograph the whole bathroom and close-ups; note visible cracks, gaps in grout or nearby dampness. Share these notes during the site review. A hollow sound alone does not confirm the cause or determine how much tile or waterproofing work is needed; agree the scope after checking the actual site.",
+        "title": "Site Inspection"
+      },
+      {
+        "desc": "Review wet-area usage, wall and floor scope, shower area, pipe penetrations, wall corners, thresholds, and drainage condition.",
+        "title": "Waterproofing Scope"
+      },
+      {
+        "desc": "Plan wall tiles, floor tiles, sanitary fittings, shower screen, vanity cabinet, mirror cabinet, ventilation, and maintenance access.",
+        "title": "Tile & Fitting Direction"
+      },
+      {
+        "desc": "Confirm whether hacking, waterproofing, drainage, plumbing, tile works, fittings, cabinets, shower screen, or rendering concepts are included.",
+        "title": "Scope & Quotation"
+      },
+      {
+        "desc": "Coordinate the confirmed bathroom scope after site conditions, materials, and quotation are approved.",
+        "title": "Renovation Coordination"
+      }
+    ],
+    "process_steps_zh": [
+      {
+        "desc": "检查漏水位置、地面坡度、地漏、排水管、墙面空鼓、现有洁具、热水器、电源、通风和管理处要求。现场评估前，可在简图上标出听起来空鼓的位置，并记下首次发现的时间。拍摄浴室全景和近照；记录可见裂纹、填缝开裂或附近潮湿等情况，并在现场一并说明。仅凭空鼓声无法确认原因，也不能判断需处理多少瓷砖或防水范围；工程范围应按实际现场确认。",
+        "title": "现场检查"
+      },
+      {
+        "desc": "确认湿区使用方式、墙地面范围、淋浴区、管口、墙角、门槛和排水条件。",
+        "title": "防水范围"
+      },
+      {
+        "desc": "规划墙砖、地砖、洁具、shower screen、浴室柜、镜柜、通风和维护便利性。",
+        "title": "瓷砖与洁具方向"
+      },
+      {
+        "desc": "确认是否包含拆除、防水、排水、给水、瓷砖、洁具、浴室柜、shower screen 或效果图方案。",
+        "title": "范围与报价"
+      },
+      {
+        "desc": "在现场条件、材料和报价确认后，协调已确认的浴室装修范围。",
+        "title": "装修协调"
+      }
+    ]
+  },
+  "source_provenance": {
+    "sources": [
+      {
+        "target": "bathroom-initial-framework-body-v1",
+        "path": "drafts/seo/fc-20260927-cms-native-admission-contract-v1/frozen-sources/bathroom-initial-framework-body-v1/candidate.json",
+        "sha256": "d498521e8a3a61a27e3f984bd5ec242861d42cf04297b9ab39ee00e2d07d6bc8"
+      },
+      {
+        "target": "bathroom-hollow-tile-v6-native-producer-v1-20261006",
+        "path": "backups/protected-body-handoff-20261007/bathroom-v6/normalized-cms-content-candidate.json",
+        "sha256": "613ca89c5b048f4838aa65bea524cc1649107c733681894b68f579b0c7cb66ba"
+      }
+    ],
+    "reviewed_binding_package": {
+      "path": "audits/unified-release-20261009/continuation/protected-cms/bathroom-unified/successor-binding-package.json",
+      "sha256": "ea06d60c595ca54cc8aacef855183ee56cfc815e97c6fd93427d16adf7e21bbe"
+    },
+    "accuracy_qa_receipts": [
+      "cms-accuracy-bathroom-initial-framework-body-v1-20261009",
+      "cms-accuracy-bathroom-v6-20261009-v1"
+    ],
+    "accuracy_qa_proofs": [
+      {
+        "path": "audits/unified-release-20261009/continuation/protected-cms/historical/bathroom-initial-framework-body-v1-qa.json",
+        "sha256": "220c736aab8e61aeb7a5936937946deac6dd82392761a224c83b23c9a9a13161"
+      },
+      {
+        "path": "audits/unified-release-20261009/continuation/protected-cms/bathroom-v6/accuracy-qa.json",
+        "sha256": "f91fa208989e2938bd54a196e894253726c011e3d34ee02742791ccd10dc4d33"
+      }
+    ],
+    "field_source_proof": [
+      {
+        "native_storage_key": "content_zh",
+        "after_native_value_sha256": "a40b4393e504f7629ae6d93f37fada8451406d01f798a696d7b0c6cb198e0467"
+      },
+      {
+        "native_storage_key": "content_en",
+        "after_native_value_sha256": "8fa0274af7ed4814393f94ca8c75b445bda0a34363cfa5da8587c18fcdc45a65"
+      },
+      {
+        "native_storage_key": "process_steps_en",
+        "after_native_value_sha256": "b35d6e6866dfeca1ae0847deda697fa92ac7f16c7b8507ae55cfb10aa0e0f6c5"
+      },
+      {
+        "native_storage_key": "process_steps_zh",
+        "after_native_value_sha256": "dbd9d5b1b98c896c5762d1c35a703fb755b5cb02d90bc50492e873036677426b"
+      }
+    ]
+  }
+}

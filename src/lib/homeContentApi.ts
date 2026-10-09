@@ -31,6 +31,7 @@ import {
 } from "@/lib/publicContentStatus";
 import { mapPublicHomeFaqs } from "@/lib/publicHomeFaqs";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
+import { stripHtml } from "@/lib/text";
 
 type Language = "en" | "zh";
 
@@ -117,6 +118,8 @@ export type PublishedSitePage = {
   seo_title: string;
   seo_description: string;
   seo_keywords: string;
+  /** Derived from the same page record as SEO; separate from the visible CMS hero. */
+  seoImage?: string | null;
   items: unknown[];
   sections?: PublishedCmsSection[];
 };
@@ -236,9 +239,10 @@ const mapPublishedCmsPage = (
     cta_description: firstText(ctaContent.description, ctaSettings.description, legacy?.cta_description),
     image_url: firstText(heroContent.image_url, heroSettings.image_url, legacy?.image_url) || null,
     alt: firstText(heroContent.alt, heroSettings.alt, legacy?.alt),
-    seo_title: pickLocalizedText(cmsRow, "seo_title", language) || legacy?.seo_title || "",
-    seo_description: pickLocalizedText(cmsRow, "seo_description", language) || legacy?.seo_description || "",
-    seo_keywords: pickLocalizedText(cmsRow, "seo_keywords", language) || legacy?.seo_keywords || "",
+    seo_title: legacy ? legacy.seo_title : pickLocalizedText(cmsRow, "seo_title", language) || pickLocalizedText(cmsRow, "title", language),
+    seo_description: legacy ? legacy.seo_description : pickLocalizedText(cmsRow, "seo_description", language),
+    seo_keywords: legacy ? legacy.seo_keywords : pickLocalizedText(cmsRow, "seo_keywords", language),
+    seoImage: legacy ? legacy.seoImage : readText(cmsRow, "image_url") || null,
     items: firstList(listContent.items, heroContent.items, richContent.items, legacy?.items),
     sections: publishedSections,
   };
@@ -256,9 +260,10 @@ const mapLegacySitePage = (row: UnknownRecord, language: Language): PublishedSit
   cta_description: pickLocalizedText(row, "cta_description", language),
   image_url: readText(row, "image_url") || null,
   alt: pickLocalizedText(row, "alt", language),
-  seo_title: pickLocalizedText(row, "seo_title", language),
-  seo_description: pickLocalizedText(row, "seo_description", language),
+  seo_title: pickLocalizedText(row, "seo_title", language) || pickLocalizedText(row, "title", language),
+  seo_description: stripHtml(pickLocalizedText(row, "seo_description", language) || pickLocalizedText(row, "description", language) || pickLocalizedText(row, "content", language).slice(0, 4096)).slice(0, 300),
   seo_keywords: pickLocalizedText(row, "seo_keywords", language),
+  seoImage: readText(row, "image_url") || null,
   items: pickLocalizedList(row, "items", language),
 });
 
@@ -512,25 +517,7 @@ export const getPublishedSitePage = async (
 
   if (!hasPublicContentDatabaseClient()) return null;
   const row = toRecord(await fetchPublishedLegacySitePageRow(pageKey, signal));
-  const legacy: PublishedSitePage | null = Object.keys(row).length
-    ? {
-        id: readText(row, "id"),
-        page_key: readText(row, "page_key"),
-        path: readText(row, "path"),
-        title: pickLocalizedText(row, "title", language),
-        subtitle: pickLocalizedText(row, "subtitle", language),
-        description: pickLocalizedText(row, "description", language),
-        content: pickLocalizedText(row, "content", language),
-        cta_title: pickLocalizedText(row, "cta_title", language),
-        cta_description: pickLocalizedText(row, "cta_description", language),
-        image_url: readText(row, "image_url") || null,
-        alt: pickLocalizedText(row, "alt", language),
-        seo_title: pickLocalizedText(row, "seo_title", language),
-        seo_description: pickLocalizedText(row, "seo_description", language),
-        seo_keywords: pickLocalizedText(row, "seo_keywords", language),
-        items: pickLocalizedList(row, "items", language),
-    }
-    : null;
+  const legacy = Object.keys(row).length ? mapLegacySitePage(row, language) : null;
 
   const cmsRow = toRecord(await fetchPublishedCmsPageByPageKey(pageKey, signal));
   if (!Object.keys(cmsRow).length) return legacy;

@@ -49,7 +49,7 @@ const Index = () => {
 
   return (
     <main className="scheme-a-home-page" data-route-pending={isLoading || undefined}>
-      <PageMeta
+      <PageMeta ogImage={pageContent?.seoImage || undefined}
         title={metaTitle}
         description={metaDescription}
         keywords={metaKeywords}

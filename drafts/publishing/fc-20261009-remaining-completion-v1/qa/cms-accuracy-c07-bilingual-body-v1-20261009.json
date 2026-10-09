@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c07-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.306Z",
+  "target": "c07-bilingual-body-v1",
+  "exact_payload_sha256": "8ecfa666ccb9aa78fee03bb36faee6953f085059593549fa93c94e78301e8e17",
+  "current_updated_at": "2026-08-22T12:23:05.625076+00:00",
+  "current_full_baseline_sha256": "48d7f00477ee29ebfa2070a179ebf51fe49d4ceb10f4125a9772519240b18359",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How can two wardrobe proposals be compared on equal terms? Put overall dimensions, internal divisions, door quantities and opening method, drawers and accessories, boards and finishes, supply and installation on one comparison sheet. Distinguish site-measured dimensions from plans or verbal estimates. The same wall length does not mean the same configuration or deliverables. Keep unspecified models and accessories pending rather than assuming they are included. How can the quotation stay traceable after a configuration change? Retain each agreed drawing or list revision, marking additions, removals and substitutions, and ask the responsible party whether price or installation scope changes. Review the built-in quotation scope guide, then discuss the actual space through the wardrobe and storage service. This article provides no universal unit price, hardware availability or delivery commitment."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 怎样把两个衣柜方案放在同一条件下比较？ 把总尺寸、柜内分区、门片数量与开门方式、抽屉和其他配件、板材与饰面、供应与安装范围列在同一张表。写明哪些尺寸已现场量度，哪些仅来自平面图或口头估算。相同墙长不代表内部配置和交付相同，未定型号或配件应保留待确认，不能假设已包含。 改了配置后，怎样保持报价可核对？ 保留每次确认的图纸或清单版本，将新增、取消和替代项目分别标注，再请负责方说明价格与安装范围是否改变。先用 定制柜报价范围指南 核对项目，再到 定制衣柜与收纳服务 讨论实际空间。本文不提供统一单价，也不承诺任何五金型号、库存或交期。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Equal configuration comparison and revision traceability; no universal unit price, stock or delivery commitment.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

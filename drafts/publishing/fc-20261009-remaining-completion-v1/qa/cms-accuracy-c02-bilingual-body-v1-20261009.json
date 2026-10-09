@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c02-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.241Z",
+  "target": "c02-bilingual-body-v1",
+  "exact_payload_sha256": "e74ccc91a3412a850715883e69401f9e13ea3d56ab6f0a1b7da175cf09d6c398",
+  "current_updated_at": "2026-09-26T11:46:22.790853+00:00",
+  "current_full_baseline_sha256": "8fe5431f13b5eb3cc90cf113657995898432a1f942e59524a9a2b42f52cedd4f",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How does an equipment list help define an office fit-out? Group equipment quantities, intended positions and retained facilities by workstation, meeting room, reception, pantry and storage area. Identify which items belong to the owner, equipment supplier or agreed fit-out scope. The office M&E and IT planning checklist helps organise interface questions. Electrical capacity, professional design, testing and connection requirements must be confirmed by the relevant qualified parties using the building information; the equipment list is not a technical design or permission to proceed. How should office quotations and handover scope be compared? Use the same layout, material and equipment list when comparing proposals. Separate retained and new items, supply and installation responsibilities, access restrictions, unresolved items and exclusions. Before handover, agree which project records are needed and who follows up any outstanding issues; the renovation handover and issue-recording checklist provides discussion prompts. Once plans, photos and equipment details are ready, request an office quotation. Deliverables remain subject to the written scope."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 办公室设备清单怎样帮助确认装修范围？ 可按工位、会议室、接待区、茶水间和储物区整理设备数量、使用位置及希望保留的设施，再标注由业主、设备供应商或装修范围分别负责的项目。需要进一步梳理接口时，查看 办公室机电与IT规划检查清单。实际电气容量、专业设计、测试和连接要求应由相关合格人员按建筑资料确认；设备清单本身不代表技术设计或施工许可。 如何比较办公室报价与交付范围？ 比较时沿用同一布局、材料和设备清单，分别确认保留与新增项目、供应与安装责任、进场限制、待核实项和排除项。交付前还应确认需要保留哪些项目记录，以及问题由谁跟进；可用 装修交付与问题记录清单 整理问项。准备好图纸、照片和设备资料后，提交办公室报价咨询，最终交付内容以书面范围为准。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Office equipment interface and handover records defer capacity, technical design, testing and connections to relevant qualified parties. Does not imply the equipment list is a design or permit.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

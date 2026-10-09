@@ -10,6 +10,7 @@ import { lockedBlogMediaCandidates } from "./managed-cms-targets-blog-media-v1.m
 import { lockedOrg020V7Candidates } from "./managed-cms-targets-org020-v7.mjs";
 import { lockedNativeBodyCandidates } from "./managed-cms-targets-native-body-v1.mjs";
 import { lockedOwnerPublisherThreeCandidates } from "./managed-cms-targets-owner-publisher-three-v1.mjs";
+import { lockedUnifiedContentCandidates } from "./managed-cms-targets-unified-content-v1.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -985,7 +986,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
       keyField: locked.keyField || "slug",

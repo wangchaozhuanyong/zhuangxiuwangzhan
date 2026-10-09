@@ -1,0 +1,42 @@
+{
+  "reviewed_at": "2026-10-09T05:22:04.020Z",
+  "sources": [
+    {
+      "id": "CIDB-quotation",
+      "url": "https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/",
+      "observed": "2026-10-09",
+      "supports": "Detailed scope/material/labour/equipment comparison; provisional and prime-cost distinctions; transparent itemised pricing.",
+      "limits": "No market average, individual FLASH CAST price, free design promise or fixed outcome derived."
+    },
+    {
+      "id": "CIDB-construction-contract",
+      "url": "https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/",
+      "observed": "2026-10-09",
+      "supports": "Written scope, responsibilities, price, period/payment and written agreed variations.",
+      "limits": "Candidate is a discussion checklist, not legal drafting or automatic authority approval."
+    },
+    {
+      "id": "BCA-ceramic-tiling-common-feedback",
+      "url": "https://www.bca.gov.sg/Publications/EnhancementSeries/others/tile7.pdf",
+      "observed": "2026-10-09",
+      "page": 4,
+      "supports": "Hollowness table lists different possible causes, including voids, membrane separation and irregular substrate; sound alone cannot establish a unique cause.",
+      "limits": "Singapore technical reference, not a Malaysian legal standard; extent/scope requires actual site review; no repair technique or waterproofing guarantee offered."
+    },
+    {
+      "id": "FLASHCAST-current-public-process",
+      "url": "https://flashcast.com.my/en/process",
+      "parallel_url": "https://flashcast.com.my/zh/process",
+      "observed": "2026-10-09T05:18:16.891Z",
+      "supports": "Rendered six-step overview: consultation, site measurement, design proposal, quotation/materials, construction, handover; conditions explicitly retained."
+    },
+    {
+      "id": "FLASHCAST-current-oldhouse-concepts",
+      "url": "https://flashcast.com.my/en/services/old-house",
+      "parallel_url": "https://flashcast.com.my/zh/services/old-house",
+      "observed": "2026-10-09T05:18:16.891Z",
+      "supports": "Existing/proposed images are visibly labelled AI-generated planning concepts and not completed client work."
+    }
+  ],
+  "no_primary_source_fulltext_copied": true
+}

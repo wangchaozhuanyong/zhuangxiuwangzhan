@@ -1,0 +1,18 @@
+{
+  "qa_receipt_id": "cms-accuracy-bathroom-v6-20261009-v1",
+  "reviewed_at": "2026-10-09T05:22:04.392Z",
+  "exact_payload_sha256": "145ac28dcba2a1dc24182fc452b09d33c1678484c768b9a2eeb33bb3ef0e656e",
+  "current_updated_at": "2026-09-24T14:58:51.371384+00:00",
+  "result": "PASS_EXACT_LEAF_APPEND_ACCURACY_QA",
+  "changed_leaves": [
+    "process_steps_en[0].desc",
+    "process_steps_zh[0].desc"
+  ],
+  "bilingual_semantic_review": "PASS_EN_AND_ZH",
+  "review": "Ask owners to record location/time/photos/cracks/grout/dampness for actual site review. Hollow sound alone does not confirm cause or repair/waterproofing extent. No destructive diagnosis, repair method, material promise or customer example invented; every other array object/key/step preserved.",
+  "fact_sources": [
+    "BCA-ceramic-tiling-common-feedback"
+  ],
+  "source_reasoning": "Inference from the primary table listing several different causes. The candidate presents observation preparation and a site-confirmation boundary, not a Singapore standard as Malaysian law.",
+  "limits": "No existing executable runtime/CLI/workflow binding. New exact target required, with full live-row baseline and only the two leaf effects; not a permit or Save."
+}

@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-bathroom-initial-framework-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.206Z",
+  "target": "bathroom-initial-framework-body-v1",
+  "exact_payload_sha256": "b28494ba8898a21be18d037b1a34962aac94e5ee651634776fb71cfe1e2a5cd1",
+  "current_updated_at": "2026-09-24T14:58:51.371384+00:00",
+  "current_full_baseline_sha256": "4334688f5814f90e3f2f70b16d3f09ec0cca841b95e779cc3318df58cc04a758",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": "How should demolition, waterproofing and fittings be scoped separately?Share current leakage or usability issues, bathroom photos and the items you want to retain or replace. Review drainage, pipes, floor traps, wall and floor finishes, waterproofing, fittings and vanity coordination on site, then distinguish removal, repairs, new installation and reinstatement in the quotation. Inspection, work and acceptance requirements follow the site and agreed scope.What daily-use arrangements should be discussed before bathroom work?Explain whether the home is occupied, whether another bathroom is available, and any access or building work-hour restrictions. Discuss material delivery, protection of adjacent areas, removal of waste, work dependencies and periods that may affect bathroom use. Actual arrangements depend on the site and agreed work.How can bathroom materials and quotation items be compared?List wall and floor tiles, fittings, shower screens, vanity units and other items to retain or replace. Check specifications, quantities and whether plumbing changes, waterproofing and reinstatement are included. Record inspection-dependent items and optional upgrades separately, and compare the written scope rather than images or totals alone.Continue planning: Residential renovation; Material library; Bathroom renovation enquiry"
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": "拆改、防水和洁具怎样分别确认范围？先提供现有漏水或使用问题、浴室照片及希望保留或更换的项目。现场核对排水、水管、地漏、墙地面、防水、洁具和浴室柜之间的衔接，再把拆除、维修、新装和恢复工程分开列入报价。具体检查、施工及验收要求以现场条件和确认范围为准。施工期间的日常使用安排要先确认什么？说明住宅是否有人居住、是否有其他可用浴室、进出场和物业施工时段限制。与团队确认材料搬运、相邻区域保护、清运和各工序衔接，以及哪些时段可能影响浴室使用；实际安排需按现场和施工范围确认。怎样比较浴室装修的材料与报价项目？对照需要保留与更换的墙地砖、洁具、淋浴屏、浴室柜和其他项目，核对规格、数量、给排水调整、防水和恢复工程是否包含。把待检查事项与可选升级分开记录，按书面范围比较，而不是只比较照片或总价。继续了解：住宅装修范围；材料库；浴室装修报价咨询"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Separates demolition, waterproofing, fittings and reinstatement scope; asks about occupied-home/access limitations and written material quantities. Does not prescribe waterproofing system, test duration, work sequence or a guaranteed usable bathroom.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

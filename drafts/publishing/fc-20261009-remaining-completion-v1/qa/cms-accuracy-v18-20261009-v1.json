@@ -1,0 +1,31 @@
+{
+  "qa_receipt_id": "cms-accuracy-v18-20261009-v1",
+  "reviewer_role": "Independent repository release QA agent; original pinned content produced before this task",
+  "reviewed_at": "2026-10-09T05:22:04.109Z",
+  "target": "v18-owner-publisher-native-preparation-v2-20261007",
+  "candidate_version": "v18-owner-publisher-native-preparation-v2-20261007",
+  "exact_payload_sha256": "0b63be321e97797d65df2dcbf123279b5aec0e43f1929bafd97c1e589d2acbea",
+  "current_baseline_sha256": "ae53dcc1a90fee545ee189a3ce8cde1a1d755f27cefdd1c41accedcaf0513d0a",
+  "current_updated_at": "2026-09-25T20:54:18.773194+00:00",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "result": "PASS_SCOPED_CONTENT_ACCURACY_AND_SCHEMA_QA",
+  "native_current_source": true,
+  "preservation": {
+    "existing_faq_objects_prefix_preserved": null,
+    "existing_blog_blocks_in_order_preserved": true
+  },
+  "unsafe_executable_elements": 0,
+  "unsafe_attributes": 0,
+  "internal_link_routes_known_published": true,
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_DELTA_AND_RETAINED_LIMITS",
+  "content_review": "New bilingual project-sequence block matches the current public six-step process and retains site/scope/deliverable/fee/timing conditions. Existing HTML blocks and CIDB links unchanged. Current CIDB sources support scope and written responsibilities/variations; historical source-check date retained as historical text, not represented as this new review date.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract",
+    "FLASHCAST-current-public-process"
+  ],
+  "limits": "QA does not issue a machine permit, prove a fresh protected preview, perform Save, verify frontend publication or measure business outcomes."
+}

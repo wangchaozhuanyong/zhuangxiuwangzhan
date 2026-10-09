@@ -9,11 +9,12 @@ import ts from 'typescript';
 const project = fileURLToPath(new URL('..', import.meta.url));
 const source = fs.readFileSync(path.join(project, 'supabase/functions/content-publish/index.ts'), 'utf8');
 const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
+const syncCompiled = ts.transpileModule(fs.readFileSync(path.join(project, 'supabase/functions/_shared/public-content-sync.ts'), 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
 const databaseRevision = '2026-10-05T01:02:03.123456+00:00';
 
 // Execute the actual Edge handler, mocking transport and external entry services.
 // No URL fetch, real environment, credentials, database or authentication is used.
-function handlerFixture({ revisionRow = { updated_at: databaseRevision }, revisionError = null, dryRun = false, allowed = true } = {}) {
+function handlerFixture({ revisionRow = { updated_at: databaseRevision }, revisionError = null, dryRun = false, allowed = true, committedRevision = null } = {}) {
   let handler;
   const calls = { writes: [], selects: [], publish: 0, purge: 0 };
   const builder = {
@@ -26,6 +27,11 @@ function handlerFixture({ revisionRow = { updated_at: databaseRevision }, revisi
     then: (resolve, reject) => Promise.resolve({ data: revisionRow, error: revisionError }).then(resolve, reject),
   };
   const client = { from: (table) => { assert.equal(table, 'site_settings'); return builder; } };
+  const syncExports = {};
+  vm.runInNewContext(syncCompiled, { exports: syncExports, Date, require: (specifier) => {
+    assert.equal(specifier, './cache-invalidation.ts');
+    return { purgePublicHtmlCache: async () => { calls.purge++; return { ok: true, attempted: false }; } };
+  } }, { filename: '_shared/public-content-sync.ts' });
   const modules = {
     'https://deno.land/std@0.224.0/http/server.ts': { serve: (callback) => { handler = callback; } },
     'https://esm.sh/@supabase/supabase-js@2': { createClient: () => client },
@@ -34,9 +40,9 @@ function handlerFixture({ revisionRow = { updated_at: databaseRevision }, revisi
       : { ok: false, status: 403, error: 'Synthetic denied access' } },
     '../_shared/cors.ts': { corsHeadersFor: () => ({}), handleCorsPreflight: () => new Response(null, { status: 204 }), isAllowedCorsOrigin: () => true },
     '../_shared/request-body.ts': { BodyTooLargeError: class extends Error {}, readJsonBody: async () => ({ contentType: 'cache_invalidation', record: {} }) },
-    './cache-invalidation.ts': { purgePublicHtmlCache: async () => { calls.purge++; return { ok: true, attempted: false }; } },
+    '../_shared/public-content-sync.ts': syncExports,
     './github-oidc.ts': {}, './permit-issuer.ts': {}, './permit-auth.ts': {},
-    './service.ts': { publishContent: async () => { calls.publish++; return { body: { ok: true, dry_run: dryRun, performed_write: !dryRun, saved_id: 'fixture' } }; } },
+    './service.ts': { publishContent: async () => { calls.publish++; return { body: { ok: true, dry_run: dryRun, performed_write: !dryRun, saved_id: 'fixture', ...(committedRevision ? { public_revision: committedRevision } : {}) } }; } },
   };
   vm.runInNewContext(compiled, {
     exports: {}, require: (specifier) => {
@@ -66,14 +72,24 @@ test('a successful zero-row revision update preserves the content save and reque
   const fixture = handlerFixture({ revisionRow: null }); const body = await (await fixture.run()).json();
   assert.equal(body.ok, true); assert.equal(body.performed_write, true); assert.equal(body.saved_id, 'fixture');
   assert.equal(body.cache_invalidation.ok, false); assert.equal(body.cache_invalidation.revision, null);
-  assert.match(body.warnings.join(' '), /revision was not returned/);
+  assert.match(body.warnings.join(' '), /Content was saved; public content synchronization needs retry/);
 });
 
 test('revision transport failure is not claimed as cache delivery success', async () => {
   const fixture = handlerFixture({ revisionRow: null, revisionError: { message: 'Synthetic revision failure' } });
   const body = await (await fixture.run()).json();
   assert.equal(body.ok, true); assert.equal(body.cache_invalidation.ok, false); assert.equal(body.cache_invalidation.revision, null);
-  assert.match(body.warnings.join(' '), /Synthetic revision failure/);
+  assert.match(body.warnings.join(' '), /Content was saved; public content synchronization needs retry/);
+  assert.doesNotMatch(body.warnings.join(' '), /Synthetic revision failure/);
+});
+
+test('atomic writer revision is retained without a second revision write', async () => {
+  const fixture = handlerFixture({ committedRevision: databaseRevision });
+  const body = await (await fixture.run()).json();
+  assert.equal(body.cache_invalidation.revision, databaseRevision);
+  assert.equal(body.cache_invalidation.ok, true);
+  assert.equal(fixture.calls.writes.length, 0);
+  assert.equal(fixture.calls.purge, 1);
 });
 
 test('dry-run retains the existing no-write behavior', async () => {

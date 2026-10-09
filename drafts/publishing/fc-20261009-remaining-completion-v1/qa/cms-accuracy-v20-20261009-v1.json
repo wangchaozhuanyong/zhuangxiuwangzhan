@@ -1,0 +1,29 @@
+{
+  "qa_receipt_id": "cms-accuracy-v20-20261009-v1",
+  "reviewer_role": "Independent repository release QA agent; original pinned content produced before this task",
+  "reviewed_at": "2026-10-09T05:22:04.166Z",
+  "target": "v20-owner-publisher-native-preparation-v2-20261007",
+  "candidate_version": "v20-owner-publisher-native-preparation-v2-20261007",
+  "exact_payload_sha256": "0fc23b7d728f9a715cf2f1142feaa549e49d3a218f968486b3147878dfb6c7eb",
+  "current_baseline_sha256": "5356b7c855efa2cc68973556ffb3ac6017aaf167025d7223773101b5da9f5d68",
+  "current_updated_at": "2026-09-24T16:55:25.345204+00:00",
+  "changed_fields": [
+    "faqs_en",
+    "faqs_zh"
+  ],
+  "result": "PASS_SCOPED_CONTENT_ACCURACY_AND_SCHEMA_QA",
+  "native_current_source": true,
+  "preservation": {
+    "existing_faq_objects_prefix_preserved": true,
+    "existing_blog_blocks_in_order_preserved": null
+  },
+  "unsafe_executable_elements": 0,
+  "unsafe_attributes": 0,
+  "internal_link_routes_known_published": true,
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_DELTA_AND_RETAINED_LIMITS",
+  "content_review": "New FAQ asks the customer to confirm written drawing/visual deliverables, spaces, purpose, detail, revision checkpoints, coordination, exclusions and changes. Both languages retain project-condition/confirmed-scope boundary; no free drawing package, regulated sign-off, completion claim or guaranteed revision allowance.",
+  "fact_sources": [
+    "CIDB-construction-contract"
+  ],
+  "limits": "QA does not issue a machine permit, prove a fresh protected preview, perform Save, verify frontend publication or measure business outcomes."
+}

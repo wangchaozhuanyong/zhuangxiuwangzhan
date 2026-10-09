@@ -15,6 +15,19 @@ interface PageMetaProps {
   noIndex?: boolean;
 }
 
+const absoluteMetaImage = (...sources: string[]): string => {
+  for (const source of sources) {
+    if (!source.trim()) continue;
+    try {
+      const url = new URL(source.trim(), siteConfig.url);
+      if (/^https?:$/.test(url.protocol)) return url.href;
+    } catch {
+      // An invalid saved image must not prevent the public page from rendering.
+    }
+  }
+  return siteConfig.ogImage;
+};
+
 const PageMeta = ({
   title,
   description,
@@ -28,7 +41,8 @@ const PageMeta = ({
   const settings = useSiteSettings();
   const brandName = settings.brand_name || "FLASH CAST";
   const companyName = settings.company_name || siteConfig.name;
-  const image = ogImage || addCacheBuster(settings.og_image_url || siteConfig.ogImage, settings.updated_at);
+  const defaultImage = addCacheBuster(settings.og_image_url || siteConfig.ogImage, settings.updated_at);
+  const image = absoluteMetaImage(ogImage || "", defaultImage, siteConfig.ogImage);
   const fullTitle = title.includes(brandName) || title.includes(companyName) ? title : `${title} | ${companyName}`;
   const path = canonicalPath ? stripLanguagePrefix(canonicalPath) : stripLanguagePrefix(window.location.pathname);
   const canonicalUrl = `${siteConfig.url}${withLanguagePrefix(path, language)}`;
@@ -39,12 +53,12 @@ const PageMeta = ({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      {noIndex && <meta name="robots" content="noindex,follow" />}
+      {noIndex && <meta name="robots" content="noindex, nofollow" />}
       {keywords && <meta name="keywords" content={keywords} />}
-      <link rel="canonical" href={canonicalUrl} />
-      <link rel="alternate" hrefLang="zh-CN" href={zhUrl} />
-      <link rel="alternate" hrefLang="en" href={enUrl} />
-      <link rel="alternate" hrefLang="x-default" href={enUrl} />
+      {!noIndex && <link rel="canonical" href={canonicalUrl} />}
+      {!noIndex && <link rel="alternate" hrefLang="zh-CN" href={zhUrl} />}
+      {!noIndex && <link rel="alternate" hrefLang="en" href={enUrl} />}
+      {!noIndex && <link rel="alternate" hrefLang="x-default" href={enUrl} />}
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />

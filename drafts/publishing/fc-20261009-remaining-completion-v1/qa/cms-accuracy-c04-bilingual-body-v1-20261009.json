@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c04-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.268Z",
+  "target": "c04-bilingual-body-v1",
+  "exact_payload_sha256": "5989209e78d7924174d7a339ad250aca59a1232c1b77a5a001f12fdf1c4f101f",
+  "current_updated_at": "2026-09-26T11:44:30.455353+00:00",
+  "current_full_baseline_sha256": "81b1dff26007d07016f6fbc8df57f6be6e43f09501fafe92f0850d40be90e8e5",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How should a racking proposal relate to its quotation? Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification. Which scope and issue records should be retained at handover? Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The handover issue-recording checklist can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, send the warehouse layout and goods information."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 货架方案与报价要怎样对应？ 请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。 交付时应留下哪些范围和问题记录？ 按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 交付问题记录清单 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，提交仓库平面与货物资料。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Racking comparison requests exact supplier configuration and relevant professional assessment. New text explicitly supplies no load design, numeric guarantee, certification or generic renovation safety certificate.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

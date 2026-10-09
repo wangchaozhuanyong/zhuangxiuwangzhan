@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c01-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.229Z",
+  "target": "c01-bilingual-body-v1",
+  "exact_payload_sha256": "a63fd663aa3b91b531a150d2f6a38b5e3b0623b3d81cf302ec060b4299efbd04",
+  "current_updated_at": "2026-08-30T12:49:05.911041+00:00",
+  "current_full_baseline_sha256": "06ea5d73d8afa46f83bad573b24db8dcf05a2d3c21b2ebc05ac2213e4e70b88b",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " What should you prepare for a flooring quotation? Alongside the location, area and photos, list each room's use, existing floor, items to retain or replace, and adjoining doors, cabinetry and spaces. Note furniture removal, access and working-hour restrictions, and any known moisture, loose areas or changes in level. Photos and approximate measurements support an initial discussion; they do not replace a site assessment or the selected product's installation requirements. Which items should be separated when comparing quotations? Compare the same room list and material specification. Ask whether existing-floor work, substrate preparation, materials and installation, skirting and trims, doorway transitions, furniture moving, protection and disposal are included. Mark unresolved items as pending confirmation and review changes when the product or scope changes. A price per area alone does not establish that two proposals cover the same work. Review material questions before confirming the site scope Start with the SPC, vinyl and laminate comparison guide to organise questions about the exact model, use, care and installation conditions. Where other rooms or trades are involved, review residential renovation planning, then send the details through the free quotation form. A catalogue or reference article does not confirm stock, certification or inclusion in a quotation."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 怎样准备地板报价资料？ 除地点、面积和照片外，可按房间列出日常用途、现有地面、希望保留或更换的部分，以及需要一起考虑的门、柜体和相邻空间。标明家具是否搬离、进场与施工时段限制，并把已知的潮湿、松动或高差问题单独列出。照片和概略尺寸用于初步沟通，不能代替现场评估或具体产品的安装要求。 比较报价时，哪些项目要单独确认？ 用同一房间清单和材料规格比较，逐项询问原地面处理、基层准备、材料与安装、踢脚和收边、门口衔接、家具搬移、保护及清运是否包含。未核实项目应标为待确认，材料型号或范围改变后重新确认差异；不能只凭面积单价判断两个方案相同。 先看选材问题，再确认现场范围 可先阅读 SPC、PVC与复合地板比较指南，整理具体型号、使用环境、维护和安装条件。涉及其他房间或工种时，可结合 住宅装修规划 一起讨论，再通过 免费报价入口 提交资料。目录或参考文章不代表某款产品现货、性能认证或已经包含在报价中。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Flooring checklist retains unresolved moisture/loose/level conditions for site review; distinguishes product-specific instructions and total scope from an area price. No blanket waterproof/fire/sustainability or stock claims.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

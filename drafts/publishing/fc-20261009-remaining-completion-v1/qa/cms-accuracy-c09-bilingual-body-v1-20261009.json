@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c09-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.327Z",
+  "target": "c09-bilingual-body-v1",
+  "exact_payload_sha256": "e8506040de3fca23d5c47cc50d77726a1fb985ab1e68313ec81c5cbf813b0bd9",
+  "current_updated_at": "2026-08-22T12:22:56.000847+00:00",
+  "current_full_baseline_sha256": "1ee8c50e811e4a57d7b01b2a4ea144eb7f6b93bd05fa221a09be32baeb012ba1",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How should presentation images and verifiable evidence be separated? Establish whether an image is a rendering, design concept, construction record or completed-work photo, then ask how it relates to the service and responsible party. Project details and public use need supporting evidence. An attractive image, unattributed review or badge beside a company name is not complete proof. Where privacy matters, request an appropriate anonymised explanation rather than unnecessary personal information. What comparison record should remain after a consultation? Use the same brief to record each response's scope, inclusions, exclusions, unresolved points and contact responsibility. Keep unconfirmed statements as questions rather than agreed deliverables. Organise the brief with the quotation checklist and review the residential renovation scope and consultation route. This checklist does not establish a company's qualifications, reviews or delivery record."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 作品图片与可核实证据怎样分开看？ 先确认展示内容是效果图、设计概念、施工记录还是完工照片，再询问它与所讨论服务及负责方的关系。真实项目细节和公开使用应有相应依据；不能把一张漂亮图片、未注明来源的评价或公司名称旁的标识当作完整证明。涉及客户隐私时，可要求合适的脱敏说明，而不是索取不必要的个人资料。 咨询后应留下什么比较记录？ 用同一份需求列出各方回复的范围、包含与排除项目、仍需核实事项及负责联系人。把尚未确认的说法保留为问题，不当作已承诺交付。可先使用 报价检查清单 整理需求，再查看 住宅装修的范围与咨询方式。本清单不证明任何公司的资质、评价或履约结果。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Separates images, claims and attributable evidence; requests privacy-preserving explanations. No asserted FLASH CAST customer result, qualification, review or credential.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

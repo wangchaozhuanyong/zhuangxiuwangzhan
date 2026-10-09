@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c06-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.288Z",
+  "target": "c06-bilingual-body-v1",
+  "exact_payload_sha256": "4c7e4fe0469d724e0a24dfc5188aa66485c64c59821b0f6077cbfe1caf75f4e1",
+  "current_updated_at": "2026-08-22T12:23:45.597996+00:00",
+  "current_full_baseline_sha256": "dd3d22c0b114602cfe0b6e6c6b479dff9be97da451974814cdb35299f0646801",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " Put material comparisons on the same checklist For each option, record the intended room, exact model or product name, dimensions and finish, sample reference, date of supplier information, quoted scope and unresolved questions. Compare the same use and deliverables to see whether a price difference comes from the material, specification, installation or related work. A brand name or rendering does not replace product-specific information. Confirm samples, substitutions and care information together Keep the agreed sample name or reference and notes from comparison under the site's lighting. If the model, colour, batch selection or supply arrangement changes, review the actual alternative, price and associated installation scope and record the decision. Obtain current care, use, installation and warranty information from the specific product supplier. Without product evidence, labels such as waterproof, fire-resistant or environmentally friendly are not verified performance claims. Follow the detailed answer for the main decision For floors, read the flooring comparison guide; for cabinetry, use the kitchen cabinet material guide; for wall colour and texture, review artistic wall planning. With space photos and the comparison list ready, request scope and quotation advice. Articles and catalogues support discussion; they do not establish stock, brand partnerships, specific certification or final project suitability."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 把选材比较写成同一份清单 每个备选先填写使用房间、具体型号或产品名称、尺寸与饰面、样板编号、供应商资料日期、报价包含范围和仍需确认的问题。用同一用途和交付范围比较，才能看清价格差异来自材料、规格、安装还是配套工作；品牌名或一张效果图不能代替具体产品资料。 样板、替代选项和维护说明一起确认 保留确认样板的名称或编号，以及现场光线下的比较记录。若型号、颜色、批次方向或供应安排改变，应重新核对实际替代品、价格与相关施工范围，并记录确认结果。清洁方法、适用环境、安装条件及保修限制要向具体产品供应方索取当前资料；没有产品证据时，不把“防水”“防火”“环保”等字样写成已验证性能。 按主要问题进入详细答案 地面方案可查看 地板材料比较；定制柜可查看 橱柜材料选择指南；墙面颜色与肌理可结合 艺术墙面规划。准备好空间照片与比较清单后，申请范围与报价咨询。文章和材料目录用于帮助讨论，不证明现货、品牌合作、特定认证或最终项目适用性。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Exact model/sample/scope and current supplier instructions are required; catalogue does not prove stock/partnership/certification/suitability. No new material performance claim.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

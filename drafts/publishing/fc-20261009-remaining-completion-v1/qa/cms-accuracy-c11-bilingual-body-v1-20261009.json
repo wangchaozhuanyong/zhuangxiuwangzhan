@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c11-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.346Z",
+  "target": "c11-bilingual-body-v1",
+  "exact_payload_sha256": "4a77281fbb88cc18aca1a09869bd47a8a52f543abfa93ac90fb5787fb1e9218b",
+  "current_updated_at": "2026-09-12T22:45:40.31716+00:00",
+  "current_full_baseline_sha256": "a57bd14d68153e5379389e090c49402aabaa900e8867be1ffbe888d3169729e4",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " Start the storage brief with items and frequency Separate daily, occasional and long-term storage, noting bulky-item dimensions and where items are used. Explain what is put away at the entrance, which documents and devices belong in the work area, and where cleaning items are needed before deciding which requirements can share cabinetry. The aim is to communicate actual habits, not fill the space with more cabinets. How can the item list become a space-planning discussion? Match the list to a plan or site photos, marking doors, windows, existing furniture and routes to retain. For fixed-cabinet dimensions and opening conditions, continue to the small-condo built-in layout guide. For coordination across rooms, share the information with the whole-house cabinetry and storage service. Usable capacity and configuration require measurement and design confirmation."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 先按物品和频率写收纳brief 把常用、偶尔使用和长期存放的物品分开，记录大件尺寸与需要靠近的使用位置。例如先说明进门要放什么、工作区有哪些文件和设备、清洁用品在哪里取用，再决定哪些需求适合共用柜体。重点是把真实使用习惯交给规划者，不是先用更多柜子填满空间。 物品清单怎样变成空间讨论？ 将清单与平面图或现场照片对应，标注门窗、现有家具与希望保留的通道。涉及固定柜体的尺寸和开启条件时，继续看 小公寓内嵌柜布局指南；需要协调不同房间时，可向 全屋定制与收纳服务 提交这些资料。实际可用容量和配置须经量度与方案确认。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "User-frequency and space brief require site measurement/design confirmation, no universal capacity guarantee.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

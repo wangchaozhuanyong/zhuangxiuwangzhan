@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-kitchen-initial-framework-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.190Z",
+  "target": "kitchen-initial-framework-body-v1",
+  "exact_payload_sha256": "9d66019fdfcd6ebe49ac036fa86b04ab89a7c2df72abbb35a034b1bede0c6411",
+  "current_updated_at": "2026-09-24T16:26:07.596036+00:00",
+  "current_full_baseline_sha256": "7b8e8de781254b1979953c42eae25df84d9b672b3a61df052fc1583838765866",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": "How should appliances and site information be prepared before cabinet planning?List the fridge, hob, oven and other appliances you plan to keep or replace, including their dimensions and current positions. Share these with kitchen photos, key dimensions, plumbing and electrical points before discussing base, wall and tall cabinets, worktops and storage. Final dimensions, points and installation coordination require a site check.How can kitchen renovation quotations be compared fairly?Compare cabinet dimensions and configuration, door and material direction, worktops, hardware, appliance points, plumbing, wet works, demolition and installation separately. Clarify retained items, owner-supplied items, optional work and matters awaiting inspection so quotations cover a similar scope. A per-foot rate or headline total alone does not explain that scope.How should kitchen cabinetry connect with storage in other rooms?Plan kitchen cabinetry around cooking, preparation, washing, appliances and worktops. Bedroom wardrobes, TV units, shoe cabinets and storage across other rooms can be discussed under the built-in furniture service. Confirm each room’s materials, hardware, fabrication and installation scope against the site.Continue planning: Built-in furniture and storage; Interior design and space planning; Kitchen renovation enquiry"
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": "橱柜规划前怎样整理家电与现场资料？先整理拟保留或更换的冰箱、灶具、烤箱和其他家电清单，以及尺寸与现有位置。连同厨房照片、主要尺寸、给排水和插座位置交给团队核对，再讨论地柜、吊柜、高柜、台面及收纳。最终尺寸、点位和安装衔接须经现场确认。怎样比较厨房装修的报价范围？比较方案时，把橱柜尺寸与配置、门板和材料方向、台面、五金、家电点位、给排水、湿作、拆除与安装分别核对。写清保留项目、业主自备项目、可选项目和待检查事项，让两份报价按相近范围比较；不要只看每尺价格或总价。厨房与其他空间收纳应怎样衔接？厨房橱柜应围绕煮食、备餐、清洗、家电和台面规划；卧室衣柜、电视柜、鞋柜和跨房间收纳则可由全屋定制服务继续讨论。共同确认柜体与现场条件，分别列出各空间的材料、五金、制作及安装范围。继续了解：全屋定制与其他空间收纳；室内设计与空间规划；厨房装修报价咨询"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Adds appliance/current-point information, separate cabinet/worktop/hardware/site-scope comparisons and dedicated-room ownership. No cabinet dimensions, price rate, technical installation specification or appliance safety promise.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

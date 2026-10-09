@@ -69,6 +69,29 @@ test('current source owner cannot be revived by a second owner; renderer-owned f
  rows.site_pages=[];rows.cms_pages=[];m=await buildQualifiedManifest(await snapshot(rows));
  assert.equal(m['/en/about'].owned_static,true);assert.equal(m['/zh/about'].owned_static,true);assertDocuments(m);
 });
+
+test('published metadata-only built-in pages override seeds without admitting empty dynamic pages',async()=>{
+ const rows=records(0);
+ rows.site_pages=[{...row('site_pages',1),path:'/contact',content_en:'',content_zh:'',items_en:[],items_zh:[],seo_title_en:'Current contact metadata',seo_title_zh:'当前联系元信息',seo_description_en:'Current description',seo_description_zh:'当前说明'}, {...row('site_pages',2),path:'/metadata-only-dynamic',content_en:'',content_zh:'',items_en:[],items_zh:[],seo_title_en:'Metadata alone is not a body'}];
+ const manifest=await buildQualifiedManifest(await snapshot(rows));
+ assert.equal(manifest['/en/contact'].title,'Current contact metadata | FLASH CAST SDN. BHD.');
+ assert.equal(manifest['/zh/contact'].description,'当前说明');
+ assert.equal(manifest['/en/contact'].owned_static,true);
+ assert.deepEqual(manifest['/en/contact'].available_locales,['en','zh']);
+ assert.ok(!manifest['/en/metadata-only-dynamic']);
+ assert.ok(!manifest['/zh/metadata-only-dynamic']);
+ assertDocuments(manifest);
+});
+test('metadata-only builtin retains its localized seed title and validates relative sharing images',async()=>{
+ const seed=await buildQualifiedManifest(await snapshot(records(0)));
+ for(const [image_url,expected] of [['images/current.webp','https://flashcast.com.my/images/current.webp'],['http://','https://flashcast.com.my/og-image.webp'],['javascript:alert(1)','https://flashcast.com.my/og-image.webp']]){
+  const rows=records(0);
+  rows.site_pages=[{...row('site_pages',1),path:'/contact',title_zh:'',content_zh:'',content_en:'',items_zh:[],items_en:[],seo_description_zh:'当前联系说明',image_url}];
+  const manifest=await buildQualifiedManifest(await snapshot(rows));
+  assert.equal(manifest['/zh/contact'].title,seed['/zh/contact'].title);
+  assert.equal(manifest['/zh/contact'].ogImage,expected);
+ }
+});
 test('real three script entrypoints write coherent documents; failing source preserves all prior bytes',async()=>{
  const runRoot=mkdtempSync(join(evidenceRoot,'actual-entrypoints-'));symlinkSync(resolve('src'),join(runRoot,'src'));symlinkSync(resolve('node_modules'),join(runRoot,'node_modules'));
  for(const f of outputs){mkdirSync(join(runRoot,f,'..'),{recursive:true});writeFileSync(join(runRoot,f),'prior legal fixture');}
