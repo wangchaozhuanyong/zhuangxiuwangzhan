@@ -192,7 +192,7 @@ const Quote = () => {
     setStatus("submitting");
 
     try {
-      await submitQuoteRequest({
+      const receipt = await submitQuoteRequest({
         name: form.name,
         phone: form.phone,
         email: form.email,
@@ -208,7 +208,7 @@ const Quote = () => {
       trackQuoteFormSubmit("success", {
         project_type: form.projectType,
         budget_range: form.budget,
-      }, submittedSourcePath);
+      }, submittedSourcePath, receipt);
       lastSavedForm.current = form;
       setStatus(JSON.stringify(currentForm.current) === JSON.stringify(form) ? "success" : "idle");
     } catch (error) {

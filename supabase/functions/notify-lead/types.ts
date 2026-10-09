@@ -26,6 +26,25 @@ export type DeliveryResult = {
   reason?: string;
   status?: number;
   error?: string;
+  delivery_status?: "provider_accepted" | "http_accepted" | "rejected" | "unknown" | "skipped";
+  provider_message_id?: number;
+  provider_error_code?: number;
+  retry_after_seconds?: number;
+  retry_policy?: "manual_after_correction" | "manual_verify" | "none";
+  receipt_recorded?: boolean;
+};
+
+export type NotificationDeliveryEvent = {
+  event_type: "lead_notification_delivery_failed" | "lead_notification_request_accepted";
+  severity: "info" | "warn" | "error";
+  message: string;
+  metadata: {
+    channel: "telegram" | "webhook";
+    type: NotifyLeadType;
+    id: string;
+    table: string;
+    result: DeliveryResult;
+  };
 };
 
 export type NotificationSettingsRow = {

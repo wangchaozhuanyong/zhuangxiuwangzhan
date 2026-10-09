@@ -14,6 +14,7 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitContactLead } from "@/lib/leadApi";
+import { resetLeadSubmissionIdentity } from "@/lib/leadSubmissionIdentity";
 import { useFormGuard } from "@/hooks/useFormGuard";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { mediaLabels } from "@/i18n/mediaLabels";
@@ -103,7 +104,7 @@ const Contact = () => {
     }
     setStatus("submitting");
     try {
-      await submitContactLead({
+      const receipt = await submitContactLead({
         name: form.name,
         phone: form.phone,
         email: form.email,
@@ -117,7 +118,7 @@ const Contact = () => {
       trackContactFormSubmit("success", {
         project_type: form.projectType,
         location: form.location,
-      }, submittedSourcePath);
+      }, submittedSourcePath, receipt);
       lastSavedForm.current = form;
       setStatus(JSON.stringify(currentForm.current) === JSON.stringify(form) ? "success" : "idle");
     } catch (error) {
@@ -281,7 +282,7 @@ const Contact = () => {
                     <h2 id="contact-form-title" tabIndex={-1} className="font-display text-2xl font-bold mb-3">{t.successTitle}</h2>
                     <p className="text-muted-foreground text-sm mb-2">{t.successThanks}, <strong className="text-foreground">{form.name}</strong>.</p>
                     <p className="text-muted-foreground text-sm mb-6">{t.successText}</p>
-                    <Button variant="outline" className="btn-press" onClick={() => { setStatus("idle"); setForm({ name: "", phone: "", email: "", projectType: "", location: "", message: "" }); }}>
+                    <Button variant="outline" className="btn-press" onClick={() => { resetLeadSubmissionIdentity("contact"); setStatus("idle"); setForm({ name: "", phone: "", email: "", projectType: "", location: "", message: "" }); }}>
                       {t.sendAnother}
                     </Button>
                   </div>

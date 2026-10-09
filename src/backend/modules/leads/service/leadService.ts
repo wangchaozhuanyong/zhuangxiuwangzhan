@@ -10,6 +10,7 @@ import {
 } from "@/backend/modules/leads/repository/leadRepository";
 import type { FormGuardFields } from "@/lib/formGuard";
 import { getTurnstileToken } from "@/lib/turnstile";
+import { getLeadSubmissionId } from "@/lib/leadSubmissionIdentity";
 
 export type AddAdminLeadFollowupInput = {
   leadId: string;
@@ -71,6 +72,11 @@ export function loadAdminLeadReportRows(startIso?: string | null, signal?: Abort
 
 export const submitContactLead = async (payload: ContactSubmission & FormGuardFields) => {
   const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
+  const sourcePath = payload.sourcePath || currentPathWithSearch();
+  const submissionId = await getLeadSubmissionId("contact", sourcePath, {
+    name: payload.name, phone: payload.phone, email: payload.email,
+    projectType: payload.projectType, location: payload.location, message: payload.message,
+  });
   const turnstileToken = await getTurnstileToken("contact");
   const data = await invokeSubmitLeadFunction({
     type: "contact",
@@ -80,17 +86,24 @@ export const submitContactLead = async (payload: ContactSubmission & FormGuardFi
     projectType: payload.projectType,
     location: payload.location,
     message: payload.message,
-    sourcePath: payload.sourcePath || currentPathWithSearch(),
+    sourcePath,
+    submissionId,
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,
     turnstileToken,
   });
-  return { id: data.id || "" };
+  return data;
 };
 
 export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFields) => {
   const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
+  const sourcePath = payload.sourcePath || currentPathWithSearch();
+  const submissionId = await getLeadSubmissionId("quote", sourcePath, {
+    name: payload.name, phone: payload.phone, email: payload.email,
+    projectType: payload.projectType, location: payload.location,
+    propertySize: payload.propertySize, budget: payload.budget, details: payload.details,
+  });
   const turnstileToken = await getTurnstileToken("quote");
   const data = await invokeSubmitLeadFunction({
     type: "quote",
@@ -102,13 +115,14 @@ export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFie
     propertySize: payload.propertySize,
     budget: payload.budget,
     details: payload.details,
-    sourcePath: payload.sourcePath || currentPathWithSearch(),
+    sourcePath,
+    submissionId,
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,
     turnstileToken,
   });
-  return { id: data.id || "" };
+  return data;
 };
 
 export async function addAdminLeadFollowup(input: AddAdminLeadFollowupInput): Promise<FollowupSyncResult> {

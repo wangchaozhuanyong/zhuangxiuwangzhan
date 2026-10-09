@@ -44,6 +44,7 @@ const getEventPayload = (gtag: GtagSpy, eventName: string) =>
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  window.sessionStorage.clear();
   vi.unstubAllEnvs();
   vi.stubEnv("VITE_GA_MEASUREMENT_ID", "");
   vi.stubEnv("VITE_GA4_PAGES_REPORT_URL", "");
@@ -110,6 +111,31 @@ describe("analytics defaults", () => {
 });
 
 describe("lead analytics events", () => {
+  it.each(["quote", "contact"] as const)("counts a confirmed %s ID once across retry and reload, using the saved ID for Ads", async (type) => {
+    const id = "a054622a-7a86-4c12-a4ae-3fcf9bbc0409";
+    const source = `/en/${type}?utm_medium=internal`;
+    const first = await loadAnalytics(source);
+    const track = type === "quote" ? first.analytics.trackQuoteFormSubmit : first.analytics.trackContactFormSubmit;
+    // The initial response was lost: the first confirmed retry still counts once.
+    track("success", {}, source, { id, deduplicated: true });
+    track("success", {}, source, { id, deduplicated: true });
+    expect(getEventNames(first.gtag).filter((name) => name === "conversion")).toHaveLength(1);
+    expect(getEventNames(first.gtag).filter((name) => name === "generate_lead")).toHaveLength(1);
+    expect(getEventPayload(first.gtag, "conversion")).toMatchObject({ transaction_id: id });
+    const reloaded = await loadAnalytics(source);
+    const trackReloaded = type === "quote" ? reloaded.analytics.trackQuoteFormSubmit : reloaded.analytics.trackContactFormSubmit;
+    trackReloaded("success", {}, source, { id, deduplicated: true });
+    expect(reloaded.gtag).not.toHaveBeenCalled();
+    trackReloaded("success", {}, source, { id: "b054622a-7a86-4c12-a4ae-3fcf9bbc0409" });
+    expect(getEventNames(reloaded.gtag).filter((name) => name === "conversion")).toHaveLength(1);
+  });
+  it.each(["quote", "contact"] as const)("excludes only trusted internal %s receipts from successful lead measurement", async (type) => {
+    const { analytics, gtag } = await loadAnalytics(`/en/${type}`);
+    const track = type === "quote" ? analytics.trackQuoteFormSubmit : analytics.trackContactFormSubmit;
+    track("success", {}, `/en/${type}`, { id: "a054622a-7a86-4c12-a4ae-3fcf9bbc0409", internal: true });
+    expect(gtag).not.toHaveBeenCalled();
+    expect(document.getElementById("flashcast-google-tag")).toBeNull();
+  });
   it("does not count TEST responses after the URL changed while the request was pending", async () => {
     const { analytics, gtag } = await loadAnalytics("/zh/quote");
     analytics.trackQuoteFormSubmit("success", {}, "/zh/quote?fc_test=fc_paid_20261008_T01");

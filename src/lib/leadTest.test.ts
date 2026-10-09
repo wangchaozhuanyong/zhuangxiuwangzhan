@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LEAD_TESTS, readLeadTest } from "../../supabase/functions/_shared/lead-test-contract";
+import { acceptanceSourcePath, LEAD_TESTS, readLeadTest } from "../../supabase/functions/_shared/lead-test-contract";
 import { FORMAL_LEAD_SOURCE_FILTER, isLeadTestPage, isStoredLeadTest } from "./leadTest";
 import { buildAdminLeadReport } from "./adminLeadReports";
 
@@ -29,5 +29,14 @@ describe("bounded lead test contract", () => {
       { id: "test-quote", source_path: LEAD_TESTS.fc_paid_20261008_T01.sourcePath, status: "accepted", quoted_amount: 9000 },
     ] });
     expect(report.totals).toMatchObject({ submitted: 2, leads: 1, quotes: 1, won: 0, wonValue: 0, quotedValue: 0 });
+  });
+  it("excludes only complete server acceptance markers alongside the fixed TEST pair", () => {
+    const marker = acceptanceSourcePath("contact", "e356c239-6bfb-8a94-93dd-01a489891234");
+    expect(isStoredLeadTest(marker)).toBe(true);
+    for (const path of [`${marker}/extra`, marker.replace("/contact/", "/other/"), marker.replace("/__internal_test__/", "/abinternalXtestyz/"), "/en/contact?internal=true", "/__internal_test__/acceptance/en/contact/not-a-uuid"]) {
+      expect(isStoredLeadTest(path)).toBe(false);
+    }
+    expect(buildAdminLeadReport({ period: "all", leads: [{ id: "internal", source_path: marker }, { id: "customer", source_path: null }], quotes: [] }).totals.submitted).toBe(1);
+    expect(readLeadTest(marker, "contact").valid).toBe(false);
   });
 });

@@ -5,7 +5,7 @@ import { LEAD_TESTS } from "../../supabase/functions/_shared/lead-test-contract"
 
 const repository = vi.hoisted(() => ({
   consumeSubmissionAttempt: vi.fn(),
-  createContactLead: vi.fn(), createQuoteRequest: vi.fn(), findSubmittedTest: vi.fn(), notifySubmittedLead: vi.fn(),
+  createContactLead: vi.fn(), createQuoteRequest: vi.fn(), findSubmittedTest: vi.fn(), notifySubmittedLead: vi.fn(), recordNotificationDispatchUnknown: vi.fn(),
 }));
 vi.mock("../../supabase/functions/submit-lead/repository.ts", () => repository);
 import { submitLead } from "../../supabase/functions/submit-lead/service";
@@ -41,6 +41,7 @@ beforeEach(() => {
   repository.createContactLead.mockResolvedValue(undefined);
   repository.createQuoteRequest.mockResolvedValue(undefined);
   repository.notifySubmittedLead.mockResolvedValue(undefined);
+  repository.recordNotificationDispatchUnknown.mockResolvedValue(undefined);
 });
 afterEach(() => vi.unstubAllGlobals());
 
@@ -102,7 +103,7 @@ describe("submit-lead TEST isolation", () => {
     const { req, client } = actor();
     const test = LEAD_TESTS.fc_paid_20261008_T01;
     repository.findSubmittedTest.mockResolvedValue({ id: test.id, source_path: test.sourcePath });
-    expect((await submitLead(req, payload("quote"), client)).body).toEqual({ ok: true, id: test.id });
+    expect((await submitLead(req, payload("quote"), client)).body).toEqual({ ok: true, id: test.id, deduplicated: true });
     expect(repository.createQuoteRequest).not.toHaveBeenCalled();
     expect(repository.notifySubmittedLead).not.toHaveBeenCalled();
   });
@@ -111,7 +112,7 @@ describe("submit-lead TEST isolation", () => {
     const test = LEAD_TESTS.fc_paid_20261008_T02;
     repository.findSubmittedTest.mockResolvedValueOnce(null).mockResolvedValueOnce({ id: test.id, source_path: test.sourcePath });
     repository.createContactLead.mockRejectedValue({ code: "23505" });
-    expect((await submitLead(req, payload("contact"), client)).body).toEqual({ ok: true, id: test.id });
+    expect((await submitLead(req, payload("contact"), client)).body).toEqual({ ok: true, id: test.id, deduplicated: true });
     expect(repository.notifySubmittedLead).not.toHaveBeenCalled();
   });
   it("does not acknowledge an unverified save or notify after save failure", async () => {
@@ -139,6 +140,7 @@ describe("submit-lead TEST isolation", () => {
     expect(result.body.id).not.toBe(type === "quote" ? LEAD_TESTS.fc_paid_20261008_T01.id : LEAD_TESTS.fc_paid_20261008_T02.id);
     expect(client.auth.getUser).not.toHaveBeenCalled();
     expect(repository.notifySubmittedLead).toHaveBeenCalledOnce();
+    expect(repository.recordNotificationDispatchUnknown).toHaveBeenCalledWith(client, type, result.body.id, "dispatch_error");
     const save = type === "quote" ? repository.createQuoteRequest : repository.createContactLead;
     expect(save).toHaveBeenCalledWith(client, expect.objectContaining({ sourcePath: `/zh/${type}` }));
   });

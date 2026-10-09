@@ -23,6 +23,8 @@ export type AdminListPage<T> = {
   pageSize: number;
 };
 
+export type SubmitLeadReceipt = { ok: true; id: string; deduplicated?: boolean; internal?: boolean };
+
 export async function invokeSubmitLeadFunction(body: Record<string, unknown>) {
   const supabase = requireSupabase();
   const { data, error } = await supabase.functions.invoke("submit-lead", { body });
@@ -30,7 +32,10 @@ export async function invokeSubmitLeadFunction(body: Record<string, unknown>) {
   if (data && typeof data === "object" && "error" in data && data.error) {
     throw new Error(String(data.error));
   }
-  return data as { ok?: boolean; id?: string };
+  if (!data || data.ok !== true || typeof data.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.id)) {
+    throw new Error("The submission could not be confirmed.");
+  }
+  return { ok: true, id: data.id, deduplicated: data.deduplicated === true, internal: data.internal === true } satisfies SubmitLeadReceipt;
 }
 
 export async function fetchAdminLeadList<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput, signal?: AbortSignal): Promise<AdminListPage<T>> {

@@ -1,4 +1,19 @@
-import type { ContactBody, QuoteBody, SubmitLeadClient } from "./types.ts";
+import type { ContactBody, QuoteBody, SubmittedLeadIdentity, SubmitLeadClient } from "./types.ts";
+
+export async function findSubmittedLead(client: SubmitLeadClient, type: "contact" | "quote", id: string): Promise<SubmittedLeadIdentity | null> {
+  const columns = type === "contact"
+    ? "id,name,phone,email,project_type,location,message,source_path"
+    : "id,customer_name,customer_phone,customer_email,project_type,location,property_size,estimated_budget,project_details,source_path";
+  const { data, error } = await client.from(type === "contact" ? "leads" : "quote_requests")
+    .select(columns).eq("id", id).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const row = data as unknown as Record<string, string | null>;
+  const common = { id: row.id!, sourcePath: row.source_path, projectType: row.project_type, location: row.location };
+  return type === "contact"
+    ? { ...common, name: row.name!, phone: row.phone!, email: row.email, message: row.message! }
+    : { ...common, name: row.customer_name!, phone: row.customer_phone!, email: row.customer_email, propertySize: row.property_size, budget: row.estimated_budget, details: row.project_details };
+}
 
 export async function findSubmittedTest(client: SubmitLeadClient, type: "contact" | "quote", id: string) {
   const { data, error } = await client.from(type === "contact" ? "leads" : "quote_requests")
@@ -89,9 +104,31 @@ export async function createQuoteRequest(
 
 export async function notifySubmittedLead(client: SubmitLeadClient, type: ContactBody["type"] | QuoteBody["type"], id: string) {
   const serviceRoleKey = getServiceRoleKey();
-  const { error } = await client.functions.invoke("notify-lead", {
+  const { data, error } = await client.functions.invoke("notify-lead", {
     body: { type, id },
     headers: serviceRoleKey ? { Authorization: `Bearer ${serviceRoleKey}` } : undefined,
+  });
+  if (error) throw error;
+  // A handled dispatch can include nested provider rejection. This confirms function processing only.
+  if (!data || typeof data !== "object" || data.ok !== true) throw new Error("Notification dispatch acknowledgement could not be verified");
+}
+
+export async function recordNotificationDispatchUnknown(
+  client: SubmitLeadClient,
+  type: ContactBody["type"] | QuoteBody["type"],
+  id: string,
+  reason: "dispatch_error" | "dispatch_timeout",
+) {
+  const { error } = await client.from("system_event_logs").insert({
+    event_type: "lead_notification_delivery_failed",
+    severity: "warn",
+    source: "submit-lead",
+    message: "Lead notification dispatch could not be verified. Manual verification is required.",
+    metadata: {
+      category: "notifications", categoryLabel: "通知",
+      channel: "dispatch", type, id, table: type === "quote" ? "quote_requests" : "leads",
+      delivery_status: "unknown", retry_policy: "manual_verify", reason,
+    },
   });
   if (error) throw error;
 }
