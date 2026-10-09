@@ -45,24 +45,29 @@ export async function readVisibleBodyEvidence(page) {
   return page.evaluate(() => {
       const main = document.querySelector("main");
       const isVisible = (node) => {
-        if (node.closest('[inert], [hidden]') || node.getBoundingClientRect().width <= 0) return false;
+        if (node.closest('[inert], [hidden]')) return false;
         for (let parent = node; parent; parent = parent.parentElement) {
           const style = getComputedStyle(parent);
           if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse" || Number(style.opacity) === 0) return false;
         }
         return true;
       };
+      const hasRenderedText = (node) => {
+        const range = document.createRange(); range.selectNodeContents(node);
+        return [...range.getClientRects()].some((rect) => rect.width > 0 && rect.height > 0);
+      };
       const visibleText = (node) => {
-        if (node.nodeType === Node.TEXT_NODE) return node.parentElement && isVisible(node.parentElement) ? node.textContent || "" : "";
+        if (node.nodeType === Node.TEXT_NODE) return node.parentElement && isVisible(node.parentElement) && hasRenderedText(node) ? node.textContent || "" : "";
         if (!(node instanceof Element)) return "";
-        if (node.tagName === "BR") return node.parentElement && isVisible(node.parentElement) ? "\n" : "";
         if (!isVisible(node)) return "";
+        if (node.tagName === "BR") return "\n";
         const content = [...node.childNodes].map(visibleText).join("");
         return /^(block|list-item|flex|grid|table)/.test(getComputedStyle(node).display) ? `\n${content}\n` : content;
       };
-      const blocks = main ? [...main.querySelectorAll("p, h2, h3, h4, li, blockquote, button, summary")].filter(isVisible).map(visibleText) : [];
-      return { visibleMainText: blocks.join("\n"),
-        visibleHeadings: main ? [...main.querySelectorAll("h2, h3, h4")].filter(isVisible).map(visibleText) : [] };
+      // Sanitized list items can be direct Text nodes. Traverse the rendered tree
+      // once, including boxless containers; actual text ranges still need geometry.
+      return { visibleMainText: main ? visibleText(main) : "",
+        visibleHeadings: main ? [...main.querySelectorAll("h2, h3, h4")].filter(isVisible).map(visibleText).filter((text) => text.trim()) : [] };
   });
 }
 export async function verifyPublicPage({ site, path, title, description, requiredText, headingsOnly = false, channel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL }) {
