@@ -12,11 +12,26 @@ export const LEAD_TESTS = {
   },
 } as const;
 
+export const SUBMISSION_UUID_PATTERN = "[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
+export const STORED_ACCEPTANCE_PATTERN = `^/__internal_test__/acceptance/en/(quote|contact)/${SUBMISSION_UUID_PATTERN}$`;
+const storedAcceptance = new RegExp(STORED_ACCEPTANCE_PATTERN);
+
 export const FORMAL_LEAD_SOURCE_FILTER =
-  `source_path.is.null,source_path.not.in.(${Object.values(LEAD_TESTS).map((test) => test.sourcePath).join(",")})`;
+  `source_path.is.null,and(source_path.not.in.(${Object.values(LEAD_TESTS).map((test) => test.sourcePath).join(",")}),source_path.not.match."${STORED_ACCEPTANCE_PATTERN}")`;
+
+export const acceptanceSourcePath = (formType: "contact" | "quote", id: string) =>
+  `/__internal_test__/acceptance/en/${formType}/${id}`;
+
+export const isEnglishAcceptancePage = (sourcePath: string, formType: "contact" | "quote") => {
+  if (!sourcePath.startsWith("/") || sourcePath.startsWith("//")) return false;
+  try {
+    const url = new URL(sourcePath, "https://flashcast.invalid");
+    return new RegExp(`^/en/${formType}/?$`).test(url.pathname);
+  } catch { return false; }
+};
 
 export const isStoredLeadTest = (sourcePath: string | null | undefined) =>
-  Object.values(LEAD_TESTS).some((test) => test.sourcePath === sourcePath);
+  Boolean(sourcePath && storedAcceptance.test(sourcePath)) || Object.values(LEAD_TESTS).some((test) => test.sourcePath === sourcePath);
 
 // Client suppression alone grants no TEST permission. Only the server can assign stored markers.
 export const isLeadTestPage = (sourcePath: string) => {

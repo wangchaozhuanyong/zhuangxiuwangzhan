@@ -2,6 +2,30 @@ import { isLeadTestPage } from "@/lib/leadTest";
 
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
+type LeadMeasurementReceipt = { id: string; deduplicated?: boolean; internal?: boolean };
+const measuredLeads = new Set<string>();
+const measuredLeadsStorageKey = "flashcast:measured-leads";
+
+const claimLeadMeasurement = (type: "quote" | "contact", receipt?: LeadMeasurementReceipt) => {
+  if (receipt?.internal) return false;
+  if (!receipt) return true; // Preserve existing callers outside the two form receipts.
+  if (!canUseBrowserAnalytics()) return false;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(receipt.id)) return false;
+  try {
+    const stored: unknown = JSON.parse(window.sessionStorage.getItem(measuredLeadsStorageKey) || "[]");
+    if (Array.isArray(stored)) {
+      stored.filter((key): key is string => typeof key === "string" && /^(quote|contact):[0-9a-f-]{36}$/i.test(key))
+        .forEach((key) => measuredLeads.add(key));
+    }
+  } catch { /* Keep the in-memory guard when storage is unavailable. */ }
+  const key = `${type}:${receipt.id.toLowerCase()}`;
+  if (measuredLeads.has(key)) return false;
+  // A retry may be the first confirmed receipt after a lost response. Count that
+  // saved lead once, including when the server marks the receipt deduplicated.
+  measuredLeads.add(key);
+  try { window.sessionStorage.setItem(measuredLeadsStorageKey, JSON.stringify([...measuredLeads].slice(-100))); } catch { /* Storage is optional. */ }
+  return true;
+};
 
 // Flashcast Website stream, verified against flashcast.com.my in GA4.
 const defaultGaMeasurementId = "G-LLJGRG2YNP";
@@ -382,8 +406,9 @@ export const trackGoogleAdsConversion = (conversionLabel: string, params: Analyt
   );
 };
 
-export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}, submittedSourcePath?: string) => {
+export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}, submittedSourcePath?: string, receipt?: LeadMeasurementReceipt) => {
   if (submittedSourcePath && isLeadTestPage(submittedSourcePath)) return;
+  if (receipt?.internal || (status === "success" && !claimLeadMeasurement("quote", receipt))) return;
   trackEvent("quote_form_submit", {
     form_status: status,
     page_path: currentPagePath(),
@@ -395,12 +420,14 @@ export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_e
     trackGoogleAdsConversion(quoteConversionLabel, {
       conversion_source: "quote_form_success",
       ...params,
+      transaction_id: receipt?.id,
     });
   }
 };
 
-export const trackContactFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}, submittedSourcePath?: string) => {
+export const trackContactFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}, submittedSourcePath?: string, receipt?: LeadMeasurementReceipt) => {
   if (submittedSourcePath && isLeadTestPage(submittedSourcePath)) return;
+  if (receipt?.internal || (status === "success" && !claimLeadMeasurement("contact", receipt))) return;
   trackEvent("contact_form_submit", {
     form_status: status,
     page_path: currentPagePath(),
@@ -412,6 +439,7 @@ export const trackContactFormSubmit = (status: "success" | "error" | "validation
     trackGoogleAdsConversion(contactConversionLabel, {
       conversion_source: "contact_form_success",
       ...params,
+      transaction_id: receipt?.id,
     });
   }
 };

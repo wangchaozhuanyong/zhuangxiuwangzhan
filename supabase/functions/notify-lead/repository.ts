@@ -1,4 +1,4 @@
-import type { NotificationSettingsRow, NotifyLeadClient, NotifyLeadType } from "./types.ts";
+import type { NotificationDeliveryEvent, NotificationSettingsRow, NotifyLeadClient, NotifyLeadType } from "./types.ts";
 
 export async function fetchTelegramSettingsRow(client: NotifyLeadClient): Promise<NotificationSettingsRow | null> {
   const { data } = await client
@@ -21,23 +21,25 @@ export async function fetchLeadNotificationRecord(client: NotifyLeadClient, type
   };
 }
 
-export async function insertNotificationFailureEvent(
+export async function insertNotificationDeliveryEvent(
   client: NotifyLeadClient,
-  severity: "warn" | "error",
-  message: string,
-  metadata: Record<string, unknown>,
-) {
-  const { error } = await client.from("system_event_logs").insert({
-    event_type: "lead_notification_delivery_failed",
-    severity,
-    source: "edge_function",
-    message,
-    metadata: {
-      category: "notifications",
-      categoryLabel: "通知",
-      ...metadata,
-    },
-  });
+  event: NotificationDeliveryEvent,
+): Promise<boolean> {
+  try {
+    const { error } = await client.from("system_event_logs").insert({
+      ...event,
+      source: "notify-lead",
+      metadata: {
+        category: "notifications",
+        categoryLabel: "通知",
+        ...event.metadata,
+      },
+    });
+    if (!error) return true;
+  } catch {
+    // Keep the saved lead and provider result even when receipt persistence fails.
+  }
 
-  if (error) console.error("Failed to write system event log", error.message);
+  console.error("Failed to write notification system event log");
+  return false;
 }

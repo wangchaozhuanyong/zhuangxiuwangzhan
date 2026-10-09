@@ -76,6 +76,7 @@ export const adminSystemLogSourceLabels = {
     "form-attempts-maintenance": "Anti-spam cleanup",
     "maintenance-reminder": "Maintenance reminder",
     "notify-lead": "Lead notification",
+    "submit-lead": "Form submission",
   },
   zh: {
     admin: "后台",
@@ -85,6 +86,7 @@ export const adminSystemLogSourceLabels = {
     "form-attempts-maintenance": "防刷清理",
     "maintenance-reminder": "维护提醒",
     "notify-lead": "线索通知",
+    "submit-lead": "表单提交",
   },
 } as const;
 
@@ -100,6 +102,7 @@ export const adminSystemLogCategoryLabels = {
     form_submission_attempts_cleanup: "Anti-spam records",
     maintenance_reminder_delivery_failed: "Notification",
     lead_notification_delivery_failed: "Notification",
+    lead_notification_request_accepted: "Notification",
   },
   zh: {
     frontend_deploy_cache_mismatch: "前端部署",
@@ -112,6 +115,7 @@ export const adminSystemLogCategoryLabels = {
     form_submission_attempts_cleanup: "防刷记录",
     maintenance_reminder_delivery_failed: "通知",
     lead_notification_delivery_failed: "通知",
+    lead_notification_request_accepted: "通知",
   },
 } as const;
 
@@ -126,7 +130,8 @@ export const adminSystemLogEventTypeLabels = {
     backup_restore_completed: "Backup restore",
     form_submission_attempts_cleanup: "Old anti-spam records cleaned",
     maintenance_reminder_delivery_failed: "Maintenance reminder delivery failed",
-    lead_notification_delivery_failed: "Lead notification delivery failed",
+    lead_notification_delivery_failed: "Lead notification needs attention",
+    lead_notification_request_accepted: "Lead notification request accepted",
   },
   zh: {
     frontend_deploy_cache_mismatch: "前端生产部署缓存不一致",
@@ -138,17 +143,24 @@ export const adminSystemLogEventTypeLabels = {
     backup_restore_completed: "备份恢复",
     form_submission_attempts_cleanup: "旧防刷记录清理",
     maintenance_reminder_delivery_failed: "维护提醒发送失败",
-    lead_notification_delivery_failed: "线索通知发送失败",
+    lead_notification_delivery_failed: "线索通知需核查",
+    lead_notification_request_accepted: "线索通知请求已接受",
   },
 } as const;
 
 export const adminSystemLogMessageLabels = {
   en: {
+    "Lead notification request accepted; delivery is not verified.": "Notification request accepted. Recipient delivery is not verified.",
+    "Lead notification acceptance could not be confirmed; the saved lead is retained.": "Notification acceptance could not be confirmed. The saved lead is retained.",
+    "Lead notification dispatch could not be verified. Manual verification is required.": "Notification processing could not be confirmed. Check the saved lead and notification records before retrying.",
     "System health check passed.": "System health check passed.",
     "System health check needs attention.": "System health check needs attention.",
     "One or more health checks need attention.": "One or more health checks need attention.",
   },
   zh: {
+    "Lead notification request accepted; delivery is not verified.": "通知请求已接受，接收方是否收到仍未核实。",
+    "Lead notification acceptance could not be confirmed; the saved lead is retained.": "通知请求是否接受未能确认，已保存的线索仍保留。",
+    "Lead notification dispatch could not be verified. Manual verification is required.": "通知处理结果尚未确认。再次发送前，请核对已保存线索和通知记录。",
     "System health check passed.": "系统健康检查通过。",
     "System health check needs attention.": "系统健康检查需要处理。",
     "One or more health checks need attention.": "有一项或多项健康检查需要处理。",

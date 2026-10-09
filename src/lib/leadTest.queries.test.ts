@@ -24,7 +24,8 @@ describe("formal lead query boundaries", () => {
     await fetchAdminQuoteReportRows();
     expect(queries.calls).toHaveLength(2);
     for (const query of queries.calls) expect(query.filters).toEqual([FORMAL_LEAD_SOURCE_FILTER]);
-    expect(FORMAL_LEAD_SOURCE_FILTER).toMatch(/^source_path.is.null,source_path.not.in./);
+    expect(FORMAL_LEAD_SOURCE_FILTER).toMatch(/^source_path.is.null,and\(source_path.not.in./);
+    expect(FORMAL_LEAD_SOURCE_FILTER).toContain('source_path.not.match."^/__internal_test__/acceptance/en/');
   });
   it("filters every lead/quote dashboard count and recent row query, not unrelated content", async () => {
     await fetchAdminDashboardStatsData();

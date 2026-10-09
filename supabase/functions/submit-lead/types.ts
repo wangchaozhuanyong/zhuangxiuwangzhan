@@ -13,6 +13,7 @@ export type ContactBody = {
   startedAt?: number;
   elapsedMs?: number;
   turnstileToken?: string;
+  submissionId?: string;
 };
 
 export type QuoteBody = {
@@ -30,11 +31,26 @@ export type QuoteBody = {
   startedAt?: number;
   elapsedMs?: number;
   turnstileToken?: string;
+  submissionId?: string;
 };
 
 export type SubmitBody = ContactBody | QuoteBody;
 
 export type SubmitLeadClient = SupabaseClient;
+
+export type SubmittedLeadIdentity = {
+  id: string;
+  sourcePath: string | null;
+  name: string;
+  phone: string;
+  email: string | null;
+  projectType: string | null;
+  location: string | null;
+  message?: string;
+  propertySize?: string | null;
+  budget?: string | null;
+  details?: string | null;
+};
 
 export type SubmitLeadResult = {
   status?: number;
@@ -42,5 +58,7 @@ export type SubmitLeadResult = {
     ok?: true;
     id?: string;
     error?: string;
+    deduplicated?: true;
+    internal?: true;
   };
 };
