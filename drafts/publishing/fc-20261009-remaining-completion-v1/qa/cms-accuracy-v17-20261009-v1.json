@@ -1,0 +1,29 @@
+{
+  "qa_receipt_id": "cms-accuracy-v17-20261009-v1",
+  "reviewer_role": "Independent repository release QA agent; original pinned content produced before this task",
+  "reviewed_at": "2026-10-09T05:22:04.096Z",
+  "target": "v17-owner-publisher-native-preparation-v2-20261007",
+  "candidate_version": "v17-owner-publisher-native-preparation-v2-20261007",
+  "exact_payload_sha256": "56891d2e9c49d90e665734354d752ac058c028128ef969da9db25c217a6e8f94",
+  "current_baseline_sha256": "cc27f87d98e1c3bedaf517fdbe0a8d5ab703b3ba655f05b225a451d12e4e4ee8",
+  "current_updated_at": "2026-06-08T07:45:35.480828+00:00",
+  "changed_fields": [
+    "faqs_en",
+    "faqs_zh"
+  ],
+  "result": "PASS_SCOPED_CONTENT_ACCURACY_AND_SCHEMA_QA",
+  "native_current_source": true,
+  "preservation": {
+    "existing_faq_objects_prefix_preserved": true,
+    "existing_blog_blocks_in_order_preserved": null
+  },
+  "unsafe_executable_elements": 0,
+  "unsafe_attributes": 0,
+  "internal_link_routes_known_published": true,
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_DELTA_AND_RETAINED_LIMITS",
+  "content_review": "New FAQ distinguishes same-property comparable photos, completed scope and consent from planning visuals. Current public page confirms AI labels in both languages. Existing 4 FAQ objects unchanged; no customer project, rights grant, completion result or guarantee invented.",
+  "fact_sources": [
+    "FLASHCAST-current-oldhouse-concepts"
+  ],
+  "limits": "QA does not issue a machine permit, prove a fresh protected preview, perform Save, verify frontend publication or measure business outcomes."
+}

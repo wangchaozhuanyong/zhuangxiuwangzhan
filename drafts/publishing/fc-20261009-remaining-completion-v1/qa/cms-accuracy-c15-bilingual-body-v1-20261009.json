@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c15-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.392Z",
+  "target": "c15-bilingual-body-v1",
+  "exact_payload_sha256": "c6d38d30a630abe1c058e5681fd5dd1c2f4f91f4a2fda38c51d97119293f92d9",
+  "current_updated_at": "2026-09-12T22:42:17.136295+00:00",
+  "current_full_baseline_sha256": "cbe8d24750f2a4d361eb05e6a8fbdfb1b5d8bfb00799b40b8a859be3025fa221",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How can current needs be separated from expansion assumptions? List current staff, visitors, meeting and storage needs as the present scope, and keep possible additional people, equipment or space as separate assumptions. Explain which teams work simultaneously, which facilities can be shared and which changes might belong to another stage. Provision or phasing depends on the site, tenancy and budget; future estimates should not automatically become committed deliverables. How can the space list connect to equipment coordination? Attach equipment and existing-facility information by area, then use the office M&E and IT coordination checklist to organise questions for the responsible parties. Once building information and the main scope are clear, continue through the office renovation service. Professional design, capacity, submission responsibility and programme remain project-specific; this page adds no local-approval or fixed-duration promise."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 怎样区分现有需求和未来扩充假设？ 把现有员工、访客、会议和储物需求列为当前范围，把可能增加的人数、设备或空间单独列为待讨论假设。说明哪些部门需要同时办公、哪些设施可共用，以及哪些改动可能安排在另一阶段。是否预留或分期，应结合实际现场、租约与预算确认，不能把未来估计自动加入承诺交付。 空间清单如何与设备协调衔接？ 按区域附上设备清单和现有设施资料，再参考 办公室机电与IT协调清单 整理需要负责方核实的问题。确认大楼资料和主要工作范围后，可前往 办公室装修服务 继续咨询。具体专业设计、容量、提交责任和进度须按项目确认，本页不新增当地审批或固定工期承诺。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Current office needs separated from future assumptions, with technical capacity/submissions/programme project-specific. No approval or fixed-duration promise.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

@@ -26,7 +26,7 @@ export default function Promotions() {
 
   return (
     <main className="fc-route-page fc-route-promotions-page" data-route-pending={pageLoading || undefined}>
-      <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords} canonicalPath="/promotions" />
+      <PageMeta ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords} canonicalPath="/promotions" />
       <JsonLdBreadcrumb items={[{ name: routeText.home, url: "/" }, { name: routeText.promotions, url: "/promotions" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.title} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
       <SchemeASection title={copy.listTitle} className="fc-route-promotions-offers">

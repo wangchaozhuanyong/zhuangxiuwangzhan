@@ -23,6 +23,18 @@ jobs:
           node-version: "20"
           cache: npm
 
+      - name: Initialize sanitized evidence
+        run: |
+          node --input-type=module <<'NODE'
+          import { mkdir, writeFile } from 'node:fs/promises';
+          const directory = `audits/real-browser/${process.env.GITHUB_RUN_ID}`;
+          await mkdir(directory, { recursive: true });
+          await writeFile(`${directory}/report.json`, JSON.stringify({
+            ok: false, status: 'NOT_STARTED', sourceRevision: process.env.GITHUB_SHA,
+            sanitized: true, sessionCreationAttempted: false, websiteChecksRun: false,
+          }, null, 2));
+          NODE
+
       - name: Install dependencies
         run: npm ci
 
@@ -34,3 +46,14 @@ jobs:
           REAL_BROWSER_BASE_URL: ${{ inputs.base_url }}
           REAL_BROWSER_TARGETS: ${{ inputs.targets }}
         run: npm run test:real-browsers
+
+      - name: Upload sanitized public browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-browser-sanitized-${{ github.run_id }}
+          path: |
+            audits/real-browser/${{ github.run_id }}/report.json
+            audits/real-browser/${{ github.run_id }}/*.png
+          if-no-files-found: warn
+          retention-days: 14

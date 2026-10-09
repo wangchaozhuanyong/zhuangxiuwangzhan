@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c05-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.278Z",
+  "target": "c05-bilingual-body-v1",
+  "exact_payload_sha256": "3c91a8e17d6200e725e5cb7ba351b9efe3c2aa11e0215d00b90736c23b0c1312",
+  "current_updated_at": "2026-08-22T07:27:29.2592+00:00",
+  "current_full_baseline_sha256": "2acf27063eef3f5ad6af1f00c667a681033f80f23205c9dc4e8fb50580907898",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How can you organise existing information before the first discussion? Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval. How should document-support fees and responsibilities be clarified? Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through home-renovation planning or commercial requirements through the office fit-out scope, then submit the document-support enquiry. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 初次沟通前，怎样整理已有资料？ 可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。 文件协助的费用与责任应怎样确认？ 逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 住宅装修咨询 中；商业单位可结合 办公室装修范围，再 提交文件协助需求。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Document-support checklist preserves current-authority/management and qualified-party confirmation. No asserted complete approval requirements, professional sign-off, fixed fee, duration or result.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

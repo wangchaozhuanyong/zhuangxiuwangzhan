@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c08-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.317Z",
+  "target": "c08-bilingual-body-v1",
+  "exact_payload_sha256": "8fd4076b0916a906dc5d777eb8120c1bc47fff86f16b1fe327c2f54ed1182892",
+  "current_updated_at": "2026-08-22T12:22:32.864064+00:00",
+  "current_full_baseline_sha256": "fba3b53e8e986dcb5dc9903de010202502b15569e493156140d61ace0f03ba42",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " Separate the budget discussion into three columns Use one column for confirmed essential work and quantities, one for optional finishes, storage or equipment, and one for items needing site confirmation. Add the room, photo or plan location and whether materials, labour and related work are included. This makes scope reductions or phasing discussable without comparing totals for different work. Does this article establish a 2026 market average? No. This article offers a way to compare scope, without a matched sample of market quotations. It cannot establish a fixed total, price per square foot or budget guarantee. Review the quotation checklist, then use the free quotation form to share location, area, condition and priorities. Pricing depends on the actual site and written quotation."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 先把预算问题分成三栏 第一栏列已确定的必要工程与数量；第二栏列可以取舍的饰面、收纳或设备方向；第三栏列仍需现场确认的事项。每项附上对应房间、照片或平面位置，以及报价是否包含材料、人工和相关配套。这样可以讨论删减或分阶段的影响，而不是把范围不同的总价直接比较。 这篇文章是否代表2026年的市场均价？ 不代表。本文提供范围比较方法，没有同条件市场报价样本，不能据此推算固定总价、每平方尺价格或预算保证。详细项目可对照 装修报价检查清单，再通过 免费报价入口 提供地点、面积、屋况和优先范围；最终价格以具体现场和书面报价为准。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Essential/optional/unresolved budget columns; explicitly disclaims 2026 market average, fixed total, rate or budget guarantee. Year/title unchanged.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

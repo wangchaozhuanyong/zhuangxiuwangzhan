@@ -67,7 +67,7 @@ export default function Projects() {
 
   return (
     <main className="fc-route-page fc-route-projects-page" data-route-pending={pageLoading || isLoading || undefined}>
-      <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
+      <PageMeta ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }]} />
       <SchemeARouteHero
         kind="listing"

@@ -8,7 +8,7 @@ export const sourceFields = {
  landing_pages:"id,status,slug,title_en,title_zh,content_en,content_zh,benefits_en,benefits_zh,faqs_en,faqs_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
  services:"id,status,slug,title_en,title_zh,content_en,content_zh,scope_items_en,scope_items_zh,process_steps_en,process_steps_zh,faqs_en,faqs_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
  site_pages:"id,status,page_key,path,title_en,title_zh,content_en,content_zh,items_en,items_zh,description_en,description_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,seo_keywords_en,seo_keywords_zh,image_url",
- cms_pages:"id,status,path,title_en,title_zh,deleted_at,cms_sections(status,deleted_at,content_en,content_zh)",
+ cms_pages:"id,status,path,title_en,title_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,seo_keywords_en,seo_keywords_zh,deleted_at,cms_sections(status,deleted_at,content_en,content_zh)",
 };
 const present = value => typeof value === "string" ? Boolean(value.replace(/<[^>]*>/g," ").replace(/&(?:nbsp|#160);/g," ").trim()) : Array.isArray(value) ? value.some(present) : value && typeof value === "object" ? Object.values(value).some(present) : false;
 export const qualifiesLocale = (row,kind,lang) => {

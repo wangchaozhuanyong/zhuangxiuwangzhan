@@ -1,6 +1,123 @@
 import { access } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import command from "selenium-webdriver/lib/command.js";
+
+export function publicDriverFailure(error) {
+  const message = error instanceof Error ? error.message : '';
+  return {
+    unsupportedConfiguration: /unsupported|invalid.{0,30}(device|os.?version|capabilit)|not supported/i.test(message),
+    authenticationFailure: /unauthorized|authentication|invalid.{0,25}(username|access.?key)/i.test(message),
+    quotaExceeded: /quota|exceed.{0,40}(time|limit)|limit.{0,40}(exceed|reach)|trial.{0,40}(expire|over|end|exhaust)|minutes.{0,40}(exhaust|remain)|insufficient.{0,20}(balance|credit)/i.test(message),
+    planUnavailable: /subscription|not.{0,20}(subscribed|entitled)|plan.{0,40}(expire|inactive|unavailable)|(?:upgrade|purchase).{0,30}(?:plan|subscription)/i.test(message),
+    capacityUnavailable: /parallel|concurren|capacity|queue.{0,30}(full|limit)/i.test(message),
+    transientNetworkFailure: /ECONN|ETIMEDOUT|ENOTFOUND|connection|socket|timeout|timed out/i.test(message),
+  };
+}
+
+export async function closeBrowserSession(driver, result) {
+  try {
+    await driver.quit();
+    result.sessionClosed = true;
+  } catch (error) {
+    result.ok = false;
+    result.sessionClosed = false;
+    result.cleanupFailed = true;
+    result.cleanupDiagnostics = publicDriverFailure(error);
+  }
+  return result;
+}
+
+export function publicProviderPlan(httpStatus, payload) {
+  const fields = ["parallel_sessions_running", "team_parallel_sessions_max_allowed",
+    "parallel_sessions_max_allowed", "queued_sessions", "queued_sessions_max_allowed"];
+  const metrics = Object.fromEntries(fields.map(name => {
+    const value = payload && typeof payload === "object" ? payload[name] : null;
+    return [name, Number.isSafeInteger(value) && value >= 0 ? value : null];
+  }));
+  const validMetrics = fields.every(name => metrics[name] !== null);
+  const authorized = httpStatus === 200;
+  return {
+    httpStatus,
+    authorized,
+    authenticationFailure: httpStatus === 401 || httpStatus === 403,
+    metrics,
+    validMetrics,
+    parallelCapacityAvailable: authorized && validMetrics
+      ? metrics.parallel_sessions_running < Math.min(metrics.parallel_sessions_max_allowed, metrics.team_parallel_sessions_max_allowed)
+      : null,
+    // This endpoint reports concurrent capacity, not remaining trial minutes.
+    trialMinutesRemaining: "NOT_MEASURED",
+    ok: authorized && validMetrics,
+  };
+}
+
+export function publicDriverHttpResponse(status, responseBody) {
+  const raw = typeof responseBody === "string" ? responseBody.slice(0, 128 * 1024) : "";
+  let payload;
+  try { payload = JSON.parse(raw); } catch { /* Non-JSON errors are classified without saving their body. */ }
+  const messages = [];
+  let visited = 0;
+  // Legacy JSON Wire errors can put their cause in a string value or nested
+  // wrapper. Inspect error fields only: successful capabilities may contain
+  // credential or account strings that must not classify the response.
+  const collect = (value, depth = 0) => {
+    if (depth > 6 || ++visited > 128) return;
+    if (typeof value === "string") {
+      const text = value.slice(0, 8192);
+      try {
+        const nested = JSON.parse(text);
+        if (nested && typeof nested === "object") { collect(nested, depth + 1); return; }
+      } catch { /* Ordinary error text stays in memory only. */ }
+      messages.push(text);
+      return;
+    }
+    if (Array.isArray(value)) { value.slice(0, 16).forEach(item => collect(item, depth + 1)); return; }
+    if (!value || typeof value !== "object") return;
+    for (const name of ["message", "reason", "error", "errors", "value", "details", "data"]) {
+      if (Object.hasOwn(value, name)) collect(value[name], depth + 1);
+    }
+  };
+  collect(payload);
+  const diagnostics = publicDriverFailure(new Error(payload === undefined ? raw : messages.join(" ")));
+  const standardErrors = ["unknown error", "session not created", "invalid argument", "unsupported operation"];
+  return {
+    httpStatus: Number.isInteger(status) && status >= 100 && status <= 599 ? status : null,
+    jsonResponseParsed: payload !== undefined,
+    providerMessagePresent: messages.length > 0,
+    standardError: standardErrors.includes(payload?.value?.error) ? payload.value.error : null,
+    ...diagnostics,
+    rawResponseSaved: false,
+  };
+}
+
+export async function withNativeDeviceContext(driver, action) {
+  const executor = driver.getExecutor();
+  executor.defineCommand("qaGetContexts", "GET", "/session/:sessionId/contexts");
+  executor.defineCommand("qaGetContext", "GET", "/session/:sessionId/context");
+  executor.defineCommand("qaSetContext", "POST", "/session/:sessionId/context");
+  const run = (name, parameters = {}) => driver.execute(new command.Command(name).setParameters(parameters));
+  const original = await run("qaGetContext");
+  const contexts = await run("qaGetContexts");
+  if (typeof original !== "string" || !Array.isArray(contexts) || !contexts.includes("NATIVE_APP")) {
+    throw new Error("NATIVE_DEVICE_CONTEXT_UNAVAILABLE");
+  }
+  if (original !== "NATIVE_APP") await run("qaSetContext", { name: "NATIVE_APP" });
+  let actionFailed = false;
+  try { return await action(); }
+  catch (error) { actionFailed = true; throw error; }
+  finally {
+    if (original !== "NATIVE_APP") {
+      try { await run("qaSetContext", { name: original }); }
+      catch (error) { if (!actionFailed) throw error; }
+    }
+  }
+}
+
+export async function hideNativeDeviceKeyboard(driver, ios = false) {
+  driver.getExecutor().defineCommand("qaHideKeyboard", "POST", "/session/:sessionId/appium/device/hide_keyboard");
+  return withNativeDeviceContext(driver, () => driver.execute(new command.Command("qaHideKeyboard").setParameters(ios ? { keyName: "Done" } : {})));
+}
 
 const baseUrl = (process.env.INSTALLED_BROWSER_BASE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const selectedTargets = (process.env.INSTALLED_BROWSER_TARGETS || "")
@@ -87,11 +204,146 @@ export function selectRunnableTargets(targets, requested = []) {
 }
 
 export function validateBrowserBaseUrl(value) {
-  const url = new URL(value);
+  let url;
+  try { url = new URL(value); }
+  catch { throw new Error("Browser test base URL must be an HTTP(S) origin without credentials, query or fragment."); }
   if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.search || url.hash || url.pathname !== "/") {
     throw new Error("Browser test base URL must be an HTTP(S) origin without credentials, query or fragment.");
   }
   return url.origin;
+}
+
+export function publicDeviceIdentity(capabilities = {}, session = {}) {
+  if (typeof capabilities.get === "function") {
+    capabilities = Object.fromEntries(["browserName", "browserVersion", "version", "platformName", "platformVersion", "appium:platformVersion", "appium:deviceName", "deviceName", "bstack:options"].map(key => [key, capabilities.get(key)]));
+  }
+  const options = capabilities["bstack:options"] || {};
+  const pick = (values, pattern) => values.find(value => typeof value === "string" && pattern.test(value)) || null;
+  return {
+    browserName: pick([session.browser, capabilities.browserName], /^(chrome|chromium|safari|firefox|edge|microsoftedge)$/i),
+    browserVersion: pick([session.browser_version, capabilities.browserVersion, capabilities.version], /^\d+(?:\.\d+){0,5}$/),
+    os: pick([session.os, capabilities.platformName, options.os], /^(ios|android|windows|mac|macos|os x)$/i),
+    osVersion: pick([session.os_version, capabilities["appium:platformVersion"], capabilities.platformVersion, options.osVersion], /^\d+(?:\.\d+){0,4}$/),
+    deviceName: pick([session.device, capabilities["appium:deviceName"], capabilities.deviceName, options.deviceName], /^(iPhone|Samsung Galaxy)[A-Za-z0-9 ._-]{0,70}$/i),
+  };
+}
+
+export function assertRequestedDeviceIdentity(target, identity) {
+  if (!identity.browserName || !identity.browserVersion || !identity.osVersion || !identity.deviceName || !/^(ios|android)$/i.test(identity.os || "")) {
+    throw new Error("DEVICE_IDENTITY_NOT_RETURNED");
+  }
+  const requestedOs = /^iPhone/i.test(target.options.deviceName) ? "ios" : "android";
+  const requestedVersion = target.options.osVersion.split(".").map(Number);
+  const returnedVersion = identity.osVersion.split(".").map(Number);
+  if (identity.os.toLowerCase() !== requestedOs || identity.browserName.toLowerCase() !== target.browserName.toLowerCase()
+    || identity.deviceName.toLowerCase() !== target.options.deviceName.toLowerCase()
+    || requestedVersion.some((part, index) => part !== (returnedVersion[index] ?? 0))
+    || target.options.realMobile !== true) {
+    throw new Error("DEVICE_IDENTITY_MISMATCH");
+  }
+  return true;
+}
+
+// Runs inside the browser through executeScript. Count and block attempts before
+// they start: completed ResourceTiming entries cannot detect an in-flight write.
+// Keep only counts; request URLs, headers, bodies and credentials are never saved.
+export function negativeLeadRequestGuard(operation, scope = globalThis) {
+  const key = "__qaNegativeLeadRequestGuard";
+  if (operation === "arm") {
+    if (scope[key]) throw new Error("NEGATIVE_FORM_GUARD_ALREADY_ACTIVE");
+    const prototype = scope.XMLHttpRequest?.prototype;
+    if (typeof scope.fetch !== "function" || typeof prototype?.open !== "function" || typeof prototype?.send !== "function") {
+      throw new Error("NEGATIVE_FORM_NETWORK_GUARD_UNAVAILABLE");
+    }
+    const state = { attempts: 0, originalFetch: scope.fetch, originalOpen: prototype.open, originalSend: prototype.send };
+    const leadRequests = new WeakSet();
+    const isLeadRequest = input => {
+      const value = typeof input === "string" ? input : input?.url ?? input?.href;
+      return typeof value === "string" && /(?:^|\/)functions\/v1\/submit-lead(?:[/?#]|$)/.test(value);
+    };
+    state.fetch = function (...args) {
+      if (isLeadRequest(args[0])) {
+        state.attempts++;
+        return Promise.reject(new Error("QA_INVALID_FORM_REQUEST_BLOCKED"));
+      }
+      return Reflect.apply(state.originalFetch, this, args);
+    };
+    state.open = function (...args) {
+      if (isLeadRequest(args[1])) leadRequests.add(this);
+      else leadRequests.delete(this);
+      return Reflect.apply(state.originalOpen, this, args);
+    };
+    state.send = function (...args) {
+      if (leadRequests.has(this)) {
+        state.attempts++;
+        throw new Error("QA_INVALID_FORM_REQUEST_BLOCKED");
+      }
+      return Reflect.apply(state.originalSend, this, args);
+    };
+    Object.defineProperty(scope, key, { configurable: true, value: state });
+    scope.fetch = state.fetch;
+    prototype.open = state.open;
+    prototype.send = state.send;
+  }
+  const state = scope[key];
+  if (!state) throw new Error("NEGATIVE_FORM_NETWORK_GUARD_UNAVAILABLE");
+  const prototype = scope.XMLHttpRequest.prototype;
+  const result = { guardInstalled: scope.fetch === state.fetch && prototype.open === state.open && prototype.send === state.send,
+    leadRequestAttempts: state.attempts };
+  if (operation === "restore") {
+    if (scope.fetch === state.fetch) scope.fetch = state.originalFetch;
+    if (prototype.open === state.open) prototype.open = state.originalOpen;
+    if (prototype.send === state.send) prototype.send = state.originalSend;
+    delete scope[key];
+  } else if (!["arm", "snapshot"].includes(operation)) throw new Error("NEGATIVE_FORM_NETWORK_GUARD_INVALID_OPERATION");
+  return result;
+}
+
+export function publicQaMetrics(value) {
+  if (!value || typeof value !== "object") return {};
+  const fields = ["realMobileRequested", "nativeContextAvailable", "restoredWebContextOnExit", "focusRestored", "nativeTouchNavigation",
+    "tapObserved", "tapDeliveredToExpectedControl", "tapTrusted", "switchedToEnglish", "switchedBackToChinese", "touchPressFeedback", "shopOpened", "testTabClosed",
+    "pressObserved", "pressed", "trusted", "touchPointer", "transformObserved", "pressDuration", "shopTabCreated", "probeArmed", "pointerDownObserved", "pointerUpObserved",
+    "trustedTouchStartObserved", "trustedClickObserved", "pressedDuringEvent", "keyboardHeightBefore", "keyboardHeightAfter", "focusedName", "typedNamePresent",
+    "height", "inputVisible", "inputTop", "inputBottom", "viewportOffset", "menuTop", "menuBottom", "viewportHeight", "keyboardDismissed", "invalidPhoneDisplayed",
+    "leadRequestSent", "guardInstalled", "leadRequestAttempts", "networkGuardRestored", "validationMessagePresent", "firstInvalidFieldFocused", "whatsappTargetVerified",
+    "clickedExternalMessageLink", "inspectedScrollPositions", "overlaps", "distinctNativeScrollPositions", "activeFrames", "reducedMotion", "maxAlignmentError", "maxButtonShift",
+    "minimumViewportHeight", "maximumViewportHeight", "hasViewBox", "squareRatio", "insideViewport", "hiddenFrames", "visibleFrames", "firstVisibleX", "firstVisibleY",
+    "finalX", "finalY", "finalFixed", "documentComplete", "pageVisible", "collectorResultPresent", "motionEntryPresent"];
+  const result = Object.fromEntries(fields.filter(key => typeof value[key] === "boolean" || (typeof value[key] === "number" && Number.isFinite(value[key])))
+    .map(key => [key, value[key]]));
+  const strings = {
+    browserName: /^(chrome|chromium|safari|firefox|edge|microsoftedge)$/i,
+    browserVersion: /^\d+(?:\.\d+){0,5}$/,
+    os: /^(ios|android|windows|mac|macos|os x)$/i,
+    osVersion: /^\d+(?:\.\d+){0,4}$/,
+    deviceName: /^(iPhone|Samsung Galaxy)[A-Za-z0-9 ._-]{0,70}$/i,
+    menuStage: /^(open_first|close_first|open_second|expand_group|navigate_projects)$/,
+    contactStage: /^(open_contact|keyboard_appearance|native_typing|native_keyboard_dismissal|menu_after_keyboard|keyboard_dismissal|invalid_form_submit)$/,
+  };
+  for (const [key, pattern] of Object.entries(strings)) if (typeof value[key] === "string" && pattern.test(value[key])) result[key] = value[key];
+  if (Array.isArray(value.states)) result.states = [...new Set(value.states.filter(state => ["flying", "settling", "done", "skipped", "idle"].includes(state)))];
+  return result;
+}
+
+// This browser-side eligibility check returns only a public path and a boolean.
+// It excludes Admin, provider pages and any visible input containing user data.
+export function publicScreenshotPage(baseOrigin, scope = globalThis) {
+  const location = scope.location;
+  if (location.origin !== baseOrigin || location.search || location.hash || !/^\/(?:zh|en)(?:\/(?:services|materials|projects|quote|contact|faq|blog))?\/?$/.test(location.pathname)
+    || !scope.document.querySelector("main") || scope.document.querySelector('input[type="password"]')) return { eligible: false, path: null };
+  const fields = Array.from(scope.document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), textarea'));
+  if (fields.some(field => field.value && !(field.id === "contact-name" && field.value === "QA keyboard only"))) return { eligible: false, path: null };
+  return { eligible: true, path: location.pathname };
+}
+
+export function assertMobileMotion(observation) {
+  if (!observation || observation.activeFrames < 3 || !observation.states?.includes("done")) throw new Error("MOTION_NOT_OBSERVED");
+  if (!observation.reducedMotion && (!observation.states.includes("flying") || !observation.states.includes("settling"))) throw new Error("MOTION_PHASE_MISSING");
+  if (!Number.isFinite(observation.maxAlignmentError) || observation.maxAlignmentError > 1.25 || observation.hasViewBox) throw new Error("MOTION_FRAME_MISALIGNED");
+  if (!Number.isFinite(observation.maxButtonShift) || observation.maxButtonShift > 1) throw new Error("FLOATING_BUTTON_JUMPED");
+  if (!Number.isFinite(observation.squareRatio) || Math.abs(observation.squareRatio - 1) > .025 || !observation.insideViewport) throw new Error("MOBILE_BUTTON_GEOMETRY_INVALID");
+  return true;
 }
 
 const pages = [

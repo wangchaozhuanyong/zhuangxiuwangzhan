@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c13-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.373Z",
+  "target": "c13-bilingual-body-v1",
+  "exact_payload_sha256": "9bab9c78a9220d68a09847dbb125952cd834bea87fcceb2d207860b2429fa229",
+  "current_updated_at": "2026-08-22T12:23:56.852625+00:00",
+  "current_full_baseline_sha256": "aea5c8bac45ce438e9ed0b3a753f1991540388ddae2a7b2bfddcfd3facbcbef0",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " Which functions should a feature-wall brief identify first? Identify whether the wall is mainly decorative, for a television, display or storage, then list retained equipment, sockets and access needs. Supply dimensions and photos, separately flagging known dampness, damage or other site concerns for assessment. A rendering communicates visual direction; it does not confirm equipment installation, wall conditions or material performance. Connect the main work to the appropriate service scope For colour and texture, review artistic wall planning; for television units, display cabinetry and storage, see custom furniture. Confirm samples, edge details, equipment interfaces and quotation inclusions separately. These style ideas are not evidence of a current trend survey, available stock or completed client work."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 背景墙需求应先说明哪些功能？ 说明它主要用于装饰、电视、展示还是收纳，再列出拟保留设备、插座和需要取用或维护的位置。提供墙面尺寸与照片，并把已知潮湿、破损或其他现场问题单独标注给负责方评估。效果图用于沟通视觉方向，不证明具体设备安装、墙体条件或材料性能已经确认。 按主要工作连接合适的服务范围 以颜色和肌理为主时，可查看 艺术墙面规划；涉及电视柜、展示柜和收纳时，可查看 定制家具服务。样板、收边、设备接口和报价包含范围应分别确认。文章中的风格方向不代表当年市场趋势调查、可用库存或已经完成的客户案例。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Function/equipment/site concerns separated from renders; no current trend survey, stock or completed-client claim. Existing 2025 title is untouched.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

@@ -1264,10 +1264,16 @@ html[data-public-theme="warm-stone"] .scheme-a-public-shell input[type="range"] 
 .fc-route-cms-copy { max-width: 760px; color: hsl(var(--muted-foreground)); font-size: 15px; line-height: 1.85; }
 .fc-route-cms-copy :is(h2, h3) { margin: 38px 0 12px; color: hsl(var(--foreground)); font-family: var(--font-display); font-weight: 400; }
 .fc-route-cms-list { display: grid; gap: 8px; margin-top: 28px; }
-.fc-route-cms-list > div { padding: 20px; background: rgb(253 252 250 / 0.24); box-shadow: none; }
-.fc-route-cms-list span { color: var(--public-accent); font-size: 12px; }
+.fc-route-cms-list > div { min-width: 0; padding: 20px; overflow-wrap: anywhere; background: rgb(253 252 250 / 0.24); box-shadow: none; }
+.fc-route-cms-list > div > span { color: var(--public-accent); font-size: 12px; }
 .fc-route-cms-list h3 { margin-top: 12px; font-family: var(--font-display); font-size: 18px; font-weight: 400; }
 .fc-route-cms-list p { margin-top: 8px; color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 1.62; }
+.fc-route-cms-media { aspect-ratio: 16 / 10; margin-bottom: 18px; overflow: hidden; border-radius: var(--radius); background: var(--public-surface-section); }
+.fc-route-cms-avatar { width: 72px; height: 72px; margin-bottom: 18px; overflow: hidden; border-radius: 50%; background: var(--public-surface-section); }
+.fc-route-cms-list :is(.fc-route-cms-media, .fc-route-cms-avatar) :is(picture, img, .smart-image-frame) { display: block; width: 100%; height: 100%; }
+.fc-route-cms-list :is(.fc-route-cms-media, .fc-route-cms-avatar) img { object-fit: cover; }
+.fc-route-cms-action-panel a { overflow-wrap: anywhere; }
+.fc-route-cms-action-panel a[aria-disabled="true"] { cursor: default; opacity: .6; }
 
 .fc-route-not-found { min-height: 100svh; padding-top: var(--site-header-height, 76px); color: #292E29; background: linear-gradient(145deg, #F7F6F2, #ECEDE6); }
 .fc-route-not-found > section { display: grid; min-height: calc(100svh - var(--site-header-height, 76px)); place-items: center; padding: 70px 22px 110px; }

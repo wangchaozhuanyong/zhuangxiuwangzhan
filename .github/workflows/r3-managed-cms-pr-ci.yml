@@ -26,7 +26,11 @@ on:
       - scripts/managed-cms-targets-org020-v7.mjs
       - scripts/managed-cms-targets-native-body-v1.mjs
       - scripts/managed-cms-targets-owner-publisher-three-v1.mjs
+      - scripts/managed-cms-targets-unified-content-v1.mjs
+      - scripts/publish-remaining-completion-20261009.mjs
+      - drafts/publishing/fc-20261009-remaining-completion-v1/**
       - drafts/seo/fc-20261007-publisher-three-designated-binding-v1/**
+      - drafts/seo/fc-20261009-unified-protected-cms-bindings-v1/**
       - drafts/seo/fc-20260927-cms-native-admission-contract-v1/**
       - backups/fc-20260927-cms-native-admission-contract-v1/**
       - scripts/publish-content-trust-fixes.mjs
@@ -36,6 +40,8 @@ on:
       - src/lib/contentPublishOrg020V7.test.ts
       - src/lib/contentPublishNativeBody.test.ts
       - src/lib/contentPublishOwnerPublisherThree.test.ts
+      - src/lib/contentPublishUnifiedContent.test.ts
+      - src/lib/contentPublishRemainingBatch.test.ts
       - src/lib/contentPublishSparsePatch.test.ts
       - src/lib/contentPublishManagedBlog.test.ts
       - src/lib/contentPublishKlMediaTargets.test.ts
@@ -53,6 +59,9 @@ on:
       - supabase/functions/content-publish/org020-v7-targets.ts
       - supabase/functions/content-publish/native-body-targets.ts
       - supabase/functions/content-publish/owner-publisher-three-targets.ts
+      - supabase/functions/content-publish/unified-content-targets.ts
+      - supabase/functions/_shared/managed-targets.ts
+      - supabase/functions/_shared/unified-content-targets.ts
       - supabase/functions/content-publish/managed-timestamp.ts
       - supabase/functions/content-publish/permit-auth.ts
       - supabase/functions/content-publish/permit-issuer.ts
@@ -104,6 +113,8 @@ jobs:
             src/lib/contentPublishOrg020V7.test.ts \
             src/lib/contentPublishNativeBody.test.ts \
             src/lib/contentPublishOwnerPublisherThree.test.ts \
+            src/lib/contentPublishUnifiedContent.test.ts \
+            src/lib/contentPublishRemainingBatch.test.ts \
             src/lib/contentPublishSparsePatch.test.ts \
             src/lib/contentPublishManagedBlog.test.ts \
             src/lib/contentPublishKlMediaTargets.test.ts \

@@ -155,13 +155,19 @@ const addSitePage = (lang, row) => {
       : row.seo_description_en || row.description_en;
   const sectionTitle=(row.cms_sections||[]).filter(s=>s.status==="published"&&!s.deleted_at).map(s=>s[`content_${lang}`]?.title).find(Boolean);
   if (!title && !description && !sectionTitle) return;
-  const ogImage = row.image_url
-    ? (String(row.image_url).startsWith("http") ? row.image_url : `${SITE_URL}${row.image_url}`)
-    : OG_IMAGE;
+  let ogImage = OG_IMAGE;
+  try {
+    const sourceImage = String(row.image_url || "").trim();
+    const image = new URL(sourceImage, SITE_URL);
+    if (sourceImage && /^https?:$/.test(image.protocol)) ogImage = image.href;
+  } catch {
+    // Invalid saved images use the same default as the public page.
+  }
   const existing = manifest[localized] || {};
-  const rawTitle = title || sectionTitle || COMPANY;
+  const rawTitle = title || sectionTitle || existing.title || COMPANY;
   const safeTitle = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
-  const safeDescription = sanitizeSeoText(description || rawTitle || COMPANY).slice(0, 300);
+  const bodyDescription = String(row[`content_${lang}`] || "").slice(0, 4096).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const safeDescription = sanitizeSeoText(description || bodyDescription || existing.description || rawTitle || COMPANY).slice(0, 300);
   manifest[localized] = {
     ...existing,
     ...provenance,
@@ -228,7 +234,16 @@ for (const lang of ["en", "zh"]) {
       ogImage: resolveReviewedMaterialImage(row.image_url || "", row.slug) || OG_IMAGE,
     });
   }
-  for (const [row,kind] of [...sitePages.map(row=>[row,"site_page"]),...cmsPages.map(row=>[row,"cms_page"])]) { const path=currentSourcePath(row,kind); if(!path||sourceOwners.get(path)?.row!==row||!qualifiesLocale(row,kind,lang))continue; provenance=bind(row,kind,lang); addSitePage(lang,row);}
+  for (const [row,kind] of [...sitePages.map(row=>[row,"site_page"]),...cmsPages.map(row=>[row,"cms_page"])]) {
+    const path=currentSourcePath(row,kind);
+    if(!path||sourceOwners.get(path)?.row!==row)continue;
+    // Built-in renderers already own these routes. Their published page-level
+    // metadata remains authoritative even when the body comes from that renderer.
+    const ownsStatic=kind==="site_page"&&Boolean(manifest[`/${lang}${path==="/"?"":path}`]?.owned_static);
+    if(!qualifiesLocale(row,kind,lang)&&!(ownsStatic&&row.status==="published"&&!row.deleted_at))continue;
+    provenance=bind(row,kind,lang,ownsStatic);
+    addSitePage(lang,row);
+  }
   for (const row of projects) {
     if(!qualifiesLocale(row,"project",lang))continue;
     provenance=bind(row,"project",lang);

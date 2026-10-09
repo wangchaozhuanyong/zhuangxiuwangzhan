@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c03-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.253Z",
+  "target": "c03-bilingual-body-v1",
+  "exact_payload_sha256": "6966d99da8993d54cef0fedd0437301d15e4075ed3c0fd023018a00991e8c424",
+  "current_updated_at": "2026-09-26T09:59:07.897407+00:00",
+  "current_full_baseline_sha256": "a744f0f8d27d1952a023ff7cace44bda6d43a18b9365481da82069a9a9b14d30",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " Which choices should be recorded when confirming a design? Keep cabinet positions and dimensions, internal divisions, doors and finishes, handles or opening method, hardware and accessories in one confirmation list, marking items that still need site review. Wardrobes should reflect the actual clothing, drawers and access habits rather than appearance or total length alone; see the custom wardrobe quotation guide. Separately confirm who supplies drawings, samples, revisions and installation, and which deliverables are included in the written scope. What records make installation handover easier to follow up? Review visible finishes, door and drawer operation, accessories and outstanding adjustments with the responsible party against the agreed list. Record the cabinet location, photos, proposed follow-up and owner for each issue, then retain the recheck result; methods and responsibilities follow the project agreement. Use the handover recording checklist and ask for care information for the selected materials and hardware, applicable after-sales terms and contact details. This does not add a fixed warranty scope or an unconfirmed performance promise."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 确认方案时，需要把哪些选择记录下来？ 可把柜体位置与尺寸、内部划分、门板与饰面、把手或开门方式、五金及配件整理到同一份确认清单，并标注哪些仍待现场核对。衣柜应按实际衣物、抽屉和取用习惯讨论，而不是只比较外观或总长度；详细问项可参考 定制衣柜报价比较指南。图纸、样板、修改与安装由谁提供，以及包含哪些交付，应在书面范围中分别确认。 安装交付时怎样保留可跟进的记录？ 与负责方对照已确认清单，记录可见饰面、门和抽屉操作、配件及待调整项。每个问题写明柜体位置、照片、需确认的处理方式和跟进人，再保留复查结果；具体检查方法与责任按项目约定。可参考 装修交付记录清单，并询问所选材料与五金的保养说明、适用售后条款和联系方法。这不新增固定保修范围或未经确认的材料性能承诺。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Cabinet choices, revision responsibilities and follow-up records follow written scope. New text adds no fixed warranty or unverified performance; existing free-quote/30km wording is unchanged and currently published.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

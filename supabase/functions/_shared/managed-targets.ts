@@ -1,6 +1,7 @@
 import { ORG020_V7_TARGETS } from "./org020-v7-targets.ts";
 import { NATIVE_BODY_TARGETS } from "./native-body-targets.ts";
 import { OWNER_PUBLISHER_THREE_TARGETS } from "./owner-publisher-three-targets.ts";
+import { UNIFIED_CONTENT_TARGETS } from "./unified-content-targets.ts";
 export { ORG020_V7_TARGETS };
 
 export type ManagedTarget = {
@@ -26,6 +27,7 @@ export type ManagedTarget = {
 
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
+  ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),
   ...NATIVE_BODY_TARGETS.filter((target) => target.contentType === "service"),
   { id: "b401a610-a4dc-4a0b-a7e0-efcac6c81d71", slug: "builtin", contentType: "service", taskId: "fc-20260920-builtin-whole-house-custom-v1", actionId: "publish-builtin-whole-house-custom-v1", candidateVersion: "builtin-whole-house-custom-v1", scope: "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71" },

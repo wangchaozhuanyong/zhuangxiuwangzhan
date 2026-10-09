@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c14-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.381Z",
+  "target": "c14-bilingual-body-v1",
+  "exact_payload_sha256": "f965cb44fd55ef3e94c795fc999235d64448668a15eb0138c2ebc7c09d47c027",
+  "current_updated_at": "2026-08-22T12:23:48.386851+00:00",
+  "current_full_baseline_sha256": "de741d1348c8684a89e606f97c4fed9e4a6b8cb034dca0b5f58f9ba67ab00313",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How can reference images become a useful design brief? Annotate each reference with the colours, storage approach, material character or lighting you like, as well as elements to avoid. Separately list retained furniture, daily activities, cleaning habits and budget priorities so appearance and use are discussed together. Materials and forms in a reference image are not automatically suitable for the actual space. Confirm the concept direction separately from the final scope Discuss layout and material direction through interior design and space planning, then use the material comparison checklist to record actual samples and unresolved points. Confirm drawings, visuals, revisions and construction coordination in the written scope. Concept images are not completed-project evidence or a fixed-price or delivery guarantee."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 怎样把喜欢的参考图转成设计brief？ 不要只写喜欢某种风格，可在每张参考图旁标注喜欢的颜色、收纳方式、材质感觉或光线，并说明不想保留的部分。另列现有家具、日常活动、清洁习惯与预算优先级，让视觉偏好和使用需求同时进入讨论。参考图的材质与造型不自动证明适用于实际空间。 概念方向与最终范围应分开确认 可通过 室内设计与空间规划 讨论布局和材料方向，再用 选材比较清单 记录实际样板与待确认项。图纸、效果图、修改及施工衔接是否包含，应按书面范围确认；概念图不代表真实完工案例，也不构成固定价格或交付保证。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Reference-image preferences separated from actual suitability/deliverables; no completion evidence, fixed price or delivery promise.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

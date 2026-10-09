@@ -28,7 +28,7 @@ const FAQ = () => {
 
   return (
     <main className="fc-route-page" data-route-pending={pageLoading || isLoading || homeLoading || undefined}>
-      <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
+      <PageMeta ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
       <JsonLdFAQ faqs={allFaqs} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.eyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.title} description={pageContent?.description || t.intro} />

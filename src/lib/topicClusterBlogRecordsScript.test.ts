@@ -199,7 +199,8 @@ describe("topic-cluster Blog publish records", () => {
     ];
     const publisherThreeTargets = ["v17-owner-publisher-native-preparation-v2-20261007",
       "v18-owner-publisher-native-preparation-v2-20261007", "v20-owner-publisher-native-preparation-v2-20261007"];
-    const publishTargets = [...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets];
+    const unifiedTargets = ["design-body-faq-unified-20261009-v1", "bathroom-body-step-unified-20261009-v1"];
+    const publishTargets = [...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
     expect(cases).toHaveLength(2);
@@ -207,7 +208,12 @@ describe("topic-cluster Blog publish records", () => {
     expect(cases[1]).toEqual(publishTargets);
     for (const target of publishTargets) expect(workflow).toContain(`          - ${target}`);
     for (const target of mediaTargets) expect(cases[0]).not.toContain(target);
-    for (const target of publisherThreeTargets) expect(cases[0]).not.toContain(target);
+    for (const target of [...publisherThreeTargets, ...unifiedTargets]) expect(cases[0]).not.toContain(target);
+    for (const targets of cases) expect(targets).not.toContain("remaining-completion-20261009");
+    expect(workflow).toContain('if [ "$PUBLISH_TARGET" = "remaining-completion-20261009" ]; then');
+    expect(workflow).toContain('[ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ]');
+    expect(workflow).toContain('[ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]');
+    expect(workflow).toContain("if: ${{ inputs.target != 'remaining-completion-20261009' }}");
     expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
       .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
     for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {

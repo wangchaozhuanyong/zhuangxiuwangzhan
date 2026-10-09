@@ -17,6 +17,7 @@ import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
+import { notFoundPageText } from "../src/i18n/notFoundPageText";
 import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
 import { translateDisplayText } from "../src/i18n/displayLabels";
 import { stripHtml } from "../src/lib/text";
@@ -105,7 +106,7 @@ type PagesEnv = {
   };
 };
 
-const DEFAULT_OG_IMAGE = (manifest as Record<string, SeoEntry>)["/en"]?.ogImage ?? "";
+const DEFAULT_OG_IMAGE = "https://flashcast.com.my/og-image.webp";
 const DEFAULT_LOGO_PNG_PATH = "/logo-flashcast.png";
 const DEFAULT_LOGO_WEBP_PATH = "/logo-flashcast.webp";
 const DEFAULT_LOGO_VERSIONED_WEBP_PATH = "/logo-flashcast-20260605.webp";
@@ -1081,9 +1082,6 @@ const stripMarkup = (value: unknown) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const boundedLocalizedContent = (row: PublicDataRow, lang: "en" | "zh") =>
-  localizedField(row, "content", lang).slice(0, 4_096);
-
 const buildReadableRenovationBodyMarkup = (
   key: string,
   state: Pick<DynamicRouteState, "kind" | "row"> | null | undefined,
@@ -1134,9 +1132,14 @@ const localizedField = (row: PublicDataRow, base: string, lang: "en" | "zh") => 
 };
 
 const absolutePublicUrl = (value: string) => {
-  if (!value) return DEFAULT_OG_IMAGE;
-  if (/^https?:\/\//i.test(value)) return value;
-  return `${PUBLIC_SITE_URL}${value.startsWith("/") ? value : `/${value}`}`;
+  if (!value.trim()) return DEFAULT_OG_IMAGE;
+  try {
+    const url = new URL(value.trim(), PUBLIC_SITE_URL);
+    if (/^https?:$/.test(url.protocol)) return url.href;
+  } catch {
+    // Malformed saved metadata must keep a usable default image.
+  }
+  return DEFAULT_OG_IMAGE;
 };
 
 const buildDynamicSeoEntry = (
@@ -1147,30 +1150,33 @@ const buildDynamicSeoEntry = (
 ): SeoEntry => {
   const lang: "en" | "zh" = key.startsWith("/zh") ? "zh" : "en";
   const alternateLang = lang === "zh" ? "en" : "zh";
-  const rawTitle =
-    localizedField(row, "seo_title", lang) ||
-    localizedField(row, "title", lang) ||
+  const selectedField = (base: string) => readString(row, `${base}_${lang}`);
+  const sourceTitle =
+    selectedField("seo_title") ||
+    selectedField("title") ||
     readString(row, "area_name") ||
     fallback?.title ||
     "FLASH CAST";
-  const rawDescription = kind === "blog"
-    ? localizedField(row, "seo_description", lang) ||
-      localizedField(row, "excerpt", lang) ||
+  const sourceDescription = kind === "blog"
+    ? selectedField("seo_description") ||
+      selectedField("excerpt") ||
       fallback?.description ||
-      rawTitle
-    : localizedField(row, "seo_description", lang) ||
-      localizedField(row, "description", lang) ||
-      localizedField(row, "excerpt", lang) ||
-      boundedLocalizedContent(row, lang) ||
+      sourceTitle
+    : selectedField("seo_description") ||
+      selectedField("description") ||
+      selectedField("excerpt") ||
+      selectedField("content").slice(0, 4096) ||
       fallback?.description ||
-      rawTitle;
+      sourceTitle;
+  const rawTitle = kind === "service_area" ? translateDisplayText(sourceTitle, lang) : sourceTitle;
+  const rawDescription = kind === "service_area" ? translateDisplayText(sourceDescription, lang) : sourceDescription;
   const boundProjectMetadata = kind === "project" ? projectPublicMetadata(row, lang) : undefined;
-  const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST`;
+  const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST SDN. BHD.`;
   const canonicalPath = key === "/" ? "/en" : key;
   const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh)/, "") || "/";
   const enPath = pathWithoutLanguage === "/" ? "/en" : `/en${pathWithoutLanguage}`;
   const zhPath = pathWithoutLanguage === "/" ? "/zh" : `/zh${pathWithoutLanguage}`;
-  const keywordValue = localizedField(row, "seo_keywords", lang) || readString(row, "category");
+  const keywordValue = selectedField("seo_keywords") || readString(row, "category");
   const tags = Array.isArray(row.tags)
     ? row.tags.filter((item): item is string => typeof item === "string" && Boolean(item.trim())).map((item) => item.trim())
     : [];
@@ -1720,10 +1726,19 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   return out;
 };
 
-const injectNoIndexNotFound = (html: string, siteSettings?: SiteSettingsHead | null) => {
+const injectNoIndexNotFound = (html: string, siteSettings?: SiteSettingsHead | null, key = "/en") => {
   const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
-  let out = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title data-rh="true">Page not found | ${siteName}</title>`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*name="description"[^>]*>/i, `<meta data-rh="true" name="description" content="The requested page was not found." />`);
+  const language = key.startsWith("/zh") ? "zh" : "en";
+  const copy = notFoundPageText[language];
+  const title = escapeHtml(`404 | ${copy.title}`) + ` | ${siteName}`;
+  const description = escapeHtml(copy.metaDescription);
+  let out = html.replace(/<html\s+lang="[^"]*"/i, `<html lang="${language === "zh" ? "zh-CN" : "en"}"`);
+  out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title data-rh="true">${title}</title>`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="description"[^>]*>/i, `<meta data-rh="true" name="description" content="${description}" />`);
+  out = out.replace(/<link\b[^>]*rel="(?:canonical|alternate)"[^>]*>/gi, "");
+  for (const [attribute, field, value] of [["property", "og:title", title], ["property", "og:description", description], ["property", "og:url", escapeHtml(`${PUBLIC_SITE_URL}${key}`)], ["name", "twitter:title", title], ["name", "twitter:description", description]]) {
+    out = replaceOrInsertTag(out, new RegExp(`<meta\\b[^>]*${attribute}="${field}"[^>]*>`, "i"), `<meta data-rh="true" ${attribute}="${field}" content="${value}" />`);
+  }
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="robots"[^>]*>/i, `<meta data-rh="true" name="robots" content="noindex, nofollow" />`);
   return injectBrandAssets(out, siteSettings);
 };
@@ -2181,7 +2196,7 @@ export const onRequest: PagesFunction = async (context) => {
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
-  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings);
+  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings, key);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
   if (siteSettings) {
@@ -2301,7 +2316,7 @@ export const onRequest: PagesFunction = async (context) => {
           : staticMeta;
       let transformed = fallbackMeta
         ? injectSeo(html, fallbackMeta, prefetchedSiteSettings)
-        : injectNoIndexNotFound(html, prefetchedSiteSettings);
+        : injectNoIndexNotFound(html, prefetchedSiteSettings, key);
       transformed = injectPerformanceHints(transformed, env as Record<string, string | undefined>);
       const headers = new Headers(appShellResponse.headers);
       if (staticMeta) {

@@ -5,6 +5,7 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
+import { SmartImage } from "@/components/SmartImage";
 import { Button } from "@/components/ui/button";
 import { SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -69,6 +70,25 @@ const CmsActionLink = ({ href, label }: { href?: string; label: string }) => hre
   ? <Link to={href}>{label}</Link>
   : <a aria-disabled="true">{label}</a>;
 
+const safeCmsImageSrc = (value: unknown) => {
+  if (typeof value !== "string" || !isSafeContentUrl(value, true) || /^[#?]/.test(value.trim())) return undefined;
+  return safeCmsHref(value);
+};
+
+const CmsActionPanel = ({ title, content }: { title: string; content: Record<string, unknown> }) => {
+  const actions = [
+    { label: firstText(content.primary_label), href: safeCmsHref(content.primary_url) },
+    { label: firstText(content.secondary_label), href: safeCmsHref(content.secondary_url) },
+  ].filter((action) => action.label);
+  if (!title && !actions.length) return null;
+  return (
+    <div className="fc-route-action-panel fc-route-cms-action-panel">
+      {title && <h2>{title}</h2>}
+      {actions.length > 0 && <div>{actions.map((action, index) => <CmsActionLink key={index} {...action} />)}</div>}
+    </div>
+  );
+};
+
 const renderList = (items: unknown[], type: string) => {
   if (!items.length) return null;
   return (
@@ -84,10 +104,29 @@ const renderList = (items: unknown[], type: string) => {
         const description = type === "faq"
           ? firstText(value.answer, value.description, value.content, value.text)
           : firstText(value.quote, value.description, value.content, value.text, value.body);
-        if (!title && !description) return null;
+        const image = safeCmsImageSrc(value.image_url);
+        const avatar = type === "testimonials";
+        const imageAlt = firstText(value.alt, avatar ? value.name : title, description);
+        if (!title && !description && !image) return null;
         const href = safeCmsHref(value.url);
         return (
           <div key={`${title}-${index}`}>
+            {image && (
+              <div className={avatar ? "fc-route-cms-avatar" : "fc-route-cms-media"}>
+                <SmartImage
+                  src={image}
+                  alt={imageAlt}
+                  width={avatar ? 72 : 960}
+                  height={avatar ? 72 : 600}
+                  targetAspectRatio={avatar ? { width: 1, height: 1 } : { width: 16, height: 10 }}
+                  resize="cover"
+                  loading={index < 6 ? "eager" : "lazy"}
+                  decoding="async"
+                  sizes={avatar ? "72px" : "(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 90vw"}
+                  showFailureFallback
+                />
+              </div>
+            )}
             <span>{String(index + 1).padStart(2, "0")}</span>
             {title && <h3>{href ? <Link to={href} style={{ font: "inherit", color: "inherit", textDecoration: "inherit" }}>{title}</Link> : title}</h3>}
             {description && <p>{description}</p>}
@@ -99,7 +138,7 @@ const renderList = (items: unknown[], type: string) => {
 };
 
 const CmsSection = ({ section, pageBody }: { section: PublishedCmsSection; pageBody: string }) => {
-  const type = section.section_type.toLowerCase();
+  const type = section.section_type.trim().toLowerCase().replace(/-/g, "_");
   if (type.includes("hero")) return null;
 
   const content = toRecord(section.content);
@@ -110,17 +149,20 @@ const CmsSection = ({ section, pageBody }: { section: PublishedCmsSection; pageB
   const sectionHtml = body ? renderCmsBody(body) : "";
   const visibleBody = pageBody && sectionHtml === renderCmsBody(pageBody) ? "" : sectionHtml;
   const items = Array.isArray(content.items) ? content.items : [];
+  const isCta = type === "cta";
+  const hasActions = isCta && Boolean(firstText(content.primary_label, content.secondary_label));
 
-  if (!title && !visibleBody && !items.length) return null;
+  if (!title && !visibleBody && !items.length && !hasActions) return null;
 
   return (
-    <SchemeASection title={title || undefined}>
+    <SchemeASection title={!isCta && title ? title : undefined}>
         {visibleBody && (
           <div
             className="fc-route-cms-copy prose prose-neutral"
             dangerouslySetInnerHTML={{ __html: visibleBody }}
           />
         )}
+        {isCta && <CmsActionPanel title={title} content={content} />}
         {renderList(items, type)}
     </SchemeASection>
   );
@@ -175,12 +217,7 @@ export default function CmsDynamicPage() {
   const heroImage = page.image_url || toText(sectionHeroImage);
   const heroAlt = page.alt || page.title;
   const sections = page.sections || [];
-  const cta = toRecord(sections.find((section) => section.section_type.trim().toLowerCase() === "cta")?.content);
-  const ctaTitle = firstText(cta.title, page.cta_title, t.quote);
-  const primaryLabel = firstText(cta.primary_label, page.cta_title, t.quote);
-  const secondaryLabel = firstText(cta.secondary_label, t.fallbackDescription);
-  const primaryHref = safeCmsHref(firstText(cta.primary_url, "/quote#quote-form"));
-  const secondaryHref = safeCmsHref(firstText(cta.secondary_url, "/contact"));
+  const hasCtaSection = sections.some((section) => section.section_type.trim().toLowerCase() === "cta");
 
   return (
     <main className="fc-route-page">
@@ -200,7 +237,7 @@ export default function CmsDynamicPage() {
               className="fc-route-cms-copy prose prose-neutral"
               dangerouslySetInnerHTML={{ __html: renderCmsBody(page.content) }}
             />
-            <div className="fc-route-action-panel"><h2>{ctaTitle}</h2><div><CmsActionLink href={primaryHref} label={primaryLabel} /><CmsActionLink href={secondaryHref} label={secondaryLabel} /></div></div>
+            {!hasCtaSection && <CmsActionPanel title={firstText(page.cta_title, t.quote)} content={{ primary_label: firstText(page.cta_title, t.quote), primary_url: "/quote#quote-form", secondary_label: t.fallbackDescription, secondary_url: "/contact" }} />}
         </SchemeASection>
       )}
 

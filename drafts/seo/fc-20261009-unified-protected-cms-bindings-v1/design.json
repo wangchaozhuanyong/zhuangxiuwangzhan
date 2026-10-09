@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "task_id": "fc-unified-release-continuation-20261009",
+  "action_id": "publish-design-body-faq-unified-20261009-v1",
+  "candidate_version": "design-body-faq-unified-20261009-v1",
+  "scope": "flashcast.com.my:services:0af89b93-8938-4a98-ba65-6525fbbe92c1:content_en,content_zh,faqs_en,faqs_zh",
+  "record_id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+  "slug": "design",
+  "expected_updated_at": "2026-09-24T16:55:25.345204+00:00",
+  "changed_fields": [
+    "content_en",
+    "content_zh",
+    "faqs_en",
+    "faqs_zh"
+  ],
+  "allowed_leaf_effects": [
+    "content_en",
+    "content_zh",
+    "faqs_en",
+    "faqs_zh"
+  ],
+  "desired_fields": {
+    "content_zh": "<p>室内设计不是只挑颜色或摆家具。好的设计应先解决空间动线、收纳、采光、材料搭配、施工可行性和预算优先级。FLASH CAST 可根据确认范围，把空间规划、设计方案、定制家具、材料选择和装修协调衔接起来。 如果同时考虑室内设计与装修，请先提供空间用途、平面图或现场照片，以及想调整的布局、收纳和材料方向。我们会据此讨论设计方向与装修范围如何衔接；图纸、3D 效果图、施工及报价的具体交付，以现场条件和确认范围为准。</p><h2>室内设计服务与空间规划方向</h2><p>FLASH CAST 的室内设计与空间规划面向住宅和商业空间，主要服务地区为吉隆坡、雪兰莪与巴生谷。咨询可从布局动线、功能分区、收纳、家具与柜体位置、材料和视觉方向开始，再按现场条件及确认范围讨论与装修的衔接。</p><p>规划厨房或全屋收纳时，设计方向应同时考虑使用习惯、可用尺寸和柜体需求；商业空间则可先整理使用人数、工作或经营方式及需要调整的功能区。具体设计内容、图纸、3D 可视化和施工协调范围需在项目确认时逐项说明。</p><h2>开始设计咨询前，建议准备这些资料</h2><p>项目地点、空间类型、大致面积与当前使用状态。</p><p>现有平面图（如有）和现场照片，以及想保留或调整的位置。</p><p>主要使用需求，例如动线、厨房操作、衣物收纳或办公分区。</p><p>材料与风格参考、预算方向、优先事项及希望安排的时间。</p><p>不必为了首次咨询先制作完整设计图。可先通过现有联系或报价入口说明手头资料，再与团队确认哪些现场信息需要补充。</p><h2>怎样整理设计与装修的规划顺序</h2><p>1. 先说明空间用途与主要问题，整理照片、平面图及预算方向。</p><p>2. 结合现场测量和条件，讨论布局、动线、收纳、材料及视觉方向。</p><p>3. 把设计方向与拟实施范围对照，确认图纸或效果图需求、施工衔接与报价范围。</p><p>具体工作内容、交付资料和安排，以双方确认范围为准。</p><h2>哪些因素会影响设计与装修报价</h2><p>空间面积、现有布局、图纸与效果图需求、材料选择、定制柜体、修改范围及协调需求都会影响报价。比较方案时，建议同时核对包含内容、可选项目和未包含事项。</p><p>报价免费；这不等于设计、3D 效果图或施工图免费，也不代表这些项目自动包含在任何装修报价中。请在确认范围前核对具体费用与交付内容。</p><h2>把设计方向连接到相关服务</h2><p>全屋柜体、衣柜和收纳需求：查看<a href=\"/zh/services/builtin\">全屋定制与定制家具</a>。</p><p>厨房动线、柜体和材料：查看<a href=\"/zh/services/kitchen\">厨房装修与橱柜规划</a>。</p><p>住宅整体施工范围：查看<a href=\"/zh/services/renovation\">住宅装修服务</a>。</p><p>工作区、会议区和办公室收纳：查看<a href=\"/zh/services/office-renovation\">办公室装修与空间规划</a>。</p><p>店铺和经营空间：查看<a href=\"/zh/services/shop-renovation\">店铺装修与商业空间规划</a>。</p><p>准备好项目地点、空间类型、照片或现有平面图后，前往<a href=\"/zh/quote\">室内设计与装修报价咨询</a>，先说明需要评估的范围。</p>",
+    "content_en": "<p>Interior design should clarify layout flow, storage, daylight, material direction, construction feasibility, and budget priorities before renovation begins. FLASH CAST helps owners and business operators connect space planning, design concepts, custom built-in furniture, material selection, and renovation coordination after the scope is confirmed. If you are planning interior design alongside renovation, share the intended use, a floor plan or site photos, and the layout, storage and material priorities you want to review. We can then discuss how the design direction connects with the renovation scope. Specific drawings, 3D visuals, construction work and quotation support depend on site conditions and the scope agreed for your project.</p><h2>Interior design services and space planning</h2><p>FLASH CAST provides interior design and space planning for residential and commercial spaces, with Kuala Lumpur, Selangor and Klang Valley as its main service areas. An enquiry can start with circulation, functional zones, storage, furniture and cabinet positions, materials and visual direction, before discussing how the design connects with renovation under the confirmed scope and actual site conditions.</p><p>For kitchen or whole-home storage planning, review daily use, available dimensions and cabinet needs together. For a commercial space, start with the number of users, working or operating requirements and the zones you want to change. Specific design work, drawings, 3D visualization and construction coordination should be clarified when the project scope is confirmed.</p><h2>What to prepare for an interior design enquiry</h2><p>The project location, space type, approximate area and current use.</p><p>An existing floor plan, if available, and site photos showing what you want to keep or change.</p><p>Main needs, such as circulation, kitchen use, wardrobe storage or office zoning.</p><p>Material and style references, budget direction, priorities and preferred timing.</p><p>You do not need to prepare a complete design drawing before an initial enquiry. Use the existing contact or quotation route to describe the information you have, then confirm which site details the team needs next.</p><h2>Planning the connection between design and renovation</h2><p>1. Describe the intended use and main issues, and gather photos, a floor plan and a budget direction.</p><p>2. Review layout, circulation, storage, materials and visual direction alongside site measurements and conditions.</p><p>3. Compare the design direction with the intended work scope, and clarify drawing or visualization needs, construction coordination and quotation scope.</p><p>Specific work, deliverables and arrangements are based on the scope agreed by both parties.</p><h2>What affects design and renovation quotations?</h2><p>Space size, the existing layout, drawing and visualization needs, material choices, custom cabinets, revision scope and coordination requirements can affect a quotation. When comparing options, review included work, optional items and exclusions together.</p><p>Quotations are free. This does not mean that design work, 3D visuals or construction drawings are free, or automatically included in every renovation quotation. Confirm the specific fees and deliverables before agreeing the scope.</p><h2>Connect the design direction with the relevant service</h2><p>Whole-home cabinets, wardrobes and storage: explore <a href=\"/en/services/builtin\">whole-house custom and built-in furniture</a>.</p><p>Kitchen layout, cabinets and materials: explore <a href=\"/en/services/kitchen\">kitchen renovation and cabinet planning</a>.</p><p>The wider residential work scope: explore <a href=\"/en/services/renovation\">residential renovation services</a>.</p><p>Work areas, meeting spaces and office storage: explore <a href=\"/en/services/office-renovation\">office renovation and space planning</a>.</p><p>Retail and operating spaces: explore <a href=\"/en/services/shop-renovation\">shop renovation and commercial space planning</a>.</p><p>With the project location, space type, photos or an existing floor plan ready, use the <a href=\"/en/quote\">interior design and renovation quotation enquiry</a> to explain the scope you want assessed.</p>",
+    "faqs_en": [
+      {
+        "a": "It can cover layout flow, storage, lighting direction, material selection, built-in planning, visualization and coordination with the confirmed renovation scope.",
+        "q": "What does interior design planning cover?"
+      },
+      {
+        "a": "Space size, drawing and visualization needs, material decisions, revision scope and coordination requirements all affect the quotation.",
+        "q": "What affects an interior design quotation?"
+      },
+      {
+        "a": "Yes. Clearly labeled concepts can support planning, but they are not evidence of a completed customer project.",
+        "q": "Can design or rendering concepts be used for planning?"
+      },
+      {
+        "a": "Share a floor plan or site photos, approximate area, intended use, priorities, location and preferred timing.",
+        "q": "How do I start an interior design enquiry?"
+      },
+      {
+        "a": "Start with the intended use, a floor plan or site photos, and layout and material priorities. Then discuss the design direction, renovation scope and quotation support. Specific deliverables depend on site conditions and the agreed scope.",
+        "q": "How can interior design and renovation be planned together?"
+      },
+      {
+        "a": "Before you confirm an interior-design scope, ask for a written list of the drawings or visual materials included and the spaces each item covers. Clarify what each item is intended to support, which details and revision checkpoints are included, and who will coordinate drawing questions with the site team. Record the confirmed deliverables, exclusions, responsibilities and any change process in the agreed scope. The specific drawing package and coordination depend on the project conditions and confirmed scope.",
+        "q": "What should I confirm about interior design drawing deliverables?"
+      }
+    ],
+    "faqs_zh": [
+      {
+        "a": "可沟通动线、收纳、灯光、材料、定制木作、效果图与已确认装修范围的衔接。",
+        "q": "室内设计规划包含哪些内容？"
+      },
+      {
+        "a": "空间面积、图纸与效果图需求、材料选择、修改范围和协调需求都会影响报价。",
+        "q": "哪些因素会影响室内设计报价？"
+      },
+      {
+        "a": "可以。概念图会清楚标注为规划参考，不作为真实客户完工项目证明。",
+        "q": "可以先用设计或效果图概念讨论吗？"
+      },
+      {
+        "a": "提交平面图或现场照片、大致面积、用途、优先需求、地点与计划时间。",
+        "q": "如何开始室内设计咨询？"
+      },
+      {
+        "a": "先核对空间用途、图纸或现场照片、布局与材料需求，再讨论设计方向、施工范围和报价支持；具体交付按现场条件和确认范围确定。",
+        "q": "室内设计与装修可以怎样衔接？"
+      },
+      {
+        "a": "确认室内设计范围前，可先索取书面成果清单，并确认每项对应的空间与用途；再问清图纸细化程度、修改确认节点，以及现场图纸问题由谁协调。把已确认的成果、未包含事项、责任和变更方式写入确认的服务范围。具体图纸与协调内容需按现场条件和确认范围确定。",
+        "q": "确认室内设计图纸交付前，应先问清什么？"
+      }
+    ]
+  },
+  "source_provenance": {
+    "sources": [
+      {
+        "target": "design-framework-cms-content-v4",
+        "path": "drafts/seo/fc-20260927-cms-native-admission-contract-v1/frozen-sources/design-framework-cms-content-v4/candidate.json",
+        "sha256": "ed2637b91f8407418bfbfb348acefe8ea0bb80eebdc5223f192eeb17458cd972"
+      },
+      {
+        "target": "v20-owner-publisher-native-preparation-v2-20261007",
+        "path": "drafts/seo/fc-20261007-publisher-three-designated-binding-v1/v20.json",
+        "sha256": "0fb2320bfc079f8038ca17a903c836ae23f5ea37192baf804ee756274d44da4e"
+      }
+    ],
+    "reviewed_binding_package": {
+      "path": "audits/unified-release-20261009/continuation/protected-cms/design-unified/successor-binding-package.json",
+      "sha256": "464ec86088f4310cf7be772aa6a2bf0a9bbd9dc8d0c45522b6ae1b87b2ef7130"
+    },
+    "accuracy_qa_receipts": [
+      "cms-accuracy-v20-20261009-v1",
+      "cms-accuracy-design-framework-cms-content-v4-20261009"
+    ],
+    "accuracy_qa_proofs": [
+      {
+        "path": "audits/unified-release-20261009/continuation/protected-cms/historical/design-framework-cms-content-v4-qa.json",
+        "sha256": "1976a75411a876ad92e777902e23d515414b925d45e521ea2ae12dc37c6117e3"
+      },
+      {
+        "path": "audits/unified-release-20261009/continuation/protected-cms/v20/accuracy-qa.json",
+        "sha256": "9ec75a7cbc3b9334bdb10aa3720ce895cc37579e8299eded431a9f1bd4c281bc"
+      }
+    ],
+    "field_source_proof": [
+      {
+        "native_storage_key": "content_zh",
+        "after_native_value_sha256": "3a52e81023c89fafa55ec5aa06c73dc97582679cef2b07f01c9d2b17c15fbc53"
+      },
+      {
+        "native_storage_key": "content_en",
+        "after_native_value_sha256": "9e9f7dbbc56df6faea230ecd6a0a0a754ef004b105c9d1e6367b492386b450e1"
+      },
+      {
+        "native_storage_key": "faqs_en",
+        "after_native_value_sha256": "b3005ffe781872d90368b3faa2abd9a1ff12c33223e3e91a0495a59e47f1510c"
+      },
+      {
+        "native_storage_key": "faqs_zh",
+        "after_native_value_sha256": "2feb3f73578991b67464515da146c2502dbcc0a88c9527853568dbf03e05e651"
+      }
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c10-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.336Z",
+  "target": "c10-bilingual-body-v1",
+  "exact_payload_sha256": "9019fa90c8ff4182dbd68e640f8691d0b3e48293ee7fb28fe2ab75f41299e784",
+  "current_updated_at": "2026-08-22T12:22:36.094404+00:00",
+  "current_full_baseline_sha256": "450726d4682a0e303f0f41d43e88c8a3942837c50ec4a3e06229e04a710e9d5b",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " How can a rental unit separate retained, replacement and review items? Record photos of existing floors, walls, cabinetry, doors and equipment by room. Separate items to retain, replace or inspect further, then list cleaning, storage and maintenance-access needs. This avoids replacing usable elements solely for a uniform appearance. Electrical, leakage or other specialist issues need scope confirmation by the appropriate responsible parties; decorative updates do not replace assessment. Which handover information helps later follow-up? Retain the agreed scope, room photos, selected product models, applicable care information and contacts for outstanding items. Review the handover recording checklist and discuss the actual scope through residential renovation planning. These preparations do not guarantee rental growth, faster letting or fixed maintenance costs."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 出租单位怎样区分保留、更换与待检查项目？ 逐个房间记录现有地面、墙面、柜体、门和设备的照片，将可保留、拟更换和需要进一步检查的项目分开。再列出日常清洁、储物和维修进入的需求，避免仅为了统一风格把可用部分一并更换。涉及电气、漏水或其他专业问题时，先由适当负责方确认范围，不用装饰升级替代检查。 交屋时哪些资料有助于日后跟进？ 可保留约定范围、房间照片、所选产品型号、适用保养说明和未完成事项的联系人与记录。先看 交付记录清单，再结合 住宅装修规划 讨论实际范围。这些准备不保证租金提升、出租速度或固定维修费用。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Separate retained/replacement/inspection items and handover records; specialist matters deferred. Explicitly no rental growth, faster letting or maintenance-cost guarantee.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}

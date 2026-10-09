@@ -1,0 +1,41 @@
+{
+  "qa_receipt_id": "cms-accuracy-c12-bilingual-body-v1-20261009",
+  "reviewed_at": "2026-10-09T05:22:04.364Z",
+  "target": "c12-bilingual-body-v1",
+  "exact_payload_sha256": "443d18d9ff6f9f2a5a3ece93e77ae59b04d61a1255deb49223f51bde04336ce8",
+  "current_updated_at": "2026-08-22T12:23:10.906493+00:00",
+  "current_full_baseline_sha256": "166e1357a066446a710aa29900d38c70d3edc9483afa0b5481cdb5b0a0662171",
+  "result": "PASS_SCOPED_INCREMENTAL_ACCURACY_AND_PRESERVATION_QA",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "bilingual_semantic_review": "PASS_MANUALLY_REVIEWED_EN_AND_ZH_NEW_INCREMENTS",
+  "locale_checks": {
+    "en": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " Review built-ins with doors and drawers in use Mark room doors, cabinet doors, drawers and nearby furniture in use, including items that need to open or be accessed together. Flag sockets, air conditioning, curtains and equipment access for review rather than assuming a rendering proves there are no conflicts. Dimensions and clearances depend on the site, selected hardware and users; this article supplies no universal safety dimensions. Clarify the stored items before confirming cabinetry If the internal divisions are still unclear, start with the small-condo storage brief to organise items and usage frequency. Discuss fixed-cabinet scope through the custom furniture service, separating measured dimensions, unresolved conditions and excluded work in the confirmation list."
+    },
+    "zh": {
+      "unsafe_elements": 0,
+      "unsafe_attributes": 0,
+      "internal_links_in_published_manifest": true,
+      "external_links": [],
+      "nonempty": true,
+      "existing_plain_text_prefix_preserved": true,
+      "added_plain_text": " 固定柜体不要只看关闭时的平面 讨论方案时，同时标出房门、柜门、抽屉和邻近家具的使用位置，说明哪些需要同时开启或取用。把插座、空调、窗帘和设备检修位置作为待核对项，不要只凭一张效果图判断没有冲突。合适尺寸与间距应按现场、所选五金和使用者需求确认，本文不提供通用安全尺寸。 先明确物品，再确认柜体配置 如果还不清楚需要多少分区，先用 小公寓收纳需求清单 整理物品与使用频率。固定柜体范围可继续与 定制家具服务 讨论，并要求在确认清单中区分已量度尺寸、待核实条件和不包含工作。"
+    }
+  },
+  "review_scope": "New incremental content and required preserved boundaries; existing published text remains verbatim as plain text prefix. No blanket certification of every pre-existing marketing statement.",
+  "review": "Door/drawer/access conflict prompts require actual dimensions/hardware/user confirmation. Explicitly no universal safety dimensions.",
+  "fact_sources": [
+    "CIDB-quotation",
+    "CIDB-construction-contract"
+  ],
+  "limits": "No Save/permit/frontend/business claim. If another same-row candidate saves first, exact full-row baseline invalidates this original target."
+}
