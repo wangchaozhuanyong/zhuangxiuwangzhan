@@ -163,11 +163,13 @@ const bindings = {
     "publicPaths": [
       {
         "path": "/en/blog/renovation-quotation-checklist-malaysia",
-        "expected": "Before comparing quotations: a project checklist"
+        "expected": "Malaysia Renovation Quotation Checklist",
+        "renderedRequiredPhrases": ["Before comparing quotations: a project checklist"]
       },
       {
         "path": "/zh/blog/renovation-quotation-checklist-malaysia",
-        "expected": "比较报价前：先核对整体项目步骤"
+        "expected": "马来西亚装修报价单要看什么",
+        "renderedRequiredPhrases": ["比较报价前：先核对整体项目步骤"]
       }
     ],
     "retainedProjectionFields": [

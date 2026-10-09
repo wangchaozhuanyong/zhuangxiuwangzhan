@@ -96,7 +96,8 @@ describe("three exact owner-publisher successor bindings", () => {
   });
 
   it.each(names)("%s is selectable for protected forward execution and rejects rollback before credentials", (name) => {
-    expect(workflow.split(name)).toHaveLength(3);
+    const choices = workflow.split("      approval_id:")[0];
+    expect(choices.split("\n").map((line) => line.trim())).toContain(`- ${name}`);
     expect(gate(name, "dry-run").status).toBe(0);
     expect(gate(name, "publish").status).not.toBe(0);
     expect(gate(name, "publish", "publish", "11111111-1111-4111-8111-111111111111").status).toBe(0);

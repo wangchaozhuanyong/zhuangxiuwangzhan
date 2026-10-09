@@ -168,8 +168,8 @@ export function assertActualPreview(entry, artifacts, current, environment) {
   assertBatchIdentity(artifacts.identity.identity, environment);
 }
 
-export function buildBatchPermit(entry, registry, identity, artifacts, now, permitId = randomUUID()) {
-  const evidence = { registrySha256: REGISTRY_SHA256, target: entry.target, entrySha256: stableDigest(entry),
+export function buildBatchPermit(entry, registry, identity, artifacts, now, permitId = randomUUID(), registrySha256 = REGISTRY_SHA256) {
+  const evidence = { registrySha256, target: entry.target, entrySha256: stableDigest(entry),
     authorizationId: registry.authorization.id, operationsDecisionId: registry.executionDecision.id,
     policyDecisionId: registry.executionDecision.policyDecisionId, identity,
     actualPreviewSha256: stableDigest(artifacts.preview), actualPreviewReceiptSha256: stableDigest(artifacts.receipt),
@@ -195,7 +195,7 @@ export function assertActualPublish(entry, receipt, current, permit, identity) {
     && receipt.postcheck.ok === true && receipt.postcheck.rowMismatches.length === 0
     && same(receipt.postcheck.pageChecks.map((page) => page.path), targetConfigs[entry.target].publicPaths.map((page) => page.path))
     && receipt.postcheck.pageChecks.length === 2 && receipt.postcheck.pageChecks.every((page) => page.status === 200
-      && page.found === true && page.forbiddenFound.length === 0 && page.missingRequired.length === 0)
+      && page.found === true && page.forbiddenFound.length === 0 && page.missingRequired.length === 0 && (!targetConfigs[entry.target].publicPaths.find((config) => config.path === page.path)?.renderedRequiredPhrases?.length || page.rendered?.ok === true))
     && permit?.status === "completed" && permit.operation === "publish"
     && permit.taskId === entry.taskId && permit.actionId === entry.actionId && permit.candidateVersion === entry.candidateVersion
     && permit.githubRunId === identity.runId && permit.githubRunAttempt === identity.runAttempt
@@ -204,10 +204,10 @@ export function assertActualPublish(entry, receipt, current, permit, identity) {
 }
 
 // Dependencies isolate orchestration tests; the command uses only the implementations below.
-export async function runFrozenBatch(registry, mode, environment, dependencies) {
+export async function runFrozenBatch(registry, mode, environment, dependencies, binding = { batch: BATCH_NAME, sha256: REGISTRY_SHA256 }) {
   assert(["dry-run", "publish"].includes(mode), "Frozen batch accepts only dry-run or publish mode");
   const rows = registry.entries.map((entry) => ({ target: entry.target, status: "NOT_STARTED", performedWrite: false }));
-  dependencies.saveSummary({ batch: BATCH_NAME, mode, registrySha256: REGISTRY_SHA256, rows });
+  dependencies.saveSummary({ batch: binding.batch, mode, registrySha256: binding.sha256, rows });
   for (let index = 0; index < registry.entries.length; index += 1) {
     const entry = registry.entries[index]; const state = rows[index];
     try {
@@ -218,7 +218,7 @@ export async function runFrozenBatch(registry, mode, environment, dependencies) 
       state.status = "PREVIEW_PASS";
       if (mode === "publish") {
         const identity = await dependencies.verifyIdentity(); assertBatchIdentity(identity, environment);
-        const { input, evidence } = buildBatchPermit(entry, registry, identity, artifacts, dependencies.now());
+        const { input, evidence } = buildBatchPermit(entry, registry, identity, artifacts, dependencies.now(), randomUUID(), binding.sha256);
         state.permitId = input.permitId; state.status = "PERMIT_ISSUE_STARTED";
         const issued = await dependencies.issue(input);
         assert(issued.permitId === input.permitId && issued.status === "issued" && issued.operation === "publish",
@@ -231,27 +231,29 @@ export async function runFrozenBatch(registry, mode, environment, dependencies) 
         assertActualPublish(entry, receipt, saved, completed, identity);
         state.status = "PUBLISH_PASS"; state.performedWrite = true; state.savedUpdatedAt = saved.updated_at;
       }
-      dependencies.saveSummary({ batch: BATCH_NAME, mode, registrySha256: REGISTRY_SHA256, rows });
+      dependencies.saveSummary({ batch: binding.batch, mode, registrySha256: binding.sha256, rows });
     } catch (error) {
       state.failedAt = state.status; state.status = "FAILED_STOPPED";
       if (state.failedAt === "PERMIT_ISSUED") state.performedWrite = null;
       state.writeOutcome = state.failedAt === "PERMIT_ISSUE_STARTED" ? "NO_CMS_WRITE_REQUESTED_INSPECT_PERMIT_INSERT_RESULT"
         : state.permitId ? "INSPECT_ACTUAL_SINGLE_USE_PERMIT_AND_RECEIPT_DO_NOT_REPLAY" : "NO_PERMIT_ISSUED";
-      dependencies.saveSummary({ batch: BATCH_NAME, mode, registrySha256: REGISTRY_SHA256, rows, stoppedAt: entry.target });
+      dependencies.saveSummary({ batch: binding.batch, mode, registrySha256: binding.sha256, rows, stoppedAt: entry.target });
       throw error;
     }
   }
-  return { batch: BATCH_NAME, mode, rows, ok: true };
+  return { batch: binding.batch, mode, rows, ok: true };
 }
 
-async function main() {
+export async function runFrozenCommand(options = {}) {
   const args = process.argv.slice(2);
   assert(args.every((arg) => /^--(?:mode|artifact-dir)=/.test(arg)), "This command accepts only mode and an in-project audit directory");
   const mode = args.find((arg) => arg.startsWith("--mode="))?.slice(7) || "dry-run";
   const environment = process.env;
   const checkoutSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-  assertBatchEnvironment(environment, mode, environment.APPROVAL_ID, checkoutSha);
-  const registry = readFrozenRegistry();
+  const binding = options.binding || { batch: BATCH_NAME, sha256: REGISTRY_SHA256 };
+  assert(environment.PUBLISH_TARGET === binding.batch && [BATCH_NAME, "remaining-completion-after-37893433883"].includes(binding.batch), "Frozen batch requires its exact owner authorization and current main dispatch identity; exact completion entry required");
+  assertBatchEnvironment({ ...environment, PUBLISH_TARGET: BATCH_NAME }, mode, environment.APPROVAL_ID, checkoutSha);
+  const registry = options.registry || readFrozenRegistry();
   const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
   assert(resolve(process.cwd()) === root, "Frozen batch must run from its owning Git project checkout");
   const artifactRoot = resolve(args.find((arg) => arg.startsWith("--artifact-dir="))?.slice(15)
@@ -302,7 +304,10 @@ async function main() {
     saveSummary: (summary) => write(join(artifactRoot, "frozen-batch-summary.json"), summary),
     savePermit: (entry, evidence) => write(join(targetDir(entry), "batch-permit-evidence.json"), evidence),
     preview: (entry) => invoke(entry),
-    publish: (entry, permitId) => invoke(entry, permitId),
+    publish: async (entry, permitId) => {
+      invoke(entry, permitId);
+      if (options.afterPublish) await options.afterPublish({ entry, write, artifactRoot });
+    },
     readPreview: (entry) => {
       const dir = targetDir(entry);
       return { backup: readJson(join(dir, "backup.json")), desired: readJson(join(dir, "desired.json")),
@@ -336,12 +341,13 @@ async function main() {
       return readManagedPermit(await existingIssuer(), permitId);
     },
   };
-  const result = await runFrozenBatch(registry, mode, environment, dependencies);
-  console.log(JSON.stringify({ ok: result.ok, mode, batch: BATCH_NAME, checkedRows: result.rows.length, artifactRoot }));
+  if (options.beforeExecute) await options.beforeExecute({ mode, environment, dependencies, write, artifactRoot });
+  const result = await runFrozenBatch(registry, mode, environment, dependencies, binding);
+  console.log(JSON.stringify({ ok: result.ok, mode, batch: binding.batch, checkedRows: result.rows.length, artifactRoot }));
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  main().catch((error) => {
+  runFrozenCommand().catch((error) => {
     const diagnostic = sanitizePublisherDiagnostic(error instanceof Error ? error.message : "Frozen batch failed",
       [process.env.CONTENT_PUBLISH_SECRET, process.env.SUPABASE_SERVICE_ROLE_KEY,
         process.env.VITE_SUPABASE_ANON_KEY, process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN]);

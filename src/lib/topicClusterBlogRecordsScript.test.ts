@@ -213,7 +213,7 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain('if [ "$PUBLISH_TARGET" = "remaining-completion-20261009" ]; then');
     expect(workflow).toContain('[ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ]');
     expect(workflow).toContain('[ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]');
-    expect(workflow).toContain("if: ${{ inputs.target != 'remaining-completion-20261009' }}");
+    expect(workflow).toContain("if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' }}");
     expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
       .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
     for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {

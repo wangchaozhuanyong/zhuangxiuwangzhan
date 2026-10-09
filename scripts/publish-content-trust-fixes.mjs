@@ -10,6 +10,7 @@ import { lockedBlogMediaCandidates } from "./managed-cms-targets-blog-media-v1.m
 import { lockedOrg020V7Candidates } from "./managed-cms-targets-org020-v7.mjs";
 import { lockedNativeBodyCandidates } from "./managed-cms-targets-native-body-v1.mjs";
 import { lockedOwnerPublisherThreeCandidates } from "./managed-cms-targets-owner-publisher-three-v1.mjs";
+import { verifyPublicPage } from "./lib/publisher-public-readback.mjs";
 import { lockedUnifiedContentCandidates } from "./managed-cms-targets-unified-content-v1.mjs";
 
 const args = process.argv.slice(2);
@@ -1376,11 +1377,18 @@ const main = async () => {
       if (last.status === 200 && last.found && forbiddenFound.length === 0 && missingRequired.length === 0) break;
       await new Promise((resolve) => setTimeout(resolve, 1200));
     }
+    if (page.renderedRequiredPhrases?.length) {
+      try {
+        last.rendered = await verifyPublicPage({ site: publicSiteUrl, path: page.path,
+          title: page.expected, description: page.path.startsWith("/zh/") ? desired.seo_description_zh : desired.seo_description_en,
+          requiredText: page.renderedRequiredPhrases, headingsOnly: true });
+      } catch { last.rendered = { ok: false, diagnostic: "Real public browser readback failed; inspect the actual saved row and do not replay a permit" }; }
+    }
     pageChecks.push(last);
   }
 
   const postcheck = {
-    ok: rowMismatches.length === 0 && pageChecks.every((check) => check.status === 200 && check.found && check.forbiddenFound.length === 0 && check.missingRequired.length === 0),
+    ok: rowMismatches.length === 0 && pageChecks.every((check) => check.status === 200 && check.found && check.forbiddenFound.length === 0 && check.missingRequired.length === 0 && (!check.rendered || check.rendered.ok === true)),
     checkedAt: new Date().toISOString(),
     rowMismatches,
     pageChecks,
@@ -1406,7 +1414,7 @@ const main = async () => {
   if (!postcheck.ok && config.lockedCandidate) {
     writeJson(path.join(outputDir, "publish-receipt.json"), {
       ok: false, target, operation, published, postcheck,
-      recovery: "CMS row readback and a separately issued single-use rollback permit are required; do not retry the publish permit.",
+      recovery: config.lockedCandidate.exactPatchOnly ? "Read the actual saved row and completed permit; prepare a separately reviewed forward correction only if needed. No old snapshot restore or permit replay." : "CMS row readback and a separately issued single-use rollback permit are required; do not retry the publish permit.",
     });
     fail(`Post-publish verification failed for ${target}; the one-time permit cannot be replayed.`);
   }
