@@ -29,8 +29,10 @@ on:
       - scripts/managed-cms-targets-unified-content-v1.mjs
       - scripts/publish-remaining-completion-20261009.mjs
       - scripts/publish-remainder18-after-37893433883.mjs
+      - scripts/publish-remainder11-after-37898568406.mjs
       - scripts/lib/publisher-public-readback.mjs
       - drafts/publishing/fc-20261009-remainder18-after-37893433883-v1/**
+      - drafts/publishing/fc-20261009-remainder11-after-37898568406-v1/**
       - drafts/publishing/fc-20261009-remaining-completion-v1/**
       - drafts/seo/fc-20261007-publisher-three-designated-binding-v1/**
       - drafts/seo/fc-20261009-unified-protected-cms-bindings-v1/**
@@ -46,6 +48,7 @@ on:
       - src/lib/contentPublishUnifiedContent.test.ts
       - src/lib/contentPublishRemainingBatch.test.ts
       - src/lib/contentPublishRemainder18.test.ts
+      - src/lib/contentPublishRemainder11.test.ts
       - src/lib/contentPublishSparsePatch.test.ts
       - src/lib/contentPublishManagedBlog.test.ts
       - src/lib/contentPublishKlMediaTargets.test.ts
@@ -120,6 +123,7 @@ jobs:
             src/lib/contentPublishUnifiedContent.test.ts \
             src/lib/contentPublishRemainingBatch.test.ts \
             src/lib/contentPublishRemainder18.test.ts \
+            src/lib/contentPublishRemainder11.test.ts \
             src/lib/contentPublishSparsePatch.test.ts \
             src/lib/contentPublishManagedBlog.test.ts \
             src/lib/contentPublishKlMediaTargets.test.ts \
