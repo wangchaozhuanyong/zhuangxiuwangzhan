@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-09T06:40:53.500Z",
+  "originalRunId": 37893433883,
+  "originalReleaseSha": "9f446c6fbe2348105549dae51293a27c3648abc9",
+  "originalRunOutcome": "FAILED_STOPPED",
+  "actualCompletedRows": 2,
+  "productionWrites": 0,
+  "credentialsPersisted": false,
+  "sourceRendererSha256": {
+    "src/pages/BlogDetail.tsx": "cd78020b53582ced4a87b7ab55c99546a2ee83dee54f3722ac47b8526f75cf07",
+    "src/lib/contentApi.ts": "08543b97884cf31ac83654c8d60808c2a3d301af17af7fd82e4f8272acaddba6",
+    "src/backend/modules/cms/repository/publicContentRepository.ts": "6e6319a67488c0a49b4c3ecdaacb625d65a43c3f9e486abf02ad55c39a8489fb",
+    "src/pages/ServiceDetail.tsx": "bbbc65de6483bbae48f9cf0d0d57bc8bdf88b67f6c5dba9219379c58753364eb",
+    "src/hooks/usePublishedContent.ts": "3083aabdb638e97960cc32d73d77c5e09c1973e1684440a30dab8dca5709af5c",
+    "functions/_middleware.ts": "e0c9cbf3779e8ed4a773803935d6aa2a9139c58f14de613f912a7056044eaa80",
+    "functions/readablePublicBody.ts": "1b74dd99de66ea33a93c25b5eeb4ebdcd098c368ec0b90c0564d3ea7ea6f3fed"
+  },
+  "completed": [
+    {
+      "target": "v17-owner-publisher-native-preparation-v2-20261007",
+      "recordId": "49276c4c-6f3d-42e3-8c4b-84b1b2c17a3a",
+      "actualUpdatedAt": "2026-10-09T06:25:51.005255+00:00",
+      "desiredFieldsSha256": "56891d2e9c49d90e665734354d752ac058c028128ef969da9db25c217a6e8f94",
+      "retainedFieldsSha256": "2e8c4496296b8207cae1745c7aaf56f371246e031f5ac7c0be67966a680549b4",
+      "permit": {
+        "permit_id": "f63c5768-cd4d-4c68-be81-267c3c29531c",
+        "task_id": "fc-20260928-keyword-page-answer-implementation-v1",
+        "action_id": "publish-v17-owner-publisher-native-preparation-v2-20261007",
+        "action_class": "cms_write",
+        "operation": "publish",
+        "scope": "flashcast.com.my:services:49276c4c-6f3d-42e3-8c4b-84b1b2c17a3a:faqs_en,faqs_zh",
+        "candidate_version": "v17-owner-publisher-native-preparation-v2-20261007",
+        "record_id": "49276c4c-6f3d-42e3-8c4b-84b1b2c17a3a",
+        "slug": "old-house",
+        "expected_updated_at": "2026-06-08T07:45:35.480828+00:00",
+        "payload_sha256": "56891d2e9c49d90e665734354d752ac058c028128ef969da9db25c217a6e8f94",
+        "rollback_payload_sha256": "3a31d956abc417dc0fe04fb3328fff83cdb7202fbe15f8224b1f87bfd5c84af1",
+        "parent_permit_id": null,
+        "github_repository_id": 1248188229,
+        "github_workflow_ref": "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+        "github_workflow_sha": "9f446c6fbe2348105549dae51293a27c3648abc9",
+        "github_actor_id": 276684684,
+        "github_run_id": 37893433883,
+        "github_run_attempt": 1,
+        "qa_receipt_id": "cms-accuracy-v17-20261009-v1",
+        "operations_decision_id": "owner-directed-remaining-completion-20261009-v1",
+        "policy_decision_id": "exact-reviewed-cas-publish-20261009-v1",
+        "issuer_evidence_sha256": "d386f6d730086830ae4e6cd723a279061959dbed0e881f0277956fe70770fad2",
+        "issued_at": "2026-10-09T06:25:46.964967+00:00",
+        "expires_at": "2026-10-09T06:35:46.822+00:00",
+        "status": "completed",
+        "claimed_at": "2026-10-09T06:25:50.622056+00:00",
+        "writing_at": "2026-10-09T06:25:50.812003+00:00",
+        "completed_at": "2026-10-09T06:25:51.199532+00:00",
+        "saved_id": "49276c4c-6f3d-42e3-8c4b-84b1b2c17a3a",
+        "saved_updated_at": "2026-10-09T06:25:51.005255+00:00"
+      },
+      "originalPublisherStatus": {
+        "exitCode": 0,
+        "receiptOk": true,
+        "savedOk": true,
+        "savedId": "49276c4c-6f3d-42e3-8c4b-84b1b2c17a3a",
+        "savedUpdatedAt": "2026-10-09T06:25:51.005255+00:00",
+        "postcheckOk": true,
+        "rowMismatches": [],
+        "originalPageChecks": [
+          {
+            "path": "/en/services/old-house",
+            "status": 200,
+            "expected": "What counts as before-and-after evidence for an old-house renovation?",
+            "found": true,
+            "forbiddenFound": [],
+            "missingRequired": []
+          },
+          {
+            "path": "/zh/services/old-house",
+            "status": 200,
+            "expected": "怎样确认旧屋翻新前后对比属于真实完工证据？",
+            "found": true,
+            "forbiddenFound": [],
+            "missingRequired": []
+          }
+        ]
+      },
+      "freshBilingualReadback": [
+        {
+          "path": "/en/services/old-house",
+          "checkedAt": "2026-10-09T06:40:35.367Z",
+          "rawStatus": 200,
+          "metadata": {
+            "titleFound": true,
+            "descriptionMatches": true
+          },
+          "status": 200,
+          "ready": true,
+          "runtimeErrors": 0,
+          "requiredText": [
+            "What counts as before-and-after evidence for an old-house renovation?"
+          ],
+          "headingsOnly": false,
+          "found": true,
+          "missingRequired": [],
+          "blockedNonReads": 4,
+          "productionWrites": 0,
+          "renderedOk": true,
+          "ok": true
+        },
+        {
+          "path": "/zh/services/old-house",
+          "checkedAt": "2026-10-09T06:40:40.493Z",
+          "rawStatus": 200,
+          "metadata": {
+            "titleFound": true,
+            "descriptionMatches": true
+          },
+          "status": 200,
+          "ready": true,
+          "runtimeErrors": 0,
+          "requiredText": [
+            "怎样确认旧屋翻新前后对比属于真实完工证据？"
+          ],
+          "headingsOnly": false,
+          "found": true,
+          "missingRequired": [],
+          "blockedNonReads": 3,
+          "productionWrites": 0,
+          "renderedOk": true,
+          "ok": true
+        }
+      ],
+      "publicCurrentProjection": {
+        "id": "49276c4c-6f3d-42e3-8c4b-84b1b2c17a3a",
+        "slug": "old-house",
+        "status": "published",
+        "version": 1,
+        "updated_at": "2026-10-09T06:25:51.005255+00:00",
+        "faqs_zh": [
+          {
+            "a": "不一定。可以先根据屋况区分安全相关项目、必须维修项目、功能改善和外观升级，再决定是否分阶段处理。",
+            "q": "旧屋翻新一定要全屋一起做吗？"
+          },
+          {
+            "a": "费用取决于房屋面积、现场状况、拆除范围、电线水管、防水、厨房浴室、柜体、材料和施工复杂度。具体数字报价需要现场评估和确认范围后提供。",
+            "q": "旧屋翻新费用受什么影响？"
+          },
+          {
+            "a": "不能直接承诺一定需要更换。较旧房屋通常建议先检查电线负载、水管状态和漏水风险，再根据安全和使用需求决定。",
+            "q": "旧屋一定要换电线和水管吗？"
+          },
+          {
+            "a": "可以。设计方案、效果图方案和材料方向可作为规划参考，但除非业主提供真实项目照片并确认可公开使用，否则不能写成真实完工案例。",
+            "q": "可以先看设计方案或效果图吗？"
+          },
+          {
+            "a": "先确认图片是否来自同一处真实物业、拍摄视角是否可比较、实际完成了哪些工程，以及业主是否同意公开使用。效果图或拟议方案只能用于沟通规划，不能作为已完工证明。本页现有“现状/方案”对比图标注为 AI 生成的规划概念，不应理解为客户项目或施工结果。",
+            "q": "怎样确认旧屋翻新前后对比属于真实完工证据？"
+          }
+        ],
+        "faqs_en": [
+          {
+            "a": "Not always. The scope can be prioritized into safety-related items, necessary repairs, function upgrades, and visual improvements before deciding whether phased work is suitable.",
+            "q": "Does an old house renovation need to be done all at once?"
+          },
+          {
+            "a": "Cost depends on property size, site condition, demolition, wiring, plumbing, waterproofing, kitchen and bathroom scope, cabinets, materials, and work complexity. Specific numeric pricing should only be provided after site assessment and confirmed scope.",
+            "q": "What affects old house renovation cost?"
+          },
+          {
+            "a": "Not automatically. Older homes should first be checked for electrical load, pipe condition, leakage risk, and safety requirements before deciding what needs replacement.",
+            "q": "Do old houses always need rewiring or pipe replacement?"
+          },
+          {
+            "a": "Yes. Design concepts, rendering concepts, and material directions can be prepared as planning references. Unless approved real project photos are provided, they must not be presented as completed project proof.",
+            "q": "Can I review design or rendering concepts first?"
+          },
+          {
+            "a": "Ask whether the images show the same actual property and comparable views, which work was completed, and whether the owner has approved the photos for public use. A planning concept or rendering is a discussion reference, not proof of completed work. The before-and-proposed visuals on this page are labelled as AI-generated planning concepts; they should not be read as a client project or construction result.",
+            "q": "What counts as before-and-after evidence for an old-house renovation?"
+          }
+        ],
+        "title_zh": "旧屋翻新规划",
+        "title_en": "Old House Renovation Planning",
+        "excerpt_zh": "为吉隆坡、雪兰莪与 Klang Valley 的旧排屋、半独立、独立式住宅、继承房产和老屋提供翻新规划。",
+        "excerpt_en": "Old house renovation planning for terrace houses, semi-D homes, bungalows, inherited properties, and older landed homes in Kuala Lumpur, Selangor, and Klang Valley.",
+        "content_zh": "旧屋翻新不只是换地砖或重新油漆。FLASH CAST 协助业主在确认施工范围前，先评估墙裂、漏水、电线、水管、防水、屋顶、白蚁风险、格局、通风、收纳和材料方向。",
+        "content_en": "Old house renovation should begin with a practical review of site condition, not only cosmetic upgrades. FLASH CAST helps owners assess cracks, leaks, wiring, plumbing, waterproofing, roof condition, termite risk, layout, ventilation, storage, and material direction before confirming the renovation scope.",
+        "image_url": "/images/services/old-house-renovation.webp",
+        "alt_zh": "吉隆坡与雪兰莪旧屋翻新规划概念设计",
+        "alt_en": "old house renovation planning concept in Kuala Lumpur and Selangor",
+        "suitable_for_zh": [
+          "购买二手排屋、半独立或独立式住宅后准备翻新入住的业主",
+          "继承旧屋、出租房或多年未装修住宅，需要分阶段更新的业主",
+          "旧屋出现漏水、墙裂、电线老化、水管生锈、厨房浴室老旧等问题的业主",
+          "想先整理预算因素、施工范围和材料方向，再决定是否全屋翻新的业主"
+        ],
+        "suitable_for_en": [
+          "Owners buying an older terrace house, semi-D, bungalow, or landed property before moving in",
+          "Families upgrading inherited homes, rental properties, or houses that have not been renovated for years",
+          "Owners dealing with leakage, wall cracks, outdated wiring, aging pipes, old kitchens, or worn bathrooms",
+          "Clients who want to review budget factors, work scope, and material direction before deciding on a full renovation"
+        ],
+        "common_projects_zh": [
+          "旧屋现场检查与翻新范围整理",
+          "厨房、浴室、客厅、卧室、楼梯区和外墙更新建议",
+          "电线、水管、防水、排水和基础维修协调",
+          "格局、通风、采光、收纳和材料方向规划",
+          "可分阶段施工的范围与预算控制规划"
+        ],
+        "common_projects_en": [
+          "Old house site review and renovation scope planning",
+          "Kitchen, bathroom, living area, bedroom, staircase, and external wall upgrade direction",
+          "Wiring, plumbing, waterproofing, drainage, and basic repair coordination",
+          "Layout, ventilation, daylight, storage, and material planning",
+          "Phased renovation planning for scope and budget control"
+        ],
+        "scope_items_zh": [
+          "现场屋况检查",
+          "电线与水管状态检查",
+          "防水与漏水处理规划",
+          "厨房与浴室更新方向",
+          "格局、通风与收纳规划",
+          "地板、天花、灯光、柜体与材料方向",
+          "分阶段翻新范围规划"
+        ],
+        "scope_items_en": [
+          "Site condition review",
+          "Wiring and plumbing review",
+          "Waterproofing and leakage planning",
+          "Kitchen and bathroom upgrade direction",
+          "Layout, ventilation, and storage planning",
+          "Flooring, ceiling, lighting, cabinet, and material direction",
+          "Phased renovation scope planning"
+        ],
+        "process_steps_zh": [
+          {
+            "desc": "了解屋况、目标、照片、地址区域和大概范围。",
+            "title": "初步咨询"
+          },
+          {
+            "desc": "记录空间尺寸、旧屋问题、施工限制和现场要求。",
+            "title": "现场测量"
+          },
+          {
+            "desc": "区分安全相关项目、必须维修项目、功能改善和外观升级。",
+            "title": "范围优先级"
+          },
+          {
+            "desc": "准备 layout idea、材料建议、效果图方案或概念设计。",
+            "title": "设计与材料方向"
+          },
+          {
+            "desc": "根据确认范围、材料和现场条件整理报价与执行顺序。",
+            "title": "报价范围"
+          }
+        ],
+        "process_steps_en": [
+          {
+            "desc": "Review property condition, goals, photos, location, and intended scope.",
+            "title": "Initial Consultation"
+          },
+          {
+            "desc": "Document dimensions, old house issues, access limits, and site requirements.",
+            "title": "Site Measurement"
+          },
+          {
+            "desc": "Separate safety-related items, necessary repairs, function upgrades, and visual improvements.",
+            "title": "Scope Priorities"
+          },
+          {
+            "desc": "Prepare layout ideas, material advice, rendering concepts, or planning examples where useful.",
+            "title": "Design Direction"
+          },
+          {
+            "desc": "Organize the confirmed scope, materials, site conditions, and execution order.",
+            "title": "Quotation Scope"
+          }
+        ],
+        "seo_title_zh": "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划",
+        "seo_title_en": "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade",
+        "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。",
+        "seo_description_en": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+      }
+    },
+    {
+      "target": "v18-owner-publisher-native-preparation-v2-20261007",
+      "recordId": "cf594080-7230-4d77-83ac-0be55dfb3b9d",
+      "actualUpdatedAt": "2026-10-09T06:26:00.016334+00:00",
+      "desiredFieldsSha256": "0b63be321e97797d65df2dcbf123279b5aec0e43f1929bafd97c1e589d2acbea",
+      "retainedFieldsSha256": "f9567fe044a9f8123e1069e2d3a0e692f4a51d207c018cefdbd543cf111970ea",
+      "permit": {
+        "permit_id": "24803f88-acf0-489b-b494-d0cfce03f42e",
+        "task_id": "fc-20260928-keyword-page-answer-implementation-v1",
+        "action_id": "publish-v18-owner-publisher-native-preparation-v2-20261007",
+        "action_class": "cms_write",
+        "operation": "publish",
+        "scope": "flashcast.com.my:blog_posts:cf594080-7230-4d77-83ac-0be55dfb3b9d:content_en,content_zh",
+        "candidate_version": "v18-owner-publisher-native-preparation-v2-20261007",
+        "record_id": "cf594080-7230-4d77-83ac-0be55dfb3b9d",
+        "slug": "renovation-quotation-checklist-malaysia",
+        "expected_updated_at": "2026-09-25T20:54:18.773194+00:00",
+        "payload_sha256": "0b63be321e97797d65df2dcbf123279b5aec0e43f1929bafd97c1e589d2acbea",
+        "rollback_payload_sha256": "5b86bcfae21a0bbe685a2cf133428a8a86b190ab5900f9fa8bf29af4f9d52fee",
+        "parent_permit_id": null,
+        "github_repository_id": 1248188229,
+        "github_workflow_ref": "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+        "github_workflow_sha": "9f446c6fbe2348105549dae51293a27c3648abc9",
+        "github_actor_id": 276684684,
+        "github_run_id": 37893433883,
+        "github_run_attempt": 1,
+        "qa_receipt_id": "cms-accuracy-v18-20261009-v1",
+        "operations_decision_id": "owner-directed-remaining-completion-20261009-v1",
+        "policy_decision_id": "exact-reviewed-cas-publish-20261009-v1",
+        "issuer_evidence_sha256": "11614403f91e0b96005ff714d6d0db0d37213e0b87b4cb8e64e0657ce0a626ab",
+        "issued_at": "2026-10-09T06:25:56.926608+00:00",
+        "expires_at": "2026-10-09T06:35:56.813+00:00",
+        "status": "completed",
+        "claimed_at": "2026-10-09T06:25:59.669717+00:00",
+        "writing_at": "2026-10-09T06:25:59.84436+00:00",
+        "completed_at": "2026-10-09T06:26:00.206052+00:00",
+        "saved_id": "cf594080-7230-4d77-83ac-0be55dfb3b9d",
+        "saved_updated_at": "2026-10-09T06:26:00.016334+00:00"
+      },
+      "originalPublisherStatus": {
+        "exitCode": 1,
+        "receiptOk": false,
+        "savedOk": true,
+        "savedId": "cf594080-7230-4d77-83ac-0be55dfb3b9d",
+        "savedUpdatedAt": "2026-10-09T06:26:00.016334+00:00",
+        "postcheckOk": false,
+        "rowMismatches": [],
+        "originalPageChecks": [
+          {
+            "path": "/en/blog/renovation-quotation-checklist-malaysia",
+            "status": 200,
+            "expected": "Before comparing quotations: a project checklist",
+            "found": false,
+            "forbiddenFound": [],
+            "missingRequired": []
+          },
+          {
+            "path": "/zh/blog/renovation-quotation-checklist-malaysia",
+            "status": 200,
+            "expected": "比较报价前：先核对整体项目步骤",
+            "found": false,
+            "forbiddenFound": [],
+            "missingRequired": []
+          }
+        ]
+      },
+      "freshBilingualReadback": [
+        {
+          "path": "/en/blog/renovation-quotation-checklist-malaysia",
+          "checkedAt": "2026-10-09T06:40:46.722Z",
+          "rawStatus": 200,
+          "metadata": {
+            "titleFound": true,
+            "descriptionMatches": true
+          },
+          "status": 200,
+          "ready": true,
+          "runtimeErrors": 0,
+          "requiredText": [
+            "Before comparing quotations: a project checklist"
+          ],
+          "headingsOnly": true,
+          "found": true,
+          "missingRequired": [],
+          "blockedNonReads": 4,
+          "productionWrites": 0,
+          "renderedOk": true,
+          "ok": true
+        },
+        {
+          "path": "/zh/blog/renovation-quotation-checklist-malaysia",
+          "checkedAt": "2026-10-09T06:40:53.480Z",
+          "rawStatus": 200,
+          "metadata": {
+            "titleFound": true,
+            "descriptionMatches": true
+          },
+          "status": 200,
+          "ready": true,
+          "runtimeErrors": 0,
+          "requiredText": [
+            "比较报价前：先核对整体项目步骤"
+          ],
+          "headingsOnly": true,
+          "found": true,
+          "missingRequired": [],
+          "blockedNonReads": 4,
+          "productionWrites": 0,
+          "renderedOk": true,
+          "ok": true
+        }
+      ],
+      "publicCurrentProjection": {
+        "id": "cf594080-7230-4d77-83ac-0be55dfb3b9d",
+        "slug": "renovation-quotation-checklist-malaysia",
+        "status": "published",
+        "version": 1,
+        "updated_at": "2026-10-09T06:26:00.016334+00:00",
+        "content_zh": "<p><strong>直接答案：</strong>最合适的报价不一定最便宜或最长，而是能把交付结果、假设、责任和变更流程写清楚，让双方在施工期间都能使用。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>比较报价前：先核对整体项目步骤</h2><p>比较各项报价前，可先按项目整理：提供现场资料和使用重点；确认现场测量与现状；明确设计范围；复核分项报价和材料；确认施工责任与协调方式；记录验收、缺陷处理和交付安排。具体顺序、交付内容、费用与时间取决于实际项目和确认范围。完整六步说明请查看<a href=\"/zh/process\">《装修施工流程》</a>。</p><h2>核对项目身份</h2><p>确认地址、物业类型、图纸版本、报价日期和计价范围。基于旧布局的报价不能可靠比较。</p><h2>数量和规格一起看</h2><p>每一项应在适用时写清工程、数量、材料或性能规格和单位。过于笼统的名称会让替换和遗漏难以发现。</p><p>如包含定制柜或收纳柜，应将尺寸、板材与饰面方向、门板和五金规格、运输与安装条件，以及暂定项目分别列明。可参考<a href=\"/zh/services/builtin\">全屋定制与定制家具服务</a>整理柜体需求；整体工程可查看<a href=\"/zh/services/renovation\">住宅装修服务</a>。备好现场照片和分项范围后，可通过<a href=\"/zh/quote\">免费报价表</a>咨询；最终规格与价格仍以现场条件和书面报价为准。</p><h2>找出暂定和业主自购项目</h2><p>标明暂定金额、待选项目、业主采购和检查后再计价的工程，并写明最终差额如何计算。</p><h2>先读不包含项目再看总价</h2><p>核对审批、押金、保护、出入、拆除、清运、测试、清洁、运输、税费、水电和还原，接口遗漏常会造成后期争议。</p><h2>付款和变更都要有记录</h2><p>写明付款节点、完成证据、变更批准、价格和时间影响、缺陷报告、交付文件及适用合同。</p><h2>开工或签约前检查清单</h2><ul><li>地址和图纸版本</li><li>分项数量与规格</li><li>暂定及业主自购项目</li><li>明确不包含项目</li><li>付款证据和节点</li><li>书面变更与交付流程</li></ul><h2>常见问题</h2><h3>只比较总价可以吗？</h3><p>不可以，应先统一范围、规格、数量、暂定金额和不包含项目。</p><h3>什么是暂定项目？</h3><p>它是尚未完全确定的工程或选择所预留的金额，必须写明调整方式。</p><h3>口头加项可以吗？</h3><p>施工前应书面记录并批准范围、费用和工期影响。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 业主装修报价指南</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 建筑合同指南</a></li></ul><p>资料核对日期：2026 年 8 月 22 日。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p>",
+        "content_en": "<p><strong>Direct answer：</strong>The best quotation is not automatically the cheapest or longest. It is the one that makes the proposed deliverable, assumptions, responsibilities and change process clear enough for both parties to use during construction.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Before comparing quotations: a project checklist</h2><p>Before comparing individual quotations, organise the project in sequence: share site information and priorities; confirm site measurements and existing conditions; agree the design scope; review an itemised quotation and materials; confirm construction responsibilities and coordination; and record inspection, defect and handover arrangements. The sequence, deliverables, fees and timing depend on the actual project and agreed scope. See <a href=\"/en/process\">Our Renovation Process</a> for the full six-step overview.</p><h2>Check the project identity</h2><p>Confirm address, property type, drawing revision, quotation date and the exact scope basis. A quotation tied to an outdated layout cannot be compared reliably.</p><h2>Review quantities and specifications together</h2><p>Each line should make the work, quantity, material or performance specification and unit clear where applicable. Generic labels make substitutions and omissions difficult to detect.</p><p>For fitted cabinets or storage, request separate dimensions, board and finish direction, door and hardware specifications, delivery and installation access, and any provisional items. Use the <a href=\"/en/services/builtin\">custom built-in furniture service</a> to frame the cabinet brief, and the <a href=\"/en/services/renovation\">residential renovation service</a> for wider works. Share site photos and an itemised scope through the <a href=\"/en/quote\">free quotation form</a>; final specifications and price depend on the site and written quotation.</p><h2>Find allowances and owner-supplied items</h2><p>Identify provisional sums, prime-cost items, selections pending, owner purchases and work priced after inspection. Record how final differences will be calculated.</p><h2>Read exclusions before the total</h2><p>Check approvals, deposits, protection, access, hacking, disposal, testing, cleaning, delivery, taxes, utilities and reinstatement. Missing interfaces often create later disputes.</p><h2>Tie payments and changes to records</h2><p>State payment milestones, completion evidence, variation approval, price/time impact, defect reporting, handover documents and the contract that governs the work.</p><h2>Checklist before approval or start</h2><ul><li>Address and drawing revision</li><li>Itemised quantities and specifications</li><li>Allowances and owner-supplied items</li><li>Explicit exclusions</li><li>Payment evidence and milestones</li><li>Written variation and handover process</li></ul><h2>Frequently asked questions</h2><h3>Should I compare only the total?</h3><p>No. First normalise scope, specification, quantities, allowances and exclusions.</p><h3>What is a provisional item?</h3><p>It is an amount for work or a selection not fully defined; the adjustment method should be written.</p><h3>Are verbal additions acceptable?</h3><p>Record and approve the scope, cost and schedule effect in writing before work proceeds.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on quotations</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on construction contracts</a></li></ul><p>Sources checked on 22 August 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p>",
+        "title_zh": "马来西亚装修报价单要看什么",
+        "title_en": "Malaysia Renovation Quotation Checklist",
+        "excerpt_zh": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。",
+        "excerpt_en": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis.",
+        "seo_title_zh": "马来西亚装修报价单要看什么",
+        "seo_title_en": "Malaysia Renovation Quotation Checklist",
+        "seo_description_zh": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。",
+        "seo_description_en": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis.",
+        "cover_image_url": "/images/heroes/hero-quote.webp",
+        "alt_zh": "装修报价单怎么看？马来西亚业主检查清单 装修指南封面",
+        "alt_en": "How to Read a Renovation Quotation in Malaysia renovation guide cover",
+        "published_at": "2026-05-26T09:00:00+00:00",
+        "category": "budget-quotation",
+        "tags": [
+          "FLASH CAST",
+          "quotation",
+          "renovation checklist",
+          "Malaysia"
+        ],
+        "sort_order": 0
+      }
+    }
+  ]
+}

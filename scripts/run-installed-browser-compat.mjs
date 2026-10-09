@@ -53,7 +53,10 @@ export function publicProviderPlan(httpStatus, payload) {
 }
 
 export function publicDriverHttpResponse(status, responseBody) {
-  const raw = typeof responseBody === "string" ? responseBody.slice(0, 128 * 1024) : "";
+  const bodyLimit = 128 * 1024;
+  const raw = typeof responseBody === "string" ? responseBody.slice(0, bodyLimit) : "";
+  const truncation = { responseBody: typeof responseBody === "string" && responseBody.length > bodyLimit,
+    messageString: false, depth: false, nodes: false, arrayItems: false };
   let payload;
   try { payload = JSON.parse(raw); } catch { /* Non-JSON errors are classified without saving their body. */ }
   const messages = [];
@@ -62,8 +65,10 @@ export function publicDriverHttpResponse(status, responseBody) {
   // wrapper. Inspect error fields only: successful capabilities may contain
   // credential or account strings that must not classify the response.
   const collect = (value, depth = 0) => {
-    if (depth > 6 || ++visited > 128) return;
+    if (depth > 6) { truncation.depth = true; return; }
+    if (++visited > 128) { truncation.nodes = true; return; }
     if (typeof value === "string") {
+      if (value.length > 8192) truncation.messageString = true;
       const text = value.slice(0, 8192);
       try {
         const nested = JSON.parse(text);
@@ -72,20 +77,62 @@ export function publicDriverHttpResponse(status, responseBody) {
       messages.push(text);
       return;
     }
-    if (Array.isArray(value)) { value.slice(0, 16).forEach(item => collect(item, depth + 1)); return; }
+    if (Array.isArray(value)) {
+      if (value.length > 16) truncation.arrayItems = true;
+      value.slice(0, 16).forEach(item => collect(item, depth + 1));
+      return;
+    }
     if (!value || typeof value !== "object") return;
     for (const name of ["message", "reason", "error", "errors", "value", "details", "data"]) {
       if (Object.hasOwn(value, name)) collect(value[name], depth + 1);
     }
   };
   collect(payload);
-  const diagnostics = publicDriverFailure(new Error(payload === undefined ? raw : messages.join(" ")));
+  const errorText = payload === undefined ? raw : messages.join(" ");
+  const diagnostics = publicDriverFailure(new Error(errorText));
+  // Fixed public enums only; never serialize an arbitrary vendor-looking token.
+  // https://www.browserstack.com/docs/automate/selenium/error-codes/browserstack-failed-to-start-browser
+  // https://www.browserstack.com/docs/app-automate/appium/error-codes
+  const vendorCodes = {
+    BROWSERSTACK_FAILED_TO_START_BROWSER: null,
+    BROWSERSTACK_ALL_PARALLELS_IN_USE: "capacityUnavailable",
+    BROWSERSTACK_FEATURE_NOT_AVAILABLE_IN_CURRENT_PLAN: "planUnavailable",
+    BROWSERSTACK_INVALID_DEVICE: "unsupportedConfiguration",
+    BROWSERSTACK_INVALID_OS_VERSION: "unsupportedConfiguration",
+    BROWSERSTACK_INCOMPATIBLE_OS_VERSION: "unsupportedConfiguration",
+    BROWSERSTACK_NO_DEVICE_SPECIFIED: "unsupportedConfiguration",
+  };
+  const vendorErrorCodes = Object.keys(vendorCodes).filter(code =>
+    new RegExp(`(?:^|[^A-Z0-9_])${code}(?=$|[^A-Z0-9_])`, "i").test(errorText));
+  for (const code of vendorErrorCodes) if (vendorCodes[code]) diagnostics[vendorCodes[code]] = true;
+  const objectPayload = payload && typeof payload === "object" && !Array.isArray(payload);
+  const hasValue = objectPayload && Object.hasOwn(payload, "value"), value = hasValue ? payload.value : undefined;
+  const legacy = objectPayload && typeof payload.status === "number";
+  const legacyStatus = legacy && Number.isSafeInteger(payload.status) && payload.status >= 0 && payload.status <= 999 ? payload.status : null;
+  const valueKind = !hasValue ? "MISSING" : value === null ? "NULL" : Array.isArray(value) ? "ARRAY"
+    : ({ string: "STRING", object: "OBJECT", number: "NUMBER", boolean: "BOOLEAN" }[typeof value] || "OTHER");
+  const protocol = legacy ? "LEGACY_JSON_WIRE" : objectPayload && payload.status === undefined && valueKind === "OBJECT"
+    ? "W3C" : payload !== undefined ? "JSON_UNKNOWN" : "NON_JSON";
   const standardErrors = ["unknown error", "session not created", "invalid argument", "unsupported operation"];
+  const standardError = standardErrors.includes(value?.error) ? value.error
+    : legacyStatus === 13 ? "unknown error" : legacyStatus === 33 ? "session not created" : null;
+  const classified = Object.values(diagnostics).some(Boolean);
+  const httpStatus = Number.isInteger(status) && status >= 100 && status <= 599 ? status : null;
+  const successfulSession = httpStatus !== null && httpStatus >= 200 && httpStatus < 300 &&
+    ((legacyStatus === 0 && typeof payload.sessionId === "string" && payload.sessionId.length > 0)
+      || (protocol === "W3C" && typeof value.sessionId === "string" && value.sessionId.length > 0 && value.capabilities && typeof value.capabilities === "object"));
+  const rejection = !successfulSession && ((httpStatus !== null && httpStatus >= 400) || (legacy && payload.status !== 0)
+    || typeof value?.error === "string" || messages.length > 0 || classified || vendorErrorCodes.length > 0);
   return {
-    httpStatus: Number.isInteger(status) && status >= 100 && status <= 599 ? status : null,
+    httpStatus,
     jsonResponseParsed: payload !== undefined,
+    protocol, legacyStatus, valueKind,
     providerMessagePresent: messages.length > 0,
-    standardError: standardErrors.includes(payload?.value?.error) ? payload.value.error : null,
+    standardError, vendorErrorCodes,
+    failureCategory: !rejection ? null : vendorErrorCodes.length ? "PROVIDER_REJECTION_WITH_VENDOR_CODE"
+      : classified ? "PROVIDER_REJECTION_CLASSIFIED" : "UNKNOWN_UNCLASSIFIED_PROVIDER_REJECTION",
+    classificationSource: !rejection ? null : vendorErrorCodes.length ? "STATIC_VENDOR_CODE" : classified ? "EXISTING_MESSAGE_RULE" : "UNCLASSIFIED",
+    truncated: Object.values(truncation).some(Boolean), truncation,
     ...diagnostics,
     rawResponseSaved: false,
   };

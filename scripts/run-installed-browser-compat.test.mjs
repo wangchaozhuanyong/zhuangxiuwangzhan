@@ -253,6 +253,116 @@ test("deep or very large error wrappers have bounded processing", () => {
   assert.equal(result.quotaExceeded, false);
 });
 
+test("legacy rejection records protocol, bounded numeric status and value shape without guessing a cause", () => {
+  const result = publicDriverHttpResponse(200, JSON.stringify({ status: 13, value: "Unclassified synthetic-private-key" }));
+  assert.equal(result.protocol, "LEGACY_JSON_WIRE");
+  assert.equal(result.legacyStatus, 13);
+  assert.equal(result.valueKind, "STRING");
+  assert.equal(result.standardError, "unknown error");
+  assert.equal(result.failureCategory, "UNKNOWN_UNCLASSIFIED_PROVIDER_REJECTION");
+  assert.equal(result.classificationSource, "UNCLASSIFIED");
+  assert.equal(result.quotaExceeded, false);
+  assert.equal(result.truncated, false);
+  assert.equal(JSON.stringify(result).includes("synthetic-private-key"), false);
+  for (const status of [-1, 1.5, 1000, Number.MAX_SAFE_INTEGER, "private-status"]) {
+    const unknown = publicDriverHttpResponse(500, JSON.stringify({ status, value: null }));
+    assert.equal(unknown.legacyStatus, null);
+    assert.equal(unknown.valueKind, "NULL");
+    assert.equal(unknown.quotaExceeded, false);
+    assert.equal(JSON.stringify(unknown).includes("private-status"), false);
+  }
+});
+
+test("only exact documented vendor enums are retained and official categories augment existing rules", () => {
+  const cases = [
+    ["BROWSERSTACK_FAILED_TO_START_BROWSER", null],
+    ["BROWSERSTACK_ALL_PARALLELS_IN_USE", "capacityUnavailable"],
+    ["BROWSERSTACK_FEATURE_NOT_AVAILABLE_IN_CURRENT_PLAN", "planUnavailable"],
+    ["BROWSERSTACK_INVALID_DEVICE", "unsupportedConfiguration"],
+    ["BROWSERSTACK_INVALID_OS_VERSION", "unsupportedConfiguration"],
+    ["BROWSERSTACK_INCOMPATIBLE_OS_VERSION", "unsupportedConfiguration"],
+    ["BROWSERSTACK_NO_DEVICE_SPECIFIED", "unsupportedConfiguration"],
+  ];
+  for (const [code, flag] of cases) {
+    const result = publicDriverHttpResponse(200, JSON.stringify({ status: 13, value: `[${code}] synthetic-private-key ${code}` }));
+    assert.deepEqual(result.vendorErrorCodes, [code]);
+    assert.equal(result.failureCategory, "PROVIDER_REJECTION_WITH_VENDOR_CODE");
+    assert.equal(result.classificationSource, "STATIC_VENDOR_CODE");
+    assert.equal(result.quotaExceeded, false);
+    if (flag) assert.equal(result[flag], true);
+    assert.equal(JSON.stringify(result).includes("synthetic-private-key"), false);
+  }
+  for (const token of ["BROWSERSTACK_SECRET_ACCOUNT_KEY", "BROWSERSTACK_FAILED_TO_START_BROWSER_PRIVATE_KEY", "SECRET_BROWSERSTACK_FAILED_TO_START_BROWSER"]) {
+    const result = publicDriverHttpResponse(500, JSON.stringify({ value: { error: token, message: "Unclassified synthetic-private-key" } }));
+    assert.deepEqual(result.vendorErrorCodes, []);
+    assert.equal(result.standardError, null);
+    assert.equal(result.failureCategory, "UNKNOWN_UNCLASSIFIED_PROVIDER_REJECTION");
+    assert.equal(JSON.stringify(result).includes(token), false);
+  }
+});
+
+test("successful session capabilities, credentials and account fields cannot supply vendor error enums", () => {
+  for (const payload of [
+    { value: { sessionId: "private-session", capabilities: { accessKey: "BROWSERSTACK_FAILED_TO_START_BROWSER", account: "BROWSERSTACK_INVALID_DEVICE" } },
+      account: "BROWSERSTACK_FEATURE_NOT_AVAILABLE_IN_CURRENT_PLAN", accessKey: "BROWSERSTACK_ALL_PARALLELS_IN_USE" },
+    { status: 0, sessionId: "private-session", value: { browserName: "Chrome", accessKey: "BROWSERSTACK_FAILED_TO_START_BROWSER" } },
+  ]) {
+    const result = publicDriverHttpResponse(200, JSON.stringify(payload));
+    assert.deepEqual(result.vendorErrorCodes, []);
+    assert.equal(result.failureCategory, null);
+    assert.equal(result.classificationSource, null);
+    assert.equal(result.providerMessagePresent, false);
+    for (const value of ["private-session", "BROWSERSTACK_FAILED_TO_START_BROWSER", "BROWSERSTACK_INVALID_DEVICE", "BROWSERSTACK_FEATURE_NOT_AVAILABLE_IN_CURRENT_PLAN", "BROWSERSTACK_ALL_PARALLELS_IN_USE"]) {
+      assert.equal(JSON.stringify(result).includes(value), false);
+    }
+  }
+});
+
+test("response protocol and value kind are fixed enums for W3C, unrelated JSON and non-JSON", () => {
+  const w3c = publicDriverHttpResponse(500, JSON.stringify({ value: { error: "session not created", message: "Unclassified private-text" } }));
+  assert.equal(w3c.protocol, "W3C");
+  assert.equal(w3c.legacyStatus, null);
+  assert.equal(w3c.valueKind, "OBJECT");
+  assert.equal(w3c.standardError, "session not created");
+  assert.equal(w3c.failureCategory, "UNKNOWN_UNCLASSIFIED_PROVIDER_REJECTION");
+  for (const [value, kind] of [[[], "ARRAY"], [true, "BOOLEAN"], [42, "NUMBER"], [null, "NULL"], ["private-value", "STRING"]]) {
+    const result = publicDriverHttpResponse(200, JSON.stringify({ value }));
+    assert.equal(result.protocol, "JSON_UNKNOWN");
+    assert.equal(result.valueKind, kind);
+    assert.equal(JSON.stringify(result).includes("private-value"), false);
+  }
+  const nonJson = publicDriverHttpResponse(502, "<html>private-provider-text</html>");
+  assert.equal(nonJson.protocol, "NON_JSON");
+  assert.equal(nonJson.valueKind, "MISSING");
+  assert.equal(nonJson.failureCategory, "UNKNOWN_UNCLASSIFIED_PROVIDER_REJECTION");
+  assert.equal(JSON.stringify(nonJson).includes("private-provider-text"), false);
+});
+
+test("depth, string, response, array and node limits are explicit without exposing truncated causes", () => {
+  let deep = { reason: "Trial expired private-text" };
+  for (let depth = 0; depth < 10; depth++) deep = { value: deep };
+  const depth = publicDriverHttpResponse(500, JSON.stringify(deep));
+  assert.equal(depth.truncated, true);
+  assert.equal(depth.truncation.depth, true);
+  assert.equal(depth.quotaExceeded, false);
+  const string = publicDriverHttpResponse(200, JSON.stringify({ status: 13, value: "X".repeat(9000) + "Trial expired private-text" }));
+  assert.equal(string.truncation.messageString, true);
+  assert.equal(string.quotaExceeded, false);
+  const body = publicDriverHttpResponse(500, JSON.stringify({ value: "X".repeat(140000) + "private-text" }));
+  assert.equal(body.truncation.responseBody, true);
+  assert.equal(body.jsonResponseParsed, false);
+  const array = publicDriverHttpResponse(500, JSON.stringify({ errors: Array.from({ length: 20 }, () => "Unknown error") }));
+  assert.equal(array.truncation.arrayItems, true);
+  const nodes = publicDriverHttpResponse(500, JSON.stringify({ errors: Array.from({ length: 16 }, () =>
+    ({ errors: Array.from({ length: 16 }, () => ({ message: "Unknown error" })) })) }));
+  assert.equal(nodes.truncation.nodes, true);
+  for (const result of [depth, string, body, array, nodes]) {
+    assert.equal(result.truncated, true);
+    assert.equal(result.rawResponseSaved, false);
+    assert.equal(JSON.stringify(result).includes("private-text"), false);
+  }
+});
+
 const providerMetrics = { parallel_sessions_running: 0, team_parallel_sessions_max_allowed: 1,
   parallel_sessions_max_allowed: 1, queued_sessions: 0, queued_sessions_max_allowed: 5 };
 

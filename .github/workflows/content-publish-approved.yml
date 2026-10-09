@@ -98,6 +98,7 @@ on:
           - design-body-faq-unified-20261009-v1
           - bathroom-body-step-unified-20261009-v1
           - remaining-completion-20261009
+          - remaining-completion-after-37893433883
       approval_id:
         description: "Owner authorization reference used in the audit log."
         required: true
@@ -153,6 +154,13 @@ jobs:
             fi
             case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
           fi
+          if [ "$PUBLISH_TARGET" = "remaining-completion-after-37893433883" ]; then
+            if [ "$MANAGED_OPERATION" != "publish" ] || [ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ] || [ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]; then
+              echo "::error::The fixed remainder requires the exact owner authorization and fresh completed-row guards without supplied permits."
+              exit 1
+            fi
+            case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
+          fi
           if [ "$MANAGED_OPERATION" = "rollback" ]; then
             case "$PUBLISH_TARGET" in
               builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1|kitchen-r1-cms-row-20260924-v1|design-r1-cms-row-20260924-v1|selangor-service-area-r1-v4|org-017-bathroom-faq-parity-reconciliation-v4|blog-kitchen-cabinet-cost-r1-v1|blog-renovation-quotation-links-r1-v1|blog-office-checklist-links-r1-v1|office-service-scope-r1-v1|kl-location-intent-r1-v2|design-framework-cms-content-v4|kitchen-initial-framework-body-v1|bathroom-initial-framework-body-v1|c01-bilingual-body-v1|c02-bilingual-body-v1|c03-bilingual-body-v1|c04-bilingual-body-v1|c05-bilingual-body-v1|c06-bilingual-body-v1|c07-bilingual-body-v1|c08-bilingual-body-v1|c09-bilingual-body-v1|c10-bilingual-body-v1|c11-bilingual-body-v1|c12-bilingual-body-v1|c13-bilingual-body-v1|c14-bilingual-body-v1|c15-bilingual-body-v1) ;;
@@ -197,6 +205,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check real Chrome before protected browser acceptance
+        if: ${{ inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'v18-owner-publisher-native-preparation-v2-20261007' }}
+        run: |
+          node --input-type=module - <<'JS'
+          import { chromium } from '@playwright/test';
+          const browser = await chromium.launch({ headless: true, channel: 'chrome' });
+          console.log(JSON.stringify({ realChromeAvailable: true, version: browser.version(), productionWrites: 0 }));
+          await browser.close();
+          JS
+
       - name: Confirm production source and required secrets
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
@@ -209,12 +227,13 @@ jobs:
           test -n "$VITE_SUPABASE_ANON_KEY"
 
       - name: Validate or publish approved updates
-        if: ${{ inputs.target != 'remaining-completion-20261009' }}
+        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SITE_URL: https://flashcast.com.my
+          PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
           PUBLISH_MODE: ${{ inputs.mode }}
           PUBLISH_TARGET: ${{ inputs.target }}
           APPROVAL_ID: ${{ inputs.approval_id }}
@@ -264,33 +283,41 @@ jobs:
           done
 
       - name: Preview the exact frozen completion batch without issuing permits
-        if: ${{ inputs.target == 'remaining-completion-20261009' && inputs.mode == 'dry-run' }}
+        if: ${{ (inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883') && inputs.mode == 'dry-run' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SITE_URL: https://flashcast.com.my
+          PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
           PUBLISH_TARGET: ${{ inputs.target }}
           APPROVAL_ID: ${{ inputs.approval_id }}
           MANAGED_OPERATION: ${{ inputs.managed_operation }}
           MANAGED_PERMIT_ID: ${{ inputs.managed_permit_id }}
           PARENT_RUN_ID: ${{ inputs.parent_run_id }}
-        run: node --experimental-strip-types scripts/publish-remaining-completion-20261009.mjs --mode=dry-run --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
+        run: |
+          batch_script=scripts/publish-remaining-completion-20261009.mjs
+          if [ "$PUBLISH_TARGET" = "remaining-completion-after-37893433883" ]; then batch_script=scripts/publish-remainder18-after-37893433883.mjs; fi
+          node --experimental-strip-types "$batch_script" --mode=dry-run --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
 
       - name: Issue and consume one exact permit at a time for the frozen owner-directed batch
-        if: ${{ inputs.target == 'remaining-completion-20261009' && inputs.mode == 'publish' }}
+        if: ${{ (inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883') && inputs.mode == 'publish' }}
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SITE_URL: https://flashcast.com.my
+          PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
           PUBLISH_TARGET: ${{ inputs.target }}
           APPROVAL_ID: ${{ inputs.approval_id }}
           MANAGED_OPERATION: ${{ inputs.managed_operation }}
           MANAGED_PERMIT_ID: ${{ inputs.managed_permit_id }}
           PARENT_RUN_ID: ${{ inputs.parent_run_id }}
-        run: node --experimental-strip-types scripts/publish-remaining-completion-20261009.mjs --mode=publish --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
+        run: |
+          batch_script=scripts/publish-remaining-completion-20261009.mjs
+          if [ "$PUBLISH_TARGET" = "remaining-completion-after-37893433883" ]; then batch_script=scripts/publish-remainder18-after-37893433883.mjs; fi
+          node --experimental-strip-types "$batch_script" --mode=publish --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
 
       - name: Upload audit package
         if: always()

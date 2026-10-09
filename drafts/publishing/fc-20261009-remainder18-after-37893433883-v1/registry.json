@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "batch": "remaining-completion-after-37893433883",
+  "sourceRegistryPath": "drafts/publishing/fc-20261009-remaining-completion-v1/registry.json",
+  "sourceRegistrySha256": "8dec1fa819f93602470e4cf236973431261b26330309b43469660f43689a82eb",
+  "authorizationId": "owner-authorized-remaining-completion-20261009",
+  "executionDecision": {
+    "id": "owner-directed-remainder18-after-37893433883-v1",
+    "policyDecisionId": "exact-reviewed-remainder18-20261009-v1",
+    "departmentControllerReviewClaimed": false
+  },
+  "excludedCompletedTargets": [
+    "v17-owner-publisher-native-preparation-v2-20261007",
+    "v18-owner-publisher-native-preparation-v2-20261007"
+  ],
+  "remainingTargets": [
+    "design-body-faq-unified-20261009-v1",
+    "bathroom-body-step-unified-20261009-v1",
+    "kitchen-initial-framework-body-v1",
+    "c01-bilingual-body-v1",
+    "c02-bilingual-body-v1",
+    "c03-bilingual-body-v1",
+    "c04-bilingual-body-v1",
+    "c05-bilingual-body-v1",
+    "c06-bilingual-body-v1",
+    "c07-bilingual-body-v1",
+    "c08-bilingual-body-v1",
+    "c09-bilingual-body-v1",
+    "c10-bilingual-body-v1",
+    "c11-bilingual-body-v1",
+    "c12-bilingual-body-v1",
+    "c13-bilingual-body-v1",
+    "c14-bilingual-body-v1",
+    "c15-bilingual-body-v1"
+  ],
+  "remainingRowCount": 18,
+  "remainingQaCount": 20,
+  "completedProofPath": "drafts/publishing/fc-20261009-remainder18-after-37893433883-v1/completed-rechecked-proof.json",
+  "completedProofSha256": "b33f0fabb43b6cd92d61ee8f157c0b3afaf5278a66b2fc81d61d64444f330308",
+  "freshPermitReadRequiredBeforePublish": true,
+  "dryRunPrivatePermitRead": false,
+  "browserEvidencePolicy": "Fresh real browser and raw metadata check every run; original 9f evidence retained as provenance only; source hashes must match"
+}
