@@ -1,12 +1,15 @@
 import { readFileSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 import { readRemainder9Registry, REMAINDER9_NAME, REMAINDER9_PATH, assertElevenCompletedPermit, assertRemainder9CompletedProof, verifyElevenBeforeRemainder9 } from "../../scripts/publish-remainder9-after-37903094390.mjs";
 import { assertCompletedRow } from "../../scripts/publish-remainder18-after-37893433883.mjs";
 import { APPROVAL_ID } from "../../scripts/publish-remaining-completion-20261009.mjs";
 import { targetConfigs } from "../../scripts/publish-content-trust-fixes.mjs";
+import { createFrozenPublisherSourceFixture } from "../test/helpers/frozenPublisherSource.mjs";
 
-const prepared = readRemainder9Registry();
+const historicalSource = createFrozenPublisherSourceFixture();
+afterAll(() => historicalSource.dispose());
+const prepared = historicalSource.readRegistry(() => readRemainder9Registry());
 const completed = prepared.original.entries.slice(0, 11);
 const proofFor = (entry) => prepared.proof.completed.find((item) => item.target === entry.target);
 const metadataReview = JSON.parse(readFileSync(prepared.proof.rendererReviewPath, "utf8"));
@@ -20,6 +23,10 @@ const deriveFixture = async ({ entry, language, row }) => {
 };
 const pagePass = { ok: true, rawStatus: 200, renderedOk: true, productionWrites: 0 };
 describe("the fixed nine-row forward remainder after three truthful stopped runs", () => {
+  it("rejects the real current metadata source while checking historical contracts against frozen bytes", () => {
+    expect(() => readRemainder9Registry()).toThrow(/Current exact metadata source fingerprint differs/);
+    expect(() => historicalSource.withCwd(() => assertRemainder9CompletedProof(prepared.proof, prepared.original, prepared.binding))).not.toThrow();
+  });
   it("admits exactly c07 through c15 and retains three failures and all eleven actual saves", () => {
     expect(prepared.registry.entries.map((entry) => entry.target)).toEqual(Array.from({ length: 9 }, (_, index) => `c${String(index + 7).padStart(2, "0")}-bilingual-body-v1`));
     expect(prepared.registry.sourceQaReceipts).toHaveLength(9); expect(prepared.proof.completed).toHaveLength(11);
@@ -31,7 +38,7 @@ describe("the fixed nine-row forward remainder after three truthful stopped runs
     expect(prepared.proof.completed[10].originalPublisherStatus.originalMissingRequired).toHaveLength(12);
     expect(prepared.proof.actualQaCount).toBe(13);
     expect(prepared.proof.stoppedRunSummaries.map((snapshot) => snapshot.summary.stoppedAt)).toEqual([completed[1].target, completed[8].target, completed[10].target]);
-    expect(() => readRemainder9Registry(Buffer.from(readFileSync(REMAINDER9_PATH, "utf8").replace('"remainingRowCount": 9', '"remainingRowCount": 8')))).toThrow(/hash differs/);
+    expect(() => historicalSource.withCwd(() => readRemainder9Registry(Buffer.from(readFileSync(REMAINDER9_PATH, "utf8").replace('"remainingRowCount": 9', '"remainingRowCount": 8'))))).toThrow(/hash differs/);
   });
   it.each(completed)("rejects current desired/retained/CAS drift and any original permit drift for $target", (entry) => {
     const proof = proofFor(entry); const index = completed.indexOf(entry);
@@ -53,7 +60,7 @@ describe("the fixed nine-row forward remainder after three truthful stopped runs
     expect(() => assertElevenCompletedPermit(entry, proof, [{ ...proof.permit, status: "revoked" }], index)).toThrow();
   });
   it("rejects proof provenance, renderer set, QA, real-browser evidence and any rewritten stopped summary", () => {
-    const check = (mutate) => { const altered = structuredClone(prepared.proof); mutate(altered); expect(() => assertRemainder9CompletedProof(altered, prepared.original, prepared.binding)).toThrow(); };
+    const check = (mutate) => { const altered = structuredClone(prepared.proof); mutate(altered); expect(() => historicalSource.withCwd(() => assertRemainder9CompletedProof(altered, prepared.original, prepared.binding))).toThrow(); };
     for (const mutation of [
       (proof) => { proof.browserReadbackStatus = "PENDING_FRESH_22_PAGES"; },
       (proof) => { proof.stoppedRuns[2].releaseSha = "a".repeat(40); },
