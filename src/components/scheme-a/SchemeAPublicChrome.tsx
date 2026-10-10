@@ -92,7 +92,7 @@ const BrandMark = ({ logo, name, chineseName }: { logo: string; name: string; ch
   const showChineseName = Boolean(chineseName && builtInLogo);
   return (
     <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={showChineseName ? `${chineseName} | ${name}` : name}>
-      <span className={`scheme-a-chrome__wordmark${showChineseName ? " scheme-a-chrome__wordmark--design" : ""}`}>
+      <span className={`scheme-a-chrome__wordmark${showChineseName ? " scheme-a-chrome__wordmark--design" : ""}`} data-builtin-logo={builtInLogo || undefined}>
         <SmartImage
           src={displayedLogo}
           alt=""
