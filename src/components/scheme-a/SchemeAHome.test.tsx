@@ -89,11 +89,13 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero?.querySelector("img")).toHaveAttribute("src", image);
     expect(hero?.querySelector("img")).toHaveAttribute("alt", alt);
     const heroLinks = hero!.querySelectorAll("a");
-    expect(heroLinks).toHaveLength(1);
+    expect(heroLinks).toHaveLength(2);
     expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "联系 WhatsApp" : "Contact WhatsApp");
     expect(heroLinks[0]).toHaveAttribute("href", state.whatsappHref);
     expect(heroLinks[0]).toHaveAttribute("target", "_blank");
     expect(heroLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
+    expect(heroLinks[1]).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
+    expect(heroLinks[1]).toHaveAttribute("href", `/${language}/projects`);
     for (const slug of originalServiceSlugs) {
       expect(container.querySelector(`[data-home-section="services"] a[href="/${language}/services/${slug}"]`)).not.toBeNull();
     }
