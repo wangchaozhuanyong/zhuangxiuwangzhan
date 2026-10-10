@@ -79,6 +79,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
+      - name: Install locked source-check dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify exact protected approval binding before production credentials
         env:
           R3_RELEASE_APPROVAL_ALLOWLIST_JSON: ${{ vars.R3_RELEASE_APPROVAL_ALLOWLIST_JSON }}
@@ -123,6 +125,7 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
+          node scripts/supabase-content-publish-release.mjs source-expected supabase/functions > "$RUNNER_TEMP/edge-source-expected.json"
           supabase db dump --linked --schema public --file "$RUNNER_TEMP/public-schema-before.sql"
           test -s "$RUNNER_TEMP/public-schema-before.sql"
           mkdir -p "$RUNNER_TEMP/edge-before"
@@ -131,7 +134,8 @@ jobs:
           test -s "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts"
           supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-before.json"
           node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-before.txt"
-          node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions/content-publish" > "$RUNNER_TEMP/edge-source-before.sha256"
+          node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before.json"
+          node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before.sha256"
           sha256sum "$RUNNER_TEMP/public-schema-before.sql" "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts" > "$RUNNER_TEMP/pre-release-hashes.txt"
           echo "Previous content-publish version: $(cat "$RUNNER_TEMP/edge-version-before.txt"); source SHA-256: $(cat "$RUNNER_TEMP/edge-source-before.sha256")." >> "$GITHUB_STEP_SUMMARY"
       - name: Retain previous Edge source for controlled recovery
@@ -139,7 +143,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: content-publish-before-${{ github.sha }}
-          path: ${{ runner.temp }}/edge-before/supabase/functions/content-publish/
+          path: |
+            ${{ runner.temp }}/edge-before/supabase/functions/
+            ${{ runner.temp }}/edge-source-before.json
+            ${{ runner.temp }}/edge-source-before.sha256
+            ${{ runner.temp }}/edge-source-expected.json
           retention-days: 7
           if-no-files-found: error
       - name: Recheck applied migration and reject all pending schema changes
@@ -164,11 +172,20 @@ jobs:
           }
           if supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api && \
              supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-after.json" && \
-             node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-after.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-after.txt"; then
-            echo "content-publish version advanced to $(cat "$RUNNER_TEMP/edge-version-after.txt"); managed switch remains off." >> "$GITHUB_STEP_SUMMARY"
+             node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-after.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-after.txt" && \
+             mkdir -p "$RUNNER_TEMP/edge-after" && \
+             supabase init --workdir "$RUNNER_TEMP/edge-after" --yes && \
+             supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-after" && \
+             node scripts/supabase-content-publish-release.mjs source-deployed supabase/functions "$RUNNER_TEMP/edge-after/supabase/functions" > "$RUNNER_TEMP/edge-source-after.sha256" && \
+             node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-after/supabase/functions" > "$RUNNER_TEMP/edge-source-after.json"; then
+            echo "content-publish version advanced to $(cat "$RUNNER_TEMP/edge-version-after.txt"); full runtime source matches the reviewed checkout; managed switch remains off." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          echo '::warning::Edge deploy or version readback failed; attempting the exact downloaded source restore. Additive permit schema is retained.'
+          echo '::warning::Edge deploy, version or source readback failed; attempting the exact downloaded source restore. Additive permit schema is retained.'
+          if ! node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before-recheck.sha256" || \
+             ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-before-recheck.sha256"; then
+            rollback_failed 'previous Edge backup changed after its source hash was frozen'
+          fi
           if ! supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api --workdir "$RUNNER_TEMP/edge-before"; then
             rollback_failed 'restoring the previous Edge source failed'
           fi
@@ -180,13 +197,34 @@ jobs:
           if ! supabase init --workdir "$RUNNER_TEMP/edge-restored" --yes || \
              ! supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-restored" || \
              ! node scripts/supabase-content-publish-release.mjs source-compare \
-                 "$RUNNER_TEMP/edge-before/supabase/functions/content-publish" \
-                 "$RUNNER_TEMP/edge-restored/supabase/functions/content-publish" > "$RUNNER_TEMP/edge-source-restored.sha256"; then
+                 "$RUNNER_TEMP/edge-before/supabase/functions" \
+                 "$RUNNER_TEMP/edge-restored/supabase/functions" > "$RUNNER_TEMP/edge-source-restored.sha256" || \
+             ! node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-restored/supabase/functions" > "$RUNNER_TEMP/edge-source-restored.json" || \
+             ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-restored.sha256"; then
             rollback_failed 'restored Edge source hash could not be verified'
           fi
           echo "rollback_succeeded_verified: version $(cat "$RUNNER_TEMP/edge-version-restored.txt"), source SHA-256 $(cat "$RUNNER_TEMP/edge-source-restored.sha256"). Additive permit schema remains; no automatic SQL rollback." >> "$GITHUB_STEP_SUMMARY"
           echo '::error::Initial Edge release failed; prior source restored and verified. Do not retry without reviewing the failure.'
           exit 1
+      - name: Retain deployed or restored Edge readback evidence
+        if: ${{ always() && inputs.mode == 'deploy' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-publish-readback-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/edge-after/supabase/functions/
+            ${{ runner.temp }}/edge-restored/supabase/functions/
+            ${{ runner.temp }}/edge-source-after.json
+            ${{ runner.temp }}/edge-source-after.sha256
+            ${{ runner.temp }}/edge-source-restored.json
+            ${{ runner.temp }}/edge-source-restored.sha256
+            ${{ runner.temp }}/edge-source-before-recheck.sha256
+            ${{ runner.temp }}/functions-after.json
+            ${{ runner.temp }}/functions-restored.json
+            ${{ runner.temp }}/edge-version-after.txt
+            ${{ runner.temp }}/edge-version-restored.txt
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Record precise release boundary
         env:
           RELEASE_MODE: ${{ inputs.mode }}
