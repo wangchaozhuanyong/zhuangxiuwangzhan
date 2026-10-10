@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "batch": "paid-three-page-native-20261010",
+  "authorizationId": "owner-authorized-paid-three-page-native-20261010",
+  "state": "READY_REAL_PREVIEW_QA",
+  "site": "https://flashcast.com.my",
+  "baseCheckoutSha": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+  "preparedFromActualBaselineSha256": "9fba7a7a1d66bcd7108201847bc2b62bb0c23e32eafc0a9f1e34f1a51ad3dca5",
+  "sourceAuthorityPins": [
+    {
+      "artifactName": "actual-human-original-three-page-production-closeout-authority-v1.json",
+      "sha256": "dcc6e503787588cfafc814be357d1e9cc043a2b6d3b5f972d3c5dae908fc9b7a"
+    },
+    {
+      "artifactName": "actual-original-three-page-wait-correction-and-priority-continuation-v1.json",
+      "sha256": "75efe2a953e1445e89ae192dd67bd3be77b9b76616f395570bad761aa6ae76e2"
+    },
+    {
+      "artifactName": "A2-original-publishing-owner-direct-formal-review-plan-v1.json",
+      "sha256": "117ec9dfc9eaf12bdd530fd1ba791fb3ee02991454ec924749c2531349840a76"
+    },
+    {
+      "artifactName": "actual-A2-original-publishing-formal-source-bound-and-five-field-evidence-linked-v1.json",
+      "sha256": "88c7acfec95017c3ed45a023d6fa1a3db4de2b8978fbfb906fe986ee4e48f87c"
+    },
+    {
+      "artifactName": "actual-A2-independent-five-field-input-review-v1.json",
+      "sha256": "415a71ec51afab32a03e6689e4aabc7f6cc12341bc893fe08ec43fd86a8ac730"
+    },
+    {
+      "artifactName": "publication-entry-1853-native-preflight.json",
+      "sha256": "ae6e78fe605f22a8eeae23879153cd694b2a82f473ca959993df073118c5ae67"
+    },
+    {
+      "artifactName": "actual-original-website-production-closeout-native-send-v1.json",
+      "sha256": "640f920034b9c22df4e0b39b92ef1312c71e48732bcffce2d707ff61c5ca0e8d"
+    },
+    {
+      "artifactName": "builtin.fresh-before-native.json",
+      "sha256": "d99d505ce4945849ba236a556b39f2b93619772e75fc06d8dde974e0eadb2eb7"
+    },
+    {
+      "artifactName": "builtin.fresh-typed-preview-input-v3.json",
+      "sha256": "4f145f526fda1168358b68843b727e10fe51ef03a94174ab6246b2d437a2a685"
+    },
+    {
+      "artifactName": "builtin.typed-preview-input.json",
+      "sha256": "98b09cb2981f20faf67cd2b00328c30fd8d0ac9755ea3c41c4717349656a91a3"
+    },
+    {
+      "artifactName": "kitchen.fresh-before-native.json",
+      "sha256": "fcad8a231ce975ca8a590be9e4ab7254fd86e4e928beca09753ee651ff674c66"
+    },
+    {
+      "artifactName": "kitchen.fresh-typed-preview-input-v3.json",
+      "sha256": "0a8f19bcbf8fc320b3d3107f34a91388ccdf22dd4a23ea61739bdbe36dc7a5bb"
+    },
+    {
+      "artifactName": "kitchen.typed-preview-input.json",
+      "sha256": "61ff6006cbd3b6611860fff662a99e420b499c2dd3dd6bbb590844b069016625"
+    },
+    {
+      "artifactName": "renovation.fresh-before-native.json",
+      "sha256": "cf3fa2e49d1ffa85b650c8dd16835e77ba1adde8bd5592bb96b26760222d36a8"
+    },
+    {
+      "artifactName": "renovation.fresh-typed-preview-input-v3.json",
+      "sha256": "52b462522b68e23f5c888606c2c7c2b839d61e458120afad1083ab372fbf04ae"
+    },
+    {
+      "artifactName": "renovation.typed-preview-input.json",
+      "sha256": "af3473381df63661aca227b6ee94de4f873682b4290e6d6bf52b46d8949d06b5"
+    }
+  ],
+  "entries": [
+    {
+      "target": "paid-three-page-builtin-exact-fields-v1",
+      "sourceCandidatePath": "drafts/publishing/fc-20261010-paid-three-page-exact-publication-followthrough-v1/builtin.typed-preview-input.json",
+      "sourceCandidateSha256": "98b09cb2981f20faf67cd2b00328c30fd8d0ac9755ea3c41c4717349656a91a3",
+      "baselinePath": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/builtin.before-public.json",
+      "baselineSha256": "d99d505ce4945849ba236a556b39f2b93619772e75fc06d8dde974e0eadb2eb7",
+      "expectedUpdatedAt": "2026-10-09T07:24:19.422726+00:00",
+      "baselineFieldsSha256": "e2cd27f93add1d5a645cef5aae717e792be11c991330d7907714365fada93b62",
+      "retainedFieldsSha256": "42ee3bc14506f6ddc0c4268edf560b1b447c12390c07a3a1c4c2197fa422a478",
+      "desiredFieldsSha256": "1d40ca43cd2b1e0ccfaee66a6c75e762c0e5c24e89c964839a38e20b2f4b1af2",
+      "rollbackFieldsSha256": "0d49b604fb61ef0409c50b0c89492a5cf1313969b3dddd3a030e956bb29483e8",
+      "baselineFieldCount": 30,
+      "retainedFieldCount": 27,
+      "changedFieldCount": 1,
+      "revisionFields": [
+        "updated_at",
+        "version"
+      ]
+    },
+    {
+      "target": "paid-three-page-kitchen-exact-fields-v1",
+      "sourceCandidatePath": "drafts/publishing/fc-20261010-paid-three-page-exact-publication-followthrough-v1/kitchen.typed-preview-input.json",
+      "sourceCandidateSha256": "61ff6006cbd3b6611860fff662a99e420b499c2dd3dd6bbb590844b069016625",
+      "baselinePath": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/kitchen.before-public.json",
+      "baselineSha256": "fcad8a231ce975ca8a590be9e4ab7254fd86e4e928beca09753ee651ff674c66",
+      "expectedUpdatedAt": "2026-10-09T07:23:28.638474+00:00",
+      "baselineFieldsSha256": "42a11419d1527f31462f5bd2cccde8dfb6295497caf7158f70e5d3185eaf852c",
+      "retainedFieldsSha256": "d02ca01b0fc4e4182b79261509c32d9f3c7bee2d9467305e3f2e0eff7c1a0b14",
+      "desiredFieldsSha256": "608d3c262b518bbac3085e5b36d159e4e2a158c6e182c85ff43d32507ced34b2",
+      "rollbackFieldsSha256": "40d306e1bec501f7ec851f24061120e2a0aa79e828b3bbcfde6bf330746f7b49",
+      "baselineFieldCount": 30,
+      "retainedFieldCount": 26,
+      "changedFieldCount": 2,
+      "revisionFields": [
+        "updated_at",
+        "version"
+      ]
+    },
+    {
+      "target": "paid-three-page-renovation-exact-fields-v1",
+      "sourceCandidatePath": "drafts/publishing/fc-20261010-paid-three-page-exact-publication-followthrough-v1/renovation.typed-preview-input.json",
+      "sourceCandidateSha256": "af3473381df63661aca227b6ee94de4f873682b4290e6d6bf52b46d8949d06b5",
+      "baselinePath": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/renovation.before-public.json",
+      "baselineSha256": "cf3fa2e49d1ffa85b650c8dd16835e77ba1adde8bd5592bb96b26760222d36a8",
+      "expectedUpdatedAt": "2026-09-26T18:10:33.566853+00:00",
+      "baselineFieldsSha256": "539359c220e67c890ea3d7b8782af817b9b3be09e4551cb4b8ee2b3e1b850ef0",
+      "retainedFieldsSha256": "bced5ffb8776c48b564578af07c6fd1cdc29bb3236b8e92d713c6df8a47ac3fc",
+      "desiredFieldsSha256": "a4ad4f05fea8755af0d23e4f83b37ec406af181c8e113ecb7d6f155955c291b3",
+      "rollbackFieldsSha256": "475391da36c20006e22446d954f8082bad8987c9fea74390feeb03bed4cd9765",
+      "baselineFieldCount": 30,
+      "retainedFieldCount": 26,
+      "changedFieldCount": 2,
+      "revisionFields": [
+        "updated_at",
+        "version"
+      ]
+    }
+  ],
+  "missingActualEvidence": [],
+  "readyRegistry": {
+    "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/registry.json",
+    "sha256": "79d5667a3a03d36b2ffa87b1355511a59ae6750f3799b09165da9b882169b3e0"
+  },
+  "actualPreviewFreezeProofSha256": "494a60ef87322ce01f03a658e0e64772254390920787c0c5d1b0bf5e17524f6a",
+  "actualIndependentQaManifestSha256": "8cc55a675a6e613b7478fb3d18f7d50b02250bb2112dcceb56f70ac7b06f2fa4",
+  "previewSourceSha": "9f917265a1de5c34faec5a245ce60a82c2187bff",
+  "actualWebsiteAtReview": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+  "executionLiveShaMustEqualCurrentWorkflowSha": true
+}

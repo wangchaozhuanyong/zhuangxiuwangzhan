@@ -1,0 +1,309 @@
+{
+  "schema": "website-independent-current-native-three-scoped-QA/v1",
+  "qa_receipt_id": "qa-20261010-builtin-native-38062456416-153153618357",
+  "formal_qa_receipt_issued": true,
+  "independently_reviewed": true,
+  "reviewer_task": "/root/ui_acceptance_finish",
+  "producer_task": "/root",
+  "result": "PASS_EXACT_NATIVE_THREE_REVIEW",
+  "reviewed_at": "2026-10-10T15:31:53.618357+00:00",
+  "reviewer_identity": {
+    "kind": "Codex independent project QA agent",
+    "canonical_task": "/root/ui_acceptance_finish",
+    "department_controller_impersonated": false,
+    "human_review_claimed": false
+  },
+  "task_id": "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+  "candidate_version": "paid-three-page-exact-native-diff-v1-20261010",
+  "action_id": "paid-three-page-builtin-exact-fields-v1",
+  "action_class": "cms_write",
+  "scope": "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71:content_zh",
+  "target": "paid-three-page-builtin-exact-fields-v1",
+  "record_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+  "slug": "builtin",
+  "content_type": "service",
+  "operation": "publish",
+  "current_updated_at": "2026-10-09T07:24:19.422726+00:00",
+  "current_version_evidence_only": 1,
+  "current_baseline_sha256": "e2cd27f93add1d5a645cef5aae717e792be11c991330d7907714365fada93b62",
+  "exact_payload_sha256": "1d40ca43cd2b1e0ccfaee66a6c75e762c0e5c24e89c964839a38e20b2f4b1af2",
+  "actual_preview_receipt_sha256": "4987d02bb01e58652cdf68d78e82e67c5813340f77b7c6758d2fcb2ba4fdbb9b",
+  "retained_fields_sha256": "42ee3bc14506f6ddc0c4268edf560b1b447c12390c07a3a1c4c2197fa422a478",
+  "prior_payload_sha256": "0d49b604fb61ef0409c50b0c89492a5cf1313969b3dddd3a030e956bb29483e8",
+  "payload_fields": [
+    "content_zh"
+  ],
+  "covered_fields": [
+    "content_zh"
+  ],
+  "changed_fields": [
+    "content_zh"
+  ],
+  "exact_reviewed_payload": {
+    "content_zh": "<p><strong>直接答案：</strong>FLASH CAST 为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。方案会按现场尺寸、日常使用、收纳分类、材料、五金、搬运和安装条件整理，而不是套用一个固定套餐。</p>\n<h2>按空间和使用方式规划</h2>\n<p>可讨论的范围包括定制衣柜、walk-in wardrobe、电视柜、鞋柜、餐边柜、展示柜、书柜、工作区与其他嵌入式收纳。若主要需求是厨房橱柜与厨房整体动线，可查看 <a href=\"/zh/services/kitchen\">定制厨房与厨房装修服务</a>，了解橱柜、台面、家电点位和报价范围。</p>\n<h2>报价前先确认的项目</h2>\n<p>报价会根据现场量度、柜体尺寸与分区、板材和饰面、门板、台面、五金、内部配件、灯光衔接、搬运、电梯、安装通道及其他工种配合范围评估。可讨论的材料方向包括 Melamine、Acrylic 与 Solid Wood，最终规格应以样板、现场条件和书面报价为准。</p>\n<h2>从参考到咨询</h2>\n<p>可先查看 <a href=\"/zh/materials/category/whole-house-custom/wardrobes\">衣柜材料</a>、<a href=\"/zh/materials/category/whole-house-custom/storage-cabinets\">收纳柜材料</a>、<a href=\"/zh/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe 参考</a> 和 <a href=\"/zh/blog/built-in-cabinet-cost-malaysia\">马来西亚定制柜报价影响因素</a>。准备地点、平面图或现场照片及主要收纳需求后，可前往 <a href=\"/zh/quote\">获取免费报价</a>。距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用需先确认。</p>\n\n<h2>确认方案时，需要把哪些选择记录下来？</h2>\n<p>可把柜体位置与尺寸、内部划分、门板与饰面、把手或开门方式、五金及配件整理到同一份确认清单，并标注哪些仍待现场核对。衣柜应按实际衣物、抽屉和取用习惯讨论，而不是只比较外观或总长度；详细问项可参考 <a href=\"/zh/blog/custom-wardrobe-price-malaysia\">定制衣柜报价比较指南</a>。图纸、样板、修改与安装由谁提供，以及包含哪些交付，应在书面范围中分别确认。</p>\n<h2>安装交付时怎样保留可跟进的记录？</h2>\n<p>与负责方对照已确认清单，记录可见饰面、门和抽屉操作、配件及待调整项。每个问题写明柜体位置、照片、需确认的处理方式和跟进人，再保留复查结果；具体检查方法与责任按项目约定。可参考 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">装修交付记录清单</a>，并询问所选材料与五金的保养说明、适用售后条款和联系方法。这不新增固定保修范围或未经确认的材料性能承诺。</p>"
+  },
+  "full_baseline_fields": [
+    "id",
+    "slug",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "image_url",
+    "alt_zh",
+    "alt_en",
+    "suitable_for_zh",
+    "suitable_for_en",
+    "common_projects_zh",
+    "common_projects_en",
+    "process_steps_zh",
+    "process_steps_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "faqs_zh",
+    "faqs_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "status",
+    "sort_order",
+    "created_at",
+    "updated_at",
+    "version"
+  ],
+  "retained_projection_fields": [
+    "id",
+    "slug",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_en",
+    "image_url",
+    "alt_zh",
+    "alt_en",
+    "suitable_for_zh",
+    "suitable_for_en",
+    "common_projects_zh",
+    "common_projects_en",
+    "process_steps_zh",
+    "process_steps_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "faqs_zh",
+    "faqs_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "status",
+    "sort_order",
+    "created_at"
+  ],
+  "native_revision_metadata_fields": [
+    "updated_at",
+    "version"
+  ],
+  "field_accounting": {
+    "full_baseline": 30,
+    "changed_chinese_fields": 1,
+    "retained_business_identity_fields": 27,
+    "native_revision_metadata_fields": 2,
+    "preview_all30_unchanged": true,
+    "future_saved_revision_expected_to_advance": true
+  },
+  "actual_native_preview": {
+    "run_id": 38062456416,
+    "head_sha": "9f917265a1de5c34faec5a245ce60a82c2187bff",
+    "workflow": ".github/workflows/content-publish-approved.yml",
+    "run_attempt": 1,
+    "official_run_conclusion": "success",
+    "official_GitHub_run_metadata": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/run-38062456416-official-metadata.json",
+      "sha256": "85fb2ee7f0f1d1a61443d5387f2ab9cd14d249aca5ae4a3107032a4e0cfa78d6"
+    },
+    "official_GitHub_artifact_metadata": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/artifact-11673692267-official-metadata.json",
+      "sha256": "11af3bbc4abe38e58f7b413d00ed204a75310699f6c125410bfa1a22645f557c"
+    },
+    "official_artifact_digest": "sha256:a85b37eb9012f32d3b03908678fe050d3e79c5ecc990bd4211561cbfe6db64b1",
+    "original_ZIP": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/original-native-preview-artifact.zip",
+      "bytes": 18605,
+      "sha256": "a85b37eb9012f32d3b03908678fe050d3e79c5ecc990bd4211561cbfe6db64b1"
+    },
+    "original_ZIP_and_extracted_seven_bytes_independently_verified": true,
+    "raw_native_receipt": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/locked-dry-run-receipt.json",
+      "bytes": 563,
+      "sha256": "4987d02bb01e58652cdf68d78e82e67c5813340f77b7c6758d2fcb2ba4fdbb9b"
+    },
+    "native_seven_artifacts": [
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/backup.json",
+        "relativePath": "paid-three-page-builtin-exact-fields-v1/backup.json",
+        "bytes": 16838,
+        "sha256": "5ad1069df2b8e1fcb16b4f94f2a9c0f7bc92c9c6a0fd050cb65331b49e92261f"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/desired.json",
+        "relativePath": "paid-three-page-builtin-exact-fields-v1/desired.json",
+        "bytes": 16704,
+        "sha256": "a3a23952d8b6534065bb7ceeda07c429e951f737431bbb5f1d7b4c0d2fc2b1df"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/locked-dry-run-receipt.json",
+        "relativePath": "paid-three-page-builtin-exact-fields-v1/locked-dry-run-receipt.json",
+        "bytes": 563,
+        "sha256": "4987d02bb01e58652cdf68d78e82e67c5813340f77b7c6758d2fcb2ba4fdbb9b"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/dry-run.json",
+        "relativePath": "paid-three-page-builtin-exact-fields-v1/dry-run.json",
+        "bytes": 3439,
+        "sha256": "995af04fcd0c561e8db127ef94d4703e0262872824fc48ecb3917b8e479c422f"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/managed-payload-digest.json",
+        "relativePath": "paid-three-page-builtin-exact-fields-v1/managed-payload-digest.json",
+        "bytes": 329,
+        "sha256": "ef4f944cdb35cf27c2e35bd767588c23642242873a77fee4d6a2420a01d48a87"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/rollback-payload-digest.json",
+        "relativePath": "paid-three-page-builtin-exact-fields-v1/rollback-payload-digest.json",
+        "bytes": 607,
+        "sha256": "750f127a0363c3d5d21886581e6ee8f06ba9e014134a102462c6c7f4d7e3951d"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/paid-three-page-builtin-exact-fields-v1/managed-identity-probe.json",
+        "relativePath": "paid-three-page-builtin-exact-fields-v1/managed-identity-probe.json",
+        "bytes": 373,
+        "sha256": "59a757b7cfa84685a6dfdb5e037f647ad353852b2a21d52e0c0bfbb44df754ad"
+      }
+    ],
+    "locked_candidate_from_original_zip": {
+      "zipPath": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062456416/original-native-preview-artifact.zip",
+      "entry": "paid-three-page-builtin-exact-fields-v1/locked-candidate.json",
+      "sha256": "a9ea216996462114ba35d5ed4d9f342048593c77efca0146d559d87370fea822"
+    },
+    "http_status": 200,
+    "ok": true,
+    "dry_run": true,
+    "performed_write": false,
+    "external_writes": 0,
+    "row_unchanged_after_dry_run": true,
+    "Saved_id_present": false,
+    "zero_write_evidence_method": "Explicit locked-dry-run receipt writefalse after actual post-preview full-row equality check, successful actual pinned publisher workflow, dry_run=true server response with no Saved, and actual zero-write identity probe. Generic dry-run response has no performed_write property; not invented.",
+    "generic_server_response_has_performed_write_field": false,
+    "identity_probe_exact_actor_repository_workflow_run_SHA": true
+  },
+  "source_QA_provenance": {
+    "original_A2_input": {
+      "path": "/Users/wangchao/Desktop/装修公司虚拟员工/logs/handoffs/2026-10-10-paid-three-page-original-followthrough-v1/actual-A2-independent-five-field-input-review-v1.json",
+      "bytes": 22072,
+      "sha256": "415a71ec51afab32a03e6689e4aabc7f6cc12341bc893fe08ec43fd86a8ac730"
+    },
+    "original_A2_input_review": "PASS_CURRENT_FIVE_FIELD_INPUT_ONLY",
+    "original_A2_formal_qa_receipt_issued": false,
+    "original_A2_used_as_content_input_facts_only": true,
+    "original_typed_input": {
+      "path": "/Users/wangchao/Desktop/装修公司虚拟员工/drafts/publishing/fc-20261010-paid-three-page-exact-publication-followthrough-v1/builtin.typed-preview-input.json",
+      "bytes": 17900,
+      "sha256": "98b09cb2981f20faf67cd2b00328c30fd8d0ac9755ea3c41c4717349656a91a3"
+    },
+    "new_QA_is_own_current_native_scoped_review": true,
+    "independent_fields_verification": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/independent-native-fields-proof.json",
+      "bytes": 70802,
+      "sha256": "82de84d4f536d25f40fde67dcf07f0d0ce3bb453cdc9fa57d9c220d9593c8751"
+    },
+    "independent_actual_source21_verification": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/independent-source21-proof.json",
+      "bytes": 25740,
+      "sha256": "63eece5cec76ca7aec9151713730cb81947db5ad7c1f516c4302e2f5bdda1560"
+    },
+    "actual_edge_version": 77,
+    "actual_edge_source_sha": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+    "actual_Edge_runtime_digest": "6ee7e48185254339ec126891a4f8096c32b9a91b5be1826f00508d097b198447",
+    "current_Git_and_preview_SHA": "9f917265a1de5c34faec5a245ce60a82c2187bff",
+    "actual_edge_runtime_byte_equal_to_current_Git": true,
+    "website_PUBLIC_version": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+    "website_version_HTTP200_before": {
+      "httpStatus": 200,
+      "deploymentVersion": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+      "contentVersion": "2026-10-10T10:01:32.923955+00:00",
+      "checkedAt": "2026-10-10T15:31:52.358Z"
+    },
+    "website_version_HTTP200_after": {
+      "httpStatus": 200,
+      "deploymentVersion": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+      "contentVersion": "2026-10-10T10:01:32.923955+00:00",
+      "checkedAt": "2026-10-10T15:31:53.560Z"
+    },
+    "main9f_only_guard_two_diff_from_served5237": true,
+    "website_frontend_runtime_bytes_unchanged": true
+  },
+  "public_before": [
+    {
+      "path": "/zh/services/builtin",
+      "httpStatus": 200,
+      "observedRawTitle": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+      "sourceSha256": "cf3dc08f8cddc6e303e5ae9b9c491ed4db59287f1a198778b658cbd334e5a80b",
+      "newPhrasePresent": [
+        {
+          "text": "若主要需求是厨房橱柜与厨房整体动线，可查看",
+          "present": false
+        },
+        {
+          "text": "，了解橱柜、台面、家电点位和报价范围。",
+          "present": false
+        }
+      ],
+      "checkedAt": "2026-10-10T14:53:45.236Z"
+    },
+    {
+      "path": "/en/services/builtin",
+      "httpStatus": 200,
+      "observedRawTitle": "Custom Built-In Furniture &amp; Wardrobes | FLASH CAST",
+      "sourceSha256": "16d387d8fe94dc8f0585bc71f4900777477bbce7642099dc386526685e477c8e",
+      "newPhrasePresent": [],
+      "checkedAt": "2026-10-10T14:53:45.621Z"
+    }
+  ],
+  "baseline_public_projection": {
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/actual-current-baseline-20261010T1454/builtin-current-public-projection.json",
+    "bytes": 16257,
+    "sha256": "d99d505ce4945849ba236a556b39f2b93619772e75fc06d8dde974e0eadb2eb7"
+  },
+  "checks": {
+    "exact_official_run_and_artifact_bindings": "PASS",
+    "zip_official_digest_and_all_seven_original_bytes": "PASS",
+    "current_full30_and_original_full30_candidate_equal": "PASS",
+    "raw_microsecond_CAS_preserved": "PASS",
+    "changed_payload_exact_keys_and_canonical_hash": "PASS",
+    "all_English_and_retained_business_identity_fields_preserved": "PASS",
+    "two_revision_metadata_unchanged_during_preview": "PASS",
+    "native_HTTP200_ok_dry_run_and_zero_write_noSaved": "PASS",
+    "actual_identity_probe_exact_run_source": "PASS",
+    "source21_current_runtime_verified_from_official_original_archives": "PASS",
+    "original_A2_input_facts_formalfalse_preserved": "PASS"
+  },
+  "boundary": {
+    "this_QA_CMS_saves": 0,
+    "this_QA_permit_issues": 0,
+    "this_QA_customer_reads": 0,
+    "this_QA_deployments": 0,
+    "business_pages_published": false,
+    "post_save_desktop_mobile_noJS_acceptance": "NOT_RUN_BEFORE_SAVE",
+    "future_native_publication_requires_final_deployed_main_equal_workflow_SHA_gate": true,
+    "QA_is_not_a_permit_or_execution_policy_decision": true,
+    "old_20_QA_reused": false,
+    "original_41_tests_rerun": false
+  },
+  "findings": [],
+  "blockers": []
+}

@@ -1,0 +1,60 @@
+{
+  "actorId": 276684684,
+  "conclusion": "success",
+  "event": "workflow_dispatch",
+  "repositoryId": 1248188229,
+  "runAttempt": 1,
+  "runId": 38062637708,
+  "status": "completed",
+  "workflowId": 351424533,
+  "workflowPath": ".github/workflows/content-publish-approved.yml",
+  "workflowSha": "9f917265a1de5c34faec5a245ce60a82c2187bff",
+  "workflowRef": "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+  "mode": "dry-run",
+  "target": "paid-three-page-kitchen-exact-fields-v1",
+  "performedWrites": 0,
+  "permitIssues": 0,
+  "officialArtifactId": 11673707509,
+  "officialArtifactDigest": "sha256:059f740967c62a741f1d6dbac0d7aa39a1a348ef5231c05f4a4d80b5906b0835",
+  "originalZipSha256": "059f740967c62a741f1d6dbac0d7aa39a1a348ef5231c05f4a4d80b5906b0835",
+  "originalWorkflowProofSha256": "8f5fa6dc2e56b3454ad19446249377ee8067f6ff9bf7cfae0181d72c4396e7ff",
+  "sourceCollectionSha256": "23d72fff44bd3b19b62b4be34d6562f15ad86ca1f33564f948c404d218d27d4d",
+  "originalNativePins": [
+    {
+      "relativePath": "paid-three-page-kitchen-exact-fields-v1/backup.json",
+      "sha256": "64425f3b83937044ee4959941b78c091d34095c2b7374ebdddfda37f4b630e45",
+      "bytes": 13894
+    },
+    {
+      "relativePath": "paid-three-page-kitchen-exact-fields-v1/desired.json",
+      "sha256": "934500f97d589eeb17c84dcca0e8508037900ff552ab78ddfb06bb0a9b2a5b6d",
+      "bytes": 13811
+    },
+    {
+      "relativePath": "paid-three-page-kitchen-exact-fields-v1/locked-dry-run-receipt.json",
+      "sha256": "ee188670b948d008b8f6604aaf1c56f7128c281d0bfb1703c45b9835b4ddc318",
+      "bytes": 572
+    },
+    {
+      "relativePath": "paid-three-page-kitchen-exact-fields-v1/dry-run.json",
+      "sha256": "2675ead8767c9abb8421bb6796fb900b70b310c4928923c8e7f8720ff0b5b526",
+      "bytes": 808
+    },
+    {
+      "relativePath": "paid-three-page-kitchen-exact-fields-v1/managed-payload-digest.json",
+      "sha256": "b7ba6ee0a729ae8fe6d23535ff67ef351ab4f394458ed2504721090c5153e5aa",
+      "bytes": 329
+    },
+    {
+      "relativePath": "paid-three-page-kitchen-exact-fields-v1/rollback-payload-digest.json",
+      "sha256": "e2450da975fac3dad1e5d5c045b25ec00ea041f06284a5456abd730a43fcb7a0",
+      "bytes": 607
+    },
+    {
+      "relativePath": "paid-three-page-kitchen-exact-fields-v1/managed-identity-probe.json",
+      "sha256": "c60678186b474ba114691b9e683243f5fa322297281a34b67ce7a22cfb0044b8",
+      "bytes": 373
+    }
+  ],
+  "actualGitHubGetCheckedAt": "2026-10-10T15:24:39.838707+00:00"
+}

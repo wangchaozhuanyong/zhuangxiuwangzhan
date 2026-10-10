@@ -1,0 +1,312 @@
+{
+  "schema": "website-independent-current-native-three-scoped-QA/v1",
+  "qa_receipt_id": "qa-20261010-kitchen-native-38062637708-153153618357",
+  "formal_qa_receipt_issued": true,
+  "independently_reviewed": true,
+  "reviewer_task": "/root/ui_acceptance_finish",
+  "producer_task": "/root",
+  "result": "PASS_EXACT_NATIVE_THREE_REVIEW",
+  "reviewed_at": "2026-10-10T15:31:53.618357+00:00",
+  "reviewer_identity": {
+    "kind": "Codex independent project QA agent",
+    "canonical_task": "/root/ui_acceptance_finish",
+    "department_controller_impersonated": false,
+    "human_review_claimed": false
+  },
+  "task_id": "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+  "candidate_version": "paid-three-page-exact-native-diff-v1-20261010",
+  "action_id": "paid-three-page-kitchen-exact-fields-v1",
+  "action_class": "cms_write",
+  "scope": "flashcast.com.my:services/ce4156db-9034-42c8-ba29-b35724ea7d6d:title_zh,excerpt_zh",
+  "target": "paid-three-page-kitchen-exact-fields-v1",
+  "record_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+  "slug": "kitchen",
+  "content_type": "service",
+  "operation": "publish",
+  "current_updated_at": "2026-10-09T07:23:28.638474+00:00",
+  "current_version_evidence_only": 1,
+  "current_baseline_sha256": "42a11419d1527f31462f5bd2cccde8dfb6295497caf7158f70e5d3185eaf852c",
+  "exact_payload_sha256": "608d3c262b518bbac3085e5b36d159e4e2a158c6e182c85ff43d32507ced34b2",
+  "actual_preview_receipt_sha256": "ee188670b948d008b8f6604aaf1c56f7128c281d0bfb1703c45b9835b4ddc318",
+  "retained_fields_sha256": "d02ca01b0fc4e4182b79261509c32d9f3c7bee2d9467305e3f2e0eff7c1a0b14",
+  "prior_payload_sha256": "40d306e1bec501f7ec851f24061120e2a0aa79e828b3bbcfde6bf330746f7b49",
+  "payload_fields": [
+    "title_zh",
+    "excerpt_zh"
+  ],
+  "covered_fields": [
+    "title_zh",
+    "excerpt_zh"
+  ],
+  "changed_fields": [
+    "title_zh",
+    "excerpt_zh"
+  ],
+  "exact_reviewed_payload": {
+    "title_zh": "吉隆坡与雪兰莪定制橱柜及厨房装修",
+    "excerpt_zh": "根据真实现场规划定制橱柜、台面、厨房收纳与干湿厨房动线；再核对家电点位、给排水、材料、五金、安装条件及书面报价范围。"
+  },
+  "full_baseline_fields": [
+    "id",
+    "slug",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "image_url",
+    "alt_zh",
+    "alt_en",
+    "suitable_for_zh",
+    "suitable_for_en",
+    "common_projects_zh",
+    "common_projects_en",
+    "process_steps_zh",
+    "process_steps_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "faqs_zh",
+    "faqs_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "status",
+    "sort_order",
+    "created_at",
+    "updated_at",
+    "version"
+  ],
+  "retained_projection_fields": [
+    "id",
+    "slug",
+    "title_en",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "image_url",
+    "alt_zh",
+    "alt_en",
+    "suitable_for_zh",
+    "suitable_for_en",
+    "common_projects_zh",
+    "common_projects_en",
+    "process_steps_zh",
+    "process_steps_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "faqs_zh",
+    "faqs_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "status",
+    "sort_order",
+    "created_at"
+  ],
+  "native_revision_metadata_fields": [
+    "updated_at",
+    "version"
+  ],
+  "field_accounting": {
+    "full_baseline": 30,
+    "changed_chinese_fields": 2,
+    "retained_business_identity_fields": 26,
+    "native_revision_metadata_fields": 2,
+    "preview_all30_unchanged": true,
+    "future_saved_revision_expected_to_advance": true
+  },
+  "actual_native_preview": {
+    "run_id": 38062637708,
+    "head_sha": "9f917265a1de5c34faec5a245ce60a82c2187bff",
+    "workflow": ".github/workflows/content-publish-approved.yml",
+    "run_attempt": 1,
+    "official_run_conclusion": "success",
+    "official_GitHub_run_metadata": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/run-38062637708-official-metadata.json",
+      "sha256": "a2a7b618671729092bb0881f6b23d9abc9fc33167371198da0e83237cffb2e4c"
+    },
+    "official_GitHub_artifact_metadata": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/artifact-11673707509-official-metadata.json",
+      "sha256": "d3d904aeb2a7373c2e8b5c4f84f17af417aff7dd6270c7ab214955e81d6da637"
+    },
+    "official_artifact_digest": "sha256:059f740967c62a741f1d6dbac0d7aa39a1a348ef5231c05f4a4d80b5906b0835",
+    "original_ZIP": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/original-native-preview-artifact.zip",
+      "bytes": 15061,
+      "sha256": "059f740967c62a741f1d6dbac0d7aa39a1a348ef5231c05f4a4d80b5906b0835"
+    },
+    "original_ZIP_and_extracted_seven_bytes_independently_verified": true,
+    "raw_native_receipt": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/locked-dry-run-receipt.json",
+      "bytes": 572,
+      "sha256": "ee188670b948d008b8f6604aaf1c56f7128c281d0bfb1703c45b9835b4ddc318"
+    },
+    "native_seven_artifacts": [
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/backup.json",
+        "relativePath": "paid-three-page-kitchen-exact-fields-v1/backup.json",
+        "bytes": 13894,
+        "sha256": "64425f3b83937044ee4959941b78c091d34095c2b7374ebdddfda37f4b630e45"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/desired.json",
+        "relativePath": "paid-three-page-kitchen-exact-fields-v1/desired.json",
+        "bytes": 13811,
+        "sha256": "934500f97d589eeb17c84dcca0e8508037900ff552ab78ddfb06bb0a9b2a5b6d"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/locked-dry-run-receipt.json",
+        "relativePath": "paid-three-page-kitchen-exact-fields-v1/locked-dry-run-receipt.json",
+        "bytes": 572,
+        "sha256": "ee188670b948d008b8f6604aaf1c56f7128c281d0bfb1703c45b9835b4ddc318"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/dry-run.json",
+        "relativePath": "paid-three-page-kitchen-exact-fields-v1/dry-run.json",
+        "bytes": 808,
+        "sha256": "2675ead8767c9abb8421bb6796fb900b70b310c4928923c8e7f8720ff0b5b526"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/managed-payload-digest.json",
+        "relativePath": "paid-three-page-kitchen-exact-fields-v1/managed-payload-digest.json",
+        "bytes": 329,
+        "sha256": "b7ba6ee0a729ae8fe6d23535ff67ef351ab4f394458ed2504721090c5153e5aa"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/rollback-payload-digest.json",
+        "relativePath": "paid-three-page-kitchen-exact-fields-v1/rollback-payload-digest.json",
+        "bytes": 607,
+        "sha256": "e2450da975fac3dad1e5d5c045b25ec00ea041f06284a5456abd730a43fcb7a0"
+      },
+      {
+        "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/paid-three-page-kitchen-exact-fields-v1/managed-identity-probe.json",
+        "relativePath": "paid-three-page-kitchen-exact-fields-v1/managed-identity-probe.json",
+        "bytes": 373,
+        "sha256": "c60678186b474ba114691b9e683243f5fa322297281a34b67ce7a22cfb0044b8"
+      }
+    ],
+    "locked_candidate_from_original_zip": {
+      "zipPath": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-previews/actual-38062637708/original-native-preview-artifact.zip",
+      "entry": "paid-three-page-kitchen-exact-fields-v1/locked-candidate.json",
+      "sha256": "938e688be6e187d0c0098d7e2f3b07431ac42dfb5bbbe0e7c748325bb59551a7"
+    },
+    "http_status": 200,
+    "ok": true,
+    "dry_run": true,
+    "performed_write": false,
+    "external_writes": 0,
+    "row_unchanged_after_dry_run": true,
+    "Saved_id_present": false,
+    "zero_write_evidence_method": "Explicit locked-dry-run receipt writefalse after actual post-preview full-row equality check, successful actual pinned publisher workflow, dry_run=true server response with no Saved, and actual zero-write identity probe. Generic dry-run response has no performed_write property; not invented.",
+    "generic_server_response_has_performed_write_field": false,
+    "identity_probe_exact_actor_repository_workflow_run_SHA": true
+  },
+  "source_QA_provenance": {
+    "original_A2_input": {
+      "path": "/Users/wangchao/Desktop/装修公司虚拟员工/logs/handoffs/2026-10-10-paid-three-page-original-followthrough-v1/actual-A2-independent-five-field-input-review-v1.json",
+      "bytes": 22072,
+      "sha256": "415a71ec51afab32a03e6689e4aabc7f6cc12341bc893fe08ec43fd86a8ac730"
+    },
+    "original_A2_input_review": "PASS_CURRENT_FIVE_FIELD_INPUT_ONLY",
+    "original_A2_formal_qa_receipt_issued": false,
+    "original_A2_used_as_content_input_facts_only": true,
+    "original_typed_input": {
+      "path": "/Users/wangchao/Desktop/装修公司虚拟员工/drafts/publishing/fc-20261010-paid-three-page-exact-publication-followthrough-v1/kitchen.typed-preview-input.json",
+      "bytes": 15028,
+      "sha256": "61ff6006cbd3b6611860fff662a99e420b499c2dd3dd6bbb590844b069016625"
+    },
+    "new_QA_is_own_current_native_scoped_review": true,
+    "independent_fields_verification": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/independent-native-fields-proof.json",
+      "bytes": 70802,
+      "sha256": "82de84d4f536d25f40fde67dcf07f0d0ce3bb453cdc9fa57d9c220d9593c8751"
+    },
+    "independent_actual_source21_verification": {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/independent-current-three-QA-20261010T152150823412Z/independent-source21-proof.json",
+      "bytes": 25740,
+      "sha256": "63eece5cec76ca7aec9151713730cb81947db5ad7c1f516c4302e2f5bdda1560"
+    },
+    "actual_edge_version": 77,
+    "actual_edge_source_sha": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+    "actual_Edge_runtime_digest": "6ee7e48185254339ec126891a4f8096c32b9a91b5be1826f00508d097b198447",
+    "current_Git_and_preview_SHA": "9f917265a1de5c34faec5a245ce60a82c2187bff",
+    "actual_edge_runtime_byte_equal_to_current_Git": true,
+    "website_PUBLIC_version": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+    "website_version_HTTP200_before": {
+      "httpStatus": 200,
+      "deploymentVersion": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+      "contentVersion": "2026-10-10T10:01:32.923955+00:00",
+      "checkedAt": "2026-10-10T15:31:52.358Z"
+    },
+    "website_version_HTTP200_after": {
+      "httpStatus": 200,
+      "deploymentVersion": "5237d068b49a20a9ce6dc395f8c6a45d7f961d8b",
+      "contentVersion": "2026-10-10T10:01:32.923955+00:00",
+      "checkedAt": "2026-10-10T15:31:53.560Z"
+    },
+    "main9f_only_guard_two_diff_from_served5237": true,
+    "website_frontend_runtime_bytes_unchanged": true
+  },
+  "public_before": [
+    {
+      "path": "/zh/services/kitchen",
+      "httpStatus": 200,
+      "observedRawTitle": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+      "sourceSha256": "a79c9f591376c41feb7013bf3b6725ff4a0cd8193a7d995198743533921c4bbc",
+      "newPhrasePresent": [
+        {
+          "text": "吉隆坡与雪兰莪定制橱柜及厨房装修",
+          "present": false
+        },
+        {
+          "text": "根据真实现场规划定制橱柜、台面、厨房收纳与干湿厨房动线；再核对家电点位、给排水、材料、五金、安装条件及书面报价范围。",
+          "present": false
+        }
+      ],
+      "checkedAt": "2026-10-10T14:53:45.961Z"
+    },
+    {
+      "path": "/en/services/kitchen",
+      "httpStatus": 200,
+      "observedRawTitle": "Kitchen Renovation Kuala Lumpur &amp; Selangor | FLASH CAST",
+      "sourceSha256": "e3323bb24937549e48812fa59096bf6618c97775d01e2995e22288f6e73d27c0",
+      "newPhrasePresent": [],
+      "checkedAt": "2026-10-10T14:53:46.162Z"
+    }
+  ],
+  "baseline_public_projection": {
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/paid-three-page-entry-release-review/native-three-preparation/actual-current-baseline-20261010T1454/kitchen-current-public-projection.json",
+    "bytes": 13317,
+    "sha256": "fcad8a231ce975ca8a590be9e4ab7254fd86e4e928beca09753ee651ff674c66"
+  },
+  "checks": {
+    "exact_official_run_and_artifact_bindings": "PASS",
+    "zip_official_digest_and_all_seven_original_bytes": "PASS",
+    "current_full30_and_original_full30_candidate_equal": "PASS",
+    "raw_microsecond_CAS_preserved": "PASS",
+    "changed_payload_exact_keys_and_canonical_hash": "PASS",
+    "all_English_and_retained_business_identity_fields_preserved": "PASS",
+    "two_revision_metadata_unchanged_during_preview": "PASS",
+    "native_HTTP200_ok_dry_run_and_zero_write_noSaved": "PASS",
+    "actual_identity_probe_exact_run_source": "PASS",
+    "source21_current_runtime_verified_from_official_original_archives": "PASS",
+    "original_A2_input_facts_formalfalse_preserved": "PASS"
+  },
+  "boundary": {
+    "this_QA_CMS_saves": 0,
+    "this_QA_permit_issues": 0,
+    "this_QA_customer_reads": 0,
+    "this_QA_deployments": 0,
+    "business_pages_published": false,
+    "post_save_desktop_mobile_noJS_acceptance": "NOT_RUN_BEFORE_SAVE",
+    "future_native_publication_requires_final_deployed_main_equal_workflow_SHA_gate": true,
+    "QA_is_not_a_permit_or_execution_policy_decision": true,
+    "old_20_QA_reused": false,
+    "original_41_tests_rerun": false
+  },
+  "findings": [],
+  "blockers": []
+}

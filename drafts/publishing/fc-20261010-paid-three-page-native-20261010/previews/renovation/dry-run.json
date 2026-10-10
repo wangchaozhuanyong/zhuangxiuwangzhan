@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "content_type": "service",
+  "action": "publish",
+  "slug": "renovation",
+  "status": "published",
+  "existing_id": "0d947129-0595-43ef-baa1-0fd9d8b870e6",
+  "warnings": [],
+  "next_steps": [
+    "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
+    "Verify the /zh and /en public service pages read the updated admin content.",
+    "Run publish receipt/QA and production cache verification."
+  ],
+  "auth_mode": "cron",
+  "payload_preview": {
+    "title_zh": "吉隆坡公寓装修、住宅翻新与旧屋装修",
+    "excerpt_zh": "为吉隆坡、雪兰莪与巴生谷业主规划公寓装修、有地住宅及旧屋翻新，整理空间、材料与施工协调范围。先准备照片、面积、屋况、管理处要求和装修目标，再确认范围与报价方向。"
+  }
+}

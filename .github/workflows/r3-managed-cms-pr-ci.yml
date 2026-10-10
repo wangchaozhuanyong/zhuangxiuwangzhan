@@ -39,6 +39,8 @@ on:
       - scripts/managed-cms-targets-owner-publisher-three-v1.mjs
       - scripts/managed-cms-targets-unified-content-v1.mjs
       - scripts/publish-remaining-completion-20261009.mjs
+      - scripts/publish-paid-three-page-native-20261010.mjs
+      - scripts/paid-three-page-native-batch.test.mjs
       - scripts/publish-remainder18-after-37893433883.mjs
       - scripts/publish-remainder11-after-37898568406.mjs
       - scripts/publish-remainder9-after-37903094390.mjs
@@ -52,6 +54,8 @@ on:
       - drafts/publishing/fc-20261009-remainder9-after-37903094390-v1/**
       - drafts/publishing/fc-20261010-remainder8-after-38037667102-v1/**
       - drafts/publishing/fc-20261009-remaining-completion-v1/**
+      - drafts/publishing/fc-20261010-paid-three-page-exact-publication-followthrough-v1/**
+      - drafts/publishing/fc-20261010-paid-three-page-native-20261010/**
       - drafts/seo/fc-20261007-publisher-three-designated-binding-v1/**
       - drafts/seo/fc-20261009-unified-protected-cms-bindings-v1/**
       - drafts/seo/fc-20260927-cms-native-admission-contract-v1/**
@@ -165,6 +169,10 @@ jobs:
             src/lib/managedPermitAuth.test.ts \
             src/lib/managedPermitIssuer.test.ts \
             src/lib/managedTimestamp.test.ts
+
+      - name: Run exact three-page native issuer and publisher regressions
+        run: |
+          node --experimental-strip-types --test scripts/paid-three-page-native-batch.test.mjs scripts/paid-three-page-publisher-adapter.test.mjs scripts/paid-three-page-exact-targets.test.mjs
 
       - name: Check repair UI and protected publish guards
         run: |

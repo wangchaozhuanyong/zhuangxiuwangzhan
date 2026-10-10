@@ -1,0 +1,60 @@
+{
+  "actorId": 276684684,
+  "conclusion": "success",
+  "event": "workflow_dispatch",
+  "repositoryId": 1248188229,
+  "runAttempt": 1,
+  "runId": 38062478090,
+  "status": "completed",
+  "workflowId": 351424533,
+  "workflowPath": ".github/workflows/content-publish-approved.yml",
+  "workflowSha": "9f917265a1de5c34faec5a245ce60a82c2187bff",
+  "workflowRef": "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+  "mode": "dry-run",
+  "target": "paid-three-page-renovation-exact-fields-v1",
+  "performedWrites": 0,
+  "permitIssues": 0,
+  "officialArtifactId": 11673178512,
+  "officialArtifactDigest": "sha256:33e9633b0f8eaecc22b6795d5f9d4007e0c446cb26c51fe9205611b57b7bb5ad",
+  "originalZipSha256": "33e9633b0f8eaecc22b6795d5f9d4007e0c446cb26c51fe9205611b57b7bb5ad",
+  "originalWorkflowProofSha256": "b8ecd3d14817c25f25c7874efc3cfdcffa17f1fec6ddb174484f2bbb0f972fbb",
+  "sourceCollectionSha256": "23d72fff44bd3b19b62b4be34d6562f15ad86ca1f33564f948c404d218d27d4d",
+  "originalNativePins": [
+    {
+      "relativePath": "paid-three-page-renovation-exact-fields-v1/backup.json",
+      "sha256": "0d50cfce150813aa0613c6bea51ef91cbc41f3b40260c21d8dfe2649c5f62243",
+      "bytes": 11892
+    },
+    {
+      "relativePath": "paid-three-page-renovation-exact-fields-v1/desired.json",
+      "sha256": "87b71b6d1318f2a0c19d40a1fd6ec6f57adb7d150c6ee9be1e5c75c55a0a900b",
+      "bytes": 11780
+    },
+    {
+      "relativePath": "paid-three-page-renovation-exact-fields-v1/locked-dry-run-receipt.json",
+      "sha256": "bfa206e13966c0c619ba06b4e492facfee307d86d101aa9747e991c7e8a66cf3",
+      "bytes": 575
+    },
+    {
+      "relativePath": "paid-three-page-renovation-exact-fields-v1/dry-run.json",
+      "sha256": "5e27ba64e0f3c97c598a4363a6219b14c6fb129238fe0bf11e1134dec5355e3b",
+      "bytes": 880
+    },
+    {
+      "relativePath": "paid-three-page-renovation-exact-fields-v1/managed-payload-digest.json",
+      "sha256": "a7f81c15bd64e83fe22764520e8dee2703a21fd406984bf6cf1a9fd6298bb2bb",
+      "bytes": 329
+    },
+    {
+      "relativePath": "paid-three-page-renovation-exact-fields-v1/rollback-payload-digest.json",
+      "sha256": "ffb1b1391a1a635c3e980d2d7793ba32aa7810300daee760154cb5b6e1915d4e",
+      "bytes": 607
+    },
+    {
+      "relativePath": "paid-three-page-renovation-exact-fields-v1/managed-identity-probe.json",
+      "sha256": "fdda02cfc0729f2d5e0075308012c9707f37a9684ab358c02b3f32c0e7ede01b",
+      "bytes": 373
+    }
+  ],
+  "actualGitHubGetCheckedAt": "2026-10-10T15:24:40.370528+00:00"
+}

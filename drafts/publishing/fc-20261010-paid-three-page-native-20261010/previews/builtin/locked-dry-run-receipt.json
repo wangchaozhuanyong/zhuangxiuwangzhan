@@ -1,0 +1,14 @@
+{
+  "task_id": "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+  "candidate_version": "paid-three-page-exact-native-diff-v1-20261010",
+  "action_id": "paid-three-page-builtin-exact-fields-v1",
+  "operation": "publish",
+  "scope": "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71:content_zh",
+  "http_status": 200,
+  "dry_run": true,
+  "performed_write": false,
+  "external_writes": 0,
+  "row_unchanged_after_dry_run": true,
+  "expected_updated_at": "2026-10-09T07:24:19.422726+00:00",
+  "checked_at": "2026-10-10T15:09:48.423Z"
+}
