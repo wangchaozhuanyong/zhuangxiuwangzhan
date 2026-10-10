@@ -95,17 +95,44 @@ const bindings = {
         "path": "/zh/services/builtin",
         "expected": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
         "requiredPhrases": [
-          "直接答案：FLASH CAST 为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。"
-        ]
+          "若主要需求是厨房橱柜与厨房整体动线，可查看",
+          "，了解橱柜、台面、家电点位和报价范围。"
+        ],
+        "forbidden": [
+          "若需求属于厨房橱柜与厨房整体动线，应进入独立的",
+          "，避免两个页面争夺同一搜索意图。"
+        ],
+        "strictMetadataTitle": true
       },
       {
         "path": "/en/services/builtin",
-        "expected": "Custom Built-In Furniture & Wardrobes | FLASH CAST"
+        "expected": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+        "strictMetadataTitle": true
       }
     ],
     "desiredFields": {
       "content_zh": "<p><strong>直接答案：</strong>FLASH CAST 为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。方案会按现场尺寸、日常使用、收纳分类、材料、五金、搬运和安装条件整理，而不是套用一个固定套餐。</p>\n<h2>按空间和使用方式规划</h2>\n<p>可讨论的范围包括定制衣柜、walk-in wardrobe、电视柜、鞋柜、餐边柜、展示柜、书柜、工作区与其他嵌入式收纳。若主要需求是厨房橱柜与厨房整体动线，可查看 <a href=\"/zh/services/kitchen\">定制厨房与厨房装修服务</a>，了解橱柜、台面、家电点位和报价范围。</p>\n<h2>报价前先确认的项目</h2>\n<p>报价会根据现场量度、柜体尺寸与分区、板材和饰面、门板、台面、五金、内部配件、灯光衔接、搬运、电梯、安装通道及其他工种配合范围评估。可讨论的材料方向包括 Melamine、Acrylic 与 Solid Wood，最终规格应以样板、现场条件和书面报价为准。</p>\n<h2>从参考到咨询</h2>\n<p>可先查看 <a href=\"/zh/materials/category/whole-house-custom/wardrobes\">衣柜材料</a>、<a href=\"/zh/materials/category/whole-house-custom/storage-cabinets\">收纳柜材料</a>、<a href=\"/zh/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe 参考</a> 和 <a href=\"/zh/blog/built-in-cabinet-cost-malaysia\">马来西亚定制柜报价影响因素</a>。准备地点、平面图或现场照片及主要收纳需求后，可前往 <a href=\"/zh/quote\">获取免费报价</a>。距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用需先确认。</p>\n\n<h2>确认方案时，需要把哪些选择记录下来？</h2>\n<p>可把柜体位置与尺寸、内部划分、门板与饰面、把手或开门方式、五金及配件整理到同一份确认清单，并标注哪些仍待现场核对。衣柜应按实际衣物、抽屉和取用习惯讨论，而不是只比较外观或总长度；详细问项可参考 <a href=\"/zh/blog/custom-wardrobe-price-malaysia\">定制衣柜报价比较指南</a>。图纸、样板、修改与安装由谁提供，以及包含哪些交付，应在书面范围中分别确认。</p>\n<h2>安装交付时怎样保留可跟进的记录？</h2>\n<p>与负责方对照已确认清单，记录可见饰面、门和抽屉操作、配件及待调整项。每个问题写明柜体位置、照片、需确认的处理方式和跟进人，再保留复查结果；具体检查方法与责任按项目约定。可参考 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">装修交付记录清单</a>，并询问所选材料与五金的保养说明、适用售后条款和联系方法。这不新增固定保修范围或未经确认的材料性能承诺。</p>"
-    }
+    },
+    "rollbackPublicPaths": [
+      {
+        "path": "/zh/services/builtin",
+        "expected": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+        "requiredPhrases": [
+          "若需求属于厨房橱柜与厨房整体动线，应进入独立的",
+          "，避免两个页面争夺同一搜索意图。"
+        ],
+        "forbidden": [
+          "若主要需求是厨房橱柜与厨房整体动线，可查看",
+          "，了解橱柜、台面、家电点位和报价范围。"
+        ],
+        "strictMetadataTitle": true
+      },
+      {
+        "path": "/en/services/builtin",
+        "expected": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+        "strictMetadataTitle": true
+      }
+    ]
   },
   "paid-three-page-kitchen-exact-fields-v1": {
     "taskId": "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
@@ -201,17 +228,43 @@ const bindings = {
         "requiredPhrases": [
           "吉隆坡与雪兰莪定制橱柜及厨房装修",
           "根据真实现场规划定制橱柜、台面、厨房收纳与干湿厨房动线；再核对家电点位、给排水、材料、五金、安装条件及书面报价范围。"
-        ]
+        ],
+        "forbidden": [
+          "吉隆坡与雪兰莪厨房装修服务",
+          "根据真实现场规划厨房动线、收纳、橱柜、台面、家电点位、给排水、湿作状况与书面报价范围。"
+        ],
+        "strictMetadataTitle": true
       },
       {
         "path": "/en/services/kitchen",
-        "expected": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST"
+        "expected": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+        "strictMetadataTitle": true
       }
     ],
     "desiredFields": {
       "title_zh": "吉隆坡与雪兰莪定制橱柜及厨房装修",
       "excerpt_zh": "根据真实现场规划定制橱柜、台面、厨房收纳与干湿厨房动线；再核对家电点位、给排水、材料、五金、安装条件及书面报价范围。"
-    }
+    },
+    "rollbackPublicPaths": [
+      {
+        "path": "/zh/services/kitchen",
+        "expected": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+        "requiredPhrases": [
+          "吉隆坡与雪兰莪厨房装修服务",
+          "根据真实现场规划厨房动线、收纳、橱柜、台面、家电点位、给排水、湿作状况与书面报价范围。"
+        ],
+        "forbidden": [
+          "吉隆坡与雪兰莪定制橱柜及厨房装修",
+          "根据真实现场规划定制橱柜、台面、厨房收纳与干湿厨房动线；再核对家电点位、给排水、材料、五金、安装条件及书面报价范围。"
+        ],
+        "strictMetadataTitle": true
+      },
+      {
+        "path": "/en/services/kitchen",
+        "expected": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+        "strictMetadataTitle": true
+      }
+    ]
   },
   "paid-three-page-renovation-exact-fields-v1": {
     "taskId": "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
@@ -307,17 +360,43 @@ const bindings = {
         "requiredPhrases": [
           "吉隆坡公寓装修、住宅翻新与旧屋装修",
           "为吉隆坡、雪兰莪与巴生谷业主规划公寓装修、有地住宅及旧屋翻新，整理空间、材料与施工协调范围。先准备照片、面积、屋况、管理处要求和装修目标，再确认范围与报价方向。"
-        ]
+        ],
+        "forbidden": [
+          "吉隆坡住宅装修与旧屋翻新规划",
+          "FLASH CAST 为吉隆坡、雪兰莪与巴生谷业主提供住宅装修、旧屋翻新、空间规划、材料建议与施工协调支持。先整理照片、面积、屋况和装修目标，再确认范围与报价方向。"
+        ],
+        "strictMetadataTitle": true
       },
       {
         "path": "/en/services/renovation",
-        "expected": "Residential Renovation Kuala Lumpur & Selangor | FLASH CAST"
+        "expected": "Residential Renovation Kuala Lumpur & Selangor | FLASH CAST",
+        "strictMetadataTitle": true
       }
     ],
     "desiredFields": {
       "title_zh": "吉隆坡公寓装修、住宅翻新与旧屋装修",
       "excerpt_zh": "为吉隆坡、雪兰莪与巴生谷业主规划公寓装修、有地住宅及旧屋翻新，整理空间、材料与施工协调范围。先准备照片、面积、屋况、管理处要求和装修目标，再确认范围与报价方向。"
-    }
+    },
+    "rollbackPublicPaths": [
+      {
+        "path": "/zh/services/renovation",
+        "expected": "吉隆坡住宅装修与旧屋翻新 | FLASH CAST",
+        "requiredPhrases": [
+          "吉隆坡住宅装修与旧屋翻新规划",
+          "FLASH CAST 为吉隆坡、雪兰莪与巴生谷业主提供住宅装修、旧屋翻新、空间规划、材料建议与施工协调支持。先整理照片、面积、屋况和装修目标，再确认范围与报价方向。"
+        ],
+        "forbidden": [
+          "吉隆坡公寓装修、住宅翻新与旧屋装修",
+          "为吉隆坡、雪兰莪与巴生谷业主规划公寓装修、有地住宅及旧屋翻新，整理空间、材料与施工协调范围。先准备照片、面积、屋况、管理处要求和装修目标，再确认范围与报价方向。"
+        ],
+        "strictMetadataTitle": true
+      },
+      {
+        "path": "/en/services/renovation",
+        "expected": "Residential Renovation Kuala Lumpur & Selangor | FLASH CAST",
+        "strictMetadataTitle": true
+      }
+    ]
   }
 };
 

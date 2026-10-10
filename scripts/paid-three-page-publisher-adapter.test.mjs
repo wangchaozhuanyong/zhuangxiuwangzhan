@@ -7,7 +7,9 @@ import { lockedPaidThreePageCandidates } from "./managed-cms-targets-paid-three-
 import {
   targetConfigs, assertLockedServiceCandidate, assertLockedRollbackCurrent,
   assertLockedPublishGate, buildLockedDryRunRequest, assertLockedDryRunResult, stableDigest,
+  resolveLockedPublicPaths, inspectPublicReadback,
 } from "./publish-content-trust-fixes.mjs";
+import { reviewedBodyPhrases } from "./lib/publisher-public-readback.mjs";
 
 const names = [
   "paid-three-page-builtin-exact-fields-v1",
@@ -183,4 +185,101 @@ test("public readback uses frozen metadata expectations and short approved visib
       assert.ok(Object.values(binding.desiredFields).some((value) => value.replace(/<[^>]*>/g, "").includes(phrase)));
     }
   }
+});
+
+const builtinPublicFixture = () => {
+  const binding = lockedPaidThreePageCandidates[names[0]];
+  const forward = binding.publicPaths[0];
+  const restore = binding.rollbackPublicPaths[0];
+  const after = binding.desiredFields.content_zh;
+  const nextSpan = after.match(/若主要需求是[\s\S]*?<\/a>[^<]*?。/)[0];
+  const anchor = nextSpan.match(/<a\b[^>]*>[\s\S]*?<\/a>/)[0];
+  const priorSpan = `${restore.requiredPhrases[0]} ${anchor}${restore.requiredPhrases[1]}`;
+  const before = after.replace(nextSpan, priorSpan);
+  // Exact original rollback digest, rather than an invented old-page fixture.
+  assert.equal(stableDigest({ content_zh: before }), binding.rollbackFieldsSha256);
+  return { binding, forward, restore, before, after, anchor };
+};
+const escapeHtml = (value) => value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+const publicHtml = (page, body) => `<title>${escapeHtml(page.expected)}</title><main>${body}</main>`;
+const publicPasses = (check) => check.status === 200 && check.found
+  && check.forbiddenFound.length === 0 && check.missingRequired.length === 0;
+
+test("public assertions reject the stale builtin even when its metadata and unchanged first paragraph match", () => {
+  const { binding, forward, before, after, anchor } = builtinPublicFixture();
+  assert.equal(reviewedBodyPhrases(before)[0], reviewedBodyPhrases(after)[0]);
+  assert.ok(before.includes(anchor) && after.includes(anchor));
+  assert.equal(forward.forbidden.includes(anchor), false);
+  const config = targetConfigs[binding.actionId];
+  const paths = resolveLockedPublicPaths(config, {}, false);
+  assert.equal(paths, config.publicPaths);
+  const stale = inspectPublicReadback(paths[0], 200, publicHtml(forward, before));
+  assert.equal(stale.found, true, "the same SEO title must not prove the changed body");
+  assert.deepEqual(stale.missingRequired, forward.requiredPhrases);
+  assert.deepEqual(stale.forbiddenFound, forward.forbidden);
+  assert.equal(publicPasses(stale), false);
+  assert.equal(publicPasses(inspectPublicReadback(paths[0], 200, publicHtml(forward, after))), true);
+  for (const target of bindings) {
+    const { current } = fixture(target);
+    const desired = targetConfigs[target.actionId].buildRecord(current);
+    for (const field of Object.keys(current).filter((field) => field.endsWith("_en"))) {
+      assert.deepEqual(desired[field], current[field], "the original English fields remain unchanged");
+    }
+    const body = target.desiredFields.content_zh || Object.values(target.desiredFields).join("<br>");
+    for (const page of resolveLockedPublicPaths(targetConfigs[target.actionId], {}, false)) {
+      assert.equal(page.strictMetadataTitle, true);
+      const html = publicHtml(page, body);
+      if (page.path.startsWith("/en/")) {
+        assert.ok(page.expected.includes("&") && !page.expected.includes("&amp;"));
+        assert.ok(html.includes("&amp;"));
+      }
+      assert.equal(publicPasses(inspectPublicReadback(page, 200, html)), true, page.path);
+      const wrongTitle = `<title>Incorrect frozen title</title><main>${body}${page.expected}</main>`;
+      assert.equal(inspectPublicReadback(page, 200, wrongTitle).found, false, "correct body text cannot mask a wrong title");
+    }
+  }
+});
+
+test("public assertions accept legitimate old builtin recovery and reverse only unique changed text", () => {
+  const { binding, before, after, anchor } = builtinPublicFixture();
+  const desired = { content_zh: before, seo_title_zh: binding.publicPaths[0].expected, seo_title_en: binding.publicPaths[1].expected };
+  const paths = resolveLockedPublicPaths(targetConfigs[binding.actionId], desired, true);
+  assert.deepEqual(paths[0].requiredPhrases, binding.rollbackPublicPaths[0].requiredPhrases);
+  assert.deepEqual(paths[0].forbidden, binding.publicPaths[0].requiredPhrases);
+  assert.equal(paths[0].forbidden.includes(anchor), false);
+  assert.equal(paths[0].forbidden.includes(reviewedBodyPhrases(before)[0]), false);
+  assert.equal(publicPasses(inspectPublicReadback(paths[0], 200, publicHtml(paths[0], before))), true);
+  assert.equal(publicPasses(inspectPublicReadback(paths[0], 200, publicHtml(paths[0], after))), false);
+  for (const page of paths) {
+    assert.equal(publicPasses(inspectPublicReadback(page, 200, publicHtml(page, before))), true);
+    assert.equal(inspectPublicReadback(page, 200, `<title>Wrong restore title</title><main>${before}${page.expected}</main>`).found, false);
+    if (page.path.startsWith("/en/")) assert.equal(page.expected, binding.publicPaths[1].expected, "rollback keeps raw English title with &");
+  }
+  for (const titleBinding of bindings.slice(1)) {
+    const fields = Object.fromEntries(titleBinding.changedFields.map((field, index) => [field, titleBinding.rollbackPublicPaths[0].requiredPhrases[index]]));
+    assert.equal(stableDigest(fields), titleBinding.rollbackFieldsSha256);
+    const restored = { ...fields, seo_title_zh: titleBinding.publicPaths[0].expected, seo_title_en: titleBinding.publicPaths[1].expected };
+    const reversePaths = resolveLockedPublicPaths(targetConfigs[titleBinding.actionId], restored, true);
+    const reverse = reversePaths[0];
+    const oldText = `<h1>${fields.title_zh}</h1><p>${fields.excerpt_zh}</p>`;
+    const newText = `<h1>${titleBinding.desiredFields.title_zh}</h1><p>${titleBinding.desiredFields.excerpt_zh}</p>`;
+    assert.equal(publicPasses(inspectPublicReadback(reverse, 200, publicHtml(reverse, oldText))), true);
+    assert.equal(publicPasses(inspectPublicReadback(reverse, 200, publicHtml(reverse, newText))), false);
+    for (const page of reversePaths) {
+      assert.equal(publicPasses(inspectPublicReadback(page, 200, publicHtml(page, oldText))), true, page.path);
+      assert.equal(inspectPublicReadback(page, 200, `<title>Wrong restore title</title><main>${oldText}${page.expected}</main>`).found, false);
+      if (page.path.startsWith("/en/")) {
+        assert.equal(page.expected, titleBinding.publicPaths[1].expected);
+        assert.ok(publicHtml(page, oldText).includes("&amp;"));
+      }
+    }
+    const positive = resolveLockedPublicPaths(targetConfigs[titleBinding.actionId], {}, false)[0];
+    assert.equal(publicPasses(inspectPublicReadback(positive, 200, publicHtml(positive, oldText))), false);
+    assert.equal(publicPasses(inspectPublicReadback(positive, 200, publicHtml(positive, newText))), true);
+  }
+  // Targets without the new explicit contract keep the original FAQ rollback fallback.
+  const legacy = { lockedCandidate: {}, publicPaths: [{ path: "/zh/services/fixture", expected: "new", requiredPhrases: ["new question"], forbidden: ["existing forbidden"] }] };
+  assert.deepEqual(resolveLockedPublicPaths(legacy, { seo_title_zh: "old title", faqs_zh: [{ q: "old question" }] }, true), [
+    { path: "/zh/services/fixture", expected: "old title", requiredPhrases: ["old question"], forbidden: ["existing forbidden", "new question"] },
+  ]);
 });
