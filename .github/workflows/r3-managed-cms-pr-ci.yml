@@ -42,6 +42,7 @@ on:
       - scripts/publish-remainder18-after-37893433883.mjs
       - scripts/publish-remainder11-after-37898568406.mjs
       - scripts/publish-remainder9-after-37903094390.mjs
+      - scripts/publish-remainder8-after-38037667102.mjs
       - scripts/lib/publisher-public-readback.mjs
       - scripts/lib/publisher-reviewed-renderer.mjs
       - scripts/lib/publisher-reviewed-metadata.mjs
@@ -49,6 +50,7 @@ on:
       - drafts/publishing/fc-20261009-remainder18-after-37893433883-v1/**
       - drafts/publishing/fc-20261009-remainder11-after-37898568406-v1/**
       - drafts/publishing/fc-20261009-remainder9-after-37903094390-v1/**
+      - drafts/publishing/fc-20261010-remainder8-after-38037667102-v1/**
       - drafts/publishing/fc-20261009-remaining-completion-v1/**
       - drafts/seo/fc-20261007-publisher-three-designated-binding-v1/**
       - drafts/seo/fc-20261009-unified-protected-cms-bindings-v1/**
@@ -66,6 +68,7 @@ on:
       - src/lib/contentPublishRemainder18.test.ts
       - src/lib/contentPublishRemainder11.test.ts
       - src/lib/contentPublishRemainder9.test.ts
+      - src/lib/contentPublishRemainder8.test.ts
       - src/lib/contentPublishReviewedRenderer.test.ts
       - src/lib/contentPublishReviewedMetadata.test.ts
       - src/lib/contentPublishSparsePatch.test.ts
@@ -81,6 +84,9 @@ on:
       - src/lib/topicClusterBlogRecordsScript.test.ts
       - supabase/functions/content-publish/github-oidc.ts
       - supabase/functions/content-publish/index.ts
+      - supabase/functions/_shared/cache-invalidation.ts
+      - supabase/functions/_shared/public-content-sync.ts
+      - supabase/functions/content-publish/repository.ts
       - supabase/functions/content-publish/managed-targets.ts
       - supabase/functions/content-publish/org020-v7-targets.ts
       - supabase/functions/content-publish/native-body-targets.ts
@@ -144,6 +150,7 @@ jobs:
             src/lib/contentPublishRemainder18.test.ts \
             src/lib/contentPublishRemainder11.test.ts \
             src/lib/contentPublishRemainder9.test.ts \
+            src/lib/contentPublishRemainder8.test.ts \
             src/lib/contentPublishReviewedRenderer.test.ts \
             src/lib/contentPublishReviewedMetadata.test.ts \
             src/lib/contentPublishSparsePatch.test.ts \

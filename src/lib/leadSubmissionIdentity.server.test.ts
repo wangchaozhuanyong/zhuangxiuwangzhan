@@ -24,6 +24,8 @@ const table = (type: Form) => type === "contact" ? "leads" : "quote_requests";
 function memory(options: { role?: string | null; active?: boolean; userId?: string; authInvalid?: boolean; permissionsFail?: boolean; readFails?: boolean; insertFails?: boolean; notifyFails?: boolean; notifyBadAck?: boolean; notifyTimeout?: boolean; logFails?: boolean; providerRejected?: boolean; race?: boolean } = {}) {
   const rows = { leads: new Map<string, Row>(), quote_requests: new Map<string, Row>() };
   const calls = { limits: 0, inserts: 0, notifications: 0, identities: 0 };
+  let resolveNotificationStarted: (() => void) | undefined;
+  const notificationStarted = new Promise<void>(resolve => { resolveNotificationStarted = resolve; });
   const logs: Array<Record<string, unknown>> = [];
   const releaseReads: Array<() => void> = [];
   let raceReads = options.race ? 2 : 0;
@@ -55,6 +57,7 @@ function memory(options: { role?: string | null; active?: boolean; userId?: stri
     }),
     functions: { invoke: async () => {
       calls.notifications++;
+      resolveNotificationStarted?.();
       if (options.notifyTimeout) return new Promise(() => undefined);
       return {
         data: options.notifyBadAck ? { error: "Synthetic invalid acknowledgement" } : { ok: true, telegram: { ok: !options.providerRejected } },
@@ -62,7 +65,7 @@ function memory(options: { role?: string | null; active?: boolean; userId?: stri
       };
     } },
   };
-  return { client: client as unknown as SubmitLeadClient, rows, calls, logs };
+  return { client: client as unknown as SubmitLeadClient, rows, calls, logs, notificationStarted };
 }
 beforeEach(() => {
   vi.stubGlobal("crypto", webcrypto);
@@ -177,8 +180,8 @@ describe.each(["contact", "quote"] as const)("%s stable logical submission", typ
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     const state = memory({ notifyTimeout: true });
     const pending = submitLead(request(), payload(type), state.client);
-    // SHA hashing runs on a native promise; let the actual repository invocation start first.
-    for (let i = 0; i < 100 && state.calls.notifications === 0; i++) await new Promise<void>(resolve => setImmediate(resolve));
+    // Await the fixture dispatch itself; native hashing is independent of fake timers.
+    await state.notificationStarted;
     expect(state.calls.notifications).toBe(1);
     await vi.advanceTimersByTimeAsync(2_500);
     const first = await pending;

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "batch": "remaining-completion-after-38037667102",
+  "sourceRegistryPath": "drafts/publishing/fc-20261009-remaining-completion-v1/registry.json",
+  "sourceRegistrySha256": "8dec1fa819f93602470e4cf236973431261b26330309b43469660f43689a82eb",
+  "previousRemainder9Path": "drafts/publishing/fc-20261009-remainder9-after-37903094390-v1/registry.json",
+  "previousRemainder9Sha256": "d9c7dec224d23bd82ee62937b4a19ab563c40681e7f6605ae685f6f58c611475",
+  "authorizationId": "owner-authorized-remaining-completion-20261009",
+  "executionDecision": {
+    "id": "owner-directed-remainder8-after-38037667102-v1",
+    "policyDecisionId": "exact-reviewed-remainder8-20261010-v1",
+    "departmentControllerReviewClaimed": false
+  },
+  "excludedCompletedTargets": [
+    "v17-owner-publisher-native-preparation-v2-20261007",
+    "v18-owner-publisher-native-preparation-v2-20261007",
+    "design-body-faq-unified-20261009-v1",
+    "bathroom-body-step-unified-20261009-v1",
+    "kitchen-initial-framework-body-v1",
+    "c01-bilingual-body-v1",
+    "c02-bilingual-body-v1",
+    "c03-bilingual-body-v1",
+    "c04-bilingual-body-v1",
+    "c05-bilingual-body-v1",
+    "c06-bilingual-body-v1",
+    "c07-bilingual-body-v1"
+  ],
+  "remainingTargets": [
+    "c08-bilingual-body-v1",
+    "c09-bilingual-body-v1",
+    "c10-bilingual-body-v1",
+    "c11-bilingual-body-v1",
+    "c12-bilingual-body-v1",
+    "c13-bilingual-body-v1",
+    "c14-bilingual-body-v1",
+    "c15-bilingual-body-v1"
+  ],
+  "remainingRowCount": 8,
+  "remainingQaCount": 8,
+  "completedProofPath": "drafts/publishing/fc-20261010-remainder8-after-38037667102-v1/completed-twelve-rechecked-proof.json",
+  "completedProofSha256": "3785e5052f6db60ca875ddb79849d9d21c0b36551793e0c07e26ca9e9177987a",
+  "freshPermitReadRequiredBeforePublish": true,
+  "dryRunPrivatePermitRead": false,
+  "browserEvidencePolicy": "Keep all four FAILED_STOPPED summaries byte-for-byte; c07 was saved although its after-hook rejected the native-owned site-settings revision. Fresh twelve exact saved rows / fourteen QA / twenty-four real strict bilingual pages guard c08-c15 only. Each preview and native write requires the preceding exact public identity; after-save identity advances only from this successful native receipt cache revision with complete issuer/permit, audit and microsecond chronology. No arbitrary fresh GET revision is accepted."
+}

@@ -251,7 +251,7 @@ export async function runFrozenCommand(options = {}) {
   const environment = process.env;
   const checkoutSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
   const binding = options.binding || { batch: BATCH_NAME, sha256: REGISTRY_SHA256 };
-  assert(environment.PUBLISH_TARGET === binding.batch && [BATCH_NAME, "remaining-completion-after-37893433883", "remaining-completion-after-37898568406", "remaining-completion-after-37903094390"].includes(binding.batch), "Frozen batch requires its exact owner authorization and current main dispatch identity; exact completion entry required");
+  assert(environment.PUBLISH_TARGET === binding.batch && [BATCH_NAME, "remaining-completion-after-37893433883", "remaining-completion-after-37898568406", "remaining-completion-after-37903094390", "remaining-completion-after-38037667102"].includes(binding.batch), "Frozen batch requires its exact owner authorization and current main dispatch identity; exact completion entry required");
   assertBatchEnvironment({ ...environment, PUBLISH_TARGET: BATCH_NAME }, mode, environment.APPROVAL_ID, checkoutSha);
   const registry = options.registry || readFrozenRegistry();
   const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
