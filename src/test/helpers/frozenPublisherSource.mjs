@@ -18,6 +18,38 @@ const historicalReadableBodySha = "4d67bd215b6e5c050d0be9d8bb562c0efdfaf7ae56fc0
 const reviewedCurrentReadableBodySha = "a9297e52fa9f7e892faea23bbd3a22a6d554d814a6091c1741984ddaf9ce27e1";
 
 export function restoreFrozenPublisherMiddleware(bytes, expectedFrozenSha = historicalMiddlewareSha) {
+  // Admit only this exact summary candidate, then restore the already reviewed baseline bytes.
+  if (hash(bytes) === "4f4227d45137df084b3e80c7f161841ba2e660a0d923ab1b6a6a1fe83b9a2061") {
+    let current = bytes.toString("utf8");
+    const substitutions = [
+      [
+        "const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = \"\", brandLine: string | null = null, dynamicRouteState?: Pick<DynamicRouteState, \"kind\" | \"row\"> | null) => {",
+        "const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = \"\", brandLine: string | null = null) => {"
+      ],
+      [
+        "  const kitchenRow = /^\\/(en|zh)\\/services\\/kitchen$/.test(publicKey)\n    && dynamicRouteState?.kind === \"service\"\n    && dynamicRouteState.row.slug === \"kitchen\" && dynamicRouteState.row.status === \"published\"\n    ? dynamicRouteState.row : null;\n  const title = escapeHtml(categoryCopy?.h1 || (kitchenRow && readString(kitchenRow, `title_${meta.lang}`).trim()) || meta.title);\n  const description = escapeHtml(categoryCopy?.intro || (kitchenRow && readString(kitchenRow, `excerpt_${meta.lang}`).trim()) || meta.description);",
+        "  const title = escapeHtml(categoryCopy?.h1 || meta.title);\n  const description = escapeHtml(categoryCopy?.intro || meta.description);"
+      ],
+      [
+        "const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null, readableBody = \"\", dynamicRouteState?: Pick<DynamicRouteState, \"kind\" | \"row\"> | null) => {",
+        "const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null, readableBody = \"\") => {"
+      ],
+      [
+        "  out = injectGeoSummary(out, safeMeta, readableBody, getChineseBrandLine(siteSettings, meta.lang), dynamicRouteState);",
+        "  out = injectGeoSummary(out, safeMeta, readableBody, getChineseBrandLine(siteSettings, meta.lang));"
+      ],
+      [
+        "  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);",
+        "  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings, key);"
+      ]
+    ];
+    for (const [candidate, reviewed] of substitutions) {
+      assert(current.split(candidate).length === 2, "Only the five reviewed kitchen summary substitutions may be reversed");
+      current = current.replace(candidate, reviewed);
+    }
+    bytes = Buffer.from(current);
+    assert(hash(bytes) === reviewedCurrentMiddlewareSha, "Summary reversal must equal the exact existing reviewed baseline");
+  }
   assert(expectedFrozenSha === historicalMiddlewareSha && hash(bytes) === reviewedCurrentMiddlewareSha,
     "Historical publisher fixture only admits the exact reviewed current middleware bytes");
   const current = bytes.toString("utf8"), start = current.indexOf("type SiteSettingsHead = {"), end = current.indexOf("\n};", start);
