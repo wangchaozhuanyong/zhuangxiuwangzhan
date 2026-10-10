@@ -69,8 +69,15 @@ html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast=
 html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast]::after {
   background: currentColor !important;
 }
-html[data-public-theme] #root .scheme-a-chrome.is-overlay .scheme-a-chrome__brand[data-header-contrast="light"] img {
-  filter: brightness(0) invert(1) !important;
+/* Give both built-in bitmap variants the same gold; uploads retain their colours. */
+html[data-public-theme] #root .scheme-a-chrome__wordmark[data-builtin-logo="true"] img {
+  filter: brightness(0) invert(.5) sepia(1) saturate(1.7) brightness(1.09);
+}
+html[data-public-theme] #root .scheme-a-chrome__wordmark-name {
+  color: var(--public-accent);
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay .scheme-a-chrome__brand[data-header-contrast="light"] .scheme-a-chrome__wordmark-name {
+  color: var(--luxury-ivory);
 }
 html[data-public-theme] #root :is(.scheme-a-language-switch, .scheme-a-chrome__menu-trigger, .scheme-a-directory__close) {
   background: var(--public-surface-card) !important; color: var(--public-accent) !important; border-color: hsl(var(--input)) !important; box-shadow: none !important;
