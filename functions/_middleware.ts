@@ -61,12 +61,15 @@ type SeoEntry = {
 };
 
 type SiteSettingsHead = {
+  id?: string | null;
   company_name?: string | null;
   brand_name?: string | null;
   logo_url?: string | null;
   favicon_url?: string | null;
   og_image_url?: string | null;
   phone_e164?: string | null;
+  phone_display?: string | null;
+  whatsapp_number?: string | null;
   email?: string | null;
   address_en?: string | null;
   address_zh?: string | null;
@@ -866,7 +869,7 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
 
   try {
     const response = await fetchWithEdgeTimeout(
-      `${supabaseUrl}/rest/v1/site_settings?select=company_name,brand_name,logo_url,favicon_url,og_image_url,phone_e164,email,address_en,address_zh,map_latitude,map_longitude,facebook_url,instagram_url,tiktok_url,xiaohongshu_url,updated_at&id=eq.default&limit=1`,
+      `${supabaseUrl}/rest/v1/site_settings?select=id,company_name,brand_name,logo_url,favicon_url,og_image_url,phone_e164,phone_display,whatsapp_number,email,address_en,address_zh,map_latitude,map_longitude,facebook_url,instagram_url,tiktok_url,xiaohongshu_url,updated_at&id=eq.default&limit=1`,
       {
         headers: {
           apikey: supabaseAnonKey,

@@ -15,6 +15,61 @@ beforeEach(() => vi.stubGlobal("caches", undefined));
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("public HTML dependency ordering", () => {
+  it.each([
+    { language: "en" as const, displayOnly: false },
+    { language: "zh" as const, displayOnly: false },
+    { language: "en" as const, displayOnly: true },
+    { language: "zh" as const, displayOnly: true },
+  ])("hydrates the configured public contacts without a settings request: $language, displayOnly=$displayOnly", async ({ language, displayOnly }) => {
+    const env = environment();
+    const settings = {
+      id: "default", company_name: "Public contact fixture", updated_at: "contact-fixture-revision",
+      phone_e164: displayOnly ? "" : "+60 3-1234 5678", phone_display: "03 1234 5678", whatsapp_number: "+60 (12) 345-6789",
+      admin_only_fixture: "MUST_NOT_ENTER_PUBLIC_SEED",
+    };
+    const fetcher = vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (!url.pathname.endsWith("/site_settings")) return json([]);
+      expect(url.searchParams.get("id")).toBe("eq.default");
+      expect(url.searchParams.get("limit")).toBe("1");
+      const selected = url.searchParams.get("select")!.split(",");
+      expect(selected).not.toContain("*");
+      return json([Object.fromEntries(selected.filter(key => key in settings).map(key => [key, settings[key as keyof typeof settings]]))]);
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const response = await onRequest({ request: new Request(`https://flashcast.com.my/${language}`), env, next: vi.fn() } as never);
+    const body = await response.text();
+    const document = new DOMParser().parseFromString(body, "text/html");
+    const payload = JSON.parse(document.getElementById("flashcast-public-data")!.textContent!);
+    expect(response.status).toBe(200);
+    expect(payload.siteSettings).toMatchObject({ id: "default", phone_e164: settings.phone_e164, phone_display: settings.phone_display, whatsapp_number: settings.whatsapp_number, updated_at: settings.updated_at });
+    expect(body).not.toContain(settings.admin_only_fixture);
+
+    vi.resetModules();
+    const { QueryClient } = await import("@tanstack/react-query");
+    const { claimPublicQuerySeed } = await import("@/lib/publicQuerySeedCache");
+    const { resolveSiteSettings } = await import("@/lib/siteSettingsApi");
+    const previousBody = window.document.body.innerHTML;
+    try {
+      const node = window.document.createElement("script");
+      node.id = "flashcast-public-data";
+      node.type = "application/json";
+      node.textContent = JSON.stringify(payload);
+      window.document.body.replaceChildren(node);
+      fetcher.mockClear();
+      const seeded = claimPublicQuerySeed(new QueryClient(), ["site-settings"]);
+      const resolved = resolveSiteSettings(seeded as Parameters<typeof resolveSiteSettings>[0], language);
+      expect(resolved.phone_display).toBe(settings.phone_display);
+      expect(resolved.phone_href).toBe(displayOnly ? "tel:0312345678" : "tel:+60312345678");
+      expect(new URL(resolved.whatsapp_url()).pathname).toBe("/60123456789");
+      expect(new URL(resolved.whatsapp_url()).searchParams.get("text")).toContain(language === "zh" ? "你好 FLASH CAST" : "Hi FLASH CAST");
+      expect(new URL(resolved.whatsapp_url("  fixture enquiry  ")).searchParams.get("text")).toBe("fixture enquiry");
+      expect(fetcher).not.toHaveBeenCalled();
+    } finally {
+      window.document.body.innerHTML = previousBody;
+    }
+  });
+
   it.each([false, true])("overlaps cache lookup with settings validation without serving a changed revision: changed=%s", async changed => {
     const env = environment();
     let finishSettings!: (response: Response) => void;

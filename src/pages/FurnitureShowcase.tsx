@@ -42,11 +42,13 @@ export default function FurnitureShowcase() {
     ? furnitureListingPagePath(currentPath, normalizeFurnitureListingPage(searchParams.get("page"))) : resolvedCanonicalPath;
   const categoryLabel = category ? furnitureCategoryName(category.key, language) : copy.title;
   const subcategoryLabel = subcategory ? furnitureSubcategoryName(subcategory.key, language, subcategory.name) : "";
+  const metaDescription = categoryCopy?.description || (validSelection && category && category.key !== "new"
+    ? `${subcategoryLabel || categoryLabel} · ${copy.metaDescription}` : copy.metaDescription);
   const pagePath = (number: number) => furnitureListingPagePath(currentPath, number);
 
   return (
     <main className="fc-route-page fc-furniture-page" data-route-pending={managedQuery.isLoading || undefined}>
-      <PageMeta ogImage={!categoryKey ? "/images/furniture/assets/7596c932c602dfc05255.webp" : undefined} title={categoryCopy?.title || [subcategoryLabel, categoryKey ? categoryLabel : copy.title].filter(Boolean).join(" | ")} description={categoryCopy?.description || copy.metaDescription} canonicalPath={canonicalPath} noIndex={!validSelection} />
+      <PageMeta ogImage={!categoryKey ? "/images/furniture/assets/7596c932c602dfc05255.webp" : undefined} title={categoryCopy?.title || [subcategoryLabel, categoryKey ? categoryLabel : copy.title].filter(Boolean).join(" | ")} description={metaDescription} canonicalPath={canonicalPath} noIndex={!validSelection} />
       <JsonLdBreadcrumb items={[
         { name: copy.home, url: "/" },
         { name: copy.title, url: "/furniture" },
