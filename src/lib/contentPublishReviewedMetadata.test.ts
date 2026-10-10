@@ -1,6 +1,9 @@
 import { spawnSync } from "node:child_process";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 import { inspectRawMetadata, inspectHydratedMetadata } from "../../scripts/lib/publisher-public-readback.mjs";
+import { createFrozenPublisherSourceFixture } from "../test/helpers/frozenPublisherSource.mjs";
 
 describe("source-derived exact public metadata", () => {
   it("rejects extra text, altered spaces, and an old brand description in strict raw and hydrated checks", () => {
@@ -15,12 +18,14 @@ describe("source-derived exact public metadata", () => {
   });
   it("derives actual mapper/Edge/PageMeta differences and rejects changed public identity before any write", () => {
     // esbuild runs in native Node, outside the DOM-emulator Uint8Array realm.
+    const historicalSource = createFrozenPublisherSourceFixture();
+    try {
     const code = `
       import assert from 'node:assert/strict';
       import {readFileSync} from 'node:fs';
       import {deriveReviewedPublicMetadata,readReviewedPublicIdentity} from './scripts/lib/publisher-reviewed-metadata.mjs';
-      import {readRemainder9Registry} from './scripts/publish-remainder9-after-37903094390.mjs';
-      import {targetConfigs} from './scripts/publish-content-trust-fixes.mjs';
+      import {readRemainder9Registry} from ${JSON.stringify(pathToFileURL(join(historicalSource.projectRoot, "scripts/publish-remainder9-after-37903094390.mjs")).href)};
+      import {targetConfigs} from ${JSON.stringify(pathToFileURL(join(historicalSource.projectRoot, "scripts/publish-content-trust-fixes.mjs")).href)};
       const prepared=readRemainder9Registry(), reviewed=JSON.parse(readFileSync(prepared.proof.rendererReviewPath));
       const observed=reviewed.metadataContract.rows, results=[];
       for(const [index,entry] of prepared.original.entries.entries()){
@@ -50,8 +55,9 @@ describe("source-derived exact public metadata", () => {
       assert.equal(calls,1);globalThis.fetch=actualFetch;
       console.log(JSON.stringify({pass:true,pages:results.length,productionWrites:0}));
     `;
-    const result = spawnSync(process.execPath, ["--experimental-strip-types", "--input-type=module", "-"], { input: code, encoding: "utf8", timeout: 30000 });
-    expect(result.status, result.stderr.slice(0, 1000)).toBe(0);
-    expect(JSON.parse(result.stdout.trim())).toEqual({ pass: true, pages: 40, productionWrites: 0 });
+      const result = spawnSync(process.execPath, ["--experimental-strip-types", "--input-type=module", "-"], { cwd: historicalSource.root, input: code, encoding: "utf8", timeout: 30000 });
+      expect(result.status, result.stderr.slice(0, 1000)).toBe(0);
+      expect(JSON.parse(result.stdout.trim())).toEqual({ pass: true, pages: 40, productionWrites: 0 });
+    } finally { historicalSource.dispose(); }
   }, 35000);
 });

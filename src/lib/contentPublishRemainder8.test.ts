@@ -1,12 +1,15 @@
 import { readFileSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 import { readRemainder8Registry, REMAINDER8_NAME, REMAINDER8_PATH, assertTwelveCompletedPermit, assertOwnNativeRevision, verifyTwelveBeforeRemainder8, readScopedPublishAudit, installRevisionIdentityGuards, assertStrictSavedPage } from "../../scripts/publish-remainder8-after-38037667102.mjs";
 import { APPROVAL_ID } from "../../scripts/publish-remaining-completion-20261009.mjs";
 import { assertCompletedRow } from "../../scripts/publish-remainder18-after-37893433883.mjs";
 import { stableDigest, targetConfigs } from "../../scripts/publish-content-trust-fixes.mjs";
+import { createFrozenPublisherSourceFixture, restoreFrozenPublisherMiddleware } from "../test/helpers/frozenPublisherSource.mjs";
 
-const prepared=readRemainder8Registry();
+const historicalSource=createFrozenPublisherSourceFixture();
+afterAll(()=>historicalSource.dispose());
+const prepared=historicalSource.readRegistry(()=>readRemainder8Registry());
 const completed=prepared.original.entries.slice(0,12);
 const proofFor=(entry)=>prepared.proof.completed.find(item=>item.target===entry.target);
 const nativeArgs=()=>({entry:completed[11],receipt:structuredClone(prepared.proof.fourthNativeEvidence.receipt),stage:structuredClone(prepared.proof.fourthNativeEvidence.stage),
@@ -21,6 +24,13 @@ const checkPageFixture=async({path,title,description,strictMetadata,hydratedMeta
 };
 
 describe("fixed eight after a truthful native save and failed identity hook",()=>{
+  it("keeps real current-source admission closed and refuses unknown historical fixture bytes",()=>{
+    expect(()=>readRemainder8Registry()).toThrow(/Current exact metadata source fingerprint differs/);
+    const current=readFileSync("functions/_middleware.ts");
+    expect(()=>restoreFrozenPublisherMiddleware(Buffer.concat([current,Buffer.from("\n// unknown source drift\n")]))).toThrow(/only admits/);
+    expect(()=>restoreFrozenPublisherMiddleware(current,"0".repeat(64))).toThrow(/only admits/);
+    expect(historicalSource.sourceSha256).toMatchObject(prepared.proof.metadataSourceSha256);
+  });
   it("admits c08-c15 only and preserves all four stopped runs and native c07 success plus failed hook",()=>{
     expect(prepared.registry.entries.map(entry=>entry.target)).toEqual(Array.from({length:8},(_,i)=>`c${String(i+8).padStart(2,"0")}-bilingual-body-v1`));
     expect(prepared.registry.sourceQaReceipts).toHaveLength(8);expect(prepared.proof.actualQaCount).toBe(14);expect(prepared.proof.completed).toHaveLength(12);
@@ -29,7 +39,7 @@ describe("fixed eight after a truthful native save and failed identity hook",()=
     expect(prepared.proof.completed[11].originalPublisherStatus).toMatchObject({nativeStageExitCode:0,receiptOk:true,savedOk:true,originalRealBodyPostcheckOk:false,originalRealBodyPages:[]});
     expect(Object.keys(prepared.proof.metadataSourceSha256)).toHaveLength(42);expect(Object.keys(prepared.proof.nativeRevisionSourceSha256)).toHaveLength(6);
     expect(prepared.proof.remainingCandidateContracts.rows).toHaveLength(16);
-    expect(()=>readRemainder8Registry(Buffer.from(readFileSync(REMAINDER8_PATH,"utf8").replace('"remainingRowCount": 8','"remainingRowCount": 9')))).toThrow(/hash differs/);
+    expect(()=>historicalSource.withCwd(()=>readRemainder8Registry(Buffer.from(readFileSync(REMAINDER8_PATH,"utf8").replace('"remainingRowCount": 8','"remainingRowCount": 9'))))).toThrow(/hash differs/);
   });
   it.each(completed)("rejects every full completed permit field, duplicate and current CAS/content drift for $target",entry=>{
     const proof=proofFor(entry),index=completed.indexOf(entry);expect(()=>assertCompletedRow(entry,proof,proof.publicCurrentProjection)).not.toThrow();

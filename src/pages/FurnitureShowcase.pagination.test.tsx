@@ -5,6 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import FurnitureShowcase from "./FurnitureShowcase";
 import { furnitureCatalog, mapFurnitureCatalogSeed, type FurnitureProduct, type FurnitureMaterialRow } from "@/lib/furnitureCatalogPresentation";
+import furnitureTaxonomyLabels from "@/i18n/furnitureTaxonomyLabels.json";
 
 const source = vi.hoisted(() => ({ language: "en" as "en" | "zh", products: undefined as FurnitureProduct[] | undefined }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: source.language }) }));
@@ -44,7 +45,54 @@ async function expectCanonical(path: string) {
   expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(expected);
 }
 
+async function expectDescription(expected: string, noIndex = false) {
+  const matches = () => document.querySelector('meta[name="description"]')?.getAttribute("content") === expected
+    && document.querySelector('meta[property="og:description"]')?.getAttribute("content") === expected
+    && Boolean(document.querySelector('meta[name="robots"]')?.getAttribute("content")?.includes("noindex")) === noIndex;
+  for (let attempt = 0; attempt < 20 && !matches(); attempt++) {
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 20)); });
+  }
+  expect(document.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(expected);
+  expect(document.querySelector('meta[property="og:description"]')?.getAttribute("content")).toBe(expected);
+  expect(Boolean(document.querySelector('meta[name="robots"]')?.getAttribute("content")?.includes("noindex"))).toBe(noIndex);
+}
+
 describe("furniture displayed pagination metadata", () => {
+  it.each(["en", "zh"] as const)("keeps generated %s category and subcategory descriptions before and after published data resolves", async (language) => {
+    const cases = [
+      ["bedroom/bed-frame", furnitureTaxonomyLabels.subcategories["bed-frame"][language]],
+      ["bedroom/bedside-table", furnitureTaxonomyLabels.subcategories["bedside-table"][language]],
+      ["dining", furnitureTaxonomyLabels.categories.dining[language]],
+      ["living", furnitureTaxonomyLabels.categories.living[language]],
+      ["study", furnitureTaxonomyLabels.categories.study[language]],
+      ["preorder", furnitureTaxonomyLabels.categories.preorder[language]],
+    ];
+    for (const [path, label] of cases) {
+      const expected = `${label} · ${furnitureTaxonomyLabels.meta[language].description}`;
+      await renderPage(`/${language}/furniture/${path}`, language, null);
+      await expectDescription(expected);
+      expect(container.querySelector('main')?.getAttribute("data-route-pending")).toBe("true");
+      await renderPage(`/${language}/furniture/${path}`, language);
+      await expectDescription(expected);
+      expect(container.querySelector('main')?.hasAttribute("data-route-pending")).toBe(false);
+    }
+  });
+
+  it.each(["en", "zh"] as const)("preserves %s homepage, dedicated bedroom and invalid-route description policies", async (language) => {
+    const generic = furnitureTaxonomyLabels.meta[language].description;
+    const cases = [
+      { path: "", description: generic, noIndex: false },
+      { path: "/new", description: generic, noIndex: false },
+      { path: "/bedroom", description: furnitureTaxonomyLabels.categoryPages.bedroom[language].description, noIndex: false },
+      { path: "/missing-category", description: generic, noIndex: true },
+      { path: "/bedroom/missing-subcategory", description: generic, noIndex: true },
+    ];
+    for (const item of cases) {
+      await renderPage(`/${language}/furniture${item.path}`, language);
+      await expectDescription(item.description, item.noIndex);
+    }
+  });
+
   it.each(["en", "zh"] as const)("keeps real %s product/adjacent links and same-page canonical/hreflang for 1/3/9/14", async (language) => {
     for (const page of [1, 3, 9, 14]) {
       const search = page === 1 ? "" : `?page=${page}`;
