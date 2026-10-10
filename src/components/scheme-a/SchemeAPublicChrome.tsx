@@ -41,6 +41,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
 import { schemeAChromeText } from "@/i18n/schemeAText";
+import { getChineseBrandLine, getHeaderChineseBrandName } from "@/i18n/brandIdentity";
 import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
 import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
@@ -83,18 +84,25 @@ const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
   publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(pathname, item.path)))?.key
   ?? "services";
 
-const BrandMark = ({ logo, name }: { logo: string; name: string }) => {
+const BrandMark = ({ logo, name, chineseName }: { logo: string; name: string; chineseName: string | null }) => {
   const [failedLogo, setFailedLogo] = useState<string | null>(null);
+  const displayedLogo = failedLogo === logo ? logoFallback : logo;
+  const builtInLogo = displayedLogo === logoFallback
+    || /^(?:https?:\/\/[^/]+)?\/logo-flashcast(?:-20260605)?\.(?:png|webp)(?:[?#].*)?$/i.test(displayedLogo);
+  const showChineseName = Boolean(chineseName && builtInLogo);
   return (
-    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={name}>
-      <SmartImage
-        src={failedLogo === logo ? logoFallback : logo}
-        alt=""
-        width={190}
-        height={52}
-        loading="eager"
-        onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
-      />
+    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={showChineseName ? `${chineseName} | ${name}` : name}>
+      <span className={`scheme-a-chrome__wordmark${showChineseName ? " scheme-a-chrome__wordmark--design" : ""}`}>
+        <SmartImage
+          src={displayedLogo}
+          alt=""
+          width={190}
+          height={52}
+          loading="eager"
+          onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
+        />
+        {showChineseName && <span className="scheme-a-chrome__wordmark-name" lang="zh-CN">{chineseName}</span>}
+      </span>
       <span className="sr-only">{name}</span>
     </LocalizedLink>
   );
@@ -473,7 +481,7 @@ export const SchemeANavbar = () => {
       <span ref={sentinelRef} className="scheme-a-chrome__sentinel" aria-hidden="true" />
       <header ref={headerRef} className={`scheme-a-chrome is-fixed ${overlay ? "is-overlay" : "is-solid"}`} data-route-pending={settingsPending || undefined}>
         <div className="scheme-a-chrome__bar scheme-a-frame">
-          <BrandMark logo={logo} name={companyName} />
+          <BrandMark logo={logo} name={companyName} chineseName={getHeaderChineseBrandName(settings)} />
           <nav className="scheme-a-chrome__primary" aria-label={t.mainNavigation}>
             {primaryPublicNavigationItems.map((item) => (
               <LocalizedLink key={item.path} to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
@@ -630,6 +638,7 @@ export const SchemeAFooter = () => {
   const areas = footerLocationLinks[language];
   const nextLanguage = language === "zh" ? "en" : "zh";
   const languagePath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
+  const chineseBrandLine = getChineseBrandLine(settings, language);
 
   return (
     <footer className="scheme-a-footer">
@@ -640,6 +649,7 @@ export const SchemeAFooter = () => {
             <section className="scheme-a-footer__studio">
               <p>{t.contactTitle}</p>
               <strong>{settings.company_name}</strong>
+              {chineseBrandLine && <p className="scheme-a-footer__brand-names">{chineseBrandLine}</p>}
               <div className="public-contact-list">
                 <address>
                   <PublicContactRow icon={<MapPin />} value={settings.address} action={footer.openMap} asChild>

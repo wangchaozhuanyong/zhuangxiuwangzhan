@@ -4,11 +4,13 @@ import { flushSync } from "react-dom";
 import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
 import { PUBLIC_NAVIGATION_EVENT, type PublicNavigation } from "@/lib/publicNavigation";
 import { isFurnitureListingPath } from "@/lib/publicScrollRestoration";
+import { isSamePublicBusinessPath } from "@/lib/publicRouteScope";
 
 type Props = {
   routeKey: string;
   pending: boolean;
   regionOnly: boolean;
+  preserveContent?: boolean;
   initial?: boolean;
   onBeforeCommit?: () => void;
   onCancelDeparture?: () => void;
@@ -46,7 +48,7 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     const revision = ++this.navigationRevision;
     const next = new URL(request.detail.destination, window.location.href);
     const current = new URL(this.props.routeKey, window.location.href);
-    const localUpdate = current.pathname === next.pathname ||
+    const localUpdate = isSamePublicBusinessPath(current.pathname, next.pathname) ||
       isFurnitureListingPath(current.pathname) && isFurnitureListingPath(next.pathname);
     if (hasProtectedChanges() || localUpdate) {
       if (next.pathname === current.pathname && next.search === current.search) {
@@ -112,7 +114,7 @@ export class PublicRouteTransitionFrame extends Component<Props> {
 
   render() {
     return <div ref={this.content} className="public-route-scene"
-      data-pending={this.props.pending || undefined} data-region-only={this.props.regionOnly || undefined}>
+      data-pending={this.props.pending && !this.props.preserveContent || undefined} data-region-only={this.props.regionOnly || undefined}>
       {this.props.children}
     </div>;
   }

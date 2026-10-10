@@ -1,4 +1,4 @@
-import { isOptionalHomeSectionEnabled } from "@/lib/homeOptionalSections";
+import { isOptionalHomeSectionEnabled, type OptionalHomeSection } from "@/lib/homeOptionalSections";
 import {
   fetchPublicHomeBundleData,
   fetchPublishedAboutSectionRow,
@@ -415,18 +415,27 @@ export const getPublishedHomeContentBundle = async (
   if (!hasPublicContentDatabaseClient()) return fallback("supabase-not-configured");
 
   try {
-    const [data, brandPartnersVisibility, testimonialsVisibility] = await Promise.all([
-      fetchPublicHomeBundleData(signal),
-      fetchPublishedHomeSectionRow("brand_partners", signal),
-      fetchPublishedHomeSectionRow("testimonials", signal),
-    ]);
+    // Optional section visibility has its own query lifecycle. A slow or failed
+    // visibility read must not discard a successfully read homepage bundle.
+    const data = await fetchPublicHomeBundleData(signal);
     const payload = toRecord(data);
     if (!Object.keys(payload).length) return fallback("remote-empty");
 
-    return createRemoteContent(mapRemoteHomeContentBundle(payload, language, brandPartnersVisibility, testimonialsVisibility));
+    return createRemoteContent(mapRemoteHomeContentBundle(payload, language));
   } catch (error) {
     return fallback("remote-error", error);
   }
+};
+
+export const getPublishedHomeOptionalSectionVisibility = async (
+  sectionKey: OptionalHomeSection,
+  signal?: AbortSignal,
+): Promise<boolean> => {
+  if (!hasPublicContentDatabaseClient()) throw new Error("Content source unavailable");
+  // Errors remain query errors; only a successful published read can confirm
+  // activation or absence. The raw items_zh setting is shared across locales.
+  const row = await fetchPublishedHomeSectionRow(sectionKey, signal);
+  return isOptionalHomeSectionEnabled(sectionKey, row);
 };
 
 export const getPublishedBrandPartners = async (signal?: AbortSignal): Promise<PublishedBrandPartner[]> => {

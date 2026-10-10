@@ -1,5 +1,6 @@
 import { chromium } from "@playwright/test";
-import { diagnosticUrl, diagnosticMessage, diagnosticTiming, isCriticalPublicRequest } from "./lib/public-network-diagnostics.mjs";
+import { diagnosticUrl, diagnosticMessage, diagnosticTiming, isCriticalPublicRequest, normalizePublicReadIdentity } from "./lib/public-network-diagnostics.mjs";
+import { installPublicInteractionMetrics, exercisePublicLanguageSwitch } from "./lib/public-interaction-metrics.mjs";
 
 const baseUrl = (process.env.PUBLIC_PERFORMANCE_BASE_URL || process.env.PREVIEW_URL || "http://127.0.0.1:8788").replace(/\/+$/, "");
 const chromiumChannel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL;
@@ -20,6 +21,7 @@ const pages = [
     maxPreloadBytes: 55_000,
     maxHomeBundleFetches: 0,
     maxSupabaseRestFetches: 0,
+    allowOptionalHomeVisibility: true,
     highRiskDynamicImages: true,
     minSupabaseImagesBeforeLateThreshold: 2,
   },
@@ -56,6 +58,16 @@ const pages = [
     requireServicesPreload: true,
     maxPreloadBytes: 25_000,
     maxSupabaseRestFetches: 0,
+    checkLanguageSwitch: true,
+    forbidFurnitureCatalog: true,
+  },
+  {
+    name: "furniture",
+    path: "/zh/furniture",
+    requireSiteSettingsPreload: true,
+    requireFurnitureCatalogPreload: true,
+    maxSupabaseRestFetches: 0,
+    checkLanguageSwitch: true,
   },
   {
     name: "materials",
@@ -112,21 +124,12 @@ const pages = [
   },
 ];
 
-const normalizeResourcePath = (resourceUrl) => {
-  try {
-    const url = new URL(resourceUrl);
-    return `${url.origin}${url.pathname}`;
-  } catch {
-    return resourceUrl.split("?")[0] || resourceUrl;
-  }
-};
-
 const countDuplicates = (items) => {
   const counts = new Map();
   for (const item of items) counts.set(item, (counts.get(item) || 0) + 1);
   return Array.from(counts.entries())
     .filter(([, count]) => count > 1)
-    .map(([endpoint, count]) => ({ endpoint, count }));
+    .map(([endpoint, count]) => ({ endpoint: diagnosticUrl(endpoint), count }));
 };
 
 const scrollThroughPage = async (page) => {
@@ -162,6 +165,16 @@ const collectPageMetrics = async (page, lateThreshold) =>
     const supabaseRestEntries = entries.filter((entry) => entry.name.includes("/rest/v1/"));
     const projectRestEntries = entries.filter((entry) => entry.name.includes("/rest/v1/projects"));
     const homeBundleEntries = entries.filter((entry) => entry.name.includes("/rest/v1/rpc/get_public_home_bundle"));
+    const seededHomeVisibilityKeys = (preload?.homeContentBundle?.home_sections || [])
+      .filter((row) => ["brand_partners", "testimonials"].includes(row?.section_key)).map((row) => `eq.${row.section_key}`);
+    const optionalHomeVisibilityKeys = supabaseRestEntries.flatMap((entry) => {
+      const url = new URL(entry.name);
+      const section = url.searchParams.get("section_key");
+      return url.pathname === "/rest/v1/home_sections" && url.searchParams.get("status") === "eq.published" &&
+        url.searchParams.get("select") === "*" && url.searchParams.get("order") === "sort_order.asc" &&
+        url.searchParams.get("limit") === "1" && !seededHomeVisibilityKeys.includes(section) &&
+        ["eq.brand_partners", "eq.testimonials"].includes(section) ? [section] : [];
+    });
     const visibleImages = Array.from(document.images).filter((img) => {
       const rect = img.getBoundingClientRect();
       return rect.bottom > 0 && rect.top < window.innerHeight && rect.width > 1 && rect.height > 1;
@@ -173,6 +186,8 @@ const collectPageMetrics = async (page, lateThreshold) =>
       preloadJsonBytes: new TextEncoder().encode(preloadNode?.textContent || "").byteLength,
       hasSiteSettings: Boolean(preload?.siteSettings),
       hasHomeBundle: Boolean(preload?.homeContentBundle),
+      hasFurnitureCatalog: Boolean(preload?.furnitureCatalog && !preload.furnitureCatalog.detailSlug),
+      furnitureCatalogScriptCount: entries.filter((entry) => entry.initiatorType === "script" && /\/(?:furnitureCatalog(?:Presentation)?|(?:public)?[Ff]urnitureQuerySeed)-[^/]+\.js(?:\?|$)/.test(entry.name)).length,
       sitePageKeys: preload?.sitePages ? Object.keys(preload.sitePages).sort() : [],
       services: Array.isArray(preload?.services) ? preload.services.length : 0,
       materials: Array.isArray(preload?.materials) ? preload.materials.length : 0,
@@ -198,6 +213,8 @@ const collectPageMetrics = async (page, lateThreshold) =>
       homeBundleFetchCount: homeBundleEntries.length,
       projectRestFetchCount: projectRestEntries.length,
       supabaseRestFetchCount: supabaseRestEntries.length,
+      optionalHomeVisibilityKeys,
+      seededHomeVisibilityKeys,
       duplicatedRestEndpoints: [],
       supabaseRenderImageCount: supabaseRenderImages.length,
       firstSupabaseImageStart: supabaseRenderImages.length
@@ -211,14 +228,18 @@ const collectPageMetrics = async (page, lateThreshold) =>
     };
   }, lateThreshold);
 
+const requestedPages = new Set(process.argv.filter((argument) => argument.startsWith("--page=")).map((argument) => argument.slice(7)));
+for (const name of requestedPages) if (!pages.some((page) => page.name === name)) throw new Error(`Unknown public performance page: ${name}`);
+const selectedPages = requestedPages.size ? pages.filter((page) => requestedPages.has(page.name)) : pages;
 const browser = await chromium.launch({ headless: true, ...(chromiumChannel ? { channel: chromiumChannel } : {}) });
 const results = [];
 const failures = [];
 const warnings = [];
 
-for (const pageSpec of pages) {
+for (const pageSpec of selectedPages) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
   const page = await context.newPage();
+  await context.addInitScript(installPublicInteractionMetrics);
   const consoleErrors = [];
   const pageErrors = [];
   const failedAssets = [];
@@ -260,7 +281,16 @@ for (const pageSpec of pages) {
 
   const url = `${baseUrl}${pageSpec.path}`;
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 });
-  await page.waitForTimeout(900);
+  let readinessError = null;
+  try {
+    await page.waitForFunction(() => {
+      const content = document.querySelector("[data-route-visual-state]");
+      return content && !content.hasAttribute("inert") && !document.getElementById("root")?.hasAttribute("inert") &&
+        !content.querySelector('[data-route-pending="true"]') && ["ready", "degraded", "handoff"].includes(content.getAttribute("data-route-visual-state"));
+    }, undefined, { timeout: 20_000 });
+  } catch {
+    readinessError = "必要正文在 20 秒内仍未解除交互等待。";
+  }
   await scrollThroughPage(page);
 
   const metrics = await collectPageMetrics(page, lateImageStartMs);
@@ -270,8 +300,19 @@ for (const pageSpec of pages) {
       domContentLoadedMs: timing.domContentLoadedEventEnd, durationMs: timing.duration,
       transferSize: timing.transferSize } : null;
   });
-  metrics.duplicatedRestEndpoints = countDuplicates(metrics.restResourcePaths.map(normalizeResourcePath));
+  metrics.duplicatedRestEndpoints = countDuplicates(metrics.restResourcePaths.map(normalizePublicReadIdentity));
   delete metrics.restResourcePaths;
+  let languageSwitch = [];
+  let languageSwitchError = null;
+  if (pageSpec.checkLanguageSwitch && !readinessError) {
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    try {
+      languageSwitch = await exercisePublicLanguageSwitch(page, pageSpec.path);
+    } catch {
+      languageSwitchError = "语言切换未能在 15 秒内显示对应正文并恢复操作。";
+    }
+  }
+  const interactionMetrics = await page.evaluate(() => window.__flashcastInteractionMetrics?.read() ?? null);
 
   const result = {
     name: pageSpec.name,
@@ -279,6 +320,8 @@ for (const pageSpec of pages) {
     url,
     ...metrics,
     navigationTiming,
+    interactionMetrics,
+    languageSwitch,
     consoleErrorCount: consoleErrors.length,
     pageErrorCount: pageErrors.length,
     failedAssetCount: failedAssets.length,
@@ -293,6 +336,14 @@ for (const pageSpec of pages) {
 
   const addFailure = (message) => failures.push({ page: pageSpec.name, path: pageSpec.path, message });
   const addWarning = (message) => warnings.push({ page: pageSpec.name, path: pageSpec.path, message });
+  if (readinessError) addFailure(readinessError);
+  if (languageSwitchError) addFailure(languageSwitchError);
+  if (pageSpec.forbidFurnitureCatalog && result.furnitureCatalogScriptCount > 0) addFailure("非家具页面初始加载包含完整家具目录脚本。");
+  if (pageSpec.requireFurnitureCatalogPreload && !result.hasFurnitureCatalog) addFailure("家具列表缺少完整 HTML 初始目录数据。");
+  for (const receipt of languageSwitch) {
+    if (receipt.lockDurationMs > 0 || receipt.ongoingLockMs > 0) addFailure(`同页语言切换重新锁住正文：${receipt.language}, ${receipt.lockDurationMs}ms`);
+    if (receipt.clickToTranslatedContentMs > 200) addWarning(`语言正文更新时间超过项目目标：${receipt.language}, ${Math.round(receipt.clickToTranslatedContentMs)}ms > 200ms`);
+  }
 
   if (result.horizontalOverflow) addFailure(`页面存在横向溢出：scrollWidth=${result.scrollWidth}, innerWidth=${result.innerWidth}`);
   if (result.brokenVisibleImageCount > 0) addFailure(`页面当前可见区域存在破图：visible=${result.brokenVisibleImageCount}`);
@@ -330,8 +381,13 @@ for (const pageSpec of pages) {
   if (typeof pageSpec.maxProjectRestFetches === "number" && result.projectRestFetchCount > pageSpec.maxProjectRestFetches) {
     addFailure(`浏览器端重复请求 projects：${result.projectRestFetchCount}`);
   }
-  if (typeof pageSpec.maxSupabaseRestFetches === "number" && result.supabaseRestFetchCount > pageSpec.maxSupabaseRestFetches) {
-    addFailure(`浏览器端仍有 Supabase REST 请求：${result.supabaseRestFetchCount} > ${pageSpec.maxSupabaseRestFetches}`);
+  const optionalVisibilityReads = pageSpec.allowOptionalHomeVisibility ? result.optionalHomeVisibilityKeys.length : 0;
+  if (pageSpec.allowOptionalHomeVisibility && (optionalVisibilityReads > 2 || new Set(result.optionalHomeVisibilityKeys).size !== optionalVisibilityReads)) {
+    addFailure("首页可选显示规则发生重复读取；每个可选区块最多一次。");
+  }
+  const unseededCoreReads = result.supabaseRestFetchCount - optionalVisibilityReads;
+  if (typeof pageSpec.maxSupabaseRestFetches === "number" && unseededCoreReads > pageSpec.maxSupabaseRestFetches) {
+    addFailure(`浏览器端仍有未预注入的必要 Supabase REST 请求：${unseededCoreReads} > ${pageSpec.maxSupabaseRestFetches}`);
   }
 
   const shouldCheckDynamicImages = pageSpec.highRiskDynamicImages || result.supabaseRenderImageCount >= 6;

@@ -1,5 +1,5 @@
 import type { QueryKey } from "@tanstack/react-query";
-import { readPublicContentQueryKey } from "@/lib/publicContentQueries";
+import { readPublicContentQueryKey } from "@/lib/publicContentQueryKeys";
 import { registerPublicQuerySeedResolver } from "@/lib/publicQuerySeedCache";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { mapPublishedBlogPostRows, mapPublishedMaterialRows, mapPublishedProjectDetail, mapPublishedProjectSummary, mapPublishedService, mapPublishedServiceAreaSummary, needsProjectSummaryContentFallback } from "@/lib/contentApi";
@@ -7,8 +7,8 @@ import { mapPublishedCtaBlockRow, mapRemoteHomeContentBundle, mapSitePageRows } 
 import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
 import { createRemoteContent } from "@/lib/publicContentStatus";
 import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
-import type { UnknownRecord } from "@/lib/recordUtils";
-import { mapFurnitureCatalogSeed, type FurnitureMaterialRow } from "@/lib/furnitureCatalog";
+import { isOptionalHomeSectionEnabled } from "./homeOptionalSections";
+import { toArray, toRecord, type UnknownRecord } from "@/lib/recordUtils";
 
 /** HTML is an initial cache seed only. Network readers never consult it. */
 export function getPublicQuerySeed(key: QueryKey): unknown {
@@ -22,15 +22,14 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
   const limit = (rows: UnknownRecord[], value: unknown) => typeof value === "number" && value > 0 ? rows.slice(0, value) : rows;
   switch (parameters.resource) {
     case "home_furniture": return payload.homeFurniture?.[language];
+    case "home_optional_visibility": {
+      const sectionKey = parameters.sectionKey;
+      if (sectionKey !== "brand_partners" && sectionKey !== "testimonials") return undefined;
+      const row = toArray(payload.homeContentBundle?.home_sections).find((row) => toRecord(row).section_key === sectionKey);
+      return row ? isOptionalHomeSectionEnabled(sectionKey, row) : undefined;
+    }
     case "home_journal": return payload.homeJournalPosts ? mapPublishedBlogPostRows(payload.homeJournalPosts, language) : undefined;
     case "home_service_areas": return payload.homeServiceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));
-    case "furniture_catalog": {
-      const bundle = payload.furnitureCatalog;
-      if (!bundle) return undefined;
-      const products = mapFurnitureCatalogSeed(bundle.materials as FurnitureMaterialRow[], bundle.setting, language);
-      if (parameters.slug !== undefined) return bundle.detailSlug === parameters.slug ? products.find((product) => product.slug === parameters.slug) || null : undefined;
-      return bundle.detailSlug ? undefined : products;
-    }
     case "services": return payload.services?.map((row) => mapPublishedService(row, language));
     case "service_summaries": return payload.services ? limit(payload.services, parameters.limit).map((row) => mapPublishedService(row, language)) : undefined;
     case "service": {

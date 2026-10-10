@@ -16,15 +16,15 @@ vi.mock("@/hooks/usePublishedContent", async (importOriginal) => ({
       ...locationsData[slug],
       name: language === "zh" ? (locationsData[slug].nameZh || locationsData[slug].name) : locationsData[slug].name,
       intro: language === "zh"
-        ? "<p>第一段介绍。</p><p>第二段服务。</p><p>第三段报价。</p>"
-        : "<p>First introduction.</p><p>Second service.</p><p>Third quotation.</p>",
+        ? `<p>第一段介绍。</p><p>${slug === "selangor" ? "仓储相关服务仅限货架、通道规划、地面标线及存储分区，具体范围以现场评估与报价为准。" : "第二段服务。"}</p><p>第三段报价。</p>`
+        : `<p>First introduction.</p><p>${slug === "selangor" ? "For warehouse-related needs, the confirmed scope is limited to racking, aisle planning, floor marking, and storage zoning; exact work is subject to a site review and quotation." : "Second service."}</p><p>Third quotation.</p>`,
     },
     isPending: false,
   }),
 }));
 
 describe("LocationPage CMS paragraph rendering", () => {
-  for (const slug of ["kuala-lumpur", "bangsar"]) for (const language of ["en", "zh"] as const) {
+  for (const slug of ["kuala-lumpur", "bangsar", "selangor"]) for (const language of ["en", "zh"] as const) {
     it(`preserves CMS ${slug}/${language} body, scopes source-reviewed labels and quote destination`, () => {
       window.history.replaceState({}, "", `/${language}/locations/${slug}`);
       const container = document.createElement("div");
@@ -50,8 +50,13 @@ describe("LocationPage CMS paragraph rendering", () => {
       const intro = sections.find((section) => section.querySelector(".fc-route-section-head p")?.textContent?.startsWith(language === "zh" ? "第一段" : "First"));
       expect(intro).toBeTruthy();
       expect(Array.from(intro!.querySelectorAll(".fc-route-section-head p"), (paragraph) => paragraph.textContent)).toEqual(
-        language === "zh" ? ["第一段介绍。", "第二段服务。", "第三段报价。"] : ["First introduction.", "Second service.", "Third quotation."],
+        language === "zh"
+          ? ["第一段介绍。", slug === "selangor" ? "仓储相关服务仅限货架、通道规划、地面标线及存储分区，具体范围以现场评估与报价为准。" : "第二段服务。", "第三段报价。"]
+          : ["First introduction.", slug === "selangor" ? "For warehouse-related needs, the confirmed scope is limited to racking, aisle planning, floor marking, and storage zoning; exact work is subject to a site review and quotation." : "Second service.", "Third quotation."],
       );
+      const warehouse = intro!.querySelectorAll(`a[href="/${language}/services/warehouse"]`);
+      expect(warehouse).toHaveLength(slug === "selangor" ? 1 : 0);
+      if (slug === "selangor") expect(warehouse[0].textContent).toBe(language === "zh" ? "仓储相关服务" : "warehouse-related needs");
       if (slug === "kuala-lumpur") expect(container.querySelectorAll(`.fc-route-section a[href^="/${language}/services/"]`).length).toBeGreaterThan(0);
       const reviewedLabel = language === "zh" ? "可讨论的项目类型：" : "PROJECT TYPES TO DISCUSS:";
       const reviewedHeading = language === "zh" ? "概念参考与规划资料" : "Concept References and Planning Guides";

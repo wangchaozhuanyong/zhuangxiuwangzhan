@@ -12,6 +12,7 @@ export type PublicBoot = {
   readonly stylesReady: boolean;
   claim: (recovery: Recovery) => () => void;
   retry: () => void;
+  /** Resolves once input is released; the brand fade may finish independently. */
   complete: (degraded?: boolean) => Promise<void>;
   hold: () => void;
   dismiss: () => void;
@@ -64,6 +65,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
   let recovery: Recovery | undefined;
   let completion: Promise<void> | undefined;
   let animation: Animation | undefined;
+  let fadeTimer = 0;
   let progress: ReturnType<typeof startPublicLoadingProgress> | undefined;
   let revision = 0;
   const failedStyles = new WeakSet<HTMLLinkElement>();
@@ -92,15 +94,24 @@ export function initializePublicBoot(): PublicBoot | undefined {
     }
     document.documentElement.dataset.publicBoot = state;
     if (homeEntry) document.documentElement.dataset.publicBootHome = "true";
-    document.documentElement.dataset.publicRouteLoading = "true";
-    document.getElementById("root")?.setAttribute("inert", "");
+    if (state === "handoff") {
+      // Readiness has completed. The remaining brand motion cannot own input.
+      document.getElementById("root")?.removeAttribute("inert");
+      if (document.documentElement.dataset.publicRouteLoading === "true") delete document.documentElement.dataset.publicRouteLoading;
+    } else {
+      document.documentElement.dataset.publicRouteLoading = "true";
+      document.getElementById("root")?.setAttribute("inert", "");
+    }
     if (!element) return;
     element.dataset.bootState = state;
+    element.style.pointerEvents = state === "handoff" ? "none" : "";
+    if (state === "handoff") element.setAttribute("aria-hidden", "true");
+    else element.removeAttribute("aria-hidden");
     const track = element.querySelector<HTMLElement>(".scheme-a-page-loader__brand > i");
     if (track && !progress) progress = startPublicLoadingProgress(track);
     if (state === "timeout") progress?.pause();
     else if (state === "waiting") progress?.resume();
-    element.setAttribute("aria-busy", String(state !== "timeout"));
+    element.setAttribute("aria-busy", String(state === "waiting"));
     for (const node of element.querySelectorAll<HTMLElement>("[data-boot-copy]")) {
       const key = node.dataset.bootCopy as keyof typeof copy;
       if (node.textContent !== copy[key]) node.textContent = copy[key];
@@ -120,6 +131,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
     }, Math.max(0, deadline - performance.now()));
   };
   const finish = (degraded: boolean) => {
+    window.clearTimeout(fadeTimer);
     observer.disconnect();
     state = degraded ? "degraded" : "ready";
     render();
@@ -157,22 +169,26 @@ export function initializePublicBoot(): PublicBoot | undefined {
         return completion = Promise.resolve();
       }
       const owner = revision;
-      const fade = () => {
-        if (owner !== revision) return Promise.resolve();
-        animation = element.animate([{ opacity: 1 }, { opacity: 0 }], {
-          duration: homeEntry ? 420 : PUBLIC_MOTION.handoff,
-          easing: homeEntry ? "ease-in-out" : PUBLIC_MOTION.easing,
-          // Keep the last transparent frame until removal, including busy mobile frames.
-          fill: "forwards",
-        });
-        return animation.finished.catch(() => {}).then(() => { if (owner === revision) finish(degraded); });
-      };
-      completion = progress ? progress.complete().then(fade) : fade();
+      void progress?.complete();
+      const duration = homeEntry ? 420 : PUBLIC_MOTION.handoff;
+      animation = element.animate([{ opacity: 1 }, { opacity: 0 }], {
+        duration,
+        easing: homeEntry ? "ease-in-out" : PUBLIC_MOTION.easing,
+        // Keep the transparent final frame until the original screen is removed.
+        fill: "forwards",
+      });
+      const finishCurrent = () => { if (owner === revision && state === "handoff") finish(degraded); };
+      void animation.finished.then(finishCurrent, finishCurrent);
+      // Browser animation promises may stall on a busy/background frame. Their
+      // decorative lifetime is bounded independently from route readiness.
+      fadeTimer = window.setTimeout(finishCurrent, duration + 100);
+      completion = Promise.resolve();
       return completion;
     },
     hold() {
       if (state !== "handoff") return;
       revision++;
+      window.clearTimeout(fadeTimer);
       animation?.cancel();
       progress?.cancel();
       progress = undefined;
@@ -184,6 +200,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
     dismiss() {
       revision++;
       window.clearTimeout(timer);
+      window.clearTimeout(fadeTimer);
       animation?.cancel();
       finish(false);
     },

@@ -108,6 +108,14 @@ describe("interruptible public scene handoff", () => {
 });
 
 describe("public visual handoff", () => {
+  it("commits a language update on the same business page without retiring the form", async () => {
+    await render("/zh/contact");
+    const commit = vi.fn();
+    requestPublicNavigation("/en/contact", commit);
+    expect(commit).toHaveBeenCalledOnce();
+    expect(beforeCommit).not.toHaveBeenCalled();
+    expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-leaving");
+  });
   it("lets the document boot own the initial handoff", async () => {
     await render("/zh", true, true);
     await render("/zh", false, true);

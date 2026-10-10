@@ -196,7 +196,8 @@
     "en-US": {
       "allowedPhrases": [
         "中文",
-        "中"
+        "中",
+        "闪铸设计"
       ],
       "allowedPatterns": []
     }

@@ -16,7 +16,7 @@ let originalUrl: string;
 let originalHistoryState: unknown;
 const src = "http://localhost/image.webp";
 
-function Image({ ready = false, offscreen = false, failed = false, raw = false }: { ready?: boolean; offscreen?: boolean; failed?: boolean; raw?: boolean }) {
+function Image({ ready = false, transferred = false, offscreen = false, failed = false, raw = false }: { ready?: boolean; transferred?: boolean; offscreen?: boolean; failed?: boolean; raw?: boolean }) {
   return <img src={src} alt="Example" data-critical-image="true"
     data-image-state={raw ? undefined : failed ? "error" : ready ? "loaded" : "loading"}
     data-decoded-src={ready ? src : undefined}
@@ -24,8 +24,8 @@ function Image({ ready = false, offscreen = false, failed = false, raw = false }
       if (!image) return;
       Object.defineProperties(image, {
         currentSrc: { configurable: true, value: src },
-        complete: { configurable: true, value: ready },
-        naturalWidth: { configurable: true, value: ready ? 1000 : 0 },
+        complete: { configurable: true, value: ready || transferred },
+        naturalWidth: { configurable: true, value: ready || transferred ? 1000 : 0 },
       });
       image.getBoundingClientRect = () => ({ x: 0, y: offscreen ? 2000 : 100, left: 0, right: 500, top: offscreen ? 2000 : 100, bottom: offscreen ? 2300 : 400, width: 500, height: 300, toJSON: () => ({}) });
     }} />;
@@ -67,6 +67,111 @@ afterEach(async () => {
 });
 
 describe("public route visual readiness", () => {
+  it.each(["transfer", "decode"])("degrades a late %s wait as soon as previously timed-out data arrives", async (stage) => {
+    await render(<div data-route-pending="true" />);
+    await act(async () => vi.advanceTimersByTime(5100));
+    expect(state()).toBe("timeout");
+    await render(<Image transferred={stage === "decode"} />);
+    expect(state()).toBe("degraded");
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+    expect(loader()).toBeNull();
+  });
+
+  it("bounds an unresolved native decode after late data without letting a late resolution change its cycle", async () => {
+    let finishDecode!: () => void;
+    const decode = vi.fn(() => new Promise<void>((resolve) => { finishDecode = resolve; }));
+    const descriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "decode");
+    Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: decode });
+    try {
+      await render(<div data-route-pending="true" />);
+      await act(async () => vi.advanceTimersByTime(5100));
+      await render(<Image raw transferred />);
+      expect(decode).toHaveBeenCalledOnce();
+      expect(state()).toBe("degraded");
+      await render(<div data-route-pending="true" />, "/zh/projects");
+      await act(async () => finishDecode());
+      expect(state()).toBe("waiting");
+      expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    } finally {
+      if (descriptor) Object.defineProperty(HTMLImageElement.prototype, "decode", descriptor);
+      else Reflect.deleteProperty(HTMLImageElement.prototype, "decode");
+    }
+  });
+
+  it("keeps the same deadline through a data rerender and gives an explicit retry a new attempt", async () => {
+    await render(<div data-route-pending="true" />);
+    await act(async () => vi.advanceTimersByTime(4700));
+    await render(<div data-route-pending="true"><span>Still fetching</span></div>);
+    await act(async () => vi.advanceTimersByTime(300));
+    expect(state()).toBe("timeout");
+    await act(async () => container.querySelector<HTMLButtonElement>(".scheme-a-page-loader__actions button")!.click());
+    await render(<Image />);
+    expect(state()).toBe("waiting");
+    await act(async () => vi.advanceTimersByTime(5100));
+    expect(state()).toBe("degraded");
+  });
+
+  it("preserves usable form nodes and focus while the same business page changes language", async () => {
+    await render(<input aria-label="Message" defaultValue="Draft remains" />, "/zh/contact");
+    const input = container.querySelector("input")!;
+    input.focus();
+    const commit = vi.fn();
+    await act(async () => requestPublicNavigation("/en/contact", commit));
+    expect(commit).toHaveBeenCalledOnce();
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+    await render(<><input aria-label="Message" defaultValue="Draft remains" /><div data-route-pending="true" /></>, "/en/contact");
+    expect(state()).toBe("waiting");
+    expect(container.querySelector("input")).toBe(input);
+    expect(input.value).toBe("Draft remains");
+    expect(document.activeElement).toBe(input);
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-pending");
+    await act(async () => vi.advanceTimersByTime(5100));
+    expect(state()).toBe("timeout");
+    expect(loader()).toHaveClass("public-route-feedback");
+    await render(<><input aria-label="Message" defaultValue="Draft remains" /><h1>Contact</h1></>, "/en/contact");
+    expect(state()).toBe("ready");
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("still locks a different detail slug even when the destination also changes language", async () => {
+    await render(<Image ready />, "/zh/services/design");
+    await render(<div data-route-pending="true" />, "/en/services/kitchen");
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    expect(loader()).toHaveClass("scheme-a-page-loader--navigation");
+  });
+
+  it("keeps consecutive uncached language updates local and emits readiness only for the final language", async () => {
+    await render(<input defaultValue="Draft" />, "/zh/contact");
+    const ready = vi.fn();
+    window.addEventListener("public-route-ready", ready);
+    try {
+      for (let index = 0; index < 20; index++) {
+        const route = index % 2 ? "/zh/contact" : "/en/contact";
+        await render(<><input defaultValue="Draft" /><div data-route-pending="true" /></>, route);
+        expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+        expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-pending");
+      }
+      expect(ready).not.toHaveBeenCalled();
+      await render(<input defaultValue="Draft" />, "/zh/contact");
+      expect(state()).toBe("ready");
+      expect(ready).toHaveBeenCalledOnce();
+      expect(ready.mock.calls[0][0].detail.routeKey).toBe("/zh/contact");
+    } finally { window.removeEventListener("public-route-ready", ready); }
+  });
+
+  it("cancels an uncached language timeout to the last truly ready route", async () => {
+    const cancel = vi.fn();
+    await render(<input defaultValue="Draft" />, "/zh/contact", cancel);
+    await render(<><input defaultValue="Draft" /><div data-route-pending="true" /></>, "/en/contact", cancel);
+    await render(<><input defaultValue="Draft" /><div data-route-pending="true" /></>, "/zh/contact", cancel);
+    await render(<><input defaultValue="Draft" /><div data-route-pending="true" /></>, "/en/contact", cancel);
+    await act(async () => vi.advanceTimersByTime(5100));
+    const buttons = container.querySelectorAll<HTMLButtonElement>(".public-route-feedback__recovery button");
+    await act(async () => buttons[1].click());
+    expect(cancel).toHaveBeenCalledWith("/zh/contact");
+  });
   it("retires cached content before navigation and immediately covers a real wait with a fresh brand bar", async () => {
     const previousAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
     const cancel = vi.fn();
@@ -405,7 +510,7 @@ describe("public route visual readiness", () => {
     } finally { window.removeEventListener("public-route-ready", ready); }
   });
 
-  it("still waits for document boot completion before enabling the first page", async () => {
+  it("enables ready content without waiting for the document boot's decorative completion", async () => {
     let finishBoot!: () => void;
     const completion = new Promise<void>(resolve => { finishBoot = resolve; });
     const complete = vi.fn(() => completion);
@@ -418,8 +523,8 @@ describe("public route visual readiness", () => {
     try {
       await render(<Image ready />);
       expect(complete).toHaveBeenCalledOnce();
-      expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
-      expect(ready).not.toHaveBeenCalled();
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+      expect(ready).toHaveBeenCalledOnce();
       await act(async () => finishBoot());
       expect(state()).toBe("ready");
       expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");

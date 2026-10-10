@@ -1,3 +1,4 @@
+import "@/lib/furnitureQuerySeed";
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { SmartImage } from "@/components/SmartImage";

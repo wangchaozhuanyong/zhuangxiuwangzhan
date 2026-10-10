@@ -14,6 +14,17 @@ on:
       - public/robots.txt
       - scripts/generate-seo-manifest.mjs
       - src/lib/contentApi.ts
+      - src/pages/BlogDetail.tsx
+      - src/pages/ServiceDetail.tsx
+      - src/pages/OldHouseRenovation.tsx
+      - src/i18n/oldHouseRenovationPageText.ts
+      - src/routes/publicRoutes.tsx
+      - src/components/PageMeta.tsx
+      - src/components/services/DesignServiceContent.tsx
+      - src/i18n/brandIdentity.ts
+      - src/hooks/useSiteSettings.ts
+      - src/lib/siteSettingsApi.ts
+      - src/backend/modules/settings/repository/siteSettingsRepository.ts
       - src/lib/projectPublicMetadata.*
       - src/lib/geoSourceBinding.integration.test.ts
       - src/test/fixtures/geo-public-source-binding.json
@@ -30,9 +41,14 @@ on:
       - scripts/publish-remaining-completion-20261009.mjs
       - scripts/publish-remainder18-after-37893433883.mjs
       - scripts/publish-remainder11-after-37898568406.mjs
+      - scripts/publish-remainder9-after-37903094390.mjs
       - scripts/lib/publisher-public-readback.mjs
+      - scripts/lib/publisher-reviewed-renderer.mjs
+      - scripts/lib/publisher-reviewed-metadata.mjs
+      - scripts/check-publisher-reviewed-renderer.mjs
       - drafts/publishing/fc-20261009-remainder18-after-37893433883-v1/**
       - drafts/publishing/fc-20261009-remainder11-after-37898568406-v1/**
+      - drafts/publishing/fc-20261009-remainder9-after-37903094390-v1/**
       - drafts/publishing/fc-20261009-remaining-completion-v1/**
       - drafts/seo/fc-20261007-publisher-three-designated-binding-v1/**
       - drafts/seo/fc-20261009-unified-protected-cms-bindings-v1/**
@@ -49,6 +65,9 @@ on:
       - src/lib/contentPublishRemainingBatch.test.ts
       - src/lib/contentPublishRemainder18.test.ts
       - src/lib/contentPublishRemainder11.test.ts
+      - src/lib/contentPublishRemainder9.test.ts
+      - src/lib/contentPublishReviewedRenderer.test.ts
+      - src/lib/contentPublishReviewedMetadata.test.ts
       - src/lib/contentPublishSparsePatch.test.ts
       - src/lib/contentPublishManagedBlog.test.ts
       - src/lib/contentPublishKlMediaTargets.test.ts
@@ -124,6 +143,9 @@ jobs:
             src/lib/contentPublishRemainingBatch.test.ts \
             src/lib/contentPublishRemainder18.test.ts \
             src/lib/contentPublishRemainder11.test.ts \
+            src/lib/contentPublishRemainder9.test.ts \
+            src/lib/contentPublishReviewedRenderer.test.ts \
+            src/lib/contentPublishReviewedMetadata.test.ts \
             src/lib/contentPublishSparsePatch.test.ts \
             src/lib/contentPublishManagedBlog.test.ts \
             src/lib/contentPublishKlMediaTargets.test.ts \

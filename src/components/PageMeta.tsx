@@ -4,6 +4,7 @@ import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 import { siteConfig } from "@/config/site";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { withChineseBrandMetadata } from "@/i18n/brandIdentity";
 
 interface PageMetaProps {
   title: string;
@@ -43,16 +44,18 @@ const PageMeta = ({
   const companyName = settings.company_name || siteConfig.name;
   const defaultImage = addCacheBuster(settings.og_image_url || siteConfig.ogImage, settings.updated_at);
   const image = absoluteMetaImage(ogImage || "", defaultImage, siteConfig.ogImage);
-  const fullTitle = title.includes(brandName) || title.includes(companyName) ? title : `${title} | ${companyName}`;
+  const baseTitle = title.includes(brandName) || title.includes(companyName) ? title : `${title} | ${companyName}`;
   const path = canonicalPath ? stripLanguagePrefix(canonicalPath) : stripLanguagePrefix(window.location.pathname);
+  const metadata = noIndex ? { title: baseTitle, description }
+    : withChineseBrandMetadata({ title: baseTitle, description }, language, path, settings);
   const canonicalUrl = `${siteConfig.url}${withLanguagePrefix(path, language)}`;
   const zhUrl = `${siteConfig.url}${withLanguagePrefix(path, "zh")}`;
   const enUrl = `${siteConfig.url}${withLanguagePrefix(path, "en")}`;
 
   return (
     <Helmet>
-      <title>{fullTitle}</title>
-      <meta name="description" content={description} />
+      <title>{metadata.title}</title>
+      <meta name="description" content={metadata.description} />
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
       {keywords && <meta name="keywords" content={keywords} />}
       {!noIndex && <link rel="canonical" href={canonicalUrl} />}
@@ -61,16 +64,16 @@ const PageMeta = ({
       {!noIndex && <link rel="alternate" hrefLang="x-default" href={enUrl} />}
 
       {/* Open Graph */}
-      <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={metadata.title} />
+      <meta property="og:description" content={metadata.description} />
       <meta property="og:image" content={image} />
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonicalUrl} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:title" content={metadata.title} />
+      <meta name="twitter:description" content={metadata.description} />
       <meta name="twitter:image" content={image} />
     </Helmet>
   );

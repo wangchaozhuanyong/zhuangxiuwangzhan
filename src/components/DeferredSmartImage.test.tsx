@@ -4,6 +4,44 @@ import { describe, expect, it, vi } from "vitest";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 
 describe("DeferredSmartImage", () => {
+  it("starts slow feedback when deferred media enters its loading range, including a fresh retry", async () => {
+    vi.useFakeTimers();
+    let notify: IntersectionObserverCallback | undefined;
+    class FakeObserver {
+      constructor(callback: IntersectionObserverCallback) { notify = callback; }
+      observe = vi.fn();
+      disconnect = vi.fn();
+    }
+    vi.stubGlobal("IntersectionObserver", FakeObserver);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<DeferredSmartImage src="/offscreen-card.webp" alt="Deferred card" />));
+      await act(async () => vi.advanceTimersByTime(6000));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+
+      await act(async () => notify?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver));
+      await act(async () => vi.advanceTimersByTime(4999));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(1));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+
+      await act(async () => (container.querySelector(".smart-image-slow button") as HTMLButtonElement).click());
+      expect(container.querySelector<HTMLImageElement>("img")?.src).toContain("image_retry=");
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(4999));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(1));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    }
+  });
+
   it("does not turn slow eager media into an error after five seconds", async () => {
     vi.useFakeTimers();
     const container = document.createElement("div");

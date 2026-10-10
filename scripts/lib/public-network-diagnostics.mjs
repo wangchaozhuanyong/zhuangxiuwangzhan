@@ -35,3 +35,18 @@ export function diagnosticTiming(request) {
     responseEndMs: timing.responseEnd >= 0 ? timing.responseEnd : null,
   };
 }
+
+/** Internal read identity. Public diagnostics must still redact the returned URL. */
+export function normalizePublicReadIdentity(resourceUrl) {
+  try {
+    const url = new URL(resourceUrl);
+    // section_key/page_key are business filters, not authentication keys.
+    for (const key of [...url.searchParams.keys()]) {
+      if (/^(?:api_?key|access_token|refresh_token|id_token|token|key|auth|authorization|secret|password)$/i.test(key)) url.searchParams.delete(key);
+    }
+    url.searchParams.sort();
+    return `${url.origin}${url.pathname}${url.search}`;
+  } catch {
+    return resourceUrl.split("?")[0] || resourceUrl;
+  }
+}

@@ -8,6 +8,7 @@ import {
   getListingScrollPosition,
 } from "@/lib/publicScrollRestoration";
 import { scrollWindowToImmediately, scrollWindowToSmoothly } from "@/lib/instantScroll";
+import { isPublicLanguageUpdate } from "@/lib/publicRouteScope";
 
 const MAX_RESTORE_FRAMES = 120;
 // Session-only positions, including detail/back and each filtered listing entry.
@@ -112,6 +113,9 @@ const ScrollToTop = () => {
     const furniturePosition = consumeFurnitureNavigationScroll(pathname);
     const positionKey = getScrollPositionKey(pathname + search);
     const isPop = routeContext.navigationType === "POP";
+    const preserveLanguagePosition = !isAdmin && !isPop && !!previous
+      && isPublicLanguageUpdate(previous.pathname, pathname)
+      && previous.search === search && previous.hash === hash;
     const listingPosition = getListingScrollPosition(state);
     const shouldRestore = isPop || !isAdmin && (hasBottomNavScrollIntent(state) || listingPosition !== null);
     const savedPosition = isPop ? historyPositions.get(key) : listingPosition ?? scrollPositions.get(positionKey);
@@ -120,10 +124,24 @@ const ScrollToTop = () => {
     let lastScroll = window.scrollY;
     let cancelRestoration = () => {};
     let interrupted = false;
+    let anchorFrame = 0;
+    const rootStyle = document.documentElement.style;
+    const previousAnchor = rootStyle.getPropertyValue("overflow-anchor");
+    const previousAnchorPriority = rootStyle.getPropertyPriority("overflow-anchor");
+    let suppressAnchoring = preserveLanguagePosition;
+    if (suppressAnchoring) rootStyle.setProperty("overflow-anchor", "none");
+    const releaseAnchoring = () => {
+      if (anchorFrame) window.cancelAnimationFrame(anchorFrame);
+      anchorFrame = 0;
+      if (!suppressAnchoring) return;
+      suppressAnchoring = false;
+      if (previousAnchor) rootStyle.setProperty("overflow-anchor", previousAnchor, previousAnchorPriority);
+      else rootStyle.removeProperty("overflow-anchor");
+    };
     const record = () => { lastScroll = window.scrollY; };
-    const interrupt = () => { interrupted = true; cancelRestoration(); };
+    const interrupt = () => { interrupted = true; cancelRestoration(); releaseAnchoring(); };
     const restore = (smooth = false) => {
-      if (interrupted || preserveAdminPosition) return;
+      if (interrupted || preserveAdminPosition || preserveLanguagePosition) return;
       cancelRestoration();
       const results = document.querySelector<HTMLElement>("#main-content [data-public-results]");
       const paginationTarget = !shouldRestore && furniturePosition === null && search && isFurnitureListingPath(pathname) && results
@@ -149,6 +167,16 @@ const ScrollToTop = () => {
     const belongsToRoute = (event: Event) => !(event instanceof CustomEvent) || !event.detail?.routeKey || event.detail.routeKey === pathname + search;
     const restoreLayout = (event: Event) => { if (belongsToRoute(event)) restore(); };
     const focusReadyTarget = (event: Event) => {
+      if (preserveLanguagePosition) {
+        // Chrome anchors a focused editor when translated content changes height.
+        // Keep its reading position through the completed language paint only.
+        if (belongsToRoute(event) && suppressAnchoring && !anchorFrame) {
+          anchorFrame = window.requestAnimationFrame(() => {
+            anchorFrame = window.requestAnimationFrame(releaseAnchoring);
+          });
+        }
+        return;
+      }
       const continued = event instanceof CustomEvent && event.detail?.degraded === true;
       if (interrupted && !continued || !belongsToRoute(event)) return;
       try {
@@ -176,6 +204,7 @@ const ScrollToTop = () => {
     restore(!isPop && samePage && !!(hash || getPublicScrollTarget(state)));
     return () => {
       cancelRestoration();
+      releaseAnchoring();
       window.removeEventListener("public-route-layout", restoreLayout);
       window.removeEventListener("admin-route-layout", restoreLayout);
       window.removeEventListener("public-route-ready", focusReadyTarget);

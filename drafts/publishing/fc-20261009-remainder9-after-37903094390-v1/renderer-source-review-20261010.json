@@ -1,0 +1,3011 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-10T07:51:53.690Z",
+  "kind": "CANDIDATE_LOCAL_REVIEW_WITH_PREDEPLOY_LIVE_GUARD",
+  "candidateSha": "8eb9f8061926bcacb15dea952097649511977a60",
+  "candidateDeployed": false,
+  "observedLiveSha": "2f055035d469c02833a8dd7025ddb8b2223c0b8c",
+  "currentExecutionGuardRequired": true,
+  "productionWrites": 0,
+  "originalCompletedProofPath": "drafts/publishing/fc-20261009-remainder9-after-37903094390-v1/completed-eleven-rechecked-proof.json",
+  "originalCompletedProofSha256": "bc6ac21909e661f26f25b0a85fbee20b653b7f41e243b3b49f7457fbcdb13c63",
+  "sourceRendererSha256": {
+    "src/pages/BlogDetail.tsx": "cd78020b53582ced4a87b7ab55c99546a2ee83dee54f3722ac47b8526f75cf07",
+    "src/lib/contentApi.ts": "08543b97884cf31ac83654c8d60808c2a3d301af17af7fd82e4f8272acaddba6",
+    "src/backend/modules/cms/repository/publicContentRepository.ts": "6e6319a67488c0a49b4c3ecdaacb625d65a43c3f9e486abf02ad55c39a8489fb",
+    "src/pages/ServiceDetail.tsx": "c4d83f8a1f5687ea77df95b77797c97920c3587dafb59ef3d6394f18b6657c1f",
+    "src/hooks/usePublishedContent.ts": "a8b98f321e118209997665905457fdc9eb3a37673d9373ef58c34fd5da4c9713",
+    "functions/_middleware.ts": "2c4c0e84bf3160ab60ac9e386a1084509158ec63f5ef4f56eefa3ef2928f382b",
+    "functions/readablePublicBody.ts": "4d67bd215b6e5c050d0be9d8bb562c0efdfaf7ae56fc01610a12323885f61293"
+  },
+  "reviewedPipelineSourceSha256": {
+    "src/pages/BlogDetail.tsx": "cd78020b53582ced4a87b7ab55c99546a2ee83dee54f3722ac47b8526f75cf07",
+    "src/lib/contentApi.ts": "08543b97884cf31ac83654c8d60808c2a3d301af17af7fd82e4f8272acaddba6",
+    "src/i18n/displayLabels.ts": "af4259387632733ddd96a75c2d5cec7aefc6c876c7c13dc4aa51cb5b2278000a",
+    "src/lib/sanitizeHtml.ts": "f40061b1105ed60ecbac5370ca40826389ab3f3fd4a811a634e849793c1a52b8",
+    "src/lib/serviceOverviewHtml.ts": "8464ba0f9645eb102db27d2040e1f40de04dd90915c9910910efa98e44fb8fb6",
+    "src/lib/text.ts": "6dd33d2bae0384508333657fb90f732bedda63f8d71f239f4e192b472ce8a55b",
+    "src/lib/recordUtils.ts": "ae69d4b368f6f83ebd5feac981f44822bec1d2e1a4d022932c69c18baec3b6a8"
+  },
+  "metadataSourceSha256": {
+    "functions/_middleware.ts": "2c4c0e84bf3160ab60ac9e386a1084509158ec63f5ef4f56eefa3ef2928f382b",
+    "functions/publicDataValues.ts": "2b064136bb699bb10d5cc140f66a0f52591b027c7d55c8fd70ee644f5108f907",
+    "src/backend/modules/cms/repository/publicContentRepository.ts": "6e6319a67488c0a49b4c3ecdaacb625d65a43c3f9e486abf02ad55c39a8489fb",
+    "src/backend/modules/settings/repository/siteSettingsRepository.ts": "9dea15884a62597e47cfe7db7f440a50d0675ae3cee80205d9dd6f4d7948667f",
+    "src/components/PageMeta.tsx": "d817c5ad7acb27951fdc93aa109fae5dd8ebedca99dc83aa41fef1c923a62407",
+    "src/components/services/DesignServiceContent.tsx": "1581e56a87d89beb6ba32ac8044553712add64c8d0604496363cef44c1e1136f",
+    "src/config/site.ts": "e89cc9a7fee1bb1d232a85f85cffc6592c633fd68177a7cb061d089060dc84be",
+    "src/data/blog.ts": "abc3815fa153eb3735711e76eba654e366ef1f5f5ff4dfb0fde05e348d38b61d",
+    "src/data/landings.ts": "a6d4d805d13fc9da30d41aab0fefe229a95775c52cb9a66b06b656560b316550",
+    "src/data/locations.ts": "6ae57eaa92c83af9d4fcfe3a4c1c3040da7de59cf3c10b0de87e94e38b2895e7",
+    "src/data/materials.ts": "cf9b04d032ea50f0a158a9911a433571d18a8ede0cb7e36bfe1ee9e32810fc41",
+    "src/data/projects.ts": "51a42affbdf82e630b8440d33ee137666ef93784332258723d4fe9ec2242e6d8",
+    "src/data/services.ts": "469f19727bfaa891621e24526ccca9eb733d3e144e21e70d37e502a4a0da09cd",
+    "src/data/surfaceRepairService.ts": "74ecf77b884be181dda32c7073777fb238aecb06513e2f9b143cb567c2863e0e",
+    "src/hooks/useSiteSettings.ts": "b44d0b55f36f4b431d6ba7863d8269b6022b599e69bdb798634eb504d831c7d9",
+    "src/i18n/brandIdentity.ts": "e23a5ccd297de165bfb5bc3db1e4de6d0927ab5b4c42ec5e17aa3d15d9f68e67",
+    "src/i18n/displayLabels.ts": "af4259387632733ddd96a75c2d5cec7aefc6c876c7c13dc4aa51cb5b2278000a",
+    "src/i18n/landingContent.ts": "fa3143098c0db2d36dc28bb39bcd36cc03eeecfb81fb9892097a4ca24041a1d6",
+    "src/i18n/languageDetection.ts": "2d98dfbb49ff108a534fb58ca35512e187f6fe7efa269d67c71d04d7734ae0f7",
+    "src/i18n/oldHouseRenovationPageText.ts": "8a1274e04e44a2040df20daf59aee0f26653fc43ca6b0c2dd0910ffc27bd8fc0",
+    "src/i18n/routes.ts": "b108a8f74486da5e96a3ca9e1ad842601594ef8c5d366fc20086f03c4e962513",
+    "src/i18n/surfaceRepairPageText.ts": "0f1aa1a99dbf25bcea4bda503b464de500fc3f310df08c04824dbec7a01ac2ce",
+    "src/lib/blogMeta.ts": "a9c8238062e98f7d2db4f341a566432aa4fa43738ca3fd838a7eadab4c6e0547",
+    "src/lib/browserPreference.ts": "4bf592ecd8a0f2564645f99df9c73789ebca4a0a39debdf178c1ce64ae4afd37",
+    "src/lib/contentApi.ts": "08543b97884cf31ac83654c8d60808c2a3d301af17af7fd82e4f8272acaddba6",
+    "src/lib/furnitureCatalogConfig.ts": "0bb7a2cd951e1e673657c1b3dcbd537506a0aaa0ba9741293a6d24aa52f2eb84",
+    "src/lib/homeDiscoveryData.ts": "e878002cec91828ab3077279b8aade0b5d2a7422d8eb510c5b09f43b2c1ce661",
+    "src/lib/interactionPolicy.ts": "10abec935916dcd115072506efc15f13494720d94acae365b5ea57ed5ff1aa72",
+    "src/lib/materialPrice.ts": "22791c8554aea24b86ed88f6c8da1d14dc230539c74cfcb8f1f9a80ec35e9da4",
+    "src/lib/projectPublicMetadata.mjs": "547e6ca0f6cfa64e6d5c7ffe633126d98675de34ef560e6e86e475b8143b070b",
+    "src/lib/readRequest.ts": "da9362ce5a891743525beb6ccb00786d99618b657c7d29e64f6e01497f9a3c06",
+    "src/lib/recordUtils.ts": "ae69d4b368f6f83ebd5feac981f44822bec1d2e1a4d022932c69c18baec3b6a8",
+    "src/lib/reviewedContentMedia.mjs": "b1cb0fd539742e4b498f7d4dd2c39d6b064ea2cc3819e5fa0c7204ee11468d5a",
+    "src/lib/siteSettingsApi.ts": "57293056a64dee6e56bd0fc9f7c0b6b4b57737eaaa69edf88747883cca3728fc",
+    "src/lib/socialProfiles.ts": "dd459bb1ba12dc3e63ba11e72a7acde422289326eb7a9c881ac54b9525bc6b46",
+    "src/lib/supabase.ts": "4df9fb48e7d3ba15b5aedcbfeb8c373fbfe4b531e720494fa0823a2149c056a4",
+    "src/lib/supabaseConfig.ts": "c6111804a7309a2d9669f38a157df5d40b910c2d8d69e61dfd57ccc789e7fee0",
+    "src/lib/text.ts": "6dd33d2bae0384508333657fb90f732bedda63f8d71f239f4e192b472ce8a55b",
+    "src/pages/BlogDetail.tsx": "cd78020b53582ced4a87b7ab55c99546a2ee83dee54f3722ac47b8526f75cf07",
+    "src/pages/OldHouseRenovation.tsx": "d44f7682a71609a84f29edd55a1be80970241e7491fc973be28268d3b0236ed4",
+    "src/pages/ServiceDetail.tsx": "c4d83f8a1f5687ea77df95b77797c97920c3587dafb59ef3d6394f18b6657c1f",
+    "src/routes/publicRoutes.tsx": "adc12b487117c7e453d809f9ec8f0251021e4af217900c3f49c81bad05d752c1"
+  },
+  "publicIdentity": {
+    "id": "default",
+    "company_name": "FLASH CAST SDN. BHD.",
+    "brand_name": "FLASH CAST",
+    "updated_at": "2026-10-09T08:11:08.409298+00:00"
+  },
+  "actualMapperContract": {
+    "checkedAt": "2026-10-10T07:37:42.916Z",
+    "fixtureOnly": true,
+    "actualProductionAcceptance": false,
+    "productionWrites": 0,
+    "attemptedNetworkRequests": 0,
+    "faithfulCandidates": 18,
+    "faithfulPhrases": 184,
+    "pipelineSourceSha256": {
+      "src/pages/BlogDetail.tsx": "cd78020b53582ced4a87b7ab55c99546a2ee83dee54f3722ac47b8526f75cf07",
+      "src/lib/contentApi.ts": "08543b97884cf31ac83654c8d60808c2a3d301af17af7fd82e4f8272acaddba6",
+      "src/i18n/displayLabels.ts": "af4259387632733ddd96a75c2d5cec7aefc6c876c7c13dc4aa51cb5b2278000a",
+      "src/lib/sanitizeHtml.ts": "f40061b1105ed60ecbac5370ca40826389ab3f3fd4a811a634e849793c1a52b8",
+      "src/lib/serviceOverviewHtml.ts": "8464ba0f9645eb102db27d2040e1f40de04dd90915c9910910efa98e44fb8fb6",
+      "src/lib/text.ts": "6dd33d2bae0384508333657fb90f732bedda63f8d71f239f4e192b472ce8a55b",
+      "src/lib/recordUtils.ts": "ae69d4b368f6f83ebd5feac981f44822bec1d2e1a4d022932c69c18baec3b6a8"
+    },
+    "c06": {
+      "rawBlocks": 12,
+      "mappedBlocks": 12,
+      "unchangedPrefixBlocks": 11,
+      "changedLinkBoundaryBlocks": 1,
+      "rawReviewedBytesUnchanged": true
+    },
+    "readinessRemainsStrict": true,
+    "diagnosticReportsActualMissingOnly": true,
+    "negatives": [
+      {
+        "name": "missing-reviewed-paragraph",
+        "rejected": true
+      },
+      {
+        "name": "wrong-reviewed-paragraph",
+        "rejected": true
+      },
+      {
+        "name": "missing-reviewed-heading",
+        "rejected": true
+      },
+      {
+        "name": "wrong-inline-link",
+        "rejected": true
+      },
+      {
+        "name": "hidden-inline-link",
+        "rejected": true
+      },
+      {
+        "name": "hidden-article",
+        "rejected": true
+      },
+      {
+        "name": "inert-article",
+        "rejected": true
+      },
+      {
+        "name": "transparent-ancestor",
+        "rejected": true
+      },
+      {
+        "name": "extra-visible-space",
+        "rejected": true
+      }
+    ],
+    "pass": true
+  },
+  "metadataContract": {
+    "checkedAt": "2026-10-10T07:51:26.822Z",
+    "candidateSha": "8eb9f8061926bcacb15dea952097649511977a60",
+    "fixtureOnly": true,
+    "candidateDeployed": false,
+    "productionWrites": 0,
+    "publicIdentity": {
+      "id": "default",
+      "company_name": "FLASH CAST SDN. BHD.",
+      "brand_name": "FLASH CAST",
+      "updated_at": "2026-10-09T08:11:08.409298+00:00"
+    },
+    "publicIdentityObservedAt": "2026-10-10T07:37:41.730Z",
+    "publicIdentityReadReceipt": "metadata-current-source-probe.json",
+    "metadataSourceSha256": {
+      "functions/_middleware.ts": "2c4c0e84bf3160ab60ac9e386a1084509158ec63f5ef4f56eefa3ef2928f382b",
+      "functions/publicDataValues.ts": "2b064136bb699bb10d5cc140f66a0f52591b027c7d55c8fd70ee644f5108f907",
+      "src/backend/modules/cms/repository/publicContentRepository.ts": "6e6319a67488c0a49b4c3ecdaacb625d65a43c3f9e486abf02ad55c39a8489fb",
+      "src/backend/modules/settings/repository/siteSettingsRepository.ts": "9dea15884a62597e47cfe7db7f440a50d0675ae3cee80205d9dd6f4d7948667f",
+      "src/components/PageMeta.tsx": "d817c5ad7acb27951fdc93aa109fae5dd8ebedca99dc83aa41fef1c923a62407",
+      "src/components/services/DesignServiceContent.tsx": "1581e56a87d89beb6ba32ac8044553712add64c8d0604496363cef44c1e1136f",
+      "src/config/site.ts": "e89cc9a7fee1bb1d232a85f85cffc6592c633fd68177a7cb061d089060dc84be",
+      "src/data/blog.ts": "abc3815fa153eb3735711e76eba654e366ef1f5f5ff4dfb0fde05e348d38b61d",
+      "src/data/landings.ts": "a6d4d805d13fc9da30d41aab0fefe229a95775c52cb9a66b06b656560b316550",
+      "src/data/locations.ts": "6ae57eaa92c83af9d4fcfe3a4c1c3040da7de59cf3c10b0de87e94e38b2895e7",
+      "src/data/materials.ts": "cf9b04d032ea50f0a158a9911a433571d18a8ede0cb7e36bfe1ee9e32810fc41",
+      "src/data/projects.ts": "51a42affbdf82e630b8440d33ee137666ef93784332258723d4fe9ec2242e6d8",
+      "src/data/services.ts": "469f19727bfaa891621e24526ccca9eb733d3e144e21e70d37e502a4a0da09cd",
+      "src/data/surfaceRepairService.ts": "74ecf77b884be181dda32c7073777fb238aecb06513e2f9b143cb567c2863e0e",
+      "src/hooks/useSiteSettings.ts": "b44d0b55f36f4b431d6ba7863d8269b6022b599e69bdb798634eb504d831c7d9",
+      "src/i18n/brandIdentity.ts": "e23a5ccd297de165bfb5bc3db1e4de6d0927ab5b4c42ec5e17aa3d15d9f68e67",
+      "src/i18n/displayLabels.ts": "af4259387632733ddd96a75c2d5cec7aefc6c876c7c13dc4aa51cb5b2278000a",
+      "src/i18n/landingContent.ts": "fa3143098c0db2d36dc28bb39bcd36cc03eeecfb81fb9892097a4ca24041a1d6",
+      "src/i18n/languageDetection.ts": "2d98dfbb49ff108a534fb58ca35512e187f6fe7efa269d67c71d04d7734ae0f7",
+      "src/i18n/oldHouseRenovationPageText.ts": "8a1274e04e44a2040df20daf59aee0f26653fc43ca6b0c2dd0910ffc27bd8fc0",
+      "src/i18n/routes.ts": "b108a8f74486da5e96a3ca9e1ad842601594ef8c5d366fc20086f03c4e962513",
+      "src/i18n/surfaceRepairPageText.ts": "0f1aa1a99dbf25bcea4bda503b464de500fc3f310df08c04824dbec7a01ac2ce",
+      "src/lib/blogMeta.ts": "a9c8238062e98f7d2db4f341a566432aa4fa43738ca3fd838a7eadab4c6e0547",
+      "src/lib/browserPreference.ts": "4bf592ecd8a0f2564645f99df9c73789ebca4a0a39debdf178c1ce64ae4afd37",
+      "src/lib/contentApi.ts": "08543b97884cf31ac83654c8d60808c2a3d301af17af7fd82e4f8272acaddba6",
+      "src/lib/furnitureCatalogConfig.ts": "0bb7a2cd951e1e673657c1b3dcbd537506a0aaa0ba9741293a6d24aa52f2eb84",
+      "src/lib/homeDiscoveryData.ts": "e878002cec91828ab3077279b8aade0b5d2a7422d8eb510c5b09f43b2c1ce661",
+      "src/lib/interactionPolicy.ts": "10abec935916dcd115072506efc15f13494720d94acae365b5ea57ed5ff1aa72",
+      "src/lib/materialPrice.ts": "22791c8554aea24b86ed88f6c8da1d14dc230539c74cfcb8f1f9a80ec35e9da4",
+      "src/lib/projectPublicMetadata.mjs": "547e6ca0f6cfa64e6d5c7ffe633126d98675de34ef560e6e86e475b8143b070b",
+      "src/lib/readRequest.ts": "da9362ce5a891743525beb6ccb00786d99618b657c7d29e64f6e01497f9a3c06",
+      "src/lib/recordUtils.ts": "ae69d4b368f6f83ebd5feac981f44822bec1d2e1a4d022932c69c18baec3b6a8",
+      "src/lib/reviewedContentMedia.mjs": "b1cb0fd539742e4b498f7d4dd2c39d6b064ea2cc3819e5fa0c7204ee11468d5a",
+      "src/lib/siteSettingsApi.ts": "57293056a64dee6e56bd0fc9f7c0b6b4b57737eaaa69edf88747883cca3728fc",
+      "src/lib/socialProfiles.ts": "dd459bb1ba12dc3e63ba11e72a7acde422289326eb7a9c881ac54b9525bc6b46",
+      "src/lib/supabase.ts": "4df9fb48e7d3ba15b5aedcbfeb8c373fbfe4b531e720494fa0823a2149c056a4",
+      "src/lib/supabaseConfig.ts": "c6111804a7309a2d9669f38a157df5d40b910c2d8d69e61dfd57ccc789e7fee0",
+      "src/lib/text.ts": "6dd33d2bae0384508333657fb90f732bedda63f8d71f239f4e192b472ce8a55b",
+      "src/pages/BlogDetail.tsx": "cd78020b53582ced4a87b7ab55c99546a2ee83dee54f3722ac47b8526f75cf07",
+      "src/pages/OldHouseRenovation.tsx": "d44f7682a71609a84f29edd55a1be80970241e7491fc973be28268d3b0236ed4",
+      "src/pages/ServiceDetail.tsx": "c4d83f8a1f5687ea77df95b77797c97920c3587dafb59ef3d6394f18b6657c1f",
+      "src/routes/publicRoutes.tsx": "adc12b487117c7e453d809f9ec8f0251021e4af217900c3f49c81bad05d752c1"
+    },
+    "rows": [
+      {
+        "target": "v17-owner-publisher-native-preparation-v2-20261007",
+        "path": "/en/services/old-house",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "hydrated": {
+          "title": "Old House Renovation Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "mappedPageMetaProps": {
+          "title": "Old House Renovation Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_SPECIAL_ROUTE_DICTIONARY",
+        "rawApprovedMetadata": {
+          "title": "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "mappedPropsEqualRawApproved": false,
+        "rawHydratedAgree": false
+      },
+      {
+        "target": "v17-owner-publisher-native-preparation-v2-20261007",
+        "path": "/zh/services/old-house",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "hydrated": {
+          "title": "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "mappedPageMetaProps": {
+          "title": "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_SPECIAL_ROUTE_DICTIONARY",
+        "rawApprovedMetadata": {
+          "title": "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "mappedPropsEqualRawApproved": false,
+        "rawHydratedAgree": false
+      },
+      {
+        "target": "v18-owner-publisher-native-preparation-v2-20261007",
+        "path": "/en/blog/renovation-quotation-checklist-malaysia",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "hydrated": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "mappedPageMetaProps": {
+          "title": "Malaysia Renovation Quotation Checklist",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Malaysia Renovation Quotation Checklist",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "v18-owner-publisher-native-preparation-v2-20261007",
+        "path": "/zh/blog/renovation-quotation-checklist-malaysia",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "hydrated": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "mappedPageMetaProps": {
+          "title": "马来西亚装修报价单要看什么",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "马来西亚装修报价单要看什么",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "design-body-faq-unified-20261009-v1",
+        "path": "/en/services/design",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "hydrated": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "mappedPageMetaProps": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "design-body-faq-unified-20261009-v1",
+        "path": "/zh/services/design",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "闪铸设计 | 吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。 闪铸装饰、闪铸设计和闪铸装修是 FLASH CAST 的中文品牌名称。"
+        },
+        "hydrated": {
+          "title": "闪铸设计 | 吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。 闪铸装饰、闪铸设计和闪铸装修是 FLASH CAST 的中文品牌名称。"
+        },
+        "mappedPageMetaProps": {
+          "title": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "bathroom-body-step-unified-20261009-v1",
+        "path": "/en/services/bathroom",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "hydrated": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "mappedPageMetaProps": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "bathroom-body-step-unified-20261009-v1",
+        "path": "/zh/services/bathroom",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "hydrated": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "mappedPageMetaProps": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "kitchen-initial-framework-body-v1",
+        "path": "/en/services/kitchen",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "hydrated": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "mappedPageMetaProps": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "kitchen-initial-framework-body-v1",
+        "path": "/zh/services/kitchen",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "hydrated": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "mappedPageMetaProps": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c01-bilingual-body-v1",
+        "path": "/en/services/flooring",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "hydrated": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "mappedPageMetaProps": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c01-bilingual-body-v1",
+        "path": "/zh/services/flooring",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "hydrated": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "mappedPageMetaProps": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c02-bilingual-body-v1",
+        "path": "/en/services/office-renovation",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "hydrated": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "mappedPageMetaProps": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c02-bilingual-body-v1",
+        "path": "/zh/services/office-renovation",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "hydrated": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "mappedPageMetaProps": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c03-bilingual-body-v1",
+        "path": "/en/services/builtin",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "hydrated": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "mappedPageMetaProps": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c03-bilingual-body-v1",
+        "path": "/zh/services/builtin",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "hydrated": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "mappedPageMetaProps": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c04-bilingual-body-v1",
+        "path": "/en/services/warehouse",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "hydrated": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "mappedPageMetaProps": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c04-bilingual-body-v1",
+        "path": "/zh/services/warehouse",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "hydrated": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "mappedPageMetaProps": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c05-bilingual-body-v1",
+        "path": "/en/services/approval",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "hydrated": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "mappedPageMetaProps": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c05-bilingual-body-v1",
+        "path": "/zh/services/approval",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "hydrated": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "mappedPageMetaProps": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c06-bilingual-body-v1",
+        "path": "/en/blog/renovation-materials-malaysia",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "hydrated": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "mappedPageMetaProps": {
+          "title": "How to Choose Renovation Materials in Malaysia",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "How to Choose Renovation Materials in Malaysia",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c06-bilingual-body-v1",
+        "path": "/zh/blog/renovation-materials-malaysia",
+        "alreadyCompleted": true,
+        "raw": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "马来西亚装修材料怎么选",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "马来西亚装修材料怎么选",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c07-bilingual-body-v1",
+        "path": "/en/blog/custom-wardrobe-price-malaysia",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "How to Compare Custom Wardrobe Prices in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Custom wardrobe pricing depends on board material, door finish, hardware, drawers, lighting, and internal accessories."
+        },
+        "hydrated": {
+          "title": "How to Compare Custom Wardrobe Prices in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Custom wardrobe pricing depends on board material, door finish, hardware, drawers, lighting, and internal accessories."
+        },
+        "mappedPageMetaProps": {
+          "title": "How to Compare Custom Wardrobe Prices in Malaysia",
+          "description": "Custom wardrobe pricing depends on board material, door finish, hardware, drawers, lighting, and internal accessories."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "How to Compare Custom Wardrobe Prices in Malaysia",
+          "description": "Custom wardrobe pricing depends on board material, door finish, hardware, drawers, lighting, and internal accessories."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c07-bilingual-body-v1",
+        "path": "/zh/blog/custom-wardrobe-price-malaysia",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "马来西亚定制衣柜价格怎么看 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚定制衣柜价格怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "马来西亚定制衣柜价格怎么看 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚定制衣柜价格怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "马来西亚定制衣柜价格怎么看",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚定制衣柜价格怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "马来西亚定制衣柜价格怎么看",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚定制衣柜价格怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c08-bilingual-body-v1",
+        "path": "/en/blog/klang-valley-renovation-cost-2026",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "Klang Valley Renovation Cost in 2026 | FLASH CAST SDN. BHD.",
+          "description": "Klang Valley renovation budgets depend on property type, scope, material grade, site restrictions, and timeline pressure."
+        },
+        "hydrated": {
+          "title": "Klang Valley Renovation Cost in 2026 | FLASH CAST SDN. BHD.",
+          "description": "Klang Valley renovation budgets depend on property type, scope, material grade, site restrictions, and timeline pressure."
+        },
+        "mappedPageMetaProps": {
+          "title": "Klang Valley Renovation Cost in 2026",
+          "description": "Klang Valley renovation budgets depend on property type, scope, material grade, site restrictions, and timeline pressure."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Klang Valley Renovation Cost in 2026",
+          "description": "Klang Valley renovation budgets depend on property type, scope, material grade, site restrictions, and timeline pressure."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c08-bilingual-body-v1",
+        "path": "/zh/blog/klang-valley-renovation-cost-2026",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "Klang Valley 装修费用 2026 怎么看 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明Klang Valley 装修费用 2026 怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "巴生谷装修费用 2026 怎么看 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明巴生谷装修费用 2026 怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "巴生谷装修费用 2026 怎么看",
+          "description": "这篇 FLASH CAST 中文指南说明巴生谷装修费用 2026 怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Klang Valley 装修费用 2026 怎么看",
+          "description": "这篇 FLASH CAST 中文指南说明Klang Valley 装修费用 2026 怎么看，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": false,
+        "rawHydratedAgree": false
+      },
+      {
+        "target": "c09-bilingual-body-v1",
+        "path": "/en/blog/how-to-choose-renovation-contractor-kl",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "How to Choose a Renovation Contractor in Kuala Lumpur | FLASH CAST SDN. BHD.",
+          "description": "Choose a KL renovation contractor by checking communication, quotation clarity, site experience, past work, payment terms, and issue handling."
+        },
+        "hydrated": {
+          "title": "How to Choose a Renovation Contractor in Kuala Lumpur | FLASH CAST SDN. BHD.",
+          "description": "Choose a KL renovation contractor by checking communication, quotation clarity, site experience, past work, payment terms, and issue handling."
+        },
+        "mappedPageMetaProps": {
+          "title": "How to Choose a Renovation Contractor in Kuala Lumpur",
+          "description": "Choose a KL renovation contractor by checking communication, quotation clarity, site experience, past work, payment terms, and issue handling."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "How to Choose a Renovation Contractor in Kuala Lumpur",
+          "description": "Choose a KL renovation contractor by checking communication, quotation clarity, site experience, past work, payment terms, and issue handling."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c09-bilingual-body-v1",
+        "path": "/zh/blog/how-to-choose-renovation-contractor-kl",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "吉隆坡装修公司怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明吉隆坡装修公司怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "吉隆坡装修公司怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明吉隆坡装修公司怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "吉隆坡装修公司怎么选",
+          "description": "这篇 FLASH CAST 中文指南说明吉隆坡装修公司怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "吉隆坡装修公司怎么选",
+          "description": "这篇 FLASH CAST 中文指南说明吉隆坡装修公司怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c10-bilingual-body-v1",
+        "path": "/en/blog/rental-unit-renovation-kl",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "KL Rental Unit Renovation: Budget and Durability Tips | FLASH CAST SDN. BHD.",
+          "description": "Rental-unit renovation should focus on durable, easy-care finishes and sensible spending, not the most expensive materials."
+        },
+        "hydrated": {
+          "title": "KL Rental Unit Renovation: Budget and Durability Tips | FLASH CAST SDN. BHD.",
+          "description": "Rental-unit renovation should focus on durable, easy-care finishes and sensible spending, not the most expensive materials."
+        },
+        "mappedPageMetaProps": {
+          "title": "KL Rental Unit Renovation: Budget and Durability Tips",
+          "description": "Rental-unit renovation should focus on durable, easy-care finishes and sensible spending, not the most expensive materials."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "KL Rental Unit Renovation: Budget and Durability Tips",
+          "description": "Rental-unit renovation should focus on durable, easy-care finishes and sensible spending, not the most expensive materials."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c10-bilingual-body-v1",
+        "path": "/zh/blog/rental-unit-renovation-kl",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "KL 出租单位装修：预算与耐用度怎么拿捏 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明KL 出租单位装修：预算与耐用度怎么拿捏，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "KL 出租单位装修：预算与耐用度怎么拿捏 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明KL 出租单位装修：预算与耐用度怎么拿捏，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "KL 出租单位装修：预算与耐用度怎么拿捏",
+          "description": "这篇 FLASH CAST 中文指南说明KL 出租单位装修：预算与耐用度怎么拿捏，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "KL 出租单位装修：预算与耐用度怎么拿捏",
+          "description": "这篇 FLASH CAST 中文指南说明KL 出租单位装修：预算与耐用度怎么拿捏，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c11-bilingual-body-v1",
+        "path": "/en/blog/small-condo-storage-design-ideas",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "Small Condo Storage Design Ideas | FLASH CAST SDN. BHD.",
+          "description": "Small condo storage works well when entry, TV wall, bedside, dining, and vertical space are planned together."
+        },
+        "hydrated": {
+          "title": "Small Condo Storage Design Ideas | FLASH CAST SDN. BHD.",
+          "description": "Small condo storage works best when entry, TV wall, bedside, dining, and vertical space are planned together."
+        },
+        "mappedPageMetaProps": {
+          "title": "Small Condo Storage Design Ideas",
+          "description": "Small condo storage works best when entry, TV wall, bedside, dining, and vertical space are planned together."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Small Condo Storage Design Ideas",
+          "description": "Small condo storage works best when entry, TV wall, bedside, dining, and vertical space are planned together."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": false
+      },
+      {
+        "target": "c11-bilingual-body-v1",
+        "path": "/zh/blog/small-condo-storage-design-ideas",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "小公寓收纳设计灵感 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓收纳设计灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "小公寓收纳设计灵感 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓收纳设计灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "小公寓收纳设计灵感",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓收纳设计灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "小公寓收纳设计灵感",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓收纳设计灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c12-bilingual-body-v1",
+        "path": "/en/blog/built-in-furniture-small-condo-storage",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "Built-In Furniture Ideas for Small Condo Storage | FLASH CAST SDN. BHD.",
+          "description": "Small-condo storage works well when circulation, cabinet depth, door swing, and daily habits are planned first."
+        },
+        "hydrated": {
+          "title": "Built-In Furniture Ideas for Small Condo Storage | FLASH CAST SDN. BHD.",
+          "description": "Small-condo storage works best when circulation, cabinet depth, door swing, and daily habits are planned first."
+        },
+        "mappedPageMetaProps": {
+          "title": "Built-In Furniture Ideas for Small Condo Storage",
+          "description": "Small-condo storage works best when circulation, cabinet depth, door swing, and daily habits are planned first."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Built-In Furniture Ideas for Small Condo Storage",
+          "description": "Small-condo storage works best when circulation, cabinet depth, door swing, and daily habits are planned first."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": false
+      },
+      {
+        "target": "c12-bilingual-body-v1",
+        "path": "/zh/blog/built-in-furniture-small-condo-storage",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "小公寓定制收纳怎么规划 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓定制收纳怎么规划，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "小公寓定制收纳怎么规划 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓定制收纳怎么规划，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "小公寓定制收纳怎么规划",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓定制收纳怎么规划，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "小公寓定制收纳怎么规划",
+          "description": "这篇 FLASH CAST 中文指南说明小公寓定制收纳怎么规划，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c13-bilingual-body-v1",
+        "path": "/en/blog/feature-wall-ideas-2025",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "Feature Wall Ideas for Malaysian Homes in 2025 | FLASH CAST SDN. BHD.",
+          "description": "A feature wall should be planned with TV position, lighting, sockets, storage, and the overall interior style."
+        },
+        "hydrated": {
+          "title": "Feature Wall Ideas for Malaysian Homes in 2025 | FLASH CAST SDN. BHD.",
+          "description": "A feature wall should be planned with TV position, lighting, sockets, storage, and the overall interior style."
+        },
+        "mappedPageMetaProps": {
+          "title": "Feature Wall Ideas for Malaysian Homes in 2025",
+          "description": "A feature wall should be planned with TV position, lighting, sockets, storage, and the overall interior style."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Feature Wall Ideas for Malaysian Homes in 2025",
+          "description": "A feature wall should be planned with TV position, lighting, sockets, storage, and the overall interior style."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c13-bilingual-body-v1",
+        "path": "/zh/blog/feature-wall-ideas-2025",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "2025 马来西亚家居背景墙灵感 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明2025 马来西亚家居背景墙灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "2025 马来西亚家居背景墙灵感 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明2025 马来西亚家居背景墙灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "2025 马来西亚家居背景墙灵感",
+          "description": "这篇 FLASH CAST 中文指南说明2025 马来西亚家居背景墙灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "2025 马来西亚家居背景墙灵感",
+          "description": "这篇 FLASH CAST 中文指南说明2025 马来西亚家居背景墙灵感，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c14-bilingual-body-v1",
+        "path": "/en/blog/modern-warm-minimalist-home-design-malaysia",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "Modern Warm Minimalist Home Design in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Warm minimalism depends on material balance, layered lighting, hidden storage, and clean detailing, not beige walls alone."
+        },
+        "hydrated": {
+          "title": "Modern Warm Minimalist Home Design in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Warm minimalism depends on material balance, layered lighting, hidden storage, and clean detailing, not beige walls alone."
+        },
+        "mappedPageMetaProps": {
+          "title": "Modern Warm Minimalist Home Design in Malaysia",
+          "description": "Warm minimalism depends on material balance, layered lighting, hidden storage, and clean detailing, not beige walls alone."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Modern Warm Minimalist Home Design in Malaysia",
+          "description": "Warm minimalism depends on material balance, layered lighting, hidden storage, and clean detailing, not beige walls alone."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c14-bilingual-body-v1",
+        "path": "/zh/blog/modern-warm-minimalist-home-design-malaysia",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "马来西亚现代暖色极简家居设计 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚现代暖色极简家居设计，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "马来西亚现代暖色极简家居设计 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚现代暖色极简家居设计，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "马来西亚现代暖色极简家居设计",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚现代暖色极简家居设计，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "马来西亚现代暖色极简家居设计",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚现代暖色极简家居设计，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c15-bilingual-body-v1",
+        "path": "/en/blog/selangor-office-fit-out-tips",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "Selangor Office Fit-Out Tips | FLASH CAST SDN. BHD.",
+          "description": "Office fit-out planning should cover workflow, cabling, lighting, meeting needs, building rules, and future expansion."
+        },
+        "hydrated": {
+          "title": "Selangor Office Fit-Out Tips | FLASH CAST SDN. BHD.",
+          "description": "Office fit-out planning should cover workflow, cabling, lighting, meeting needs, building rules, and future expansion."
+        },
+        "mappedPageMetaProps": {
+          "title": "Selangor Office Fit-Out Tips",
+          "description": "Office fit-out planning should cover workflow, cabling, lighting, meeting needs, building rules, and future expansion."
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "Selangor Office Fit-Out Tips",
+          "description": "Office fit-out planning should cover workflow, cabling, lighting, meeting needs, building rules, and future expansion."
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      },
+      {
+        "target": "c15-bilingual-body-v1",
+        "path": "/zh/blog/selangor-office-fit-out-tips",
+        "alreadyCompleted": false,
+        "raw": {
+          "title": "雪兰莪办公室装修实用提醒 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明雪兰莪办公室装修实用提醒，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "雪兰莪办公室装修实用提醒 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明雪兰莪办公室装修实用提醒，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPageMetaProps": {
+          "title": "雪兰莪办公室装修实用提醒",
+          "description": "这篇 FLASH CAST 中文指南说明雪兰莪办公室装修实用提醒，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "pageMetaPropsOrigin": "ACTUAL_PUBLISHED_MAPPER_AND_PAGE_TRANSFORM",
+        "rawApprovedMetadata": {
+          "title": "雪兰莪办公室装修实用提醒",
+          "description": "这篇 FLASH CAST 中文指南说明雪兰莪办公室装修实用提醒，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "mappedPropsEqualRawApproved": true,
+        "rawHydratedAgree": true
+      }
+    ],
+    "pass": true,
+    "rawHydratedEquivalenceRequired": false,
+    "actualBranchDifferences": [
+      "/en/services/old-house",
+      "/zh/services/old-house",
+      "/zh/blog/klang-valley-renovation-cost-2026",
+      "/en/blog/small-condo-storage-design-ideas",
+      "/en/blog/built-in-furniture-small-condo-storage"
+    ],
+    "completedMapperRoutesPropsExactlyApproved": true,
+    "reviewedSourceAudit": {
+      "reviewer": "current_sources",
+      "reviewedAt": "2026-10-10T07:51:26.825Z",
+      "helperSha256": "73eff5179a9a6a068def9e0f2fb18cc003c50a6e5aad7f6fcf2108bc76686baf",
+      "result": "PASS_FIXED_NONEMPTY_SEO_SCOPE_ACTUAL_EDGE_AND_HYDRATED_PRECEDENCE_WITH_EXPLICIT_OLD_HOUSE_ROUTE",
+      "fallbackApplicability": "All 20 approved records retain nonempty bilingual SEO fields. Actual special old-house PageMeta dictionary, published mapper, blog display transform and design stripHtml precedences are individually used.",
+      "sourceClosure": "Actual esbuild src/functions imports plus detail routes, old-house route and dictionary, design page, PageMeta, settings hook/repository and public route ownership."
+    }
+  },
+  "currentLiveCompletedGuard": {
+    "stoppedRuns": [
+      {
+        "runId": 37893433883,
+        "releaseSha": "9f446c6fbe2348105549dae51293a27c3648abc9",
+        "outcome": "FAILED_STOPPED",
+        "actualCompletedRows": 2
+      },
+      {
+        "runId": 37898568406,
+        "releaseSha": "15fdefac8abfed413e5f1d8ba6089420f53333fd",
+        "outcome": "FAILED_STOPPED",
+        "actualCompletedRows": 7
+      },
+      {
+        "runId": 37903094390,
+        "releaseSha": "03e840c4b1aa91de1d12b309af364ca3dd985fe5",
+        "outcome": "FAILED_STOPPED",
+        "actualCompletedRows": 2
+      }
+    ],
+    "actualCompletedRows": 11,
+    "mode": "publish",
+    "privatePermitRead": true,
+    "currentRowsAndDomFresh": true,
+    "originalEvidenceReusedAsCurrent": false,
+    "checkedAt": "2026-10-10T07:25:00.060Z",
+    "rows": [
+      {
+        "target": "v17-owner-publisher-native-preparation-v2-20261007",
+        "originRunId": 37893433883,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "f63c5768-cd4d-4c68-be81-267c3c29531c",
+        "pages": [
+          {
+            "path": "/en/services/old-house",
+            "checkedAt": "2026-10-10T07:25:09.894Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "What counts as before-and-after evidence for an old-house renovation?"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/old-house",
+            "checkedAt": "2026-10-10T07:25:16.321Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "怎样确认旧屋翻新前后对比属于真实完工证据？"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T06:25:51.005255+00:00",
+        "desiredSha256": "56891d2e9c49d90e665734354d752ac058c028128ef969da9db25c217a6e8f94",
+        "retainedSha256": "2e8c4496296b8207cae1745c7aaf56f371246e031f5ac7c0be67966a680549b4",
+        "qaReceiptIds": [
+          "cms-accuracy-v17-20261009-v1"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "v18-owner-publisher-native-preparation-v2-20261007",
+        "originRunId": 37893433883,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "24803f88-acf0-489b-b494-d0cfce03f42e",
+        "pages": [
+          {
+            "path": "/en/blog/renovation-quotation-checklist-malaysia",
+            "checkedAt": "2026-10-10T07:25:22.811Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "Before comparing quotations: a project checklist"
+            ],
+            "headingsOnly": true,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/blog/renovation-quotation-checklist-malaysia",
+            "checkedAt": "2026-10-10T07:25:29.568Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "比较报价前：先核对整体项目步骤"
+            ],
+            "headingsOnly": true,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T06:26:00.016334+00:00",
+        "desiredSha256": "0b63be321e97797d65df2dcbf123279b5aec0e43f1929bafd97c1e589d2acbea",
+        "retainedSha256": "f9567fe044a9f8123e1069e2d3a0e692f4a51d207c018cefdbd543cf111970ea",
+        "qaReceiptIds": [
+          "cms-accuracy-v18-20261009-v1"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "design-body-faq-unified-20261009-v1",
+        "originRunId": 37898568406,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "bd935820-e754-432e-bb92-969ffb9c869c",
+        "pages": [
+          {
+            "path": "/en/services/design",
+            "checkedAt": "2026-10-10T07:25:39.346Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "Interior design should clarify layout flow, storage, daylight, material direction, construction feasibility, and budget priorities before renovation begins. FLASH CAST helps owners and business operators connect space planning, design concepts, custom built-in furniture, material selection, and renovation coordination after the scope is confirmed. If you are planning interior design alongside renovation, share the intended use, a floor plan or site photos, and the layout, storage and material priorities you want to review. We can then discuss how the design direction connects with the renovation scope. Specific drawings, 3D visuals, construction work and quotation support depend on site conditions and the scope agreed for your project.",
+              "Interior design services and space planning",
+              "FLASH CAST provides interior design and space planning for residential and commercial spaces, with Kuala Lumpur, Selangor and Klang Valley as its main service areas. An enquiry can start with circulation, functional zones, storage, furniture and cabinet positions, materials and visual direction, before discussing how the design connects with renovation under the confirmed scope and actual site conditions.",
+              "For kitchen or whole-home storage planning, review daily use, available dimensions and cabinet needs together. For a commercial space, start with the number of users, working or operating requirements and the zones you want to change. Specific design work, drawings, 3D visualization and construction coordination should be clarified when the project scope is confirmed.",
+              "What to prepare for an interior design enquiry",
+              "The project location, space type, approximate area and current use.",
+              "An existing floor plan, if available, and site photos showing what you want to keep or change.",
+              "Main needs, such as circulation, kitchen use, wardrobe storage or office zoning.",
+              "Material and style references, budget direction, priorities and preferred timing.",
+              "You do not need to prepare a complete design drawing before an initial enquiry. Use the existing contact or quotation route to describe the information you have, then confirm which site details the team needs next.",
+              "Planning the connection between design and renovation",
+              "1. Describe the intended use and main issues, and gather photos, a floor plan and a budget direction.",
+              "2. Review layout, circulation, storage, materials and visual direction alongside site measurements and conditions.",
+              "3. Compare the design direction with the intended work scope, and clarify drawing or visualization needs, construction coordination and quotation scope.",
+              "Specific work, deliverables and arrangements are based on the scope agreed by both parties.",
+              "What affects design and renovation quotations?",
+              "Space size, the existing layout, drawing and visualization needs, material choices, custom cabinets, revision scope and coordination requirements can affect a quotation. When comparing options, review included work, optional items and exclusions together.",
+              "Quotations are free. This does not mean that design work, 3D visuals or construction drawings are free, or automatically included in every renovation quotation. Confirm the specific fees and deliverables before agreeing the scope.",
+              "Connect the design direction with the relevant service",
+              "Whole-home cabinets, wardrobes and storage: explore whole-house custom and built-in furniture.",
+              "Kitchen layout, cabinets and materials: explore kitchen renovation and cabinet planning.",
+              "The wider residential work scope: explore residential renovation services.",
+              "Work areas, meeting spaces and office storage: explore office renovation and space planning.",
+              "Retail and operating spaces: explore shop renovation and commercial space planning.",
+              "With the project location, space type, photos or an existing floor plan ready, use the interior design and renovation quotation enquiry to explain the scope you want assessed."
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/design",
+            "checkedAt": "2026-10-10T07:25:46.419Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "室内设计不是只挑颜色或摆家具。好的设计应先解决空间动线、收纳、采光、材料搭配、施工可行性和预算优先级。FLASH CAST 可根据确认范围，把空间规划、设计方案、定制家具、材料选择和装修协调衔接起来。 如果同时考虑室内设计与装修，请先提供空间用途、平面图或现场照片，以及想调整的布局、收纳和材料方向。我们会据此讨论设计方向与装修范围如何衔接；图纸、3D 效果图、施工及报价的具体交付，以现场条件和确认范围为准。",
+              "室内设计服务与空间规划方向",
+              "FLASH CAST 的室内设计与空间规划面向住宅和商业空间，主要服务地区为吉隆坡、雪兰莪与巴生谷。咨询可从布局动线、功能分区、收纳、家具与柜体位置、材料和视觉方向开始，再按现场条件及确认范围讨论与装修的衔接。",
+              "规划厨房或全屋收纳时，设计方向应同时考虑使用习惯、可用尺寸和柜体需求；商业空间则可先整理使用人数、工作或经营方式及需要调整的功能区。具体设计内容、图纸、3D 可视化和施工协调范围需在项目确认时逐项说明。",
+              "开始设计咨询前，建议准备这些资料",
+              "项目地点、空间类型、大致面积与当前使用状态。",
+              "现有平面图（如有）和现场照片，以及想保留或调整的位置。",
+              "主要使用需求，例如动线、厨房操作、衣物收纳或办公分区。",
+              "材料与风格参考、预算方向、优先事项及希望安排的时间。",
+              "不必为了首次咨询先制作完整设计图。可先通过现有联系或报价入口说明手头资料，再与团队确认哪些现场信息需要补充。",
+              "怎样整理设计与装修的规划顺序",
+              "1. 先说明空间用途与主要问题，整理照片、平面图及预算方向。",
+              "2. 结合现场测量和条件，讨论布局、动线、收纳、材料及视觉方向。",
+              "3. 把设计方向与拟实施范围对照，确认图纸或效果图需求、施工衔接与报价范围。",
+              "具体工作内容、交付资料和安排，以双方确认范围为准。",
+              "哪些因素会影响设计与装修报价",
+              "空间面积、现有布局、图纸与效果图需求、材料选择、定制柜体、修改范围及协调需求都会影响报价。比较方案时，建议同时核对包含内容、可选项目和未包含事项。",
+              "报价免费；这不等于设计、3D 效果图或施工图免费，也不代表这些项目自动包含在任何装修报价中。请在确认范围前核对具体费用与交付内容。",
+              "把设计方向连接到相关服务",
+              "全屋柜体、衣柜和收纳需求：查看全屋定制与定制家具。",
+              "厨房动线、柜体和材料：查看厨房装修与橱柜规划。",
+              "住宅整体施工范围：查看住宅装修服务。",
+              "工作区、会议区和办公室收纳：查看办公室装修与空间规划。",
+              "店铺和经营空间：查看店铺装修与商业空间规划。",
+              "准备好项目地点、空间类型、照片或现有平面图后，前往室内设计与装修报价咨询，先说明需要评估的范围。"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T07:22:50.912627+00:00",
+        "desiredSha256": "cc86fb6efa12a41424b94b90aa8c9797586a110bf02b2367b9758300791300c9",
+        "retainedSha256": "606e981faf87eb9a1f0ad52ea89d8838cfdc7b97c08768f4105e7586c8bad00f",
+        "qaReceiptIds": [
+          "cms-accuracy-design-framework-cms-content-v4-20261009",
+          "cms-accuracy-v20-20261009-v1"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "bathroom-body-step-unified-20261009-v1",
+        "originRunId": 37898568406,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "fa8391cb-5c24-4703-95e4-e25d82ea4945",
+        "pages": [
+          {
+            "path": "/en/services/bathroom",
+            "checkedAt": "2026-10-10T07:25:54.421Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.",
+              "How should demolition, waterproofing and fittings be scoped separately?",
+              "Share current leakage or usability issues, bathroom photos and the items you want to retain or replace. Review drainage, pipes, floor traps, wall and floor finishes, waterproofing, fittings and vanity coordination on site, then distinguish removal, repairs, new installation and reinstatement in the quotation. Inspection, work and acceptance requirements follow the site and agreed scope.",
+              "What daily-use arrangements should be discussed before bathroom work?",
+              "Explain whether the home is occupied, whether another bathroom is available, and any access or building work-hour restrictions. Discuss material delivery, protection of adjacent areas, removal of waste, work dependencies and periods that may affect bathroom use. Actual arrangements depend on the site and agreed work.",
+              "How can bathroom materials and quotation items be compared?",
+              "List wall and floor tiles, fittings, shower screens, vanity units and other items to retain or replace. Check specifications, quantities and whether plumbing changes, waterproofing and reinstatement are included. Record inspection-dependent items and optional upgrades separately, and compare the written scope rather than images or totals alone.",
+              "Continue planning: Residential renovation; Material library; Bathroom renovation enquiry"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/bathroom",
+            "checkedAt": "2026-10-10T07:26:02.722Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。",
+              "拆改、防水和洁具怎样分别确认范围？",
+              "先提供现有漏水或使用问题、浴室照片及希望保留或更换的项目。现场核对排水、水管、地漏、墙地面、防水、洁具和浴室柜之间的衔接，再把拆除、维修、新装和恢复工程分开列入报价。具体检查、施工及验收要求以现场条件和确认范围为准。",
+              "施工期间的日常使用安排要先确认什么？",
+              "说明住宅是否有人居住、是否有其他可用浴室、进出场和物业施工时段限制。与团队确认材料搬运、相邻区域保护、清运和各工序衔接，以及哪些时段可能影响浴室使用；实际安排需按现场和施工范围确认。",
+              "怎样比较浴室装修的材料与报价项目？",
+              "对照需要保留与更换的墙地砖、洁具、淋浴屏、浴室柜和其他项目，核对规格、数量、给排水调整、防水和恢复工程是否包含。把待检查事项与可选升级分开记录，按书面范围比较，而不是只比较照片或总价。",
+              "继续了解：住宅装修范围；材料库；浴室装修报价咨询"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T07:23:11.361613+00:00",
+        "desiredSha256": "62ce06334d86dd4340dbac6ac31bb152a0195b5ae555acbfec2cdb86516ab2e0",
+        "retainedSha256": "ff0be3eabbe731ccd13b9060fa8e4a9db2d977518bbbc02bcce6c2d171856110",
+        "qaReceiptIds": [
+          "cms-accuracy-bathroom-initial-framework-body-v1-20261009",
+          "cms-accuracy-bathroom-v6-20261009-v1"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "kitchen-initial-framework-body-v1",
+        "originRunId": 37898568406,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "967a8116-aa53-4b1a-95bf-a8f3733fc6bf",
+        "pages": [
+          {
+            "path": "/en/services/kitchen",
+            "checkedAt": "2026-10-10T07:26:13.602Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "Kitchen renovation should address daily workflow, storage, countertop use, appliance points, plumbing, and wet-work scope together. FLASH CAST can begin with site measurements, existing service points, dry and wet kitchen zoning, cabinet structure, material direction, and quotation scope. Final scope follows the real site and written quotation.",
+              "How should appliances and site information be prepared before cabinet planning?",
+              "List the fridge, hob, oven and other appliances you plan to keep or replace, including their dimensions and current positions. Share these with kitchen photos, key dimensions, plumbing and electrical points before discussing base, wall and tall cabinets, worktops and storage. Final dimensions, points and installation coordination require a site check.",
+              "How can kitchen renovation quotations be compared fairly?",
+              "Compare cabinet dimensions and configuration, door and material direction, worktops, hardware, appliance points, plumbing, wet works, demolition and installation separately. Clarify retained items, owner-supplied items, optional work and matters awaiting inspection so quotations cover a similar scope. A per-foot rate or headline total alone does not explain that scope.",
+              "How should kitchen cabinetry connect with storage in other rooms?",
+              "Plan kitchen cabinetry around cooking, preparation, washing, appliances and worktops. Bedroom wardrobes, TV units, shoe cabinets and storage across other rooms can be discussed under the built-in furniture service. Confirm each room’s materials, hardware, fabrication and installation scope against the site.",
+              "Continue planning: Built-in furniture and storage; Interior design and space planning; Kitchen renovation enquiry"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/kitchen",
+            "checkedAt": "2026-10-10T07:26:19.546Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "厨房装修不只是换橱柜，而是重新整理日常使用动线、收纳、台面、家电点位、给排水和湿作范围。FLASH CAST 可从现场测量、现有水电点位、干湿厨房分区、柜体结构、材料方向和报价范围开始整理；最终范围以真实现场与书面报价为准。",
+              "橱柜规划前怎样整理家电与现场资料？",
+              "先整理拟保留或更换的冰箱、灶具、烤箱和其他家电清单，以及尺寸与现有位置。连同厨房照片、主要尺寸、给排水和插座位置交给团队核对，再讨论地柜、吊柜、高柜、台面及收纳。最终尺寸、点位和安装衔接须经现场确认。",
+              "怎样比较厨房装修的报价范围？",
+              "比较方案时，把橱柜尺寸与配置、门板和材料方向、台面、五金、家电点位、给排水、湿作、拆除与安装分别核对。写清保留项目、业主自备项目、可选项目和待检查事项，让两份报价按相近范围比较；不要只看每尺价格或总价。",
+              "厨房与其他空间收纳应怎样衔接？",
+              "厨房橱柜应围绕煮食、备餐、清洗、家电和台面规划；卧室衣柜、电视柜、鞋柜和跨房间收纳则可由全屋定制服务继续讨论。共同确认柜体与现场条件，分别列出各空间的材料、五金、制作及安装范围。",
+              "继续了解：全屋定制与其他空间收纳；室内设计与空间规划；厨房装修报价咨询"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T07:23:28.638474+00:00",
+        "desiredSha256": "9d66019fdfcd6ebe49ac036fa86b04ab89a7c2df72abbb35a034b1bede0c6411",
+        "retainedSha256": "2df0427ae8e2540151714b3a51badce0df74d4ff409906dfb74ca380b5262c2e",
+        "qaReceiptIds": [
+          "cms-accuracy-kitchen-initial-framework-body-v1-20261009"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "c01-bilingual-body-v1",
+        "originRunId": 37898568406,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "f17aa06b-1c14-4330-a629-335d8628069c",
+        "pages": [
+          {
+            "path": "/en/services/flooring",
+            "checkedAt": "2026-10-10T07:26:25.623Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.",
+              "Share your location, space type, area, and site photos so we can arrange the next consultation.",
+              "What should you prepare for a flooring quotation?",
+              "Alongside the location, area and photos, list each room's use, existing floor, items to retain or replace, and adjoining doors, cabinetry and spaces. Note furniture removal, access and working-hour restrictions, and any known moisture, loose areas or changes in level. Photos and approximate measurements support an initial discussion; they do not replace a site assessment or the selected product's installation requirements.",
+              "Which items should be separated when comparing quotations?",
+              "Compare the same room list and material specification. Ask whether existing-floor work, substrate preparation, materials and installation, skirting and trims, doorway transitions, furniture moving, protection and disposal are included. Mark unresolved items as pending confirmation and review changes when the product or scope changes. A price per area alone does not establish that two proposals cover the same work.",
+              "Review material questions before confirming the site scope",
+              "Start with the SPC, vinyl and laminate comparison guide to organise questions about the exact model, use, care and installation conditions. Where other rooms or trades are involved, review residential renovation planning, then send the details through the free quotation form. A catalogue or reference article does not confirm stock, certification or inclusion in a quotation."
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/flooring",
+            "checkedAt": "2026-10-10T07:26:30.893Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。",
+              "请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。",
+              "怎样准备地板报价资料？",
+              "除地点、面积和照片外，可按房间列出日常用途、现有地面、希望保留或更换的部分，以及需要一起考虑的门、柜体和相邻空间。标明家具是否搬离、进场与施工时段限制，并把已知的潮湿、松动或高差问题单独列出。照片和概略尺寸用于初步沟通，不能代替现场评估或具体产品的安装要求。",
+              "比较报价时，哪些项目要单独确认？",
+              "用同一房间清单和材料规格比较，逐项询问原地面处理、基层准备、材料与安装、踢脚和收边、门口衔接、家具搬移、保护及清运是否包含。未核实项目应标为待确认，材料型号或范围改变后重新确认差异；不能只凭面积单价判断两个方案相同。",
+              "先看选材问题，再确认现场范围",
+              "可先阅读 SPC、PVC与复合地板比较指南，整理具体型号、使用环境、维护和安装条件。涉及其他房间或工种时，可结合 住宅装修规划 一起讨论，再通过 免费报价入口 提交资料。目录或参考文章不代表某款产品现货、性能认证或已经包含在报价中。"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T07:23:45.479194+00:00",
+        "desiredSha256": "a63fd663aa3b91b531a150d2f6a38b5e3b0623b3d81cf302ec060b4299efbd04",
+        "retainedSha256": "21c034d1260a79dcaa896b78f67f49044db2a9d865f7e437bedc124a3e10b4af",
+        "qaReceiptIds": [
+          "cms-accuracy-c01-bilingual-body-v1-20261009"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "c02-bilingual-body-v1",
+        "originRunId": 37898568406,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "ec187966-1c77-4141-90e4-a242e6020388",
+        "pages": [
+          {
+            "path": "/en/services/office-renovation",
+            "checkedAt": "2026-10-10T07:26:37.297Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "For an office fit-out in Kuala Lumpur or Selangor, start with the actual unit and its intended use. Share a floor plan or site photos, approximate area, headcount, visitor flow, the items to retain, access rules and any building-management requirements. These details help separate essential operational work from optional finishes before a quotation is prepared.",
+              "A written scope can then identify the agreed layout, partitions, reception and meeting areas, workstations, storage, lighting, flooring, electrical and data points, selected built-ins and material direction. It should also record owner-supplied items, exclusions, restricted work hours, management submissions and dependencies between trades. Any drawing or document support, responsibility and cost must be confirmed against the actual building requirements and agreed scope.",
+              "New fit-out work and lease handback or reinstatement obligations should be reviewed as separate scopes. If the tenancy has a handback clause, share it for review; reinstatement is included only when the written quotation expressly covers it. Final price, programme and any approval requirements depend on the site review, confirmed work and the property rules. No fixed price, completion date or approval outcome is promised here.",
+              "How does an equipment list help define an office fit-out?",
+              "Group equipment quantities, intended positions and retained facilities by workstation, meeting room, reception, pantry and storage area. Identify which items belong to the owner, equipment supplier or agreed fit-out scope. The office M&E and IT planning checklist helps organise interface questions. Electrical capacity, professional design, testing and connection requirements must be confirmed by the relevant qualified parties using the building information; the equipment list is not a technical design or permission to proceed.",
+              "How should office quotations and handover scope be compared?",
+              "Use the same layout, material and equipment list when comparing proposals. Separate retained and new items, supply and installation responsibilities, access restrictions, unresolved items and exclusions. Before handover, agree which project records are needed and who follows up any outstanding issues; the renovation handover and issue-recording checklist provides discussion prompts. Once plans, photos and equipment details are ready, request an office quotation. Deliverables remain subject to the written scope."
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/office-renovation",
+            "checkedAt": "2026-10-10T07:26:42.751Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "规划吉隆坡或雪兰莪的办公室装修与商业空间 fit-out，先从实际单位和业务用途出发。可准备平面图或现场照片、约略面积、员工人数、访客动线、拟保留项目、进出场限制及大楼管理处要求。这样才能在报价前分清必要工程与可选的装饰升级。",
+              "书面工程范围可逐项确认布局、隔间、接待区与会议室、工作站、收纳、灯光、地面、电力及数据点、局部定制柜和材料方向，并写明业主自备项目、排除项、允许施工时段、管理处提交资料与工种之间的依赖。图纸或文件协助的责任、费用和范围，应按实际大楼要求及双方确认内容厘清。",
+              "新办公室 fit-out 与租约退租复原义务应分开核对；如租约有交还条件，可提供条款供范围讨论，只有书面报价明确列入时才视为包含复原工程。最终价格、工期及审批要求仍取决于现场查看、确认的工程范围和物业规定；本页不承诺固定价格、完工日期或审批结果。",
+              "办公室设备清单怎样帮助确认装修范围？",
+              "可按工位、会议室、接待区、茶水间和储物区整理设备数量、使用位置及希望保留的设施，再标注由业主、设备供应商或装修范围分别负责的项目。需要进一步梳理接口时，查看 办公室机电与IT规划检查清单。实际电气容量、专业设计、测试和连接要求应由相关合格人员按建筑资料确认；设备清单本身不代表技术设计或施工许可。",
+              "如何比较办公室报价与交付范围？",
+              "比较时沿用同一布局、材料和设备清单，分别确认保留与新增项目、供应与安装责任、进场限制、待核实项和排除项。交付前还应确认需要保留哪些项目记录，以及问题由谁跟进；可用 装修交付与问题记录清单 整理问项。准备好图纸、照片和设备资料后，提交办公室报价咨询，最终交付内容以书面范围为准。"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T07:24:01.784049+00:00",
+        "desiredSha256": "e74ccc91a3412a850715883e69401f9e13ea3d56ab6f0a1b7da175cf09d6c398",
+        "retainedSha256": "452e532041a82e3a24424ea6d3e06346b456ebd56d119cec87fdda820a6dad5c",
+        "qaReceiptIds": [
+          "cms-accuracy-c02-bilingual-body-v1-20261009"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "c03-bilingual-body-v1",
+        "originRunId": 37898568406,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "87046080-f98d-4c81-9ab1-cef7bae9aeac",
+        "pages": [
+          {
+            "path": "/en/services/builtin",
+            "checkedAt": "2026-10-10T07:26:49.420Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "Direct answer: FLASH CAST plans whole-house custom furniture, built-in storage and fitted wardrobes for homes and commercial spaces across Kuala Lumpur, Selangor and Klang Valley. Each scope is organised around site measurements, daily use, storage categories, materials, hardware, delivery and installation conditions instead of a fixed package.",
+              "Plan around the room and how it is used",
+              "The scope can cover fitted wardrobes, walk-in wardrobes, TV units, shoe cabinets, sideboards, display cabinets, bookshelves, study areas and other built-in storage. Kitchen cabinetry and the wider kitchen workflow belong on the dedicated custom kitchen and kitchen renovation service, keeping the search intent of both pages clear.",
+              "What shapes the quotation",
+              "The quotation is assessed from site measurements, cabinet dimensions and zones, board and finish direction, doors, worktops, hardware, internal accessories, lighting coordination, delivery, lift and installation access, and coordination with other trades. Material directions can include Melamine, Acrylic and Solid Wood; final specifications remain subject to approved samples, site conditions and the written quotation.",
+              "Move from research to an enquiry",
+              "Review wardrobe materials, storage cabinet materials, the Bangsar walk-in wardrobe reference and the Malaysia built-in cabinet cost guide. When the location, floor plan or site photos and main storage needs are ready, request a free quotation. Site measurement is free within 30 km of the company or service point; travel beyond 30 km is chargeable and the amount must be confirmed first.",
+              "Which choices should be recorded when confirming a design?",
+              "Keep cabinet positions and dimensions, internal divisions, doors and finishes, handles or opening method, hardware and accessories in one confirmation list, marking items that still need site review. Wardrobes should reflect the actual clothing, drawers and access habits rather than appearance or total length alone; see the custom wardrobe quotation guide. Separately confirm who supplies drawings, samples, revisions and installation, and which deliverables are included in the written scope.",
+              "What records make installation handover easier to follow up?",
+              "Review visible finishes, door and drawer operation, accessories and outstanding adjustments with the responsible party against the agreed list. Record the cabinet location, photos, proposed follow-up and owner for each issue, then retain the recheck result; methods and responsibilities follow the project agreement. Use the handover recording checklist and ask for care information for the selected materials and hardware, applicable after-sales terms and contact details. This does not add a fixed warranty scope or an unconfirmed performance promise."
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/builtin",
+            "checkedAt": "2026-10-10T07:26:55.444Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "直接答案：FLASH CAST 为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。方案会按现场尺寸、日常使用、收纳分类、材料、五金、搬运和安装条件整理，而不是套用一个固定套餐。",
+              "按空间和使用方式规划",
+              "可讨论的范围包括定制衣柜、walk-in wardrobe、电视柜、鞋柜、餐边柜、展示柜、书柜、工作区与其他嵌入式收纳。若需求属于厨房橱柜与厨房整体动线，应进入独立的 定制厨房与厨房装修服务，避免两个页面争夺同一搜索意图。",
+              "报价前先确认的项目",
+              "报价会根据现场量度、柜体尺寸与分区、板材和饰面、门板、台面、五金、内部配件、灯光衔接、搬运、电梯、安装通道及其他工种配合范围评估。可讨论的材料方向包括 Melamine、Acrylic 与 Solid Wood，最终规格应以样板、现场条件和书面报价为准。",
+              "从参考到咨询",
+              "可先查看 衣柜材料、收纳柜材料、Bangsar walk-in wardrobe 参考 和 马来西亚定制柜报价影响因素。准备地点、平面图或现场照片及主要收纳需求后，可前往 获取免费报价。距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用需先确认。",
+              "确认方案时，需要把哪些选择记录下来？",
+              "可把柜体位置与尺寸、内部划分、门板与饰面、把手或开门方式、五金及配件整理到同一份确认清单，并标注哪些仍待现场核对。衣柜应按实际衣物、抽屉和取用习惯讨论，而不是只比较外观或总长度；详细问项可参考 定制衣柜报价比较指南。图纸、样板、修改与安装由谁提供，以及包含哪些交付，应在书面范围中分别确认。",
+              "安装交付时怎样保留可跟进的记录？",
+              "与负责方对照已确认清单，记录可见饰面、门和抽屉操作、配件及待调整项。每个问题写明柜体位置、照片、需确认的处理方式和跟进人，再保留复查结果；具体检查方法与责任按项目约定。可参考 装修交付记录清单，并询问所选材料与五金的保养说明、适用售后条款和联系方法。这不新增固定保修范围或未经确认的材料性能承诺。"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T07:24:19.422726+00:00",
+        "desiredSha256": "6966d99da8993d54cef0fedd0437301d15e4075ed3c0fd023018a00991e8c424",
+        "retainedSha256": "cce0cf8d3b999d822823d639b1b51f3a1eb4946c73804d424966dcc58161ff80",
+        "qaReceiptIds": [
+          "cms-accuracy-c03-bilingual-body-v1-20261009"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "c04-bilingual-body-v1",
+        "originRunId": 37898568406,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "e09baab9-08f7-4c61-9bd8-d82c943b4fe2",
+        "pages": [
+          {
+            "path": "/en/services/warehouse",
+            "checkedAt": "2026-10-10T07:27:01.311Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.",
+              "Rendering concept note: the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.",
+              "Information to Share Before Planning",
+              "Dimensions and weight information for goods, pallets, cartons and equipment.",
+              "Daily receiving, storage, picking, dispatch and loading flow.",
+              "Positions for forklifts, trolleys, worktables, fire routes and access doors.",
+              "Existing floors, columns, lighting, drainage and site services.",
+              "Storage-Planning Priorities",
+              "Separate receiving, holding, storage, picking, packing and dispatch zones clearly.",
+              "Place faster-moving goods where access is more direct.",
+              "Allow for operation, turning, replenishment and maintenance routes.",
+              "Coordinate shelving, floors, lighting and any related renovation work in one clear scope.",
+              "Discussion and Delivery Process",
+              "Review warehouse use, goods flow and current bottlenecks.",
+              "Check the plan, measurements, loading activity and equipment constraints.",
+              "Discuss zoning, shelving directions and site-coordination items.",
+              "Confirm the related renovation or supporting-work scope.",
+              "Proceed with site coordination and checks against the agreed scope.",
+              "Related Services",
+              "If the office area needs to change at the same time, see Office Renovation. If permits or renovation documents may be relevant, see Renovation Approval Support. Use Request a Renovation Consultation to share a floor plan, goods information and site photos.",
+              "FAQs",
+              "What information helps with an initial discussion?",
+              "A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.",
+              "Can only part of a warehouse be adjusted?",
+              "Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.",
+              "Do the planning examples show real completed sites?",
+              "No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.",
+              "Request a Renovation Consultation",
+              "How should a racking proposal relate to its quotation?",
+              "Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification.",
+              "Which scope and issue records should be retained at handover?",
+              "Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The handover issue-recording checklist can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, send the warehouse layout and goods information."
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/warehouse",
+            "checkedAt": "2026-10-10T07:27:07.136Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。",
+              "概念设计说明：本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。",
+              "规划前应提供的资料",
+              "货物、托盘、纸箱或设备的尺寸与重量资料。",
+              "入库、存放、拣货、出库和装卸的日常动线。",
+              "叉车、推车、工作台、消防通道和门口位置。",
+              "地面、柱网、照明、排水与既有设施的现场情况。",
+              "空间规划重点",
+              "将收货、暂存、存储、拣货、包装和出库区域区分清楚。",
+              "按货物周转频率安排较容易取放的位置。",
+              "预留操作、转弯、补货与维护需要的合理通道。",
+              "把货架、地面、照明与其他装修工序的衔接列入范围讨论。",
+              "沟通与执行流程",
+              "了解仓库用途、货物流向和现有问题。",
+              "核对平面、尺寸、进出货与设备条件。",
+              "讨论分区、货架类型方向和施工协调事项。",
+              "确认需要处理的装修或配套工作范围。",
+              "按确认内容推进现场协调与后续检查。",
+              "相关服务",
+              "办公区需要同步调整时，可查看 办公室装修服务；涉及装修报批或文件准备时，可查看 装修报批协助。可通过 获取装修咨询与报价 提交平面图、货物资料和现场照片。",
+              "常见问题",
+              "初次沟通要准备哪些资料？",
+              "建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。",
+              "可以只调整仓库的一部分吗？",
+              "可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。",
+              "规划示例是否代表真实项目？",
+              "不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。",
+              "获取装修咨询与报价",
+              "货架方案与报价要怎样对应？",
+              "请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。",
+              "交付时应留下哪些范围和问题记录？",
+              "按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 交付问题记录清单 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，提交仓库平面与货物资料。"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T07:24:35.895857+00:00",
+        "desiredSha256": "5989209e78d7924174d7a339ad250aca59a1232c1b77a5a001f12fdf1c4f101f",
+        "retainedSha256": "e8e0c67117c8379ddc169265de4e4754316aaa153a988a62ad6be07fac4db527",
+        "qaReceiptIds": [
+          "cms-accuracy-c04-bilingual-body-v1-20261009"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "c05-bilingual-body-v1",
+        "originRunId": 37903094390,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "3b999148-d5bf-4b78-ad07-1344f7b9c248",
+        "pages": [
+          {
+            "path": "/en/services/approval",
+            "checkedAt": "2026-10-10T07:27:12.555Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "How can you organise existing information before the first discussion?",
+              "Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval.",
+              "How should document-support fees and responsibilities be clarified?",
+              "Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through home-renovation planning or commercial requirements through the office fit-out scope, then submit the document-support enquiry. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here."
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/services/approval",
+            "checkedAt": "2026-10-10T07:27:18.230Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "初次沟通前，怎样整理已有资料？",
+              "可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。",
+              "文件协助的费用与责任应怎样确认？",
+              "逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 住宅装修咨询 中；商业单位可结合 办公室装修范围，再 提交文件协助需求。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T08:10:46.723222+00:00",
+        "desiredSha256": "3c91a8e17d6200e725e5cb7ba351b9efe3c2aa11e0215d00b90736c23b0c1312",
+        "retainedSha256": "99f6911b3ef465e39374d48d1f71044c9ac9f639f06bf6396dc65368c001534a",
+        "qaReceiptIds": [
+          "cms-accuracy-c05-bilingual-body-v1-20261009"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      },
+      {
+        "target": "c06-bilingual-body-v1",
+        "originRunId": 37903094390,
+        "stage": "COMPLETED_ROW_GUARD_PASS",
+        "permitId": "e49e16f2-d0df-4b78-a01f-b9ac23f0b1c9",
+        "pages": [
+          {
+            "path": "/en/blog/renovation-materials-malaysia",
+            "checkedAt": "2026-10-10T07:27:25.208Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "Each space has a different priority",
+              "Bathrooms need slip resistance and waterproofing, kitchens need stain and heat resistance, living areas need durability, and bedrooms need comfort.",
+              "Samples are more reliable than renders",
+              "A material can look different under natural, warm, and cool light. Review samples on site before confirming.",
+              "Ask about maintenance early",
+              "Some finishes look good but scratch easily, dislike moisture, or need special cleaning. Daily maintenance should match your habits.",
+              "Put material comparisons on the same checklist",
+              "For each option, record the intended room, exact model or product name, dimensions and finish, sample reference, date of supplier information, quoted scope and unresolved questions. Compare the same use and deliverables to see whether a price difference comes from the material, specification, installation or related work. A brand name or rendering does not replace product-specific information.",
+              "Confirm samples, substitutions and care information together",
+              "Keep the agreed sample name or reference and notes from comparison under the site's lighting. If the model, colour, batch selection or supply arrangement changes, review the actual alternative, price and associated installation scope and record the decision. Obtain current care, use, installation and warranty information from the specific product supplier. Without product evidence, labels such as waterproof, fire-resistant or environmentally friendly are not verified performance claims.",
+              "Follow the detailed answer for the main decision",
+              "For floors, read the flooring comparison guide; for cabinetry, use the kitchen cabinet material guide; for wall colour and texture, review artistic wall planning. With space photos and the comparison list ready, request scope and quotation advice. Articles and catalogues support discussion; they do not establish stock, brand partnerships, specific certification or final project suitability."
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          },
+          {
+            "path": "/zh/blog/renovation-materials-malaysia",
+            "checkedAt": "2026-10-10T07:27:32.570Z",
+            "rawStatus": 200,
+            "metadata": {
+              "titleFound": true,
+              "descriptionMatches": true
+            },
+            "status": 200,
+            "ready": true,
+            "runtimeErrors": 0,
+            "requiredText": [
+              "每个空间的重点不同",
+              "浴室看防滑和防水，厨房看耐污和耐热，客厅看耐磨和视觉效果，卧室则更重视舒适和触感。",
+              "样板比效果图更可靠",
+              "同一款材料在自然光、暖光和冷光下都可能不同。确认前最好把样板放到现场看。",
+              "维护方式要先问清楚",
+              "有些材料好看但怕刮、怕水或需要特别清洁。日常维护能不能接受，比短时间的视觉效果更重要。",
+              "把选材比较写成同一份清单",
+              "每个备选先填写使用房间、具体型号或产品名称、尺寸与饰面、样板编号、供应商资料日期、报价包含范围和仍需确认的问题。用同一用途和交付范围比较，才能看清价格差异来自材料、规格、安装还是配套工作；品牌名或一张效果图不能代替具体产品资料。",
+              "样板、替代选项和维护说明一起确认",
+              "保留确认样板的名称或编号，以及现场光线下的比较记录。若型号、颜色、批次方向或供应安排改变，应重新核对实际替代品、价格与相关施工范围，并记录确认结果。清洁方法、适用环境、安装条件及保修限制要向具体产品供应方索取当前资料；没有产品证据时，不把“防水”“防火”“环保”等字样写成已验证性能。",
+              "按主要问题进入详细答案",
+              "地面方案可查看地板材料比较；定制柜可查看橱柜材料选择指南；墙面颜色与肌理可结合艺术墙面规划。准备好空间照片与比较清单后，申请范围与报价咨询。文章和材料目录用于帮助讨论，不证明现货、品牌合作、特定认证或最终项目适用性。"
+            ],
+            "headingsOnly": false,
+            "found": true,
+            "missingRequired": [],
+            "blockedNonReads": 4,
+            "productionWrites": 0,
+            "renderedOk": true,
+            "ok": true
+          }
+        ],
+        "actualUpdatedAt": "2026-10-09T08:11:07.286305+00:00",
+        "desiredSha256": "4c7e4fe0469d724e0a24dfc5188aa66485c64c59821b0f6077cbfe1caf75f4e1",
+        "retainedSha256": "764a46560721c04458de18a70ebe0b14072a72d217b730726e3b9eeb96726f53",
+        "qaReceiptIds": [
+          "cms-accuracy-c06-bilingual-body-v1-20261009"
+        ],
+        "permitStatus": "FRESH_COMPLETED"
+      }
+    ],
+    "ok": true,
+    "productionWrites": 0
+  },
+  "currentLiveExactMetadata": {
+    "checkedAt": "2026-10-10T07:51:30.729Z",
+    "observedDeploymentOnly": "2f055035d469c02833a8dd7025ddb8b2223c0b8c",
+    "candidateSha": "8eb9f8061926bcacb15dea952097649511977a60",
+    "candidateDeployed": false,
+    "liveBefore": {
+      "checkedAt": "2026-10-10T07:51:27.855Z",
+      "deploymentVersion": "2f055035d469c02833a8dd7025ddb8b2223c0b8c",
+      "status": 200
+    },
+    "liveAfter": {
+      "checkedAt": "2026-10-10T07:51:30.729Z",
+      "deploymentVersion": "2f055035d469c02833a8dd7025ddb8b2223c0b8c",
+      "status": 200
+    },
+    "rows": [
+      {
+        "target": "c06-bilingual-body-v1",
+        "path": "/en/blog/renovation-materials-malaysia",
+        "checkedAt": "2026-10-10T07:49:11.287Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "hydrated": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "expectedObservedRaw": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "expectedObservedHydrated": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "candidateRaw": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "candidateHydrated": {
+          "title": "How to Choose Renovation Materials in Malaysia | FLASH CAST SDN. BHD.",
+          "description": "Choose renovation materials by room usage, durability, cleaning needs, budget, and actual site conditions."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "v18-owner-publisher-native-preparation-v2-20261007",
+        "path": "/en/blog/renovation-quotation-checklist-malaysia",
+        "checkedAt": "2026-10-10T07:48:57.199Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "hydrated": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "expectedObservedRaw": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "expectedObservedHydrated": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "candidateRaw": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "candidateHydrated": {
+          "title": "Malaysia Renovation Quotation Checklist | FLASH CAST SDN. BHD.",
+          "description": "Use this Malaysia renovation quotation checklist to compare scope, quantities, specifications, allowances, exclusions, milestones and change control on the same basis."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c05-bilingual-body-v1",
+        "path": "/en/services/approval",
+        "checkedAt": "2026-10-10T07:49:09.600Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "hydrated": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "expectedObservedRaw": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "expectedObservedHydrated": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "candidateRaw": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "candidateHydrated": {
+          "title": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "description": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "bathroom-body-step-unified-20261009-v1",
+        "path": "/en/services/bathroom",
+        "checkedAt": "2026-10-10T07:49:00.804Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "hydrated": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "expectedObservedRaw": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "expectedObservedHydrated": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "candidateRaw": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "candidateHydrated": {
+          "title": "Bathroom Renovation Malaysia | FLASH CAST",
+          "description": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c03-bilingual-body-v1",
+        "path": "/en/services/builtin",
+        "checkedAt": "2026-10-10T07:49:06.766Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "hydrated": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "expectedObservedRaw": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "expectedObservedHydrated": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "candidateRaw": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "candidateHydrated": {
+          "title": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+          "description": "Custom built-in furniture and wardrobes for Kuala Lumpur and Selangor, planned around site measurements, storage needs, materials, hardware and installation."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "design-body-faq-unified-20261009-v1",
+        "path": "/en/services/design",
+        "checkedAt": "2026-10-10T07:48:58.782Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "hydrated": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "expectedObservedRaw": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "expectedObservedHydrated": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "candidateRaw": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "candidateHydrated": {
+          "title": "Interior Design Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c01-bilingual-body-v1",
+        "path": "/en/services/flooring",
+        "checkedAt": "2026-10-10T07:49:03.998Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "hydrated": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "expectedObservedRaw": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "expectedObservedHydrated": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "candidateRaw": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "candidateHydrated": {
+          "title": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "kitchen-initial-framework-body-v1",
+        "path": "/en/services/kitchen",
+        "checkedAt": "2026-10-10T07:49:02.634Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "hydrated": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "expectedObservedRaw": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "expectedObservedHydrated": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "candidateRaw": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "candidateHydrated": {
+          "title": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+          "description": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c02-bilingual-body-v1",
+        "path": "/en/services/office-renovation",
+        "checkedAt": "2026-10-10T07:49:05.299Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "hydrated": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "expectedObservedRaw": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "expectedObservedHydrated": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "candidateRaw": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "candidateHydrated": {
+          "title": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+          "description": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "v17-owner-publisher-native-preparation-v2-20261007",
+        "path": "/en/services/old-house",
+        "checkedAt": "2026-10-10T07:51:30.131Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "hydrated": {
+          "title": "Old House Renovation Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "expectedObservedRaw": {
+          "title": "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "expectedObservedHydrated": {
+          "title": "Old House Renovation Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "candidateRaw": {
+          "title": "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "candidateHydrated": {
+          "title": "Old House Renovation Kuala Lumpur | FLASH CAST",
+          "description": "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c04-bilingual-body-v1",
+        "path": "/en/services/warehouse",
+        "checkedAt": "2026-10-10T07:49:08.082Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "hydrated": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "expectedObservedRaw": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "expectedObservedHydrated": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "candidateRaw": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "candidateHydrated": {
+          "title": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "description": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley."
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c06-bilingual-body-v1",
+        "path": "/zh/blog/renovation-materials-malaysia",
+        "checkedAt": "2026-10-10T07:49:12.083Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "hydrated": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "expectedObservedRaw": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "expectedObservedHydrated": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "candidateRaw": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "candidateHydrated": {
+          "title": "马来西亚装修材料怎么选 | FLASH CAST SDN. BHD.",
+          "description": "这篇 FLASH CAST 中文指南说明马来西亚装修材料怎么选，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "v18-owner-publisher-native-preparation-v2-20261007",
+        "path": "/zh/blog/renovation-quotation-checklist-malaysia",
+        "checkedAt": "2026-10-10T07:48:57.881Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "hydrated": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "expectedObservedRaw": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "expectedObservedHydrated": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "candidateRaw": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "candidateHydrated": {
+          "title": "马来西亚装修报价单要看什么 | FLASH CAST SDN. BHD.",
+          "description": "用这份马来西亚装修报价清单，在同一基础上比较范围、数量、规格、暂定金额、不包含项目、付款节点和变更管理。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c05-bilingual-body-v1",
+        "path": "/zh/services/approval",
+        "checkedAt": "2026-10-10T07:49:10.332Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "hydrated": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "expectedObservedRaw": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "expectedObservedHydrated": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "candidateRaw": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "candidateHydrated": {
+          "title": "装修准证与图纸支持 | FLASH CAST",
+          "description": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "bathroom-body-step-unified-20261009-v1",
+        "path": "/zh/services/bathroom",
+        "checkedAt": "2026-10-10T07:49:01.906Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "hydrated": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "expectedObservedRaw": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "expectedObservedHydrated": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "candidateRaw": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "candidateHydrated": {
+          "title": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c03-bilingual-body-v1",
+        "path": "/zh/services/builtin",
+        "checkedAt": "2026-10-10T07:49:07.399Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "hydrated": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "expectedObservedRaw": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "expectedObservedHydrated": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "candidateRaw": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "candidateHydrated": {
+          "title": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+          "description": "FLASH CAST 为吉隆坡、雪兰莪与巴生谷规划全屋定制、定制家具与定制衣柜，按现场尺寸、收纳需求、材料、五金和安装范围整理免费报价。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "design-body-faq-unified-20261009-v1",
+        "path": "/zh/services/design",
+        "checkedAt": "2026-10-10T07:48:59.915Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。"
+        },
+        "hydrated": {
+          "title": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。"
+        },
+        "expectedObservedRaw": {
+          "title": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。"
+        },
+        "expectedObservedHydrated": {
+          "title": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。"
+        },
+        "candidateRaw": {
+          "title": "闪铸设计 | 吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。 闪铸装饰、闪铸设计和闪铸装修是 FLASH CAST 的中文品牌名称。"
+        },
+        "candidateHydrated": {
+          "title": "闪铸设计 | 吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。 闪铸装饰、闪铸设计和闪铸装修是 FLASH CAST 的中文品牌名称。"
+        },
+        "candidateDesignBrandChange": true,
+        "pass": true
+      },
+      {
+        "target": "c01-bilingual-body-v1",
+        "path": "/zh/services/flooring",
+        "checkedAt": "2026-10-10T07:49:04.614Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "hydrated": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "expectedObservedRaw": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "expectedObservedHydrated": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "candidateRaw": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "candidateHydrated": {
+          "title": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "description": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "kitchen-initial-framework-body-v1",
+        "path": "/zh/services/kitchen",
+        "checkedAt": "2026-10-10T07:49:03.336Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "hydrated": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "expectedObservedRaw": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "expectedObservedHydrated": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "candidateRaw": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "candidateHydrated": {
+          "title": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+          "description": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c02-bilingual-body-v1",
+        "path": "/zh/services/office-renovation",
+        "checkedAt": "2026-10-10T07:49:06.048Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "hydrated": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "expectedObservedRaw": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "expectedObservedHydrated": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "candidateRaw": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "candidateHydrated": {
+          "title": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+          "description": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "v17-owner-publisher-native-preparation-v2-20261007",
+        "path": "/zh/services/old-house",
+        "checkedAt": "2026-10-10T07:51:30.566Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "hydrated": {
+          "title": "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "expectedObservedRaw": {
+          "title": "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "expectedObservedHydrated": {
+          "title": "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "candidateRaw": {
+          "title": "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划 | FLASH CAST SDN. BHD.",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "candidateHydrated": {
+          "title": "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
+          "description": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      },
+      {
+        "target": "c04-bilingual-body-v1",
+        "path": "/zh/services/warehouse",
+        "checkedAt": "2026-10-10T07:49:08.833Z",
+        "rawStatus": 200,
+        "status": 200,
+        "raw": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "hydrated": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "expectedObservedRaw": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "expectedObservedHydrated": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "candidateRaw": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "candidateHydrated": {
+          "title": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "description": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+        },
+        "candidateDesignBrandChange": false,
+        "pass": true
+      }
+    ],
+    "productionWrites": 0,
+    "credentialsPersisted": false,
+    "blockedNonReads": 4,
+    "previousTwentyObservedAt": "2026-10-10T07:49:22.376Z",
+    "priorTwentySourceReceipt": "current-eleven-exact-metadata-observed-2f055.json",
+    "specialOldHouseFreshPages": 2,
+    "pass": true
+  },
+  "currentLiveScopeReadOnly": {
+    "checkedAt": "2026-10-10T07:24:59.012Z",
+    "expectedSha": "2f055035d469c02833a8dd7025ddb8b2223c0b8c",
+    "checkout": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/.worktrees/remaining-completion-20261009",
+    "readOnly": true,
+    "productionWrites": 0,
+    "previews": 0,
+    "permitsIssued": 0,
+    "notifications": 0,
+    "customerReads": 0,
+    "credentialsPersisted": false,
+    "historicalProofReusedAsCurrent": false,
+    "oldStoppedRunsPreserved": true,
+    "completedRowsExpected": 11,
+    "completedQaExpected": 13,
+    "remainingRowsExpected": 9,
+    "remainingQaExpected": 9,
+    "completedGuardPath": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/unified-release-20261009/continuation/resume-20261010/cms-finalization/fresh-protected-cms-2026-10-10T07-24-59-012Z-completed-guard.json",
+    "currentCmsReads": 20,
+    "machinePermitReads": 20,
+    "remaining": [
+      {
+        "target": "c07-bilingual-body-v1",
+        "recordId": "bf690bf8-fbc3-41aa-9ce1-161fdddda184",
+        "actualUpdatedAt": "2026-08-22T12:23:05.625076+00:00",
+        "baselineSha256": "48d7f00477ee29ebfa2070a179ebf51fe49d4ceb10f4125a9772519240b18359",
+        "reviewedBaselineSha256": "48d7f00477ee29ebfa2070a179ebf51fe49d4ceb10f4125a9772519240b18359",
+        "retainedSha256": "b7f882e105c6be0bbb55d8fa0b248683b472c5ff4745341934d534f7d7a13761",
+        "reviewedDesiredSha256": "8ecfa666ccb9aa78fee03bb36faee6953f085059593549fa93c94e78301e8e17",
+        "qaReceiptIds": [
+          "cms-accuracy-c07-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c08-bilingual-body-v1",
+        "recordId": "e871c29f-b4e1-4b3b-ab0f-0a83a41c9f35",
+        "actualUpdatedAt": "2026-08-22T12:22:32.864064+00:00",
+        "baselineSha256": "fba3b53e8e986dcb5dc9903de010202502b15569e493156140d61ace0f03ba42",
+        "reviewedBaselineSha256": "fba3b53e8e986dcb5dc9903de010202502b15569e493156140d61ace0f03ba42",
+        "retainedSha256": "c3599c423e76019fdd2aee55eb6b374a0b7582ddac25bb42395355b8a6b7b500",
+        "reviewedDesiredSha256": "8fd4076b0916a906dc5d777eb8120c1bc47fff86f16b1fe327c2f54ed1182892",
+        "qaReceiptIds": [
+          "cms-accuracy-c08-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c09-bilingual-body-v1",
+        "recordId": "9914e1fc-c475-42e0-8d11-9e92117a5e4f",
+        "actualUpdatedAt": "2026-08-22T12:22:56.000847+00:00",
+        "baselineSha256": "1ee8c50e811e4a57d7b01b2a4ea144eb7f6b93bd05fa221a09be32baeb012ba1",
+        "reviewedBaselineSha256": "1ee8c50e811e4a57d7b01b2a4ea144eb7f6b93bd05fa221a09be32baeb012ba1",
+        "retainedSha256": "7902581fbb83bd0b96e6d02c62d793f9faba4d3293b28757c84ffe46b018f870",
+        "reviewedDesiredSha256": "e8506040de3fca23d5c47cc50d77726a1fb985ab1e68313ec81c5cbf813b0bd9",
+        "qaReceiptIds": [
+          "cms-accuracy-c09-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c10-bilingual-body-v1",
+        "recordId": "ef92b60e-3541-40c7-8997-621df78cbdea",
+        "actualUpdatedAt": "2026-08-22T12:22:36.094404+00:00",
+        "baselineSha256": "450726d4682a0e303f0f41d43e88c8a3942837c50ec4a3e06229e04a710e9d5b",
+        "reviewedBaselineSha256": "450726d4682a0e303f0f41d43e88c8a3942837c50ec4a3e06229e04a710e9d5b",
+        "retainedSha256": "16e3bb8f8552a3742a409bb5a0598394f5408b49782a83ecdecbd8375bf6cfbf",
+        "reviewedDesiredSha256": "9019fa90c8ff4182dbd68e640f8691d0b3e48293ee7fb28fe2ab75f41299e784",
+        "qaReceiptIds": [
+          "cms-accuracy-c10-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c11-bilingual-body-v1",
+        "recordId": "5e8933ab-bda4-46f2-aed6-e63f83fac415",
+        "actualUpdatedAt": "2026-09-12T22:45:40.31716+00:00",
+        "baselineSha256": "a57bd14d68153e5379389e090c49402aabaa900e8867be1ffbe888d3169729e4",
+        "reviewedBaselineSha256": "a57bd14d68153e5379389e090c49402aabaa900e8867be1ffbe888d3169729e4",
+        "retainedSha256": "6ab9566697b90acb163ca2d6130d87d3b3e5604a3617ef7e7b54fa8676dafedb",
+        "reviewedDesiredSha256": "4a77281fbb88cc18aca1a09869bd47a8a52f543abfa93ac90fb5787fb1e9218b",
+        "qaReceiptIds": [
+          "cms-accuracy-c11-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c12-bilingual-body-v1",
+        "recordId": "5ce1950b-21ab-4bc0-a0b3-375a6202204f",
+        "actualUpdatedAt": "2026-08-22T12:23:10.906493+00:00",
+        "baselineSha256": "166e1357a066446a710aa29900d38c70d3edc9483afa0b5481cdb5b0a0662171",
+        "reviewedBaselineSha256": "166e1357a066446a710aa29900d38c70d3edc9483afa0b5481cdb5b0a0662171",
+        "retainedSha256": "44c3fdb70846fe4ed33b6f52d1487e355dfb1d40c83f104d8949f0386568f8f6",
+        "reviewedDesiredSha256": "443d18d9ff6f9f2a5a3ece93e77ae59b04d61a1255deb49223f51bde04336ce8",
+        "qaReceiptIds": [
+          "cms-accuracy-c12-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c13-bilingual-body-v1",
+        "recordId": "429a087a-2a91-4b56-9d39-39644e519541",
+        "actualUpdatedAt": "2026-08-22T12:23:56.852625+00:00",
+        "baselineSha256": "aea5c8bac45ce438e9ed0b3a753f1991540388ddae2a7b2bfddcfd3facbcbef0",
+        "reviewedBaselineSha256": "aea5c8bac45ce438e9ed0b3a753f1991540388ddae2a7b2bfddcfd3facbcbef0",
+        "retainedSha256": "1a40fd2b96b45097c9a45b92a33326db6d1191b446ba83acf296ed968d21dbe5",
+        "reviewedDesiredSha256": "9bab9c78a9220d68a09847dbb125952cd834bea87fcceb2d207860b2429fa229",
+        "qaReceiptIds": [
+          "cms-accuracy-c13-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c14-bilingual-body-v1",
+        "recordId": "5a0322a0-0f58-4c28-a370-569428c13508",
+        "actualUpdatedAt": "2026-08-22T12:23:48.386851+00:00",
+        "baselineSha256": "de741d1348c8684a89e606f97c4fed9e4a6b8cb034dca0b5f58f9ba67ab00313",
+        "reviewedBaselineSha256": "de741d1348c8684a89e606f97c4fed9e4a6b8cb034dca0b5f58f9ba67ab00313",
+        "retainedSha256": "8fc884ef054d6f5f1ab1db26b5d26724892aa9776ee368f81e77b3a8bf7dd5b4",
+        "reviewedDesiredSha256": "f965cb44fd55ef3e94c795fc999235d64448668a15eb0138c2ebc7c09d47c027",
+        "qaReceiptIds": [
+          "cms-accuracy-c14-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      },
+      {
+        "target": "c15-bilingual-body-v1",
+        "recordId": "d6eb44ba-4c99-4fd4-bd78-1eeb0be1d1a9",
+        "actualUpdatedAt": "2026-09-12T22:42:17.136295+00:00",
+        "baselineSha256": "cbe8d24750f2a4d361eb05e6a8fbdfb1b5d8bfb00799b40b8a859be3025fa221",
+        "reviewedBaselineSha256": "cbe8d24750f2a4d361eb05e6a8fbdfb1b5d8bfb00799b40b8a859be3025fa221",
+        "retainedSha256": "c53a2d3a19ef6bf40bed8352fe7a22b4d23deb9d3fba9831ba587effcff536a8",
+        "reviewedDesiredSha256": "c6d38d30a630abe1c058e5681fd5dd1c2f4f91f4a2fda38c51d97119293f92d9",
+        "qaReceiptIds": [
+          "cms-accuracy-c15-bilingual-body-v1-20261009"
+        ],
+        "activePermits": 0,
+        "revokedPermits": 0,
+        "pass": true
+      }
+    ],
+    "pass": true,
+    "liveBefore": {
+      "checkedAt": "2026-10-10T07:25:00.060Z",
+      "httpStatus": 200,
+      "deploymentVersion": "2f055035d469c02833a8dd7025ddb8b2223c0b8c"
+    },
+    "completedRows": 11,
+    "completedQa": 13,
+    "completedUniquePermits": 11,
+    "completedRealBilingualPages": 22,
+    "liveAfter": {
+      "checkedAt": "2026-10-10T07:27:36.362Z",
+      "httpStatus": 200,
+      "deploymentVersion": "2f055035d469c02833a8dd7025ddb8b2223c0b8c"
+    },
+    "registrySha256": "492267732719a54cdd197b3d36b281ac21f6fff2bdaf0a40c9a623fc68cd310f",
+    "completedProvenanceSha256": "bc6ac21909e661f26f25b0a85fbee20b653b7f41e243b3b49f7457fbcdb13c63",
+    "completedGuardSha256": "7ed74c67c63a7b7781e6ce5ff7fb8208176bb8064bdd4a3fac6ed50bf9c22a42",
+    "finishedAt": "2026-10-10T07:27:36.363Z"
+  },
+  "historicalProjectionPolicy": "Original saved full projections are retained byte-for-byte and revalidated by current desired/retained/CAS and exact QA; no newly invented row dump.",
+  "observedLivePolicy": "The 22 actual body pages and metadata belong only to 2f055. The candidate's design ZH brand projection is LOCAL until a later deployment. Raw and hydrated expectations are independently derived from actual product source, never copied from a live response.",
+  "executionPolicy": "Every new run first checks frozen product source. Final runtime release/deployment SHA, current public default identity, all eleven rows/QA, and real bilingual raw+hydrated/body guards must pass before any remainder preview. Publish additionally refreshes all eleven exact completed permit tuples; remaining nine receive only fresh permits and CAS writes."
+}

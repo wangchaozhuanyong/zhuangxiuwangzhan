@@ -28,7 +28,8 @@ export function assertNineCompletedPermit(entry, proof, permits, index) {
     && permit.payload_sha256 === entry.desiredFieldsSha256 && permit.rollback_payload_sha256 === entry.rollbackFieldsSha256,
   "An exact completed permit changed, has residue or is duplicated; no remainder preview, permit or write allowed");
 }
-export function readRemainder11Registry(bytes = readFileSync(REMAINDER11_PATH)) {
+// Pure historical contract loading; the executable reader below still pins source.
+export function readRemainder11HistoricalRegistry(bytes = readFileSync(REMAINDER11_PATH)) {
   assert(hash(bytes) === REMAINDER11_SHA256, "Frozen exact remainder11 registry hash differs");
   const binding = JSON.parse(bytes.toString("utf8")); const original = readFrozenRegistry();
   assert(binding.schemaVersion === 1 && binding.batch === REMAINDER11_NAME && binding.sourceRegistrySha256 === REGISTRY_SHA256
@@ -64,9 +65,6 @@ export function readRemainder11Registry(bytes = readFileSync(REMAINDER11_PATH)) 
       && rows.slice(stopped + 1).every((row) => row.status === "NOT_STARTED" && row.performedWrite === false),
     "Original failed summaries cannot be rewritten as a successful batch");
   }
-  for (const [file, sha256] of Object.entries(proof.sourceRendererSha256)) {
-    assert(hash(readFileSync(file)) === sha256, "Completed-row renderer fingerprint differs; recheck before rebinding");
-  }
   for (const [index, entry] of original.entries.slice(0, 9).entries()) {
     const completed = proof.completed[index]; assertCompletedRow(entry, completed, completed.publicCurrentProjection);
     assertNineCompletedPermit(entry, completed, [completed.permit], index);
@@ -76,6 +74,16 @@ export function readRemainder11Registry(bytes = readFileSync(REMAINDER11_PATH)) 
   return { binding, proof, original, registry: { ...original, batch: REMAINDER11_NAME, uniqueRows: 11,
     sourceQaCount: 11, sourceQaReceipts: original.sourceQaReceipts.filter((item) => qaIds.has(item.id)), entries,
     executionDecision: { ...original.executionDecision, ...binding.executionDecision } } };
+}
+export function assertRemainder11RendererSource(prepared) {
+  for (const [file, sha256] of Object.entries(prepared.proof.sourceRendererSha256)) {
+    assert(hash(readFileSync(file)) === sha256, "Completed-row renderer fingerprint differs; recheck before rebinding");
+  }
+}
+export function readRemainder11Registry(bytes = readFileSync(REMAINDER11_PATH)) {
+  const prepared = readRemainder11HistoricalRegistry(bytes);
+  assertRemainder11RendererSource(prepared);
+  return prepared;
 }
 export async function verifyNineBeforeRemainder11({ prepared, mode, readCurrent, readPermits, checkPage = verifyPublicPage, save }) {
   assert(["dry-run", "publish"].includes(mode), "Fixed remainder11 accepts only dry-run or publish");
@@ -108,6 +116,7 @@ export async function verifyNineBeforeRemainder11({ prepared, mode, readCurrent,
   } catch (error) { receipt.diagnostic = sanitizePublisherDiagnostic(error instanceof Error ? error.message : "Nine-completed guard failed"); save(receipt); throw error; }
 }
 export async function runRemainder11Command() {
+  assert(process.argv.slice(2).every((arg) => /^--(?:mode|artifact-dir)=/.test(arg)), "This command accepts only mode and an in-project audit directory");
   assert(process.env.PUBLISH_TARGET === REMAINDER11_NAME, "Only the fixed remainder11 entry is accepted; arbitrary skips are forbidden");
   const prepared = readRemainder11Registry();
   return runFrozenCommand({ registry: prepared.registry, binding: { batch: REMAINDER11_NAME, sha256: REMAINDER11_SHA256 },

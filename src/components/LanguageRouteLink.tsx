@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useRef, type MouseEvent } from "react";
+import { forwardRef, useCallback, useEffect, useRef, type MouseEvent, type PointerEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useNavigate, type LinkProps } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -20,6 +20,7 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
   prefetchOnReady = false,
   onClick,
   onFocus,
+  onPointerDown,
   onPointerEnter,
   onTouchStart,
   children,
@@ -71,12 +72,25 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
     });
   };
 
+  const handlePointerDown = (event: PointerEvent<HTMLAnchorElement>) => {
+    onPointerDown?.(event);
+    if (event.defaultPrevented || !event.isPrimary || !isPlainLeftClick(event) || props.target === "_blank") return;
+
+    const editor = document.activeElement;
+    if (editor instanceof HTMLElement && (editor.matches("input,textarea,select") || editor.isContentEditable)) {
+      // Keep the editing selection through pointer activation. The later click
+      // still owns language navigation, and keyboard focus remains native.
+      event.preventDefault();
+    }
+  };
+
   return (
     <Link
       {...props}
       ref={ref}
       to={to}
       onClick={handleClick}
+      onPointerDown={handlePointerDown}
       onFocus={(event) => {
         void prefetch();
         onFocus?.(event);

@@ -1,5 +1,53 @@
-import { describe, expect, it } from "vitest";
-import { isPublishedHomeSectionEnabled, mapSitePageRows } from "@/lib/homeContentApi";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { getPublishedHomeContentBundle, getPublishedHomeOptionalSectionVisibility, isPublishedHomeSectionEnabled, mapSitePageRows } from "@/lib/homeContentApi";
+
+const readers = vi.hoisted(() => ({
+  bundle: vi.fn(), visibility: vi.fn(), configured: vi.fn(() => true),
+}));
+vi.mock("@/backend/modules/cms/repository/publicContentRepository", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/backend/modules/cms/repository/publicContentRepository")>(),
+  fetchPublicHomeBundleData: readers.bundle,
+  fetchPublishedHomeSectionRow: readers.visibility,
+  hasPublicContentDatabaseClient: readers.configured,
+}));
+beforeEach(() => { readers.bundle.mockReset(); readers.visibility.mockReset(); readers.configured.mockReturnValue(true); });
+
+describe("independent optional homepage visibility", () => {
+  it("returns the successful core bundle without starting or awaiting optional reads", async () => {
+    readers.bundle.mockResolvedValue({ site_pages: [{ page_key: "home", title_en: "Current home" }], home_sections: [] });
+    readers.visibility.mockImplementation(() => new Promise(() => {}));
+    const signal = new AbortController().signal;
+    const result = await getPublishedHomeContentBundle("en", signal);
+    expect(result.source).toBe("remote");
+    expect(result.data.pageContent?.title).toBe("Current home");
+    expect(result.data.brandPartnersEnabled).toBe(false);
+    expect(result.data.testimonialsEnabled).toBe(false);
+    expect(readers.bundle).toHaveBeenCalledWith(signal);
+    expect(readers.visibility).not.toHaveBeenCalled();
+  });
+
+  it.each(["brand_partners", "testimonials"] as const)("requires a confirmed explicit %s activation", async (sectionKey) => {
+    const signal = new AbortController().signal;
+    readers.visibility.mockResolvedValue({ section_key: sectionKey, status: "published", items_zh: [{ enabled: true }] });
+    expect(await getPublishedHomeOptionalSectionVisibility(sectionKey, signal)).toBe(true);
+    expect(readers.visibility).toHaveBeenCalledWith(sectionKey, signal);
+    readers.visibility.mockResolvedValue(null);
+    expect(await getPublishedHomeOptionalSectionVisibility(sectionKey, signal)).toBe(false);
+    readers.visibility.mockResolvedValue({ section_key: sectionKey, status: "draft", items_zh: [{ enabled: true }] });
+    expect(await getPublishedHomeOptionalSectionVisibility(sectionKey, signal)).toBe(false);
+    readers.visibility.mockResolvedValue({ section_key: sectionKey, status: "published", items_en: [{ enabled: true }] });
+    expect(await getPublishedHomeOptionalSectionVisibility(sectionKey, signal)).toBe(false);
+  });
+
+  it("keeps visibility failure distinct from confirmed disabled content and the successful bundle", async () => {
+    readers.bundle.mockResolvedValue({ site_pages: [{ page_key: "home", title_zh: "当前首页" }] });
+    readers.visibility.mockRejectedValue(new Error("Visibility unavailable"));
+    await expect(getPublishedHomeOptionalSectionVisibility("brand_partners")).rejects.toThrow("Visibility unavailable");
+    expect((await getPublishedHomeContentBundle("zh")).source).toBe("remote");
+    readers.configured.mockReturnValue(false);
+    await expect(getPublishedHomeOptionalSectionVisibility("testimonials")).rejects.toThrow("Content source unavailable");
+  });
+});
 
 describe("homepage section visibility", () => {
   it("keeps a section disabled when its setting is missing or not published", () => {

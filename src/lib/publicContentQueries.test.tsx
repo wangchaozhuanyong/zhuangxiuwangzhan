@@ -103,6 +103,16 @@ describe("shared public query consumers", () => {
 });
 
 describe("shared HTML seed parameter semantics", () => {
+  it("seeds optional homepage visibility only from a matching confirmed row", () => {
+    const key = publicContentQueries.homeOptionalSectionVisibility("brand_partners").queryKey;
+    expect(key).toEqual(["published", "home_optional_visibility", "brand_partners"]);
+    fixture.payload = { homeContentBundle: { home_sections: [{ section_key: "stats", status: "published" }] } };
+    expect(getPublicQuerySeed(key)).toBeUndefined();
+    fixture.payload = { homeContentBundle: { home_sections: [{ section_key: "brand_partners", status: "published", items_zh: [{ enabled: false }] }] } };
+    expect(getPublicQuerySeed(key)).toBe(false);
+    fixture.payload.homeContentBundle!.home_sections = [{ section_key: "brand_partners", status: "published", items_zh: [{ enabled: true }] }];
+    expect(getPublicQuerySeed(key)).toBe(true);
+  });
   it("retains the existing cache identities for every public reader", () => {
     const q = publicContentQueries;
     const legacyKeys = [

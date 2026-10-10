@@ -4,7 +4,7 @@ import { JsonLdFAQ, JsonLdLocalBusiness, JsonLdOrganization } from "@/components
 import SchemeAHome from "@/components/scheme-a/SchemeAHome";
 import PublicContentNotice from "@/components/PublicContentNotice";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { usePublishedHomeContentBundle } from "@/hooks/usePublishedContent";
+import { usePublishedHomeContentBundle, usePublishedHomeOptionalSectionVisibility } from "@/hooks/usePublishedContent";
 import { indexPageText } from "@/i18n/indexPageText";
 import { siteConfig } from "@/config/site";
 import { withLanguagePrefix } from "@/i18n/routes";
@@ -20,7 +20,17 @@ const Index = () => {
     isLoading,
     refetch: retryHomeContent,
   } = usePublishedHomeContentBundle(language);
-  const homeContent = homeContentResult?.data;
+  const brandPartnersVisibility = usePublishedHomeOptionalSectionVisibility("brand_partners");
+  const testimonialsVisibility = usePublishedHomeOptionalSectionVisibility("testimonials");
+  const homeContent = useMemo(() => homeContentResult?.data ? {
+    ...homeContentResult.data,
+    // A confirmed HTML seed remains usable until the independent read settles.
+    // Missing visibility never activates an optional section.
+    brandPartnersEnabled: homeContentResult.source === "remote"
+      ? brandPartnersVisibility.data ?? homeContentResult.data.brandPartnersEnabled : homeContentResult.data.brandPartnersEnabled,
+    testimonialsEnabled: homeContentResult.source === "remote"
+      ? testimonialsVisibility.data ?? homeContentResult.data.testimonialsEnabled : homeContentResult.data.testimonialsEnabled,
+  } : undefined, [homeContentResult?.data, homeContentResult?.source, brandPartnersVisibility.data, testimonialsVisibility.data]);
   const pageContent = homeContent?.pageContent ?? null;
   const metaTitle = pageContent?.seo_title || pageContent?.title || copy.title;
   const metaDescription = pageContent?.seo_description || pageContent?.description || copy.description;

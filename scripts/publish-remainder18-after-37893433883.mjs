@@ -14,7 +14,8 @@ const assert = (condition, message) => { if (!condition) throw Error(message); }
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const same = (left, right) => stableDigest(left) === stableDigest(right);
 const project = (row, fields) => Object.fromEntries(fields.map((field) => [field, row[field] ?? null]));
-export function readRemainderRegistry(bytes = readFileSync(REMAINDER_PATH)) {
+// Pure historical contract loading; this is never an execution authorization.
+export function readRemainderHistoricalRegistry(bytes = readFileSync(REMAINDER_PATH)) {
   assert(hash(bytes) === REMAINDER_SHA256, "Frozen exact remainder registry hash differs");
   const binding = JSON.parse(bytes.toString("utf8")); const original = readFrozenRegistry();
   assert(binding.schemaVersion === 1 && binding.batch === REMAINDER_NAME && binding.sourceRegistrySha256 === REGISTRY_SHA256
@@ -36,9 +37,6 @@ export function readRemainderRegistry(bytes = readFileSync(REMAINDER_PATH)) {
     && proof.completed[1].originalPublisherStatus.receiptOk === false
     && proof.completed[1].originalPublisherStatus.savedOk === true,
   "Actual stopped-run evidence must retain both saved rows and the original failed HTML postcheck");
-  for (const [file, sha256] of Object.entries(proof.sourceRendererSha256)) {
-    assert(hash(readFileSync(file)) === sha256, "Completed-row renderer source fingerprint differs; review fresh rendering before rebinding");
-  }
   for (const entry of original.entries.slice(0, 2)) {
     const completed = proof.completed.find((item) => item.target === entry.target);
     assertCompletedRow(entry, completed, completed.publicCurrentProjection);
@@ -49,6 +47,16 @@ export function readRemainderRegistry(bytes = readFileSync(REMAINDER_PATH)) {
   return { binding, proof, original, registry: { ...original, batch: REMAINDER_NAME, uniqueRows: 18,
     sourceQaCount: 20, sourceQaReceipts: original.sourceQaReceipts.filter((item) => qaIds.has(item.id)), entries,
     executionDecision: { ...original.executionDecision, ...binding.executionDecision } } };
+}
+export function assertRemainderRendererSource(prepared) {
+  for (const [file, sha256] of Object.entries(prepared.proof.sourceRendererSha256)) {
+    assert(hash(readFileSync(file)) === sha256, "Completed-row renderer source fingerprint differs; review fresh rendering before rebinding");
+  }
+}
+export function readRemainderRegistry(bytes = readFileSync(REMAINDER_PATH)) {
+  const prepared = readRemainderHistoricalRegistry(bytes);
+  assertRemainderRendererSource(prepared);
+  return prepared;
 }
 export function assertCompletedRow(entry, proof, row) {
   assert(row.id === entry.recordId && row.slug === entry.slug && row.status === "published"
@@ -101,6 +109,7 @@ export async function verifyCompletedBeforeRemainder({ prepared, mode, readCurre
   } catch (error) { receipt.diagnostic = sanitizePublisherDiagnostic(error instanceof Error ? error.message : "Completed guard failed"); save(receipt); throw error; }
 }
 export async function runRemainderCommand() {
+  assert(process.argv.slice(2).every((arg) => /^--(?:mode|artifact-dir)=/.test(arg)), "This command accepts only mode and an in-project audit directory");
   assert(process.env.PUBLISH_TARGET === REMAINDER_NAME, "Only the fixed remainder18 entry is accepted; arbitrary skips are forbidden");
   const prepared = readRemainderRegistry();
   return runFrozenCommand({ registry: prepared.registry, binding: { batch: REMAINDER_NAME, sha256: REMAINDER_SHA256 },

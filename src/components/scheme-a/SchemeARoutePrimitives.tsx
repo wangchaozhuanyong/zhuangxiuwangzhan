@@ -210,7 +210,7 @@ export function SchemeASection({
   className = "",
 }: {
   title?: string;
-  description?: string | readonly string[];
+  description?: string | readonly ReactNode[];
   children: ReactNode;
   className?: string;
 }) {
@@ -225,7 +225,7 @@ export function SchemeASection({
                 <span className="scheme-a-heading-phrase" key={`${index}-${phrase}`}>{phrase}</span>
               ))
               : title}</h2> : null}
-            {paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
+            {paragraphs.map((paragraph, index) => <p key={`${index}-${typeof paragraph === "string" ? paragraph : "linked"}`}>{paragraph}</p>)}
           </header>
         ) : null}
         {children}

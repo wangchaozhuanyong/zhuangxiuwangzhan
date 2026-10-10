@@ -3,18 +3,27 @@ const norm = (value) => String(value || "").replace(/\s+/g, " ").trim();
 const decode = (value) => String(value).replace(/&#(x[\da-f]+|\d+);|&(amp|lt|gt|quot|apos|#39);/gi, (_, code, name) => code
   ? String.fromCodePoint(code[0].toLowerCase() === "x" ? parseInt(code.slice(1), 16) : Number(code))
   : ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'" })[name.toLowerCase()]);
-export function inspectRawMetadata(html, title, description) {
+export function inspectRawMetadata(html, title, description, strictTitle = false) {
   const actualTitle = decode(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] || "");
   const tag = (html.match(/<meta\b[^>]*>/gi) || []).find((value) => /\bname\s*=\s*["']description["']/i.test(value));
   const actualDescription = decode(tag?.match(/\bcontent\s*=\s*"([^"]*)"/i)?.[1] ?? tag?.match(/\bcontent\s*=\s*'([^']*)'/i)?.[1] ?? "");
-  return { titleFound: Boolean(norm(title)) && norm(actualTitle).includes(norm(title)),
-    descriptionMatches: Boolean(norm(description)) && norm(actualDescription) === norm(description) };
+  return { titleFound: Boolean(norm(title)) && (strictTitle ? actualTitle === title : norm(actualTitle).includes(norm(title))),
+    descriptionMatches: Boolean(norm(description)) && (strictTitle ? actualDescription === description : norm(actualDescription) === norm(description)) };
 }
 export function assertRenderedEvidence(evidence, expected, headingsOnly = false) {
   return evidence.status === 200 && evidence.ready === true && evidence.runtimeErrors === 0
-    && expected.length > 0 && expected.every((phrase) => headingsOnly
-      ? evidence.visibleHeadings.some((heading) => norm(heading) === norm(phrase))
-      : norm(evidence.visibleMainText).includes(norm(phrase)));
+    && expected.length > 0 && missingRenderedPhrases(evidence, expected, headingsOnly).length === 0;
+}
+export function inspectHydratedMetadata(actual, expected) {
+  return { titleFound: Boolean(expected?.title) && actual?.title === expected.title,
+    descriptionMatches: Boolean(expected?.description) && actual?.description === expected.description };
+}
+export function missingRenderedPhrases(evidence, expected, headingsOnly = false) {
+  // Readiness/status remain required for PASS, but must not turn one missing
+  // phrase into a false diagnostic claiming every visible paragraph is absent.
+  return expected.filter((phrase) => headingsOnly
+    ? !evidence.visibleHeadings.some((heading) => norm(heading) === norm(phrase))
+    : !norm(evidence.visibleMainText).includes(norm(phrase)));
 }
 export function reviewedBodyPhrases(content) {
   if (typeof content !== "string" || !content.trim()) throw Error("Reviewed native body is absent");
@@ -32,13 +41,27 @@ export async function verifyCandidateTextContracts(candidates, channel = process
     const context = await browser.newContext(); await context.route("**/*", (route) => route.abort());
     const page = await context.newPage();
     for (const candidate of candidates) {
-      await page.setContent(`<main>${candidate.content}</main>`);
-      const actual = norm((await readVisibleBodyEvidence(page)).visibleMainText); const phrases = reviewedBodyPhrases(candidate.content);
+      let content = candidate.content; let pipelineSourceSha256;
+      if (candidate.entry && candidate.row) {
+        const { renderReviewedRow } = await import("./publisher-reviewed-renderer.mjs");
+        const rendered = await renderReviewedRow(page, candidate); content = rendered.mappedContent; pipelineSourceSha256 = rendered.sourceSha256;
+      } else await page.setContent(`<main>${content}</main>`);
+      const actual = norm((await readVisibleBodyEvidence(page)).visibleMainText); const phrases = reviewedBodyPhrases(content);
       const missing = phrases.filter((phrase) => !actual.includes(phrase));
-      rows.push({ target: candidate.target, language: candidate.language, checkedBlocks: phrases.length, missingRequired: missing, ok: missing.length === 0 });
+      rows.push({ target: candidate.target, language: candidate.language, checkedBlocks: phrases.length, missingRequired: missing,
+        ...(pipelineSourceSha256 ? { actualProductPipeline: true, pipelineSourceSha256 } : {}), ok: missing.length === 0 });
     }
     return { checkedAt: new Date().toISOString(), fixtureOnly: true, livePageAcceptance: false,
       checkedCandidates: rows.length, rows, ok: rows.every((row) => row.ok), productionWrites: 0 };
+  } finally { await browser.close(); }
+}
+export async function reviewedRenderedBodyPhrases(candidate, channel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL) {
+  const { chromium } = await import("@playwright/test"); const { renderReviewedRow } = await import("./publisher-reviewed-renderer.mjs");
+  const browser = await chromium.launch({ headless: true, ...(channel ? { channel } : {}) });
+  try {
+    const context = await browser.newContext({ bypassCSP: false }); await context.route("**/*", (route) => route.abort());
+    const rendered = await renderReviewedRow(await context.newPage(), candidate);
+    return reviewedBodyPhrases(rendered.mappedContent);
   } finally { await browser.close(); }
 }
 export async function readVisibleBodyEvidence(page) {
@@ -70,11 +93,12 @@ export async function readVisibleBodyEvidence(page) {
         visibleHeadings: main ? [...main.querySelectorAll("h2, h3, h4")].filter(isVisible).map(visibleText).filter((text) => text.trim()) : [] };
   });
 }
-export async function verifyPublicPage({ site, path, title, description, requiredText, headingsOnly = false, channel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL }) {
+export async function verifyPublicPage({ site, path, title, description, requiredText, headingsOnly = false, strictMetadata = false, hydratedMetadata, channel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL }) {
   if (site !== "https://flashcast.com.my" || !/^\/(en|zh)\//.test(path) || !requiredText?.length) throw Error("Exact public site, language path and reviewed text required");
   const url = `${site}${path}?managed_public_readback=${Date.now()}`;
   const raw = await fetch(url, { method: "GET", cache: "no-store", headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(25000) });
-  const metadata = inspectRawMetadata(await raw.text(), title, description);
+  const metadata = inspectRawMetadata(await raw.text(), title, description, strictMetadata);
+  if (strictMetadata && (!hydratedMetadata?.title || !hydratedMetadata?.description)) throw Error("Exact current source-derived hydrated metadata required");
   const { chromium } = await import("@playwright/test");
   const browser = await chromium.launch({ headless: true, ...(channel ? { channel } : {}) });
   let blockedNonReads = 0; let runtimeErrors = 0;
@@ -108,10 +132,18 @@ export async function verifyPublicPage({ site, path, title, description, require
     });
     for (const position of scrollPositions) { await page.evaluate((y) => window.scrollTo(0, y), position); await page.waitForTimeout(180); }
     const visible = await readVisibleBodyEvidence(page);
+    let hydrated = null;
+    if (strictMetadata) {
+      try { await page.waitForFunction((expected) => document.title === expected.title
+        && document.querySelector('meta[name="description"]')?.getAttribute("content") === expected.description, hydratedMetadata, { timeout: 15000 }); } catch { /* Exact checks below remain false. */ }
+      const actual = await page.evaluate(() => ({ title: document.title, description: document.querySelector('meta[name="description"]')?.getAttribute("content") || "" }));
+      hydrated = inspectHydratedMetadata(actual, hydratedMetadata);
+    }
     const evidence = { status: response?.status() || 0, ready, runtimeErrors, ...visible };
     const renderedOk = assertRenderedEvidence(evidence, requiredText, headingsOnly);
     return { path, checkedAt: new Date().toISOString(), rawStatus: raw.status, metadata, status: evidence.status, ready, runtimeErrors,
-      requiredText, headingsOnly, found: renderedOk, missingRequired: requiredText.filter((phrase) => !assertRenderedEvidence(evidence, [phrase], headingsOnly)),
-      blockedNonReads, productionWrites: 0, renderedOk, ok: raw.status === 200 && Object.values(metadata).every(Boolean) && renderedOk };
+      requiredText, headingsOnly, strictMetadata, ...(hydrated ? { hydratedMetadata: hydrated } : {}), found: renderedOk, missingRequired: missingRenderedPhrases(evidence, requiredText, headingsOnly),
+      blockedNonReads, productionWrites: 0, renderedOk, ok: raw.status === 200 && Object.values(metadata).every(Boolean)
+        && (!strictMetadata || Object.values(hydrated).every(Boolean)) && renderedOk };
   } finally { await browser.close(); }
 }

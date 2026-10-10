@@ -8,6 +8,8 @@ import { isServiceConceptImage } from "../src/lib/serviceMedia";
 import { quotePageText } from "../src/i18n/quotePageText";
 import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText } from "../src/i18n/furnitureText";
 import { furnitureListingPagePath, furnitureProductPath, localizeFurnitureProduct, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
+import { findSelangorWarehouseIntroLink } from "../src/lib/selangorWarehouseIntroLink";
+import { plainTextParagraphs } from "../src/lib/text";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
@@ -114,12 +116,27 @@ function buildReviewedCta(path: string, lang: "en" | "zh", identity?: ReadableCo
 export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined, identity?: ReadableContactIdentity | null) {
   const match = key.match(/^\/(en|zh)(\/.*)$/);
   const reviewedOffice = key === "/en/services/office-renovation";
-  if (!match || (!reviewedOffice && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
+  const reviewedSelangor = match?.[2] === "/locations/selangor";
+  if (!match || (!reviewedOffice && !reviewedSelangor && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
   const lang = match[1] as "en" | "zh";
   const path = match[2];
   if (row.slug !== path.split("/").pop()) return "";
   const field = (base: string) => row[`${base}_${lang}`];
   const title = plain(field("title"));
+  if (reviewedSelangor) {
+    const intro = text(field("content"));
+    if (!title || !intro.trim() || intro.length > 131072) return "";
+    const paragraphs = plainTextParagraphs(translateDisplayText(intro, lang));
+    const link = findSelangorWarehouseIntroLink(paragraphs, text(row.slug), lang);
+    if (!link) return "";
+    const summary = plain(field("seo_description")) || plain(field("excerpt"));
+    const body = `<h1>${escape(translateDisplayText(title, lang))}</h1>${summary ? `<p>${escape(translateDisplayText(summary, lang))}</p>` : ""}${paragraphs.map((paragraph, index) =>
+      `<p>${link.paragraphIndex === index
+        ? `${escape(link.before)}<a href="/${lang}${link.to}">${escape(link.anchor)}</a>${escape(link.after)}`
+        : escape(paragraph)}</p>`
+    ).join("")}`;
+    return body.length <= 262144 ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}</main>` : "";
+  }
   const content = text(field("content"));
   // A missing language/body is an input gap; do not claim a complete fallback from a summary.
   if (!title || !content.trim() || content.length > 131072) return "";

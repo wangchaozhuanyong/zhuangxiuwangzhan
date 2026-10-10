@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { initializePublicBoot, syncPublicTheme } from "./publicBoot";
 import { publicContentStatusText } from "../i18n/publicContentStatusText";
-import { PUBLIC_LOADING_PROGRESS } from "./publicLoadingProgress";
 
 const markup = '<div id="flashcast-public-boot" data-route-loader="initial"><p data-boot-copy="loaderPending"></p><div data-boot-recovery hidden><button data-boot-action="retry" data-boot-copy="loaderRetry"></button><button data-boot-action="continue" hidden></button></div></div><div id="root"></div>';
 let listeners: ReturnType<typeof vi.spyOn>;
@@ -24,6 +23,25 @@ afterEach(() => {
 });
 
 describe("public document boot", () => {
+  it("releases root and hit testing immediately while the bar and fade remain decorative", async () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+    const screen = document.getElementById("flashcast-public-boot")!;
+    screen.innerHTML += '<div class="scheme-a-page-loader__brand"><i></i></div>';
+    const animate = vi.fn(() => ({ finished: new Promise<void>(() => {}), cancel: vi.fn() }));
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
+    const boot = initializePublicBoot()!;
+    const completion = boot.complete();
+    expect(document.getElementById("root")).not.toHaveAttribute("inert");
+    expect(screen.style.pointerEvents).toBe("none");
+    expect(screen).toHaveAttribute("aria-hidden", "true");
+    expect(document.documentElement.dataset.publicRouteLoading).toBeUndefined();
+    expect(animate).toHaveBeenCalledOnce();
+    await completion;
+    expect(boot.state).toBe("handoff");
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(boot.state).toBe("ready");
+    expect(document.getElementById("flashcast-public-boot")).toBeNull();
+  });
   it("owns the prepaint theme, copy and the same screen before React exists", () => {
     const screen = document.getElementById("flashcast-public-boot");
     const boot = initializePublicBoot()!;
@@ -126,7 +144,7 @@ describe("public document boot", () => {
     await current;
     expect(boot.state).toBe("ready");
   });
-  it("fills the brand bar before fading and cancels a superseded completion", async () => {
+  it("fills the brand bar alongside fading and cancels a superseded completion", async () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
     const screen = document.getElementById("flashcast-public-boot")!;
     const brand = document.createElement("div");
@@ -134,26 +152,28 @@ describe("public document boot", () => {
     brand.innerHTML = "<i></i>";
     screen.append(brand);
     const track = brand.querySelector("i")!;
-    let finish!: () => void;
-    const animate = vi.fn(() => ({ finished: new Promise<void>((resolve) => { finish = resolve; }), cancel: vi.fn() }));
+    const finishes: (() => void)[] = [];
+    const animate = vi.fn(() => ({ finished: new Promise<void>((resolve) => { finishes.push(resolve); }), cancel: vi.fn() }));
     Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
     const boot = initializePublicBoot()!;
     vi.advanceTimersByTime(250);
     expect(Number(track.style.getPropertyValue("--loading-progress"))).toBeLessThan(1);
     const stale = boot.complete();
     expect(track.style.getPropertyValue("--loading-progress")).toBe("1");
-    expect(animate).not.toHaveBeenCalled();
+    expect(animate).toHaveBeenCalledOnce();
     boot.hold();
     await stale;
-    expect(animate).not.toHaveBeenCalled();
+    finishes[0]();
+    await Promise.resolve();
+    expect(animate).toHaveBeenCalledOnce();
     expect(boot.state).toBe("waiting");
     expect(document.getElementById("root")).toHaveAttribute("inert");
     const current = boot.complete();
     expect(boot.complete()).toBe(current);
-    await vi.advanceTimersByTimeAsync(PUBLIC_LOADING_PROGRESS.finish);
-    expect(animate).toHaveBeenCalledOnce();
+    expect(animate).toHaveBeenCalledTimes(2);
+    expect(document.getElementById("root")).not.toHaveAttribute("inert");
     expect(document.getElementById("flashcast-public-boot")).toBe(screen);
-    finish();
+    finishes[1]();
     await current;
     expect(boot.state).toBe("ready");
     expect(document.getElementById("flashcast-public-boot")).toBeNull();

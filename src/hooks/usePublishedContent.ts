@@ -5,6 +5,7 @@ import { publicContentQueries } from "@/lib/publicContentQueries";
 import type { getPublishedBlogPosts } from "@/lib/contentApi";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
+import type { OptionalHomeSection } from "@/lib/homeOptionalSections";
 
 const STALE = INTERACTION_POLICY.publicStaleTime;
 const GC = INTERACTION_POLICY.gcTime;
@@ -38,6 +39,14 @@ export function usePublishedHomeContentBundle(language: "en" | "zh", options?: P
   return useQuery({
     ...publicContentQueries.homeBundle(language),
     enabled: isEnabled(options),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedHomeOptionalSectionVisibility(sectionKey: OptionalHomeSection) {
+  return useQuery({
+    ...publicContentQueries.homeOptionalSectionVisibility(sectionKey),
+    enabled: isSupabaseQueryEnabled(),
     ...queryDefaults,
   });
 }

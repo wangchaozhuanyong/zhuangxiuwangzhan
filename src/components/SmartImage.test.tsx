@@ -4,6 +4,123 @@ import { describe, expect, it, vi } from "vitest";
 import SmartImage from "@/components/SmartImage";
 
 describe("SmartImage", () => {
+  it("tracks the cached candidate while decode is pending and gives its replacement a fresh deadline", async () => {
+    vi.useFakeTimers();
+    vi.spyOn(HTMLImageElement.prototype, "complete", "get").mockReturnValue(true);
+    vi.spyOn(HTMLImageElement.prototype, "naturalWidth", "get").mockReturnValue(100);
+    const originalDecode = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "decode");
+    const decode = vi.fn(() => new Promise<void>(() => {}));
+    Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: decode });
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/cached.webp" alt="Cached" loading="eager" critical />));
+      expect(decode).toHaveBeenCalledOnce();
+      await act(async () => vi.advanceTimersByTime(5000));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/replacement.webp" });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(4999));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(1));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.restoreAllMocks();
+      if (originalDecode) Object.defineProperty(HTMLImageElement.prototype, "decode", originalDecode);
+      else Reflect.deleteProperty(HTMLImageElement.prototype, "decode");
+      vi.useRealTimers();
+    }
+  });
+
+  it("refreshes the decode deadline when a picture changes before the previous decode finishes", async () => {
+    vi.useFakeTimers();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/picture.webp" alt="Picture" loading="eager" critical />));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/mobile.webp" });
+      Object.defineProperty(image, "decode", { configurable: true, value: () => new Promise<void>(() => {}) });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      await act(async () => vi.advanceTimersByTime(5000));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/desktop.webp" });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(4999));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(1));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.useRealTimers();
+    }
+  });
+
+  it("gives a newly selected picture candidate its own slow-image deadline", async () => {
+    vi.useFakeTimers();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/picture.webp" alt="Picture" loading="eager" critical />));
+      await act(async () => vi.advanceTimersByTime(5000));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/mobile.webp" });
+      Object.defineProperty(image, "decode", { configurable: true, value: () => Promise.resolve() });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      expect(image.dataset.imageState).toBe("loaded");
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/desktop.webp" });
+      Object.defineProperty(image, "decode", { configurable: true, value: () => new Promise<void>(() => {}) });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      expect(image.dataset.imageState).toBe("loading");
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(4999));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(1));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not report an offscreen lazy image as slow before it enters the loading range", async () => {
+    vi.useFakeTimers();
+    let notify: IntersectionObserverCallback | undefined;
+    class FakeObserver {
+      constructor(callback: IntersectionObserverCallback) { notify = callback; }
+      observe = vi.fn();
+      disconnect = vi.fn();
+    }
+    vi.stubGlobal("IntersectionObserver", FakeObserver);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/offscreen.webp" alt="Offscreen" loading="lazy" showFailureFallback />));
+      await act(async () => vi.advanceTimersByTime(6000));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => notify?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver));
+      await act(async () => vi.advanceTimersByTime(5000));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    }
+  });
+
   it("waits for the selected candidate to decode and retains it while a replacement loads", async () => {
     const container = document.createElement("div");
     document.body.appendChild(container);

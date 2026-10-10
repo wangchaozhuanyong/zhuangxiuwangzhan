@@ -28,7 +28,7 @@ type Status = "generatedLabel" | "staleLabel" | "editedLabel" | "keptLabel" | "c
 const imageRoot = "/images/services/surface-repair/";
 const photoIcons = [Camera, Focus, Ruler];
 
-export default function SurfaceRepairContent({ service }: { service: PublishedServiceSummary }) {
+export default function SurfaceRepairContent({ service, pending = false }: { service: PublishedServiceSummary; pending?: boolean }) {
   const { language } = useLanguage();
   const copy = surfaceRepairPageText[language];
   const common = serviceDetailPageText[language];
@@ -91,7 +91,7 @@ export default function SurfaceRepairContent({ service }: { service: PublishedSe
   const directEnquiry = <a className="scheme-a-button scheme-a-button--gold" href={settings.whatsapp_url(copy.genericMessage)} target="_blank" rel="noopener noreferrer" onClick={trackEnquiry}>{copy.primaryAction}<ArrowUpRight size={18} aria-hidden="true" /></a>;
   const focusChapter = (id: string) => document.getElementById(id)?.focus({ preventScroll: true });
 
-  return <main className="fc-route-page fc-surface-repair-page">
+  return <main className="fc-route-page fc-surface-repair-page" data-route-pending={pending || undefined} aria-busy={pending || undefined}>
     <PageMeta title={seoTitle} description={seoDescription} canonicalPath="/services/surface-repair" ogImage={service.image} />
     <JsonLdService name={title} description={seoDescription} />
     <JsonLdBreadcrumb items={[{ name: common.breadcrumbHome, url: "/" }, { name: common.breadcrumbServices, url: "/services" }, { name: title, url: "/services/surface-repair" }]} />
