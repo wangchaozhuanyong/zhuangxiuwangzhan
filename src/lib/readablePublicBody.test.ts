@@ -1,7 +1,11 @@
-import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
 import { buildReadablePublicBody } from "../../functions/readablePublicBody";
+import { createFrozenPublisherSourceFixture, restoreFrozenPublisherReadableBody } from "../test/helpers/frozenPublisherSource.mjs";
 
 type PublicService = Record<string, unknown>;
 
@@ -100,5 +104,58 @@ describe("reviewed service no-JS primary content", () => {
       dom.window.close();
     });
   }
+});
+
+describe("owned historical publisher readable-body fixture", () => {
+  const expectedHistoricalSha = "4d67bd215b6e5c050d0be9d8bb562c0efdfaf7ae56fc01610a12323885f61293";
+  const reviewedCurrentSha = "a9297e52fa9f7e892faea23bbd3a22a6d554d814a6091c1741984ddaf9ce27e1";
+  const sourceRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
+  const currentPath = join(sourceRoot, "functions/readablePublicBody.ts");
+  const digest = (bytes: Buffer) => createHash("sha256").update(bytes).digest("hex");
+
+  it("restores only the two reviewed service paths and verifies the entire original frozen bytes", () => {
+    const current = readFileSync(currentPath);
+    expect(digest(current)).toBe(reviewedCurrentSha);
+    const restored = restoreFrozenPublisherReadableBody(current, expectedHistoricalSha);
+    expect(digest(restored)).toBe(expectedHistoricalSha);
+    expect(restored.toString("utf8")).toBe(current.toString("utf8").replace('"/services/builtin", "/services/kitchen", "/services/renovation",', '"/services/builtin",'));
+    expect(readFileSync(currentPath)).toEqual(current);
+  });
+
+  it("rejects modified content, an extra route, extra file bytes and incorrect or missing historical pins", () => {
+    const current = readFileSync(currentPath);
+    const modified = Buffer.from(current.toString("utf8").replace('const allowedTags = new Set(', 'const changedTags = new Set('));
+    const extraRoute = Buffer.from(current.toString("utf8").replace('"/services/renovation",', '"/services/renovation", "/services/shop-renovation",'));
+    for (const bytes of [modified, extraRoute, Buffer.concat([current, Buffer.from("\n// bytes from an unreviewed extra source file\n")])]) {
+      expect(() => restoreFrozenPublisherReadableBody(bytes, expectedHistoricalSha)).toThrow(/only admits/);
+    }
+    expect(() => restoreFrozenPublisherReadableBody(current, "0".repeat(64))).toThrow(/only admits/);
+    expect(() => restoreFrozenPublisherReadableBody(current, undefined)).toThrow(/only admits/);
+    const historical = restoreFrozenPublisherReadableBody(current, expectedHistoricalSha);
+    expect(() => restoreFrozenPublisherReadableBody(historical, expectedHistoricalSha)).toThrow(/only admits/);
+  });
+
+  it("rejects another source file rather than applying the readable-body adapter outside its exact scope", () => {
+    const middleware = readFileSync(join(sourceRoot, "functions/_middleware.ts"));
+    expect(() => restoreFrozenPublisherReadableBody(middleware, expectedHistoricalSha)).toThrow(/only admits/);
+  });
+
+  it("keeps the original 52-source closure inside its owned fixture without copying new source files or changing the project", () => {
+    const current = readFileSync(currentPath);
+    const fixture = createFrozenPublisherSourceFixture();
+    try {
+      expect(Object.keys(fixture.sourceSha256)).toHaveLength(52);
+      expect(fixture.sourceSha256["functions/readablePublicBody.ts"]).toBe(expectedHistoricalSha);
+      expect(digest(readFileSync(join(fixture.root, "functions/readablePublicBody.ts")))).toBe(expectedHistoricalSha);
+      expect(existsSync(join(fixture.root, "src/lib/readablePublicBody.test.ts"))).toBe(false);
+      expect(existsSync(join(fixture.root, "scripts/publish-paid-three-page-native-20261010.mjs"))).toBe(false);
+      expect(existsSync(join(fixture.root, ".env.production.local"))).toBe(false);
+      expect(readFileSync(currentPath)).toEqual(current);
+    } finally {
+      fixture.dispose();
+    }
+    expect(existsSync(fixture.root)).toBe(false);
+    expect(readFileSync(currentPath)).toEqual(current);
+  });
 });
 
