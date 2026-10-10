@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "performed_write": false,
+  "identity": {
+    "repositoryId": 1248188229,
+    "actorId": 276684684,
+    "workflowRef": "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+    "runId": 38062478090,
+    "runAttempt": 1,
+    "workflowSha": "9f917265a1de5c34faec5a245ce60a82c2187bff"
+  }
+}

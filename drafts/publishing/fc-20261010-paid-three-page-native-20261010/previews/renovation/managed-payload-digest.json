@@ -1,0 +1,7 @@
+{
+  "task_id": "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+  "candidate_version": "paid-three-page-exact-native-diff-v1-20261010",
+  "operation": "publish",
+  "payload_sha256": "a4ad4f05fea8755af0d23e4f83b37ec406af181c8e113ecb7d6f155955c291b3",
+  "expected_updated_at": "2026-09-26T18:10:33.566853+00:00"
+}

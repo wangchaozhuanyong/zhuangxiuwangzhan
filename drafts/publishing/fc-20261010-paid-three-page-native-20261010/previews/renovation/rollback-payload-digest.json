@@ -1,0 +1,10 @@
+{
+  "task_id": "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+  "candidate_version": "paid-three-page-exact-native-diff-v1-20261010",
+  "payload_sha256": "475391da36c20006e22446d954f8082bad8987c9fea74390feeb03bed4cd9765",
+  "baseline_fields_sha256": "539359c220e67c890ea3d7b8782af817b9b3be09e4551cb4b8ee2b3e1b850ef0",
+  "restoration_allowed": true,
+  "restoration_requires_distinct_completed_parent_permit": true,
+  "native_restore_preview_executed": false,
+  "recovery": "CMS row readback and a separately issued single-use rollback permit bound to the completed parent are required."
+}

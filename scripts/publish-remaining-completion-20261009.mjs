@@ -11,6 +11,20 @@ export const BATCH_NAME = "remaining-completion-20261009";
 export const REGISTRY_PATH = "drafts/publishing/fc-20261009-remaining-completion-v1/registry.json";
 export const REGISTRY_SHA256 = "8dec1fa819f93602470e4cf236973431261b26330309b43469660f43689a82eb";
 export const APPROVAL_ID = "owner-authorized-remaining-completion-20261009";
+export const NATIVE_THREE_BATCH = "paid-three-page-native-20261010";
+export const NATIVE_THREE_APPROVAL_ID = "owner-authorized-paid-three-page-native-20261010";
+export const NATIVE_THREE_TARGETS = Object.freeze([
+  "paid-three-page-builtin-exact-fields-v1", "paid-three-page-kitchen-exact-fields-v1", "paid-three-page-renovation-exact-fields-v1",
+]);
+const BATCH_APPROVALS = Object.freeze(Object.fromEntries([
+  BATCH_NAME, "remaining-completion-after-37893433883", "remaining-completion-after-37898568406",
+  "remaining-completion-after-37903094390", "remaining-completion-after-38037667102",
+].map((batch) => [batch, APPROVAL_ID]).concat([[NATIVE_THREE_BATCH, NATIVE_THREE_APPROVAL_ID]])));
+export function assertFixedBatchBinding(binding) {
+  const approvalId = Object.hasOwn(BATCH_APPROVALS, binding.batch) ? BATCH_APPROVALS[binding.batch] : null;
+  assert(approvalId && (!binding.approvalId || binding.approvalId === approvalId), "Unknown fixed batch or owner authorization binding");
+  return { ...binding, approvalId };
+}
 const WORKFLOW_REF = "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main";
 const EXACT_TARGETS = [
   "v17-owner-publisher-native-preparation-v2-20261007", "v18-owner-publisher-native-preparation-v2-20261007",
@@ -68,9 +82,10 @@ export function readFrozenRegistry(bytes = readFileSync(REGISTRY_PATH)) {
   return registry;
 }
 
-export function assertBatchEnvironment(environment, mode, approvalId, checkoutSha) {
-  assert(["dry-run", "publish"].includes(mode) && approvalId === APPROVAL_ID
-    && environment.PUBLISH_TARGET === BATCH_NAME && environment.MANAGED_OPERATION === "publish"
+export function assertBatchEnvironment(environment, mode, approvalId, checkoutSha, binding = { batch: BATCH_NAME }) {
+  const fixed = assertFixedBatchBinding(binding);
+  assert(["dry-run", "publish"].includes(mode) && approvalId === fixed.approvalId
+    && environment.PUBLISH_TARGET === fixed.batch && environment.MANAGED_OPERATION === "publish"
     && environment.GITHUB_ACTIONS === "true" && environment.GITHUB_REF === "refs/heads/main"
     && environment.GITHUB_REPOSITORY === "wangchaozhuanyong/zhuangxiuwangzhan"
     && String(environment.GITHUB_REPOSITORY_ID) === "1248188229"
@@ -184,8 +199,8 @@ export function buildBatchPermit(entry, registry, identity, artifacts, now, perm
     expiresAt: new Date(now + 10 * 60_000).toISOString() }, evidence };
 }
 
-export function assertActualPublish(entry, receipt, current, permit, identity) {
-  assert(receipt.ok === true && receipt.target === entry.target && receipt.approvalId === APPROVAL_ID
+export function assertActualPublish(entry, receipt, current, permit, identity, approvalId = APPROVAL_ID) {
+  assert(receipt.ok === true && receipt.target === entry.target && receipt.approvalId === approvalId
     && receipt.published.ok === true && receipt.published.saved_id === entry.recordId
     && receipt.published.saved_updated_at && receipt.published.saved_updated_at !== entry.expectedUpdatedAt
     && current.updated_at === receipt.published.saved_updated_at
@@ -206,6 +221,12 @@ export function assertActualPublish(entry, receipt, current, permit, identity) {
 // Dependencies isolate orchestration tests; the command uses only the implementations below.
 export async function runFrozenBatch(registry, mode, environment, dependencies, binding = { batch: BATCH_NAME, sha256: REGISTRY_SHA256 }) {
   assert(["dry-run", "publish"].includes(mode), "Frozen batch accepts only dry-run or publish mode");
+  binding = assertFixedBatchBinding(binding);
+  if (binding.batch === NATIVE_THREE_BATCH) {
+    assert(registry.batch === NATIVE_THREE_BATCH && registry.authorization.id === NATIVE_THREE_APPROVAL_ID
+      && same(registry.entries.map((entry) => entry.target), NATIVE_THREE_TARGETS), "Native three batch requires its exact independent authorization and three targets");
+    assert(mode !== "publish" || typeof dependencies.assertReadback === "function", "Native three publish requires its exact saved revision readback");
+  }
   const rows = registry.entries.map((entry) => ({ target: entry.target, status: "NOT_STARTED", performedWrite: false }));
   dependencies.saveSummary({ batch: binding.batch, mode, registrySha256: binding.sha256, rows });
   for (let index = 0; index < registry.entries.length; index += 1) {
@@ -228,7 +249,8 @@ export async function runFrozenBatch(registry, mode, environment, dependencies, 
         await dependencies.publish(entry, input.permitId);
         const receipt = dependencies.readPublished(entry); const saved = await dependencies.readCurrent(entry);
         const completed = await dependencies.readPermit(input.permitId);
-        assertActualPublish(entry, receipt, saved, completed, identity);
+        assertActualPublish(entry, receipt, saved, completed, identity, binding.approvalId);
+        if (dependencies.assertReadback) await dependencies.assertReadback({ entry, receipt, saved, completed, identity, permitId: input.permitId });
         state.status = "PUBLISH_PASS"; state.performedWrite = true; state.savedUpdatedAt = saved.updated_at;
       }
       dependencies.saveSummary({ batch: binding.batch, mode, registrySha256: binding.sha256, rows });
@@ -250,9 +272,9 @@ export async function runFrozenCommand(options = {}) {
   const mode = args.find((arg) => arg.startsWith("--mode="))?.slice(7) || "dry-run";
   const environment = process.env;
   const checkoutSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-  const binding = options.binding || { batch: BATCH_NAME, sha256: REGISTRY_SHA256 };
-  assert(environment.PUBLISH_TARGET === binding.batch && [BATCH_NAME, "remaining-completion-after-37893433883", "remaining-completion-after-37898568406", "remaining-completion-after-37903094390", "remaining-completion-after-38037667102"].includes(binding.batch), "Frozen batch requires its exact owner authorization and current main dispatch identity; exact completion entry required");
-  assertBatchEnvironment({ ...environment, PUBLISH_TARGET: BATCH_NAME }, mode, environment.APPROVAL_ID, checkoutSha);
+  const binding = assertFixedBatchBinding(options.binding || { batch: BATCH_NAME, sha256: REGISTRY_SHA256 });
+  assert(environment.PUBLISH_TARGET === binding.batch, "Frozen batch requires its exact owner authorization and current main dispatch identity; exact completion entry required");
+  assertBatchEnvironment(environment, mode, environment.APPROVAL_ID, checkoutSha, binding);
   const registry = options.registry || readFrozenRegistry();
   const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
   assert(resolve(process.cwd()) === root, "Frozen batch must run from its owning Git project checkout");
@@ -279,7 +301,7 @@ export async function runFrozenCommand(options = {}) {
   const invoke = (entry, permitId) => {
     const childEnvironment = { ...environment }; delete childEnvironment.SUPABASE_SERVICE_ROLE_KEY;
     const result = spawnSync(process.execPath, ["scripts/publish-content-trust-fixes.mjs", `--target=${entry.target}`,
-      `--artifact-dir=${artifactRoot}`, ...(permitId ? ["--execute", `--approval-id=${APPROVAL_ID}`, `--managed-permit-id=${permitId}`] : [])],
+      `--artifact-dir=${artifactRoot}`, ...(permitId ? ["--execute", `--approval-id=${binding.approvalId}`, `--managed-permit-id=${permitId}`] : [])],
     { cwd: root, env: childEnvironment, encoding: "utf8", maxBuffer: 8 * 1024 * 1024 });
     write(join(targetDir(entry), `publisher-${permitId ? "publish" : "preview"}-stage.json`), {
       target: entry.target, stage: permitId ? "publish" : "preview", checkedAt: new Date().toISOString(),
@@ -300,6 +322,7 @@ export async function runFrozenCommand(options = {}) {
     return issuerClient;
   };
   const dependencies = {
+    assertReadback: options.assertReadback,
     now: Date.now,
     saveSummary: (summary) => write(join(artifactRoot, "frozen-batch-summary.json"), summary),
     savePermit: (entry, evidence) => write(join(targetDir(entry), "batch-permit-evidence.json"), evidence),
