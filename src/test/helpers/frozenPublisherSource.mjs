@@ -13,6 +13,9 @@ const assert = (value, message) => { if (!value) throw Error(message); };
 const historicalMiddlewareSha = "2c4c0e84bf3160ab60ac9e386a1084509158ec63f5ef4f56eefa3ef2928f382b";
 const reviewedCurrentMiddlewareSha = "05d0ca998b4ecc2260d02cfd4d5ac01e55ddbac561f96e500ff975dce3d87708";
 const middlewarePath = "functions/_middleware.ts";
+const readableBodyPath = "functions/readablePublicBody.ts";
+const historicalReadableBodySha = "4d67bd215b6e5c050d0be9d8bb562c0efdfaf7ae56fc01610a12323885f61293";
+const reviewedCurrentReadableBodySha = "a9297e52fa9f7e892faea23bbd3a22a6d554d814a6091c1741984ddaf9ce27e1";
 
 export function restoreFrozenPublisherMiddleware(bytes, expectedFrozenSha = historicalMiddlewareSha) {
   assert(expectedFrozenSha === historicalMiddlewareSha && hash(bytes) === reviewedCurrentMiddlewareSha,
@@ -30,6 +33,17 @@ export function restoreFrozenPublisherMiddleware(bytes, expectedFrozenSha = hist
   assert(restored.split(selected).length === 2, "Only the exact reviewed REST projection may be reversed");
   restored = Buffer.from(restored.replace(selected, historical));
   assert(hash(restored) === expectedFrozenSha, "Restored historical middleware must equal the existing frozen proof hash");
+  return restored;
+}
+
+export function restoreFrozenPublisherReadableBody(bytes, expectedHistoricalSha) {
+  assert(expectedHistoricalSha === historicalReadableBodySha && hash(bytes) === reviewedCurrentReadableBodySha,
+    "Historical publisher fixture only admits the exact reviewed current readable body bytes");
+  const current = bytes.toString("utf8");
+  const reviewed = '"/services/builtin", "/services/kitchen", "/services/renovation",';
+  assert(current.split(reviewed).length === 2, "Only the two exact reviewed service path additions may be reversed");
+  const restored = Buffer.from(current.replace(reviewed, '"/services/builtin",'));
+  assert(hash(restored) === expectedHistoricalSha, "Restored historical readable body must equal the existing frozen proof hash");
   return restored;
 }
 
@@ -82,7 +96,8 @@ export function createFrozenPublisherSourceFixture() {
   try {
     for (const [file, digest] of Object.entries(pins)) {
       const current = readFileSync(sourcePath(file));
-      const bytes = file === middlewarePath ? restoreFrozenPublisherMiddleware(current, digest) : current;
+      const bytes = file === middlewarePath ? restoreFrozenPublisherMiddleware(current, digest)
+        : file === readableBodyPath ? restoreFrozenPublisherReadableBody(current, digest) : current;
       assert(hash(bytes) === digest, "Every historical source byte must match its unchanged proof"); write(file, bytes);
     }
     const evidence = new Set([eightPath, ninePath, originalPath, eight.completedProofPath, nine.completedProofPath,

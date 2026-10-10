@@ -14,6 +14,8 @@ export const INPUT_MANIFEST_PATH = `${INPUT_DIRECTORY}/frozen-inputs.json`;
 export const INPUT_MANIFEST_SHA256 = "8100e82337b4b442e241b6fe4a7a89ace69eb0c80c18470a55873914032d0651";
 export const SAVED_RECOVERY_PATH = `${INPUT_DIRECTORY}/recovery-38066380587.json`;
 export const SAVED_RECOVERY_SHA256 = "5cd7e765b7fcbd6d71488734c58ba791b9c33950d8e6943904dea9d4db08a36c";
+export const KITCHEN_RECOVERY_PATH = `${INPUT_DIRECTORY}/recovery-38069295075.json`;
+export const KITCHEN_RECOVERY_SHA256 = "9393f2d9ac85ce8afbd222d306f059e7fcccc877a3c92076a003d32e819bf360";
 const WORKFLOW_REF = "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const assert = (condition, message) => { if (!condition) throw Error(message); };
@@ -139,6 +141,7 @@ export function readNativeRegistry() {
   const registry = validateNativeRegistry(readNativePinnedJson(manifest.readyRegistry), manifest);
   const prepared = { registry, binding: { batch: NATIVE_THREE_BATCH, approvalId: NATIVE_THREE_APPROVAL_ID, sha256: manifest.readyRegistry.sha256 }, manifest };
   prepared.recovery = validateNativeRecovery(prepared);
+  prepared.kitchenRecovery = validateNativeKitchenRecovery(prepared);
   return prepared;
 }
 
@@ -196,11 +199,66 @@ export function validateNativeRecovery(prepared, readProof = readNativePinnedJso
   return { recovery, receipt };
 }
 
+export function validateNativeKitchenRecovery(prepared, readProof = readNativePinnedJson) {
+  const recovery = readProof({ path: KITCHEN_RECOVERY_PATH, sha256: KITCHEN_RECOVERY_SHA256 });
+  assert(recovery.schemaVersion === 1 && recovery.runId === 38069295075 && recovery.runAttempt === 1
+    && recovery.workflowSha === "93716aaed5ef30ca209aa4a89db5230d47bd19fd" && recovery.actorId === 276684684
+    && recovery.workflowId === 351424533 && recovery.batch === NATIVE_THREE_BATCH
+    && recovery.registrySha256 === prepared.binding.sha256 && recovery.exactRecoveredTarget === NATIVE_THREE_TARGETS[1]
+    && recovery.permitId === "cde7fc7d-2021-4f5a-97b6-47c79c736945"
+    && recovery.savedUpdatedAt === "2026-10-10T16:51:33.869215+00:00"
+    && recovery.originalRunConclusion === "failure" && recovery.failureIsNotReclassified === true && recovery.maximumNewWrites === 1
+    && recovery.exactOriginalFailure === "RAW_ZH_KITCHEN_EXCERPT_MISSING_BEFORE_READABLE_BODY_REPAIR"
+    && recovery.currentPublicReadbackRequired === true && recovery.officialArtifactId === 11676177171
+    && recovery.officialArtifactDigest === "sha256:4d26c1dfbbecff17c5cf13c3bae3e20f541e6f207dd91d791dcf27ce299139e2",
+  "Native kitchen recovery must bind only the exact failed public-check run and its already Saved row");
+  const proofs = Object.fromEntries(Object.entries(recovery.proofs).map(([key, proof]) => [key, readProof(proof)]));
+  assert(same(Object.keys(proofs).sort(), ["permitEvidence", "receipt", "summary", "workflow"]), "Native kitchen recovery evidence closure differs");
+  const { workflow, summary, receipt, permitEvidence } = proofs; const entry = prepared.registry.entries[1];
+  assert(workflow.runId === recovery.runId && workflow.runAttempt === recovery.runAttempt && workflow.headSha === recovery.workflowSha
+    && workflow.actorId === recovery.actorId && workflow.workflowId === recovery.workflowId && workflow.mode === "publish"
+    && workflow.status === "completed" && workflow.conclusion === "failure" && workflow.registrySha256 === recovery.registrySha256,
+  "Native kitchen recovery original workflow identity differs");
+  assert(summary.batch === NATIVE_THREE_BATCH && summary.mode === "publish" && summary.registrySha256 === recovery.registrySha256
+    && same(summary.rows.map(row => row.target), NATIVE_THREE_TARGETS) && summary.stoppedAt === entry.target
+    && summary.rows[0].status === "PUBLISH_RECOVERED" && summary.rows[0].performedWrite === false
+    && summary.rows[0].priorRunId === 38066380587 && summary.rows[0].priorPermitId === "14ae24de-f39a-44cb-9dde-4d1a4a399edc"
+    && summary.rows[0].savedUpdatedAt === "2026-10-10T16:08:22.003433+00:00"
+    && summary.rows[1].status === "FAILED_STOPPED" && summary.rows[1].performedWrite === null
+    && summary.rows[1].failedAt === "PERMIT_ISSUED" && summary.rows[1].permitId === recovery.permitId
+    && summary.rows[2].status === "NOT_STARTED" && summary.rows[2].performedWrite === false && !summary.rows[2].permitId,
+  "Native kitchen recovery cannot skip unknown writes or change the untouched renovation CAS");
+  const evidence = permitEvidence.evidence;
+  assert(permitEvidence.issued.permitId === recovery.permitId && permitEvidence.issued.status === "issued"
+    && permitEvidence.issued.operation === "publish" && evidence.registrySha256 === prepared.binding.sha256
+    && evidence.target === entry.target && evidence.entrySha256 === stableDigest(entry)
+    && evidence.authorizationId === NATIVE_THREE_APPROVAL_ID
+    && evidence.operationsDecisionId === prepared.registry.executionDecision.id
+    && evidence.policyDecisionId === prepared.registry.executionDecision.policyDecisionId
+    && same(evidence.identity, { repositoryId: 1248188229, workflowRef: WORKFLOW_REF, workflowSha: recovery.workflowSha,
+      actorId: recovery.actorId, runId: recovery.runId, runAttempt: recovery.runAttempt })
+    && evidence.actualPayloadSha256 === entry.desiredFieldsSha256 && evidence.actualPriorSha256 === entry.rollbackFieldsSha256
+    && same(evidence.actualQa, entry.qaProofs.map(proof => ({ id: proof.receiptId, sha256: proof.sha256 }))),
+  "Native kitchen recovery original authorization, source, QA or issuer evidence differs");
+  // The immutable historical receipt remains failed. Only its precise known raw-summary gap is admissible.
+  assert(receipt.ok === false && receipt.target === entry.target && receipt.published.ok === true
+    && receipt.published.saved_id === entry.recordId && receipt.published.saved_updated_at === recovery.savedUpdatedAt
+    && receipt.postcheck.ok === false && same(receipt.postcheck.rowMismatches, [])
+    && same(receipt.postcheck.pageChecks.map(page => page.path), entry.publicPaths.map(page => page.path))
+    && receipt.postcheck.pageChecks.every((page, index) => page.status === 200 && page.found === true
+      && page.expected === entry.publicPaths[index].expected && same(page.forbiddenFound, [])
+      && same(page.missingRequired, index === 0 ? [entry.desiredFields.excerpt_zh] : [])),
+  "Native kitchen recovery historical failure differs; it must never be reclassified as success");
+  return { recovery, receipt };
+}
+
 export async function verifyNativeRecoveredSaved(prepared, recovered, context) {
-  const { entry, mode, dependencies, write, artifactRoot } = context;
-  assert(entry.target === NATIVE_THREE_TARGETS[0], "Only the exact previous first Saved row can be recovered");
+  const { entry, mode, dependencies, write, artifactRoot, environment } = context;
+  const index = NATIVE_THREE_TARGETS.indexOf(entry.target);
+  assert((index === 0 || index === 1) && recovered.recovery.exactRecoveredTarget === entry.target,
+    "Only the exact previous builtin or kitchen Saved row can be recovered");
   const { recovery, receipt } = recovered;
-  const source = prepared.manifest.entries[0];
+  const source = prepared.manifest.entries[index];
   const before = readNativePinnedJson({ path: source.baselinePath, sha256: source.baselineSha256 });
   const saved = await dependencies.readCurrent(entry);
   assert(same(Object.keys(saved).sort(), Object.keys(before).sort()) && saved.updated_at === recovery.savedUpdatedAt
@@ -209,18 +267,36 @@ export async function verifyNativeRecoveredSaved(prepared, recovered, context) {
     && stableDigest(project(saved, entry.retainedProjectionFields)) === entry.retainedFieldsSha256,
   "Previously Saved public row drifted; no fresh permit or write may start");
   assertNativeSavedPublic({ entry, receipt, saved }, before);
+  assert(typeof dependencies.readPublic === "function" && /^[0-9a-f]{40}$/.test(environment?.GITHUB_SHA || ""),
+    "Native recovered row requires current public readback and exact source identity");
+  const currentReadback = await dependencies.readPublic(entry);
+  assert(currentReadback.pageChecks?.length === 2 && same(currentReadback.pageChecks.map(page => page.path), entry.publicPaths.map(page => page.path))
+    && currentReadback.pageChecks.every((page, position) => page.status === 200 && page.found === true
+      && page.expected === entry.publicPaths[position].expected && same(page.forbiddenFound, []) && same(page.missingRequired, [])),
+  "Native recovered row current raw public title, required summary or forbidden content differs; no new permit may start");
   let completed = null;
   if (mode === "publish") {
     completed = await dependencies.readPermit(recovery.permitId);
     const originalIdentity = { repositoryId: 1248188229, workflowRef: WORKFLOW_REF, workflowSha: recovery.workflowSha,
       actorId: recovery.actorId, runId: recovery.runId, runAttempt: recovery.runAttempt };
-    assertActualPublish(entry, receipt, saved, completed, originalIdentity, NATIVE_THREE_APPROVAL_ID);
+    if (index === 0) assertActualPublish(entry, receipt, saved, completed, originalIdentity, NATIVE_THREE_APPROVAL_ID);
+    else assert(completed?.permitId === recovery.permitId && completed.status === "completed" && completed.operation === "publish"
+      && completed.taskId === entry.taskId && completed.actionId === entry.actionId && completed.candidateVersion === entry.candidateVersion
+      && completed.githubRunId === originalIdentity.runId && completed.githubRunAttempt === originalIdentity.runAttempt
+      && completed.savedId === entry.recordId && completed.savedUpdatedAt === saved.updated_at,
+    "Native recovered kitchen exact original completed permit tuple differs; never replay");
     assertNativeSavedRevision({ entry, receipt, saved, completed, permitId: recovery.permitId }, before);
   }
+  const publicProof = { schema: "native-recovered-current-public-readback/v1", target: entry.target,
+    priorRunId: recovery.runId, originalReceiptSha256: recovery.proofs.receipt.sha256,
+    currentSourceSha: environment.GITHUB_SHA, checkedAt: currentReadback.checkedAt,
+    pageChecks: currentReadback.pageChecks, ok: true, performedWrite: false, failureIsNotReclassified: true };
+  const publicProofBytes = `${JSON.stringify(publicProof, null, 2)}\n`;
+  write(join(artifactRoot, entry.target, "current-public-readback.json"), publicProof);
   const result = { target: entry.target, priorRunId: recovery.runId, permitId: recovery.permitId,
     savedUpdatedAt: saved.updated_at, performedWrite: false, privatePermitReadback: mode === "publish",
     originalRunConclusion: "failure", originalReceiptSha256: recovery.proofs.receipt.sha256,
-    publicRow: saved, completedPermit: completed };
+    publicRow: saved, completedPermit: completed, currentPublicReadbackVerified: true, currentPublicReadbackSha256: hash(publicProofBytes) };
   write(join(artifactRoot, entry.target, "recovered-completed-row.json"), result);
   return result;
 }
@@ -228,9 +304,9 @@ export async function verifyNativeRecoveredSaved(prepared, recovered, context) {
 export async function runNativeCommand() {
   assert(resolve(process.cwd()) === root, "Native batch must run from its owning Git project checkout");
   const prepared = readNativeRegistry();
-  const recovered = prepared.recovery;
   return runFrozenCommand({ registry: prepared.registry, binding: prepared.binding,
-    verifyCompleted: (context) => verifyNativeRecoveredSaved(prepared, recovered, context),
+    verifyCompleted: (context) => verifyNativeRecoveredSaved(prepared,
+      context.entry.target === NATIVE_THREE_TARGETS[0] ? prepared.recovery : prepared.kitchenRecovery, context),
     assertReadback: (context) => {
       const source = prepared.manifest.entries.find((entry) => entry.target === context.entry.target);
       assertNativeSavedRevision(context, readNativePinnedJson({ path: source.baselinePath, sha256: source.baselineSha256 }));

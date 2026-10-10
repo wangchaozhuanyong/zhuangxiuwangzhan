@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "runId": 38069295075,
+  "runAttempt": 1,
+  "workflowSha": "93716aaed5ef30ca209aa4a89db5230d47bd19fd",
+  "actorId": 276684684,
+  "workflowId": 351424533,
+  "batch": "paid-three-page-native-20261010",
+  "registrySha256": "79d5667a3a03d36b2ffa87b1355511a59ae6750f3799b09165da9b882169b3e0",
+  "exactRecoveredTarget": "paid-three-page-kitchen-exact-fields-v1",
+  "permitId": "cde7fc7d-2021-4f5a-97b6-47c79c736945",
+  "savedUpdatedAt": "2026-10-10T16:51:33.869215+00:00",
+  "originalRunConclusion": "failure",
+  "failureIsNotReclassified": true,
+  "maximumNewWrites": 1,
+  "exactOriginalFailure": "RAW_ZH_KITCHEN_EXCERPT_MISSING_BEFORE_READABLE_BODY_REPAIR",
+  "currentPublicReadbackRequired": true,
+  "officialArtifactId": 11676177171,
+  "officialArtifactDigest": "sha256:4d26c1dfbbecff17c5cf13c3bae3e20f541e6f207dd91d791dcf27ce299139e2",
+  "proofs": {
+    "workflow": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38069295075/workflow.json",
+      "sha256": "198fe5ee13378291ecbcc4cd1ad434a85503dbb51367f08bb84cdcd8b636412b"
+    },
+    "summary": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38069295075/summary.json",
+      "sha256": "666ff18e7846bf22032d0ba17cd7fdb428f3705160304d898681ad60c28bca17"
+    },
+    "receipt": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38069295075/receipt.json",
+      "sha256": "2a353573fcc4a9e3c502f3f00ebdfd76436bb483dfe60322af44d2884f56a99f"
+    },
+    "permitEvidence": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38069295075/permitEvidence.json",
+      "sha256": "e174f35b8dd5b0c9eb3ed8fa2bfa5e7642b4aa4973c61df04539d87a1b9e1750"
+    }
+  }
+}

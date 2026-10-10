@@ -5,7 +5,7 @@ import { resolve, relative, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash, randomUUID } from "node:crypto";
 import { execFileSync, spawnSync } from "node:child_process";
-import { targetConfigs, stableDigest, assertLockedServiceCandidate, assertLockedDryRunResult } from "./publish-content-trust-fixes.mjs";
+import { targetConfigs, stableDigest, assertLockedServiceCandidate, assertLockedDryRunResult, inspectPublicReadback } from "./publish-content-trust-fixes.mjs";
 
 export const BATCH_NAME = "remaining-completion-20261009";
 export const REGISTRY_PATH = "drafts/publishing/fc-20261009-remaining-completion-v1/registry.json";
@@ -226,18 +226,22 @@ export async function runFrozenBatch(registry, mode, environment, dependencies, 
     assert(registry.batch === NATIVE_THREE_BATCH && registry.authorization.id === NATIVE_THREE_APPROVAL_ID
       && same(registry.entries.map((entry) => entry.target), NATIVE_THREE_TARGETS), "Native three batch requires its exact independent authorization and three targets");
     assert(mode !== "publish" || typeof dependencies.assertReadback === "function", "Native three publish requires its exact saved revision readback");
+    assert(typeof dependencies.verifyCompleted === "function", "Native three requires exact builtin and kitchen completed-row recovery before the only fresh write");
   }
   const rows = registry.entries.map((entry) => ({ target: entry.target, status: "NOT_STARTED", performedWrite: false }));
   dependencies.saveSummary({ batch: binding.batch, mode, registrySha256: binding.sha256, rows });
   for (let index = 0; index < registry.entries.length; index += 1) {
     const entry = registry.entries[index]; const state = rows[index];
     try {
-      if (index === 0 && dependencies.verifyCompleted) {
+      if (index < 2 && dependencies.verifyCompleted) {
         assert(binding.batch === NATIVE_THREE_BATCH, "Completed-row recovery is restricted to the exact native three batch");
         state.status = "RECOVERY_VERIFICATION_STARTED";
         const recovered = await dependencies.verifyCompleted(entry);
-        assert(recovered.target === NATIVE_THREE_TARGETS[0] && recovered.priorRunId === 38066380587
-          && recovered.performedWrite === false && recovered.savedUpdatedAt
+        assert(recovered.target === NATIVE_THREE_TARGETS[index] && recovered.priorRunId === [38066380587, 38069295075][index]
+          && recovered.permitId === ["14ae24de-f39a-44cb-9dde-4d1a4a399edc", "cde7fc7d-2021-4f5a-97b6-47c79c736945"][index]
+          && recovered.savedUpdatedAt === ["2026-10-10T16:08:22.003433+00:00", "2026-10-10T16:51:33.869215+00:00"][index]
+          && recovered.performedWrite === false && recovered.currentPublicReadbackVerified === true
+          && /^[0-9a-f]{64}$/.test(recovered.currentPublicReadbackSha256 || "")
           && recovered.privatePermitReadback === (mode === "publish"), "Exact original Saved recovery did not verify");
         state.status = mode === "publish" ? "PUBLISH_RECOVERED" : "PREVIEW_SAVED_RECOVERED";
         state.performedWrite = false; state.savedUpdatedAt = recovered.savedUpdatedAt;
@@ -353,6 +357,15 @@ export async function runFrozenCommand(options = {}) {
         identity: readJson(join(dir, "managed-identity-probe.json")) };
     },
     readPublished: (entry) => readJson(join(targetDir(entry), "publish-receipt.json")),
+    readPublic: async (entry) => {
+      const pageChecks = [];
+      for (const page of targetConfigs[entry.target].publicPaths) {
+        const url = new URL(page.path, registry.site); url.searchParams.set("cms_recovered_run", environment.GITHUB_RUN_ID);
+        const response = await fetch(url, { cache: "no-store", headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(20_000) });
+        pageChecks.push(inspectPublicReadback(page, response.status, await response.text()));
+      }
+      return { checkedAt: new Date().toISOString(), pageChecks };
+    },
     readCurrent: async (entry) => {
       const url = new URL(`/rest/v1/${entry.table}`, environment.VITE_SUPABASE_URL);
       url.searchParams.set("id", `eq.${entry.recordId}`); url.searchParams.set("select", entry.baselineProjectionFields.join(","));

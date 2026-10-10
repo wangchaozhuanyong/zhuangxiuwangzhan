@@ -1,0 +1,34 @@
+{
+  "issued": {
+    "permitId": "cde7fc7d-2021-4f5a-97b6-47c79c736945",
+    "status": "issued",
+    "operation": "publish",
+    "expiresAt": "2026-10-10T17:01:26.812Z"
+  },
+  "evidence": {
+    "registrySha256": "79d5667a3a03d36b2ffa87b1355511a59ae6750f3799b09165da9b882169b3e0",
+    "target": "paid-three-page-kitchen-exact-fields-v1",
+    "entrySha256": "42d725c43800eac886da5e1163c921b9402c643a778489e20e99ad00cfcc52c3",
+    "authorizationId": "owner-authorized-paid-three-page-native-20261010",
+    "operationsDecisionId": "owner-authorized-paid-three-page-native-20261010-execution",
+    "policyDecisionId": "paid-three-page-native-20261010-exact-five-field-policy",
+    "identity": {
+      "repositoryId": 1248188229,
+      "actorId": 276684684,
+      "workflowRef": "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+      "runId": 38069295075,
+      "runAttempt": 1,
+      "workflowSha": "93716aaed5ef30ca209aa4a89db5230d47bd19fd"
+    },
+    "actualPreviewSha256": "be9bbf7caec800ba604955704c72f52148e8d286c0d2a776a539e6d018cadb5f",
+    "actualPreviewReceiptSha256": "e9c30c6a16aa405b2b4497c68c3328af72e29aa6225c83aacb4c49fbff04b9d0",
+    "actualPayloadSha256": "608d3c262b518bbac3085e5b36d159e4e2a158c6e182c85ff43d32507ced34b2",
+    "actualPriorSha256": "40d306e1bec501f7ec851f24061120e2a0aa79e828b3bbcfde6bf330746f7b49",
+    "actualQa": [
+      {
+        "id": "qa-20261010-kitchen-native-38062637708-153153618357",
+        "sha256": "c0f014c2409119a22f87c3404563b9c482b5c5143c033d99481cb5046adffc2c"
+      }
+    ]
+  }
+}

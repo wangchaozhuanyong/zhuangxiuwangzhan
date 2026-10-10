@@ -25,6 +25,21 @@ const publishedRenovation = (overrides: Partial<ServiceRow> = {}): ServiceRow =>
   ...overrides,
 });
 
+const publishedKitchen = (): ServiceRow => publishedRenovation({
+  id: "fixture-kitchen",
+  slug: "kitchen",
+  title_en: "Custom kitchen",
+  title_zh: "定制厨房",
+  seo_title_en: "Custom kitchen | FLASH CAST",
+  seo_title_zh: "定制厨房 | FLASH CAST",
+  seo_description_en: "Plan the custom kitchen scope.",
+  seo_description_zh: "规划定制厨房范围。",
+  excerpt_en: "Kitchen cabinet and appliance planning.",
+  excerpt_zh: "厨房橱柜与家电规划。",
+  content_en: "<h2>Kitchen scope</h2><p>Cabinet installation coordination.</p>",
+  content_zh: "<h2>厨房范围</h2><p>橱柜安装协调。</p>",
+});
+
 const render = async (pathname: string, row: ServiceRow) => {
   const shell = "<!doctype html><html lang=\"en\"><head><title>App</title></head><body><div id=\"root\"></div></body></html>";
   const responseFetch = vi.fn(async () => new Response(shell, { headers: { "content-type": "text/html; charset=utf-8" } }));
@@ -54,7 +69,8 @@ describe("renovation no-script body summary", () => {
     ["/zh/services/renovation", "厨房与浴室协调。"],
   ])("renders only the matching published locale for %s", async (path, expectedText) => {
     const html = await render(path, publishedRenovation());
-    expect(html).toContain('data-flashcast-readable-service-body');
+    expect(html).toContain('data-flashcast-readable-body');
+    expect(html).not.toContain('data-flashcast-readable-service-body');
     expect(html).toContain(expectedText);
     expect(html).not.toContain("alert(1)");
     expect(html).not.toContain("onerror");
@@ -62,17 +78,36 @@ describe("renovation no-script body summary", () => {
 
     const jsEnabled = new JSDOM(`${html}<script>document.documentElement.dataset.scripted = "true";</script>`, { runScripts: "dangerously" });
     expect(jsEnabled.window.document.documentElement.dataset.scripted).toBe("true");
-    expect(jsEnabled.window.document.querySelector("[data-flashcast-readable-service-body]")).toBeNull();
+    expect(jsEnabled.window.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
     const noJs = new JSDOM(html);
-    expect(noJs.window.document.querySelector("[data-flashcast-readable-service-body]")?.textContent).toContain(expectedText.replaceAll("&amp;", "&"));
+    expect(noJs.window.document.querySelector("[data-flashcast-readable-body]")?.textContent).toContain(expectedText.replaceAll("&amp;", "&"));
+    expect(noJs.window.document.title).toBe(path.startsWith("/zh/") ? "闪铸装修 | 住宅装修 | FLASH CAST" : "Residential renovation | FLASH CAST");
+    expect(noJs.window.document.querySelector("meta[name=description]")?.getAttribute("content")).toBe(path.startsWith("/zh/") ? "与 FLASH CAST 规划住宅装修。 闪铸装饰、闪铸设计和闪铸装修是 FLASH CAST 的中文品牌名称。" : "Plan a residential renovation with FLASH CAST.");
     jsEnabled.window.close();
     noJs.window.close();
   });
 
-  it("does not enrich a different service route", async () => {
-    const html = await render("/en/services/kitchen", publishedRenovation({ slug: "kitchen" }));
+  it("does not use a renovation row to enrich a different kitchen route", async () => {
+    const html = await render("/en/services/kitchen", publishedRenovation());
+    expect(html).not.toContain("data-flashcast-readable-body");
     expect(html).not.toContain("data-flashcast-readable-service-body");
     expect(html).not.toContain("Kitchen &amp; bathroom coordination.");
+  });
+
+  it.each([
+    ["/en/services/kitchen", "Cabinet installation coordination.", "Kitchen cabinet and appliance planning.", "Custom kitchen | FLASH CAST"],
+    ["/zh/services/kitchen", "橱柜安装协调。", "厨房橱柜与家电规划。", "定制厨房 | FLASH CAST"],
+  ])("renders only the matching kitchen row for %s without renovation content", async (path, body, excerpt, title) => {
+    const html = await render(path, publishedKitchen());
+    const noJs = new JSDOM(html);
+    const main = noJs.window.document.querySelector("[data-flashcast-readable-body]");
+    expect(main?.textContent).toContain(body);
+    expect(main?.textContent).toContain(excerpt);
+    expect(noJs.window.document.title).toBe(title);
+    expect(html).not.toContain("Kitchen &amp; bathroom coordination.");
+    expect(html).not.toContain("厨房与浴室协调。");
+    expect(html).not.toContain("data-flashcast-readable-service-body");
+    noJs.window.close();
   });
 
   it("does not enrich a non-published or mismatched row", async () => {
@@ -80,12 +115,15 @@ describe("renovation no-script body summary", () => {
     const mismatch = await render("/en/services/renovation", publishedRenovation({ slug: "kitchen" }));
     expect(draft).not.toContain("data-flashcast-readable-service-body");
     expect(mismatch).not.toContain("data-flashcast-readable-service-body");
+    expect(draft).not.toContain("data-flashcast-readable-body");
+    expect(mismatch).not.toContain("data-flashcast-readable-body");
   });
 
   it("does not substitute the other language when the matching body is absent", async () => {
     const row = publishedRenovation({ content_en: "", content_zh: "仅中文正文。" });
     const html = await render("/en/services/renovation", row);
     expect(html).not.toContain("data-flashcast-readable-service-body");
+    expect(html).not.toContain("data-flashcast-readable-body");
     expect(html).not.toContain("仅中文正文。");
   });
 });
