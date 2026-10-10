@@ -149,6 +149,10 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                 >
                   {copy.whatsappCta}
                 </a>
+                <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
+                  {copy.projectsCta}
+                  <ArrowUpRight aria-hidden="true" />
+                </LocalizedLink>
               </div>
             </div>
           </div>
