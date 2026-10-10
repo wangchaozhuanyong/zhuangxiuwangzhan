@@ -25,11 +25,78 @@ export type ManagedTarget = {
   retainedFieldsSha256?: string;
 };
 
+// Full native baselines for the original three-page candidate; registration grants no write authority.
+const PAID_THREE_PAGE_NATIVE_FIELDS = [
+  "id", "slug", "title_zh", "title_en", "excerpt_zh",
+  "excerpt_en", "content_zh", "content_en", "image_url", "alt_zh",
+  "alt_en", "suitable_for_zh", "suitable_for_en", "common_projects_zh", "common_projects_en",
+  "process_steps_zh", "process_steps_en", "scope_items_zh", "scope_items_en", "faqs_zh",
+  "faqs_en", "seo_title_zh", "seo_title_en", "seo_description_zh", "seo_description_en",
+  "status", "sort_order", "created_at", "updated_at", "version",
+] as const;
+
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
   ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),
   ...NATIVE_BODY_TARGETS.filter((target) => target.contentType === "service"),
+  {
+    id: "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+    slug: "builtin",
+    contentType: "service",
+    taskId: "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+    actionId: "paid-three-page-builtin-exact-fields-v1",
+    scope: "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71:content_zh",
+    candidateVersion: "paid-three-page-exact-native-diff-v1-20261010",
+    changedFields: ["content_zh"],
+    baselineProjectionFields: PAID_THREE_PAGE_NATIVE_FIELDS,
+    baselineFieldsSha256: "e2cd27f93add1d5a645cef5aae717e792be11c991330d7907714365fada93b62",
+    desiredFieldsSha256: "1d40ca43cd2b1e0ccfaee66a6c75e762c0e5c24e89c964839a38e20b2f4b1af2",
+    rollbackFieldsSha256: "0d49b604fb61ef0409c50b0c89492a5cf1313969b3dddd3a030e956bb29483e8",
+    expectedUpdatedAt: "2026-10-09T07:24:19.422726+00:00",
+    retainedProjectionFields: PAID_THREE_PAGE_NATIVE_FIELDS.filter((field) => !["content_zh", "updated_at", "version"].includes(field)),
+    retainedFieldsSha256: "42ee3bc14506f6ddc0c4268edf560b1b447c12390c07a3a1c4c2197fa422a478",
+    rollbackAllowed: true,
+    requiresParentRun: true,
+  },
+  {
+    id: "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+    slug: "kitchen",
+    contentType: "service",
+    taskId: "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+    actionId: "paid-three-page-kitchen-exact-fields-v1",
+    scope: "flashcast.com.my:services/ce4156db-9034-42c8-ba29-b35724ea7d6d:title_zh,excerpt_zh",
+    candidateVersion: "paid-three-page-exact-native-diff-v1-20261010",
+    changedFields: ["title_zh", "excerpt_zh"],
+    baselineProjectionFields: PAID_THREE_PAGE_NATIVE_FIELDS,
+    baselineFieldsSha256: "42a11419d1527f31462f5bd2cccde8dfb6295497caf7158f70e5d3185eaf852c",
+    desiredFieldsSha256: "608d3c262b518bbac3085e5b36d159e4e2a158c6e182c85ff43d32507ced34b2",
+    rollbackFieldsSha256: "40d306e1bec501f7ec851f24061120e2a0aa79e828b3bbcfde6bf330746f7b49",
+    expectedUpdatedAt: "2026-10-09T07:23:28.638474+00:00",
+    retainedProjectionFields: PAID_THREE_PAGE_NATIVE_FIELDS.filter((field) => !["title_zh", "excerpt_zh", "updated_at", "version"].includes(field)),
+    retainedFieldsSha256: "d02ca01b0fc4e4182b79261509c32d9f3c7bee2d9467305e3f2e0eff7c1a0b14",
+    rollbackAllowed: true,
+    requiresParentRun: true,
+  },
+  {
+    id: "0d947129-0595-43ef-baa1-0fd9d8b870e6",
+    slug: "renovation",
+    contentType: "service",
+    taskId: "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+    actionId: "paid-three-page-renovation-exact-fields-v1",
+    scope: "flashcast.com.my:services/0d947129-0595-43ef-baa1-0fd9d8b870e6:title_zh,excerpt_zh",
+    candidateVersion: "paid-three-page-exact-native-diff-v1-20261010",
+    changedFields: ["title_zh", "excerpt_zh"],
+    baselineProjectionFields: PAID_THREE_PAGE_NATIVE_FIELDS,
+    baselineFieldsSha256: "539359c220e67c890ea3d7b8782af817b9b3be09e4551cb4b8ee2b3e1b850ef0",
+    desiredFieldsSha256: "a4ad4f05fea8755af0d23e4f83b37ec406af181c8e113ecb7d6f155955c291b3",
+    rollbackFieldsSha256: "475391da36c20006e22446d954f8082bad8987c9fea74390feeb03bed4cd9765",
+    expectedUpdatedAt: "2026-09-26T18:10:33.566853+00:00",
+    retainedProjectionFields: PAID_THREE_PAGE_NATIVE_FIELDS.filter((field) => !["title_zh", "excerpt_zh", "updated_at", "version"].includes(field)),
+    retainedFieldsSha256: "bced5ffb8776c48b564578af07c6fd1cdc29bb3236b8e92d713c6df8a47ac3fc",
+    rollbackAllowed: true,
+    requiresParentRun: true,
+  },
   { id: "b401a610-a4dc-4a0b-a7e0-efcac6c81d71", slug: "builtin", contentType: "service", taskId: "fc-20260920-builtin-whole-house-custom-v1", actionId: "publish-builtin-whole-house-custom-v1", candidateVersion: "builtin-whole-house-custom-v1", scope: "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71" },
   { id: "0d947129-0595-43ef-baa1-0fd9d8b870e6", slug: "renovation", contentType: "service", taskId: "fc-20260920-en-renovation-owner-publish-v2", actionId: "publish-en-renovation-owner-cms-v2", candidateVersion: "en-renovation-owner-cms-v2", scope: "flashcast.com.my:/en/services/renovation:service:renovation:english-content-fields" },
   { id: "32f5374f-9919-41ea-80c7-00b5ac917532", slug: "shop-renovation", contentType: "service", taskId: "fc-20260921-seo-pg002-shop-candidate-v1", actionId: "publish-pg002-shop-cms-v1", candidateVersion: "pg002-shop-cms-v1", scope: "flashcast.com.my:services/32f5374f-9919-41ea-80c7-00b5ac917532" },
@@ -79,6 +146,44 @@ export const managedAction = (target: ManagedTarget, operation: "publish" | "rol
   candidateVersion: operation === "publish" ? target.candidateVersion : `${target.candidateVersion}-rollback-v1`,
   scope: target.scope,
 });
+
+export type ManagedPreviewCandidate = ReturnType<typeof managedAction> & { operation: "publish" };
+
+const stablePreviewValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(stablePreviewValue);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.keys(value).sort().map((key) =>
+    [key, stablePreviewValue((value as Record<string, unknown>)[key])]));
+};
+
+const previewDigest = async (value: unknown) => {
+  const bytes = new TextEncoder().encode(JSON.stringify(stablePreviewValue(value)));
+  return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)))
+    .map((byte) => byte.toString(16).padStart(2, "0")).join("");
+};
+
+// Selects a zero-write preview only; the server still checks the actual row and permit.
+export async function findManagedPreviewCandidate(
+  contentType: ManagedTarget["contentType"], record: Record<string, unknown>,
+  expectedUpdatedAt: string, targets: readonly ManagedTarget[] = MANAGED_TARGETS,
+): Promise<ManagedPreviewCandidate | undefined> {
+  const matches: ManagedTarget[] = [];
+  for (const target of targets) {
+    if (target.contentType !== contentType || target.id !== record.id || target.slug !== record.slug
+        || !expectedUpdatedAt || target.expectedUpdatedAt !== expectedUpdatedAt
+        || record.updated_at !== expectedUpdatedAt || record.status !== "published"
+        || !target.changedFields || !target.baselineProjectionFields
+        || !target.retainedProjectionFields || !target.retainedFieldsSha256 || !target.desiredFieldsSha256
+        || Object.keys(record).some((field) => !target.baselineProjectionFields!.includes(field))
+        || target.baselineProjectionFields.some((field) => record[field] === undefined)) continue;
+    const patch = Object.fromEntries(target.changedFields.map((field) => [field, record[field]]));
+    const retained = Object.fromEntries(target.retainedProjectionFields.map((field) => [field, record[field] ?? null]));
+    if (await previewDigest(patch) === target.desiredFieldsSha256
+        && await previewDigest(retained) === target.retainedFieldsSha256) matches.push(target);
+  }
+  const match = matches.length === 1 ? matches[0] : undefined;
+  return match ? { ...managedAction(match, "publish"), operation: "publish" } : undefined;
+}
 
 // Shared admission guard for secondary content writers such as translation.
 // All protected IDs and aliases derive from the same exact publisher targets.

@@ -59,7 +59,7 @@ describe("18 exact original-identity bilingual body targets", () => {
     expect(names).toHaveLength(18); expect(NATIVE_BODY_TARGETS).toHaveLength(18);
     expect(NATIVE_BODY_TARGETS.filter((t) => t.contentType === "service")).toHaveLength(8);
     expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
-    expect(MANAGED_TARGETS).toHaveLength(68);
+    expect(MANAGED_TARGETS).toHaveLength(71);
     const workflow = readFileSync(".github/workflows/content-publish-approved.yml", "utf8");
     for (const name of names) {
       const locked = lockedNativeBodyCandidates[name]; const row = frozenRow(name);
