@@ -9,7 +9,9 @@ import { lockedPaidThreePageCandidates } from "./managed-cms-targets-paid-three-
 import { NATIVE_THREE_BATCH, NATIVE_THREE_APPROVAL_ID, NATIVE_THREE_TARGETS, APPROVAL_ID, BATCH_NAME,
   assertFixedBatchBinding, assertBatchEnvironment, assertActualPreview, assertActualPublish, buildBatchPermit, runFrozenBatch } from "./publish-remaining-completion-20261009.mjs";
 import { INPUT_DIRECTORY, INPUT_MANIFEST_PATH, readNativeRegistry, validateNativeInputs, validateNativeRegistry,
-  assertNativeSavedRevision } from "./publish-paid-three-page-native-20261010.mjs";
+  SAVED_RECOVERY_PATH, assertNativeSavedPublic, assertNativeSavedRevision, validateNativeRecovery,
+  verifyNativeRecoveredSaved } from "./publish-paid-three-page-native-20261010.mjs";
+import { readManagedPermit } from "../supabase/functions/content-publish/permit-issuer.ts";
 
 // All QA/preview/permit examples below are SYNTHETIC contract fixtures, never release evidence.
 const root = process.cwd();
@@ -26,8 +28,30 @@ const beforeRows = new Map(actualManifest.entries.map(entry => [entry.target, JS
 const typedSources = new Map(actualManifest.entries.map(entry => [entry.target, JSON.parse(readFileSync(entry.sourceCandidatePath))]));
 const savedTime = "2026-10-10T15:30:00.123456+00:00";
 
+const receiptFor = (entry, updatedAt = savedTime) => ({ ok: true, target: entry.target, approvalId: NATIVE_THREE_APPROVAL_ID,
+  published: { ok: true, saved_id: entry.recordId, saved_updated_at: updatedAt, dry_run: false, content_type: "service", action: "publish",
+    existing_id: entry.recordId, slug: entry.slug, status: "published", warnings: [], cache_invalidation: { ok: true, strategy: "content-revision",
+      revision: updatedAt, edge_purge_requested: { ok: true, attempted: true, tag: "flashcast-public-html", status: 200 } } },
+  postcheck: { ok: true, rowMismatches: [], pageChecks: entry.publicPaths.map(page => ({ path: page.path, status: 200,
+    found: true, forbiddenFound: [], missingRequired: [] })) } });
+
+async function completedFromDatabase(entry, permitId, runIdentity = identity, updatedAt = savedTime, drift = {}, calls = []) {
+  // Raw snake_case DB fields pass through the real reader, rather than a handwritten response mock.
+  const row = { permit_id: permitId, status: "completed", operation: "publish", task_id: entry.taskId, action_id: entry.actionId,
+    candidate_version: entry.candidateVersion, github_run_id: runIdentity.runId, github_run_attempt: runIdentity.runAttempt,
+    saved_id: entry.recordId, saved_updated_at: updatedAt, ...drift };
+  const client = { from(table) { calls.push(["from", table]); return {
+    select(fields) { calls.push(["select", fields]); return {
+      eq(field, value) { calls.push(["eq", field, value]); return {
+        async maybeSingle() { calls.push(["maybeSingle"]); return { data: row, error: null }; },
+      }; },
+    }; },
+  }; } };
+  return readManagedPermit(client, permitId);
+}
+
 async function syntheticFixture(work) {
-  const tmpParent = join(root, ".tmp"); mkdirSync(tmpParent, { recursive: true });
+  const tmpParent = resolve(process.env.TMPDIR || join(root, ".tmp")); mkdirSync(tmpParent, { recursive: true });
   const own = mkdtempSync(join(tmpParent, "native-three-SYNTHETIC-"));
   const values = new Map();
   const pin = (path, value) => {
@@ -80,7 +104,7 @@ async function syntheticFixture(work) {
   try { return await work({ manifest, registry, read, pin, values }); }
   finally {
     process.chdir(root); assert.equal(process.cwd(), root);
-    assert(own.startsWith(join(root, ".tmp", "native-three-SYNTHETIC-"))); rmSync(own, { recursive: true });
+    assert(own.startsWith(join(tmpParent, "native-three-SYNTHETIC-"))); rmSync(own, { recursive: true });
     assert(!existsSync(own));
   }
 }
@@ -153,12 +177,11 @@ test("native dry-run never verifies issuer identity, issues a permit or publishe
 });
 
 test("saved readback refuses permit, Saved ID/time, version, English/retained and cache drift", async () => {
-  await syntheticFixture(({ registry }) => {
+  await syntheticFixture(async ({ registry }) => {
     const entry = registry.entries[0]; const before = beforeRows.get(entry.target);
-    const saved = { ...before, ...entry.desiredFields, updated_at: savedTime, version: before.version + 1 };
+    const saved = { ...before, ...entry.desiredFields, updated_at: savedTime, version: before.version };
     const permitId = "11111111-1111-4111-8111-111111111111";
-    const completed = { permitId, status: "completed", operation: "publish", taskId: entry.taskId, actionId: entry.actionId,
-      candidateVersion: entry.candidateVersion, githubRunId: identity.runId, githubRunAttempt: identity.runAttempt, savedId: entry.recordId, savedUpdatedAt: savedTime };
+    const completed = await completedFromDatabase(entry, permitId);
     const receipt = { ok: true, target: entry.target, approvalId: NATIVE_THREE_APPROVAL_ID,
       published: { ok: true, saved_id: entry.recordId, saved_updated_at: savedTime, dry_run: false, content_type: "service", action: "publish",
         existing_id: entry.recordId, slug: entry.slug, status: "published", warnings: [], cache_invalidation: { ok: true, strategy: "content-revision",
@@ -171,11 +194,110 @@ test("saved readback refuses permit, Saved ID/time, version, English/retained an
     }
     assert.throws(() => assertActualPublish(entry, { ...receipt, approvalId: APPROVAL_ID }, saved, completed, identity, NATIVE_THREE_APPROVAL_ID));
     assert.throws(() => assertActualPublish(entry, receipt, { ...saved, title_en: "newer unrelated English" }, completed, identity, NATIVE_THREE_APPROVAL_ID));
-    for (const mutate of [c => { c.completed.permitId = "other"; }, c => { c.saved.version = before.version; },
+    for (const mutate of [c => { c.completed.permitId = "other"; }, c => { c.saved.version = before.version + 1; },
       c => { c.receipt.published.content_type = "blog"; }, c => { c.receipt.published.cache_invalidation.edge_purge_requested.ok = false; }]) {
       const drift = structuredClone(context); mutate(drift); assert.throws(() => assertNativeSavedRevision(drift, before));
     }
   });
+});
+
+test("real managed-permit reader maps the raw database tuple before completed/Saved checks", async () => {
+  const entry = readNativeRegistry().registry.entries[0];
+  const permitId = "11111111-1111-4111-8111-111111111111"; const calls = [];
+  const completed = await completedFromDatabase(entry, permitId, identity, savedTime, {}, calls);
+  assert.deepEqual(calls, [["from", "managed_cms_release_permits"], ["select", "*"], ["eq", "permit_id", permitId], ["maybeSingle"]]);
+  assert.deepEqual(completed, { permitId, status: "completed", operation: "publish", taskId: entry.taskId, actionId: entry.actionId,
+    candidateVersion: entry.candidateVersion, githubRunId: identity.runId, githubRunAttempt: identity.runAttempt,
+    savedId: entry.recordId, savedUpdatedAt: savedTime });
+  assert(!Object.hasOwn(completed, "id")); assert(!Object.hasOwn(completed, "saved_updated_at"));
+  assert.equal(await readManagedPermit({ from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }) }) }, permitId), null);
+  await assert.rejects(readManagedPermit({ from: () => { throw Error("invalid ID must not query"); } }, "invalid"), /Invalid permit ID/);
+});
+
+test("all three services change only five approved fields, preserve 79 fields and versions, and advance precise timestamps", async () => {
+  const { registry } = readNativeRegistry(); let changedCount = 0; let retainedCount = 0;
+  for (const entry of registry.entries) {
+    const before = beforeRows.get(entry.target); const saved = { ...before, ...entry.desiredFields, updated_at: savedTime };
+    const permitId = "11111111-1111-4111-8111-111111111111";
+    const completed = await completedFromDatabase(entry, permitId); const receipt = receiptFor(entry);
+    const context = { entry, receipt, saved, completed, permitId };
+    assertActualPublish(entry, receipt, saved, completed, identity, NATIVE_THREE_APPROVAL_ID);
+    assertNativeSavedRevision(context, before);
+    assert.deepEqual(Object.keys(saved).sort(), [...entry.baselineProjectionFields].sort());
+    for (const field of entry.retainedProjectionFields) assert.deepEqual(saved[field], before[field]);
+    const actualChanges = entry.baselineProjectionFields.filter(field => JSON.stringify(saved[field]) !== JSON.stringify(before[field]));
+    assert.deepEqual(actualChanges.sort(), [...entry.changedFields, "updated_at"].sort());
+    assert.equal(saved.version, before.version); changedCount += entry.changedFields.length; retainedCount += entry.retainedProjectionFields.length;
+    for (const version of [before.version + 1, before.version - 1, String(before.version), null]) {
+      assert.throws(() => assertNativeSavedRevision({ ...context, saved: { ...saved, version } }, before), /saved version/);
+    }
+    assertNativeSavedPublic(context, { ...before, updated_at: "2026-10-10T15:30:00.123455+00:00" });
+    for (const updatedAt of [savedTime, "2026-10-10T15:30:00.123457+00:00", "invalid"]) {
+      assert.throws(() => assertNativeSavedPublic(context, { ...before, updated_at: updatedAt }), /saved version/);
+    }
+    const staleCache = structuredClone(context); staleCache.receipt.published.cache_invalidation.revision = "2026-10-10T15:30:00.123455+00:00";
+    assert.throws(() => assertNativeSavedRevision(staleCache, before), /cache delivery/);
+  }
+  assert.equal(changedCount, 5); assert.equal(retainedCount, 79);
+});
+
+test("Saved recovery accepts only the fixed failed first-row run, immutable evidence closure and untouched remaining rows", () => {
+  const prepared = readNativeRegistry(); const recovered = validateNativeRecovery(prepared);
+  assert.equal(recovered.recovery.runId, 38066380587); assert.equal(recovered.recovery.maximumNewWrites, 2);
+  assert.equal(recovered.recovery.originalRunConclusion, "failure");
+  const values = new Map([[SAVED_RECOVERY_PATH, recovered.recovery], ...Object.values(recovered.recovery.proofs)
+    .map(proof => [proof.path, JSON.parse(readFileSync(join(root, proof.path)))] )]);
+  for (const mutate of [v => { v.get(SAVED_RECOVERY_PATH).runId += 1; },
+    v => { v.get(SAVED_RECOVERY_PATH).exactRecoveredTarget = NATIVE_THREE_TARGETS[1]; },
+    v => { v.get(SAVED_RECOVERY_PATH).permitId = "11111111-1111-4111-8111-111111111111"; },
+    v => { v.get(SAVED_RECOVERY_PATH).registrySha256 = "b".repeat(64); },
+    v => { v.get(SAVED_RECOVERY_PATH).maximumNewWrites = 3; },
+    v => { v.get(SAVED_RECOVERY_PATH).originalRunConclusion = "success"; },
+    v => { v.get(recovered.recovery.proofs.workflow.path).headSha = environment.GITHUB_SHA; },
+    v => { v.get(recovered.recovery.proofs.summary.path).rows[1].performedWrite = true; },
+    v => { v.get(recovered.recovery.proofs.summary.path).rows[2].permitId = "unknown"; },
+    v => { v.get(recovered.recovery.proofs.receipt.path).published.saved_updated_at = savedTime; }]) {
+    const drift = structuredClone(values); mutate(drift);
+    assert.throws(() => validateNativeRecovery(prepared, proof => structuredClone(drift.get(proof.path))), /Native recovery/);
+  }
+});
+
+test("recovered Saved uses public-only dry-run and real completed-permit mapping in publish; all drift stops before fresh permits", async () => {
+  const prepared = readNativeRegistry(); const recovered = prepared.recovery; const { recovery } = recovered;
+  const entry = prepared.registry.entries[0]; const before = beforeRows.get(entry.target);
+  const saved = { ...before, ...entry.desiredFields, updated_at: recovery.savedUpdatedAt };
+  const originalIdentity = { ...identity, runId: recovery.runId, runAttempt: recovery.runAttempt };
+  for (const mode of ["dry-run", "publish"]) {
+    const reads = []; const writes = [];
+    const deps = { readCurrent: async () => structuredClone(saved), readPermit: async permitId => {
+      reads.push(permitId); return completedFromDatabase(entry, permitId, originalIdentity, recovery.savedUpdatedAt);
+    }, issue: () => assert.fail("recovery cannot issue"), publish: () => assert.fail("recovery cannot write") };
+    const context = { entry, mode, dependencies: deps, artifactRoot: "audits/SYNTHETIC-recovery", write: (path, value) => writes.push({ path, value }) };
+    const result = await verifyNativeRecoveredSaved(prepared, recovered, context);
+    assert.deepEqual(reads, mode === "publish" ? [recovery.permitId] : []);
+    assert.equal(result.performedWrite, false); assert.equal(result.privatePermitReadback, mode === "publish");
+    assert.equal(result.priorRunId, 38066380587); assert.equal(result.savedUpdatedAt, recovery.savedUpdatedAt);
+    assert.equal(writes.length, 1); assert.equal(writes[0].path, join(context.artifactRoot, entry.target, "recovered-completed-row.json"));
+    assert.equal(writes[0].value.completedPermit?.permitId ?? null, mode === "publish" ? recovery.permitId : null);
+    for (const mutate of [row => { row[entry.changedFields[0]] = "payload drift"; },
+      row => { row.title_en = "retained drift"; }, row => { row.updated_at = savedTime; },
+      row => { row.version += 1; }, row => { row.extra = "unknown public field"; }, row => { delete row.title_en; }]) {
+      const drift = structuredClone(saved); mutate(drift); reads.length = 0; writes.length = 0;
+      await assert.rejects(verifyNativeRecoveredSaved(prepared, recovered, { ...context,
+        dependencies: { ...deps, readCurrent: async () => drift } }), /Previously Saved|saved version/);
+      assert.deepEqual(reads, []); assert.deepEqual(writes, []);
+    }
+  }
+  for (const drift of [null, { status: "issued" }, { github_run_id: 12345 }, { github_run_attempt: 2 },
+    { task_id: "other" }, { action_id: "other" }, { candidate_version: "other" }, { operation: "rollback" },
+    { saved_id: "other" }, { saved_updated_at: before.updated_at }]) {
+    let writes = 0;
+    await assert.rejects(verifyNativeRecoveredSaved(prepared, recovered, { entry, mode: "publish", artifactRoot: "audits/SYNTHETIC-recovery",
+      write: () => { writes += 1; }, dependencies: { readCurrent: async () => saved,
+        readPermit: permitId => drift === null ? null : completedFromDatabase(entry, permitId, originalIdentity, recovery.savedUpdatedAt, drift) } }), /Actual publish/);
+    assert.equal(writes, 0);
+  }
+  await assert.rejects(verifyNativeRecoveredSaved(prepared, recovered, { entry: prepared.registry.entries[1], mode: "publish" }), /exact previous first/);
 });
 
 test("native orchestration binds a fresh permit per row and stops before issuing on wrong identity or after uncertain saved readback", async () => {
@@ -194,10 +316,8 @@ test("native orchestration binds a fresh permit per row and stops before issuing
       readCurrent: async entry => rows.get(entry.target), verifyIdentity: async () => { events.push("identity"); return identity; },
       issue: async input => { issued = input; events.push("issue"); return { permitId: input.permitId, status: "issued", operation: "publish" }; },
       publish: async entry => { events.push("publish"); const before = beforeRows.get(entry.target); rows.set(entry.target, {
-        ...before, ...entry.desiredFields, updated_at: savedTime, version: before.version + 1 }); },
-      readPublished: receiptFor, readPermit: async permitId => ({ permitId, status: "completed", operation: "publish", taskId: active.taskId,
-        actionId: active.actionId, candidateVersion: active.candidateVersion, githubRunId: identity.runId, githubRunAttempt: identity.runAttempt,
-        savedId: active.recordId, savedUpdatedAt: savedTime }),
+        ...before, ...entry.desiredFields, updated_at: savedTime, version: before.version }); },
+      readPublished: receiptFor, readPermit: permitId => completedFromDatabase(active, permitId),
       assertReadback: context => { events.push("readback"); assertNativeSavedRevision(context, beforeRows.get(context.entry.target)); } };
     const result = await runFrozenBatch(registry, "publish", environment, deps, binding);
     assert(result.rows.every(row => row.status === "PUBLISH_PASS")); assert.equal(new Set(result.rows.map(row => row.permitId)).size, 3);
@@ -214,6 +334,81 @@ test("native orchestration binds a fresh permit per row and stops before issuing
     assert.equal(summary.rows[0].status, "FAILED_STOPPED"); assert.equal(summary.rows[0].performedWrite, null);
     assert.equal(summary.rows[0].writeOutcome, "INSPECT_ACTUAL_SINGLE_USE_PERMIT_AND_RECEIPT_DO_NOT_REPLAY");
     assert.equal(summary.rows[1].status, "NOT_STARTED");
+  });
+});
+
+test("native resume skips only the verified original Saved row; the other two alone preview and use fresh single-use permits", async () => {
+  const prepared = readNativeRegistry(); const recovered = prepared.recovery; const { recovery } = recovered;
+  await syntheticFixture(async ({ registry, read }) => {
+    const setup = (mode, rowDrift, permitDrift) => {
+      const rows = new Map([...beforeRows].map(([target, row]) => [target, structuredClone(row)]));
+      const first = registry.entries[0]; const priorSaved = { ...rows.get(first.target), ...first.desiredFields, updated_at: recovery.savedUpdatedAt };
+      if (rowDrift) rowDrift(priorSaved); rows.set(first.target, priorSaved);
+      const events = []; const issued = []; const privateReads = []; const writtenArtifacts = []; let active; let summary;
+      const deps = { now: () => Date.parse("2026-10-10T15:00:00Z"), saveSummary: value => { summary = structuredClone(value); }, savePermit: () => {},
+        preview: async entry => { active = entry; events.push(`preview:${entry.slug}`); },
+        readPreview: entry => Object.fromEntries(Object.entries(registry.actualPreviews.find(p => p.target === entry.target).artifacts).map(([key, pin]) => [key, read(pin)])),
+        readCurrent: async entry => rows.get(entry.target), verifyIdentity: async () => { assert.equal(mode, "publish"); events.push("identity"); return identity; },
+        issue: async input => { assert.equal(mode, "publish"); issued.push(input); events.push(`issue:${active.slug}`);
+          return { permitId: input.permitId, status: "issued", operation: "publish" }; },
+        publish: async entry => { assert.equal(mode, "publish"); events.push(`publish:${entry.slug}`);
+          rows.set(entry.target, { ...rows.get(entry.target), ...entry.desiredFields, updated_at: savedTime }); },
+        readPublished: entry => receiptFor(entry), readPermit: permitId => {
+          assert.equal(mode, "publish"); privateReads.push(permitId);
+          if (permitId === recovery.permitId) return permitDrift === null ? null : completedFromDatabase(first, permitId,
+            { ...identity, runId: recovery.runId, runAttempt: recovery.runAttempt }, recovery.savedUpdatedAt, permitDrift || {});
+          return completedFromDatabase(active, permitId);
+        },
+        assertReadback: context => assertNativeSavedRevision(context, beforeRows.get(context.entry.target)),
+      };
+      deps.verifyCompleted = entry => { events.push(`recover:${entry.slug}`); return verifyNativeRecoveredSaved(prepared, recovered,
+        { entry, mode, dependencies: deps, artifactRoot: "audits/SYNTHETIC-resume", write: (path, value) => writtenArtifacts.push({ path, value }) }); };
+      return { deps, rows, events, issued, privateReads, writtenArtifacts, summary: () => summary };
+    };
+    for (const mode of ["dry-run", "publish"]) {
+      const state = setup(mode); const result = await runFrozenBatch(registry, mode, environment, state.deps, binding);
+      assert.deepEqual(result.rows.map(row => row.status), mode === "publish"
+        ? ["PUBLISH_RECOVERED", "PUBLISH_PASS", "PUBLISH_PASS"] : ["PREVIEW_SAVED_RECOVERED", "PREVIEW_PASS", "PREVIEW_PASS"]);
+      assert.equal(result.rows[0].performedWrite, false); assert.equal(result.rows[0].priorRunId, 38066380587);
+      assert.equal(result.rows[0].priorPermitId, recovery.permitId); assert.equal(result.rows[0].savedUpdatedAt, recovery.savedUpdatedAt);
+      assert.equal(result.rows.filter(row => row.performedWrite).length, mode === "publish" ? 2 : 0);
+      assert(!state.events.some(event => /^(preview|issue|publish):builtin$/.test(event)));
+      assert.deepEqual(state.events, mode === "publish" ? ["recover:builtin", "preview:kitchen", "identity", "issue:kitchen", "publish:kitchen",
+        "preview:renovation", "identity", "issue:renovation", "publish:renovation"] : ["recover:builtin", "preview:kitchen", "preview:renovation"]);
+      assert.deepEqual(state.issued.map(input => input.recordId), mode === "publish" ? registry.entries.slice(1).map(entry => entry.recordId) : []);
+      assert.equal(new Set(state.issued.map(input => input.permitId)).size, mode === "publish" ? 2 : 0);
+      assert(state.issued.every(input => input.permitId !== recovery.permitId));
+      assert.equal(state.privateReads.length, mode === "publish" ? 3 : 0);
+      assert.equal(state.writtenArtifacts[0].value.privatePermitReadback, mode === "publish");
+      for (const rowDrift of [row => { row.version += 1; }, row => { row.updated_at = savedTime; },
+        row => { row.content_zh = "changed reviewed content"; }, row => { row.title_en = "changed retained field"; }]) {
+        const failed = setup(mode, rowDrift);
+        await assert.rejects(runFrozenBatch(registry, mode, environment, failed.deps, binding), /Previously Saved|saved version/);
+        assert.deepEqual(failed.events, ["recover:builtin"]); assert.equal(failed.privateReads.length, 0);
+        assert.equal(failed.issued.length, 0); assert.equal(failed.writtenArtifacts.length, 0);
+        assert.deepEqual(failed.summary().rows.map(row => row.status), ["FAILED_STOPPED", "NOT_STARTED", "NOT_STARTED"]);
+        assert.equal(failed.summary().rows[0].performedWrite, false);
+      }
+    }
+    for (const permitDrift of [null, { status: "issued" }, { github_run_id: Number(environment.GITHUB_RUN_ID) }, { saved_updated_at: savedTime }]) {
+      const failed = setup("publish", null, permitDrift);
+      await assert.rejects(runFrozenBatch(registry, "publish", environment, failed.deps, binding), /Actual publish/);
+      assert.deepEqual(failed.events, ["recover:builtin"]); assert.equal(failed.issued.length, 0);
+      assert.deepEqual(failed.summary().rows.map(row => row.status), ["FAILED_STOPPED", "NOT_STARTED", "NOT_STARTED"]);
+    }
+    const uncertain = setup("publish"); uncertain.deps.readPermit = async () => { throw Error("private read unavailable"); };
+    await assert.rejects(runFrozenBatch(registry, "publish", environment, uncertain.deps, binding), /private read unavailable/);
+    assert.equal(uncertain.issued.length, 0); assert.equal(uncertain.summary().rows[2].status, "NOT_STARTED");
+    const failedSecond = setup("publish"); const publish = failedSecond.deps.publish;
+    failedSecond.deps.publish = async entry => { await publish(entry); failedSecond.rows.get(entry.target).title_en = "unexpected Saved drift"; };
+    await assert.rejects(runFrozenBatch(registry, "publish", environment, failedSecond.deps, binding), /Actual publish/);
+    assert.deepEqual(failedSecond.events, ["recover:builtin", "preview:kitchen", "identity", "issue:kitchen", "publish:kitchen"]);
+    assert.equal(failedSecond.issued.length, 1); assert.equal(failedSecond.summary().rows[0].status, "PUBLISH_RECOVERED");
+    assert.equal(failedSecond.summary().rows[1].performedWrite, null); assert.equal(failedSecond.summary().rows[2].status, "NOT_STARTED");
+    const oldBatch = setup("dry-run");
+    await assert.rejects(runFrozenBatch({ ...registry, batch: BATCH_NAME, authorization: { id: APPROVAL_ID } }, "dry-run", environment,
+      oldBatch.deps, { batch: BATCH_NAME, approvalId: APPROVAL_ID, sha256: binding.sha256 }), /restricted to the exact native three batch/);
+    assert.equal(oldBatch.events.length, 0); assert.equal(oldBatch.privateReads.length, 0); assert.equal(oldBatch.issued.length, 0);
   });
 });
 

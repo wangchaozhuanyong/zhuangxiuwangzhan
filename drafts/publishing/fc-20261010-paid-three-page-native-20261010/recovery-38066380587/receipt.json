@@ -1,0 +1,60 @@
+{
+  "ok": true,
+  "target": "paid-three-page-builtin-exact-fields-v1",
+  "operation": "optimize",
+  "approvalId": "owner-authorized-paid-three-page-native-20261010",
+  "publishedAt": "2026-10-10T16:08:24.545Z",
+  "published": {
+    "ok": true,
+    "dry_run": false,
+    "content_type": "service",
+    "action": "publish",
+    "slug": "builtin",
+    "status": "published",
+    "existing_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+    "warnings": [],
+    "next_steps": [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
+      "Verify the /zh and /en public service pages read the updated admin content.",
+      "Run publish receipt/QA and production cache verification."
+    ],
+    "auth_mode": "cron",
+    "saved_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+    "saved_updated_at": "2026-10-10T16:08:22.003433+00:00",
+    "cache_invalidation": {
+      "ok": true,
+      "strategy": "content-revision",
+      "revision": "2026-10-10T16:08:22.931663+00:00",
+      "edge_purge_requested": {
+        "ok": true,
+        "attempted": true,
+        "tag": "flashcast-public-html",
+        "status": 200
+      }
+    }
+  },
+  "postcheck": {
+    "ok": true,
+    "checkedAt": "2026-10-10T16:08:24.545Z",
+    "rowMismatches": [],
+    "pageChecks": [
+      {
+        "path": "/zh/services/builtin",
+        "status": 200,
+        "expected": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST",
+        "found": true,
+        "forbiddenFound": [],
+        "missingRequired": []
+      },
+      {
+        "path": "/en/services/builtin",
+        "status": 200,
+        "expected": "Custom Built-In Furniture & Wardrobes | FLASH CAST",
+        "found": true,
+        "forbiddenFound": [],
+        "missingRequired": []
+      }
+    ]
+  },
+  "rollbackCommand": "Issue a distinct one-time rollback permit bound to this completed publish permit and its saved_updated_at; run content-publish-approved.yml with managed_operation=rollback, parent_run_id=38066380587, and the new permit ID."
+}

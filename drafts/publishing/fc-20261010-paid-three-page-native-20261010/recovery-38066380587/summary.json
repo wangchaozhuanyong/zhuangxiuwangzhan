@@ -1,0 +1,26 @@
+{
+  "batch": "paid-three-page-native-20261010",
+  "mode": "publish",
+  "registrySha256": "79d5667a3a03d36b2ffa87b1355511a59ae6750f3799b09165da9b882169b3e0",
+  "rows": [
+    {
+      "target": "paid-three-page-builtin-exact-fields-v1",
+      "status": "FAILED_STOPPED",
+      "performedWrite": null,
+      "permitId": "14ae24de-f39a-44cb-9dde-4d1a4a399edc",
+      "failedAt": "PERMIT_ISSUED",
+      "writeOutcome": "INSPECT_ACTUAL_SINGLE_USE_PERMIT_AND_RECEIPT_DO_NOT_REPLAY"
+    },
+    {
+      "target": "paid-three-page-kitchen-exact-fields-v1",
+      "status": "NOT_STARTED",
+      "performedWrite": false
+    },
+    {
+      "target": "paid-three-page-renovation-exact-fields-v1",
+      "status": "NOT_STARTED",
+      "performedWrite": false
+    }
+  ],
+  "stoppedAt": "paid-three-page-builtin-exact-fields-v1"
+}

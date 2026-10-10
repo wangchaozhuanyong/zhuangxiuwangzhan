@@ -1,0 +1,102 @@
+{
+  "status": "completed",
+  "conclusion": "failure",
+  "mode": "publish",
+  "runId": 38066380587,
+  "headSha": "1b1909437c4de6e6c7764a416e92d6468276f23f",
+  "runAttempt": 1,
+  "workflowId": 351424533,
+  "actorId": 276684684,
+  "url": "https://github.com/wangchaozhuanyong/zhuangxiuwangzhan/actions/runs/38066380587",
+  "registrySha256": "79d5667a3a03d36b2ffa87b1355511a59ae6750f3799b09165da9b882169b3e0",
+  "jobs": [
+    {
+      "id": 114254764123,
+      "name": "publish",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Reject unverified locked-target writes before loading production credentials",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Download exact parent-run backup for managed rollback",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/setup-node@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate frozen native three-page evidence before loading credentials",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check real Chrome before protected browser acceptance",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Confirm production source and required secrets",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate or publish approved updates",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Preview the exact frozen completion batch without issuing permits",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Issue and consume one exact permit at a time for the frozen owner-directed batch",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Upload audit package",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v6",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}
