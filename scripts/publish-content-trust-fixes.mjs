@@ -12,6 +12,7 @@ import { lockedNativeBodyCandidates } from "./managed-cms-targets-native-body-v1
 import { lockedOwnerPublisherThreeCandidates } from "./managed-cms-targets-owner-publisher-three-v1.mjs";
 import { verifyPublicPage } from "./lib/publisher-public-readback.mjs";
 import { lockedUnifiedContentCandidates } from "./managed-cms-targets-unified-content-v1.mjs";
+import { lockedPaidThreePageCandidates } from "./managed-cms-targets-paid-three-page-v1.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -987,7 +988,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
       keyField: locked.keyField || "slug",
@@ -1290,16 +1291,19 @@ const main = async () => {
       });
     }
     if (config.lockedCandidate.exactPatchOnly) {
-      // A prior payload digest is required by the existing issuer contract, but never authorizes restoring it.
+      // A prior-payload digest grants no restore authority; allowed restores still require a distinct completed-parent permit.
       const prior = Object.fromEntries(config.lockedCandidate.changedFields.map((field) => [field, current[field]]));
       writeJson(path.join(outputDir, "rollback-payload-digest.json"), {
         task_id: config.lockedCandidate.taskId,
         candidate_version: config.lockedCandidate.candidateVersion,
         payload_sha256: stableDigest(prior),
         baseline_fields_sha256: config.lockedCandidate.baselineFieldsSha256,
-        restoration_allowed: false,
+        restoration_allowed: config.lockedCandidate.rollbackAllowed === true,
+        restoration_requires_distinct_completed_parent_permit: config.lockedCandidate.rollbackAllowed === true,
         native_restore_preview_executed: false,
-        recovery: "Read the actual saved row and prepare a separately reviewed exact forward correction.",
+        recovery: config.lockedCandidate.rollbackAllowed === true
+          ? "CMS row readback and a separately issued single-use rollback permit bound to the completed parent are required."
+          : "Read the actual saved row and prepare a separately reviewed exact forward correction.",
       });
     }
     if (process.env.GITHUB_ACTIONS === "true") {
@@ -1315,7 +1319,7 @@ const main = async () => {
     }
   }
 
-  const rollbackCommand = config.lockedCandidate?.exactPatchOnly
+  const rollbackCommand = config.lockedCandidate?.exactPatchOnly && config.lockedCandidate.rollbackAllowed !== true
     ? "Read the actual saved row; prepare a new reviewed exact forward correction. Prior-payload restore and permit replay are disabled."
     : config.lockedCandidate
     ? `Issue a distinct one-time rollback permit bound to this completed publish permit and its saved_updated_at; run content-publish-approved.yml with managed_operation=rollback, parent_run_id=${process.env.GITHUB_RUN_ID || "PARENT_RUN_ID"}, and the new permit ID.`
@@ -1414,7 +1418,7 @@ const main = async () => {
   if (!postcheck.ok && config.lockedCandidate) {
     writeJson(path.join(outputDir, "publish-receipt.json"), {
       ok: false, target, operation, published, postcheck,
-      recovery: config.lockedCandidate.exactPatchOnly ? "Read the actual saved row and completed permit; prepare a separately reviewed forward correction only if needed. No old snapshot restore or permit replay." : "CMS row readback and a separately issued single-use rollback permit are required; do not retry the publish permit.",
+      recovery: config.lockedCandidate.exactPatchOnly && config.lockedCandidate.rollbackAllowed !== true ? "Read the actual saved row and completed permit; prepare a separately reviewed forward correction only if needed. No old snapshot restore or permit replay." : "CMS row readback and a separately issued single-use rollback permit are required; do not retry the publish permit.",
     });
     fail(`Post-publish verification failed for ${target}; the one-time permit cannot be replayed.`);
   }

@@ -54,7 +54,7 @@ function clientFor(initial: Row, race = false) {
 describe("two exact combined native CMS targets", () => {
   it("registers two additional selectors while preserving historical bindings", () => {
     expect(Object.keys(lockedUnifiedContentCandidates)).toEqual(names);
-    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(MANAGED_TARGETS).toHaveLength(68);
+    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(MANAGED_TARGETS).toHaveLength(71);
     expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

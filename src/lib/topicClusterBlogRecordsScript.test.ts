@@ -200,11 +200,12 @@ describe("topic-cluster Blog publish records", () => {
     const publisherThreeTargets = ["v17-owner-publisher-native-preparation-v2-20261007",
       "v18-owner-publisher-native-preparation-v2-20261007", "v20-owner-publisher-native-preparation-v2-20261007"];
     const unifiedTargets = ["design-body-faq-unified-20261009-v1", "bathroom-body-step-unified-20261009-v1"];
-    const publishTargets = [...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
+    const paidThreeTargets = ["paid-three-page-builtin-exact-fields-v1", "paid-three-page-kitchen-exact-fields-v1", "paid-three-page-renovation-exact-fields-v1"];
+    const publishTargets = [...paidThreeTargets, ...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
     expect(cases).toHaveLength(2);
-    expect(cases[0]).toEqual(rollbackTargets);
+    expect(cases[0]).toEqual([...paidThreeTargets, ...rollbackTargets]);
     expect(cases[1]).toEqual(publishTargets);
     for (const target of publishTargets) expect(workflow).toContain(`          - ${target}`);
     for (const target of mediaTargets) expect(cases[0]).not.toContain(target);

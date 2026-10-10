@@ -130,12 +130,15 @@ jobs:
           test -s "$RUNNER_TEMP/public-schema-before.sql"
           mkdir -p "$RUNNER_TEMP/edge-before"
           supabase init --workdir "$RUNNER_TEMP/edge-before" --yes
+          supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-before-download.json"
+          node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-before-download.json" > "$RUNNER_TEMP/edge-version-before-download.txt"
           supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-before"
           test -s "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts"
-          supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-before.json"
-          node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-before.txt"
           node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before.json"
           node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before.sha256"
+          supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-before.json"
+          node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-before.txt"
+          cmp -s "$RUNNER_TEMP/edge-version-before-download.txt" "$RUNNER_TEMP/edge-version-before.txt"
           sha256sum "$RUNNER_TEMP/public-schema-before.sql" "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts" > "$RUNNER_TEMP/pre-release-hashes.txt"
           echo "Previous content-publish version: $(cat "$RUNNER_TEMP/edge-version-before.txt"); source SHA-256: $(cat "$RUNNER_TEMP/edge-source-before.sha256")." >> "$GITHUB_STEP_SUMMARY"
       - name: Retain previous Edge source for controlled recovery
@@ -148,6 +151,8 @@ jobs:
             ${{ runner.temp }}/edge-source-before.json
             ${{ runner.temp }}/edge-source-before.sha256
             ${{ runner.temp }}/edge-source-expected.json
+            ${{ runner.temp }}/functions-before-download.json
+            ${{ runner.temp }}/functions-before.json
           retention-days: 7
           if-no-files-found: error
       - name: Recheck applied migration and reject all pending schema changes
@@ -177,7 +182,10 @@ jobs:
              supabase init --workdir "$RUNNER_TEMP/edge-after" --yes && \
              supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-after" && \
              node scripts/supabase-content-publish-release.mjs source-deployed supabase/functions "$RUNNER_TEMP/edge-after/supabase/functions" > "$RUNNER_TEMP/edge-source-after.sha256" && \
-             node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-after/supabase/functions" > "$RUNNER_TEMP/edge-source-after.json"; then
+             node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-after/supabase/functions" > "$RUNNER_TEMP/edge-source-after.json" && \
+             supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-after-download.json" && \
+             node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-after-download.json" > "$RUNNER_TEMP/edge-version-after-download.txt" && \
+             cmp -s "$RUNNER_TEMP/edge-version-after.txt" "$RUNNER_TEMP/edge-version-after-download.txt"; then
             echo "content-publish version advanced to $(cat "$RUNNER_TEMP/edge-version-after.txt"); full runtime source matches the reviewed checkout; managed switch remains off." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
@@ -200,7 +208,10 @@ jobs:
                  "$RUNNER_TEMP/edge-before/supabase/functions" \
                  "$RUNNER_TEMP/edge-restored/supabase/functions" > "$RUNNER_TEMP/edge-source-restored.sha256" || \
              ! node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-restored/supabase/functions" > "$RUNNER_TEMP/edge-source-restored.json" || \
-             ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-restored.sha256"; then
+             ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-restored.sha256" || \
+             ! supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-restored-download.json" || \
+             ! node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-restored-download.json" > "$RUNNER_TEMP/edge-version-restored-download.txt" || \
+             ! cmp -s "$RUNNER_TEMP/edge-version-restored.txt" "$RUNNER_TEMP/edge-version-restored-download.txt"; then
             rollback_failed 'restored Edge source hash could not be verified'
           fi
           echo "rollback_succeeded_verified: version $(cat "$RUNNER_TEMP/edge-version-restored.txt"), source SHA-256 $(cat "$RUNNER_TEMP/edge-source-restored.sha256"). Additive permit schema remains; no automatic SQL rollback." >> "$GITHUB_STEP_SUMMARY"
@@ -220,7 +231,9 @@ jobs:
             ${{ runner.temp }}/edge-source-restored.sha256
             ${{ runner.temp }}/edge-source-before-recheck.sha256
             ${{ runner.temp }}/functions-after.json
+            ${{ runner.temp }}/functions-after-download.json
             ${{ runner.temp }}/functions-restored.json
+            ${{ runner.temp }}/functions-restored-download.json
             ${{ runner.temp }}/edge-version-after.txt
             ${{ runner.temp }}/edge-version-restored.txt
           retention-days: 7

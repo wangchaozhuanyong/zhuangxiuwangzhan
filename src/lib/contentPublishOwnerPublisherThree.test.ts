@@ -23,7 +23,7 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(Object.keys(lockedOwnerPublisherThreeCandidates)).toEqual(names);
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
     expect(NATIVE_BODY_TARGETS).toHaveLength(18);
-    expect(MANAGED_TARGETS).toHaveLength(68);
+    expect(MANAGED_TARGETS).toHaveLength(71);
     expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

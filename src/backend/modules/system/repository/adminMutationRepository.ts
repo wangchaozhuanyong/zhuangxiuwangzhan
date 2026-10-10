@@ -1,6 +1,7 @@
 import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
 import type { Json } from "@/lib/database.types";
+import type { ManagedPreviewCandidate } from "../../../../../supabase/functions/_shared/managed-targets.ts";
 
 export type AdminMutationDbRecord = Record<string, unknown>;
 
@@ -9,6 +10,7 @@ export type AdminContentPreflightRequest = {
   nextStatus: "draft" | "published" | "archived";
   expectedUpdatedAt: string;
   record: AdminMutationDbRecord;
+  managedCandidate?: ManagedPreviewCandidate;
 };
 
 export function requestAdminContentPreflight(input: AdminContentPreflightRequest) {
@@ -18,6 +20,7 @@ export function requestAdminContentPreflight(input: AdminContentPreflightRequest
       mode: "dry-run",
       nextStatus: input.nextStatus,
       expectedUpdatedAt: input.expectedUpdatedAt,
+      ...(input.managedCandidate ? { managedCandidate: input.managedCandidate } : {}),
       record: input.record,
     },
   });

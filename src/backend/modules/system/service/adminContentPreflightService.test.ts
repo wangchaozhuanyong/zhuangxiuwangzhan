@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { previewAdminContent, AdminContentPreflightError } from "./adminContentPreflightService";
 import { previewAdminService } from "@/backend/modules/services/service/serviceService";
 import { previewAdminBlogPost } from "@/backend/modules/blog/service/blogService";
+import * as managedPreview from "../../../../../supabase/functions/_shared/managed-targets.ts";
 
 const { invoke, from } = vi.hoisted(() => ({ invoke: vi.fn(), from: vi.fn() }));
 vi.mock("@/lib/supabase", () => ({
@@ -23,6 +24,7 @@ const validResponse = {
 
 describe("admin read-only content preflight", () => {
   beforeEach(() => {
+    vi.restoreAllMocks();
     invoke.mockReset(); from.mockReset();
     invoke.mockResolvedValue({ data: validResponse, error: null });
   });
@@ -74,6 +76,20 @@ describe("admin read-only content preflight", () => {
     await previewAdminService({ record: { ...input.record, status: "draft", faqs_zh: [{ q: "  问题  ", a: " 答案 " }] } });
     expect(invoke.mock.lastCall?.[1].body.record.faqs_zh).toEqual([{ q: "问题", a: "答案" }]);
     expect(invoke.mock.lastCall?.[1].body.expectedUpdatedAt).toBe(timestamp);
+  });
+
+  it("carries the exact zero-write candidate from the service resolver through the real preflight repository", async () => {
+    const candidate = { taskId: "fc-20261010-paid-three-page-exact-publication-followthrough-v1",
+      actionId: "paid-three-page-kitchen-exact-fields-v1", operation: "publish" as const,
+      scope: "flashcast.com.my:services/ce4156db-9034-42c8-ba29-b35724ea7d6d:title_zh,excerpt_zh",
+      candidateVersion: "paid-three-page-exact-native-diff-v1-20261010" };
+    const resolver = vi.spyOn(managedPreview, "findManagedPreviewCandidate").mockResolvedValueOnce(candidate);
+    await previewAdminService({ record: { ...input.record, status: "draft" } });
+    expect(resolver).toHaveBeenCalledWith("service", expect.objectContaining({ id: "row-1", updated_at: timestamp }), timestamp);
+    expect(invoke.mock.lastCall?.[1].body).toMatchObject({ mode: "dry-run", expectedUpdatedAt: timestamp, managedCandidate: candidate });
+    expect(invoke.mock.lastCall?.[1].body).not.toHaveProperty("managedPermit");
+    expect(invoke.mock.lastCall?.[1].body).not.toHaveProperty("ownerApproved");
+    expect(from).not.toHaveBeenCalled();
   });
 
   it("uses the same blog payload normalization without generating publication time or saving", async () => {

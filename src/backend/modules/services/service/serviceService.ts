@@ -5,6 +5,7 @@ import { previewAdminContent, requestPublicContentInvalidation, saveAdminRecord 
 import { getPublicSyncIssues, registerPublicSyncIssue, resolvePublicSyncIssue, type PublicSyncIssue } from "@/lib/publicSyncRecovery";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { canReadNativeServiceSnapshot, serializeNativeServiceSnapshot } from "./nativeServiceSnapshot";
+import { findManagedPreviewCandidate } from "../../../../../supabase/functions/_shared/managed-targets.ts";
 import {
   fetchAdminServiceDetail,
   fetchAdminServiceList,
@@ -147,12 +148,15 @@ export function buildAdminServicePayload(record: AdminServiceRecord, nextStatus?
   };
 }
 
-export function previewAdminService(input: Pick<SaveAdminServiceInput, "record" | "nextStatus">) {
+export async function previewAdminService(input: Pick<SaveAdminServiceInput, "record" | "nextStatus">) {
   const { payload } = buildAdminServicePayload(input.record, input.nextStatus);
+  const expectedUpdatedAt = input.record.updated_at || "";
+  const managedCandidate = await findManagedPreviewCandidate("service", payload, expectedUpdatedAt);
   return previewAdminContent({
     contentType: "service",
     nextStatus: payload.status || "draft",
-    expectedUpdatedAt: input.record.updated_at || "",
+    expectedUpdatedAt,
+    ...(managedCandidate ? { managedCandidate } : {}),
     record: payload,
   });
 }
