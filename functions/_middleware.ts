@@ -840,14 +840,18 @@ const injectEdgeStructuredData = (html: string, meta: SeoEntry, siteSettings?: S
   );
 };
 
-const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "", brandLine: string | null = null) => {
+const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "", brandLine: string | null = null, dynamicRouteState?: Pick<DynamicRouteState, "kind" | "row"> | null) => {
   if (html.includes("data-flashcast-geo-summary")) return html;
 
   const publicKey = new URL(meta.canonical).pathname;
   const categoryCopy = publicKey === `/${meta.lang}/furniture/bedroom`
     ? furnitureLabels.categoryPages.bedroom[meta.lang === "zh" ? "zh" : "en"] : undefined;
-  const title = escapeHtml(categoryCopy?.h1 || meta.title);
-  const description = escapeHtml(categoryCopy?.intro || meta.description);
+  const kitchenRow = /^\/(en|zh)\/services\/kitchen$/.test(publicKey)
+    && dynamicRouteState?.kind === "service"
+    && dynamicRouteState.row.slug === "kitchen" && dynamicRouteState.row.status === "published"
+    ? dynamicRouteState.row : null;
+  const title = escapeHtml(categoryCopy?.h1 || (kitchenRow && readString(kitchenRow, `title_${meta.lang}`).trim()) || meta.title);
+  const description = escapeHtml(categoryCopy?.intro || (kitchenRow && readString(kitchenRow, `excerpt_${meta.lang}`).trim()) || meta.description);
   const canonical = escapeHtml(meta.canonical);
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
   const preparation = buildQuotePreparationBody(publicKey);
@@ -1680,7 +1684,7 @@ const isRedirectOnlySitemapPath = (pathname: string) => Boolean(
   || getLandingToServiceRedirectPath(pathname),
 );
 
-const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null, readableBody = "") => {
+const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null, readableBody = "", dynamicRouteState?: Pick<DynamicRouteState, "kind" | "row"> | null) => {
   const safeMeta = {
     ...meta,
     ...withChineseBrandMetadata({
@@ -1723,7 +1727,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
   out = injectHeadIcons(out, favicon, touchIcon);
   out = injectEdgeStructuredData(out, safeMeta, siteSettings);
-  out = injectGeoSummary(out, safeMeta, readableBody, getChineseBrandLine(siteSettings, meta.lang));
+  out = injectGeoSummary(out, safeMeta, readableBody, getChineseBrandLine(siteSettings, meta.lang), dynamicRouteState);
 
   return out;
 };
@@ -2210,7 +2214,7 @@ export const onRequest: PagesFunction = async (context) => {
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
-  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings, key);
+  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
   if (siteSettings) {
