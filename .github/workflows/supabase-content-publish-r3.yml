@@ -164,17 +164,30 @@ jobs:
           supabase migration list --linked > "$RUNNER_TEMP/migration-list-pre-edge.txt"
           ALLOW_APPLIED=true node scripts/supabase-content-publish-release.mjs migration-list "$RUNNER_TEMP/migration-list-pre-edge.txt"
           echo 'The permit migration is already applied; this run performs no schema write.' >> "$GITHUB_STEP_SUMMARY"
-      - name: Deploy Edge function and restore prior source on failure
+      - name: Deploy Edge function and verify source without automatic rollback
         if: ${{ inputs.mode == 'deploy' }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
-          rollback_failed() {
-            echo "::error::rollback_failed: $1"
-            echo "rollback_failed: $1. Additive permit schema remains; stop and inspect production before retry." >> "$GITHUB_STEP_SUMMARY"
+          if ! node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before-recheck.sha256" || \
+             ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-before-recheck.sha256"; then
+            echo '::error::The frozen prior Edge backup changed; deployment is blocked.'
+            echo 'Deployment blocked: the frozen full-source recovery backup changed before the forward deploy.' >> "$GITHUB_STEP_SUMMARY"
             exit 1
-          }
+          fi
+          if ! supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-pre-edge.json" || \
+             ! node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-pre-edge.json" > "$RUNNER_TEMP/edge-version-pre-edge.txt" || \
+             ! cmp -s "$RUNNER_TEMP/edge-version-before.txt" "$RUNNER_TEMP/edge-version-pre-edge.txt"; then
+            echo '::error::The current Edge version changed or could not be read; deployment is blocked.'
+            echo 'Deployment blocked: the current Edge version no longer matches the frozen prior version, or metadata could not be read.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if ! node -e 'fetch("https://flashcast.com.my/__flashcast/version", {cache:"no-store", signal:AbortSignal.timeout(10000)}).then(async r=>{if(r.status!==200)throw new Error("Website version response failed");const v=await r.json();if(v.deploymentVersion!==process.env.GITHUB_SHA)throw new Error("Website version changed");process.stdout.write(JSON.stringify({deploymentVersion:v.deploymentVersion})+"\n")}).catch(()=>process.exit(1))' > "$RUNNER_TEMP/website-version-pre-edge.json"; then
+            echo '::error::The public website version changed or could not be read; deployment is blocked.'
+            echo 'Deployment blocked: the public website no longer runs the reviewed SHA, or its version could not be read.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
           if supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api && \
              supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-after.json" && \
              node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-after.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-after.txt" && \
@@ -189,53 +202,26 @@ jobs:
             echo "content-publish version advanced to $(cat "$RUNNER_TEMP/edge-version-after.txt"); full runtime source matches the reviewed checkout; managed switch remains off." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          echo '::warning::Edge deploy, version or source readback failed; attempting the exact downloaded source restore. Additive permit schema is retained.'
-          if ! node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before-recheck.sha256" || \
-             ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-before-recheck.sha256"; then
-            rollback_failed 'previous Edge backup changed after its source hash was frozen'
-          fi
-          if ! supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api --workdir "$RUNNER_TEMP/edge-before"; then
-            rollback_failed 'restoring the previous Edge source failed'
-          fi
-          if ! supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-restored.json" || \
-             ! node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-restored.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-restored.txt"; then
-            rollback_failed 'restored Edge version could not be verified'
-          fi
-          mkdir -p "$RUNNER_TEMP/edge-restored"
-          if ! supabase init --workdir "$RUNNER_TEMP/edge-restored" --yes || \
-             ! supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-restored" || \
-             ! node scripts/supabase-content-publish-release.mjs source-compare \
-                 "$RUNNER_TEMP/edge-before/supabase/functions" \
-                 "$RUNNER_TEMP/edge-restored/supabase/functions" > "$RUNNER_TEMP/edge-source-restored.sha256" || \
-             ! node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-restored/supabase/functions" > "$RUNNER_TEMP/edge-source-restored.json" || \
-             ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-restored.sha256" || \
-             ! supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-restored-download.json" || \
-             ! node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-restored-download.json" > "$RUNNER_TEMP/edge-version-restored-download.txt" || \
-             ! cmp -s "$RUNNER_TEMP/edge-version-restored.txt" "$RUNNER_TEMP/edge-version-restored-download.txt"; then
-            rollback_failed 'restored Edge source hash could not be verified'
-          fi
-          echo "rollback_succeeded_verified: version $(cat "$RUNNER_TEMP/edge-version-restored.txt"), source SHA-256 $(cat "$RUNNER_TEMP/edge-source-restored.sha256"). Additive permit schema remains; no automatic SQL rollback." >> "$GITHUB_STEP_SUMMARY"
-          echo '::error::Initial Edge release failed; prior source restored and verified. Do not retry without reviewing the failure.'
+          echo '::error::Edge deploy or verification failed. No automatic prior-source deploy was attempted; inspect the actual current version before a separately reviewed recovery.'
+          echo 'release_failed: deploy, metadata, source or version-CAS validation failed. Full frozen source backup is retained; no automatic Edge or SQL restore was attempted. Stop and review current production before any explicit recovery.' >> "$GITHUB_STEP_SUMMARY"
           exit 1
-      - name: Retain deployed or restored Edge readback evidence
+      - name: Retain Edge readback evidence
         if: ${{ always() && inputs.mode == 'deploy' }}
         uses: actions/upload-artifact@v4
         with:
           name: content-publish-readback-${{ github.sha }}
           path: |
             ${{ runner.temp }}/edge-after/supabase/functions/
-            ${{ runner.temp }}/edge-restored/supabase/functions/
             ${{ runner.temp }}/edge-source-after.json
             ${{ runner.temp }}/edge-source-after.sha256
-            ${{ runner.temp }}/edge-source-restored.json
-            ${{ runner.temp }}/edge-source-restored.sha256
             ${{ runner.temp }}/edge-source-before-recheck.sha256
+            ${{ runner.temp }}/functions-pre-edge.json
+            ${{ runner.temp }}/edge-version-pre-edge.txt
+            ${{ runner.temp }}/website-version-pre-edge.json
             ${{ runner.temp }}/functions-after.json
             ${{ runner.temp }}/functions-after-download.json
-            ${{ runner.temp }}/functions-restored.json
-            ${{ runner.temp }}/functions-restored-download.json
             ${{ runner.temp }}/edge-version-after.txt
-            ${{ runner.temp }}/edge-version-restored.txt
+            ${{ runner.temp }}/edge-version-after-download.txt
           retention-days: 7
           if-no-files-found: ignore
       - name: Record precise release boundary
