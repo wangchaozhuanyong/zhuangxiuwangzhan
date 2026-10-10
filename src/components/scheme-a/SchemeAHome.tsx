@@ -6,6 +6,7 @@ import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
@@ -18,6 +19,7 @@ import SchemeAHomeFurniture from "@/components/scheme-a/SchemeAHomeFurniture";
 import { HomeJournal, HomeServiceAreas } from "@/components/scheme-a/SchemeAHomeDiscovery";
 import { homeEditorialText } from "@/i18n/homeEditorialText";
 import { mediaLabels } from "@/i18n/mediaLabels";
+import { trackCtaClick } from "@/lib/analytics";
 import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHomeSections";
 
 type SchemeAHomeProps = {
@@ -47,6 +49,7 @@ const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const copy = schemeAHomeText[language];
   const editorial = homeEditorialText[language];
   const mediaCopy = mediaLabels[language];
@@ -137,13 +140,15 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
               <p className="scheme-a-hero__service">{copy.heroService}</p>
               <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
               <div className="scheme-a-actions">
-                <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
-                  {presentation.heroAction.label}
-                </LocalizedLink>
-                <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
-                  {copy.projectsCta}
-                  <ArrowUpRight aria-hidden="true" />
-                </LocalizedLink>
+                <a
+                  className="scheme-a-button scheme-a-button--paper"
+                  href={settings.whatsapp_url()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackCtaClick("whatsapp", "home_hero", { destination: "whatsapp" })}
+                >
+                  {copy.whatsappCta}
+                </a>
               </div>
             </div>
           </div>

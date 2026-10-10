@@ -494,6 +494,28 @@ export const SchemeANavbar = () => {
             </button>
           </nav>
           <div className="scheme-a-chrome__actions">
+            <div className="scheme-a-chrome__desktop-contacts">
+              <a
+                className="scheme-a-chrome__contact"
+                href={settings.whatsapp_url(furnitureMessage)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t.whatsapp}
+                title={t.whatsapp}
+                onClick={() => trackCtaClick("whatsapp", "scheme_a_header", { destination: "whatsapp" })}
+              >
+                <WhatsAppIcon />
+              </a>
+              <a
+                className="scheme-a-chrome__contact"
+                href={settings.phone_href}
+                aria-label={t.call}
+                title={t.call}
+                onClick={() => trackCtaClick("phone", "scheme_a_header", { destination: "phone" })}
+              >
+                <Phone aria-hidden="true" />
+              </a>
+            </div>
             <LocalizedLink className="scheme-a-chrome__quote" to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_header", { destination: QUOTE_FORM_PATH })}>
               {t.quote}<ArrowUpRight aria-hidden="true" />
             </LocalizedLink>

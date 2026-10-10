@@ -94,20 +94,6 @@
     overflow-y: auto;
   }
 
-  /* This decoration never participates in hit testing or document layout. */
-  .fc-furniture-arrival {
-    position: fixed;
-    inset: 0;
-    z-index: 106;
-    display: none;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-    contain: strict;
-  }
-  .fc-furniture-arrival[data-active="true"] { display: block; }
-
   .fc-furniture-floating {
     position: fixed;
     right: clamp(1rem, 2vw, 2rem);
@@ -146,22 +132,37 @@
     opacity: 0;
     background: linear-gradient(110deg, transparent 20%, rgb(246 220 181 / .3) 48%, transparent 76%);
     transform: translateX(-110%);
+    animation: furniture-button-sheen 5.6s ease-in-out infinite;
   }
-  .fc-furniture-floating[data-arrival="settling"]::before {
-    animation: furniture-entry-sheen 900ms ease-out both;
+
+  .fc-furniture-floating::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid #E8CDA8;
+    border-radius: inherit;
+    box-shadow: inset 0 0 18px rgb(217 193 159 / .22);
+    pointer-events: none;
+    opacity: 0;
+    animation: furniture-button-glow 5.6s ease-in-out infinite;
   }
-  .fc-furniture-floating[data-arrival="settling"] {
-    animation: furniture-entry-illuminate 900ms ease-out both;
+
+  @keyframes furniture-button-sheen {
+    0%, 62% { opacity: 0; transform: translateX(-110%); }
+    68%, 82% { opacity: .75; }
+    90%, 100% { opacity: 0; transform: translateX(110%); }
   }
-  @keyframes furniture-entry-sheen {
+
+  @keyframes furniture-button-glow {
+    0%, 60%, 76%, 92%, 100% { opacity: 0; }
+    67%, 84% { opacity: .85; }
+  }
+
+  @keyframes furniture-button-hover-sheen {
     0% { opacity: 0; transform: translateX(-110%); }
     20% { opacity: 1; }
     75% { opacity: 1; }
     100% { opacity: 0; transform: translateX(110%); }
-  }
-  @keyframes furniture-entry-illuminate {
-    0%, 100% { border-color: rgb(162 139 104 / .44); }
-    35% { border-color: #F4D7AC; box-shadow: 0 0 0 4px rgb(217 193 159 / .2), 0 0 28px rgb(217 193 159 / .45); background-color: #54422C; }
   }
 
   .fc-furniture-floating__icon {
@@ -200,7 +201,7 @@
     .fc-furniture-floating:hover .fc-furniture-floating__icon { color: #F4DDBD; transform: translateY(-2px); }
     .fc-furniture-floating:hover .fc-furniture-floating__action { color: #28231D; background: #D9C19F; border-color: #D9C19F; }
     .fc-furniture-floating:hover .fc-furniture-floating__arrow { transform: translate(3px, -3px); }
-    .fc-furniture-floating:hover::before { animation: furniture-entry-sheen 800ms ease-out; }
+    .fc-furniture-floating:hover::before { animation: furniture-button-hover-sheen 800ms ease-out; }
   }
 
   .fc-furniture-floating:focus-visible {
@@ -269,11 +270,15 @@
     pointer-events: none;
   }
 
+  .fc-furniture-floating[data-obstructed="true"]::before,
+  .fc-furniture-floating[data-obstructed="true"]::after {
+    animation-play-state: paused;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .fc-furniture-floating,
     .fc-furniture-floating::before,
-    .fc-furniture-floating[data-arrival="settling"],
-    .fc-furniture-floating[data-arrival="settling"]::before,
+    .fc-furniture-floating::after,
     .fc-furniture-floating:hover::before,
     .fc-furniture-floating:is(:hover, :active, [data-pressed="true"]),
     .fc-furniture-floating__icon,

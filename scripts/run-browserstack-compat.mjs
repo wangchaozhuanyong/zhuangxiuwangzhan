@@ -339,81 +339,93 @@ const swipeTo = async (driver, selector) => {
 };
 
 const captureMotion = async driver => {
-  if(nativeTapDrivers.has(driver)) {
-    // Some remote iOS script contexts do not retain callbacks between commands.
-    // Read real rendered frames synchronously; do not synthesize animation states.
-    const start=Date.now(),states=new Set();
-    let original,activeFrames=0,maxAlignmentError=0,maxButtonShift=0,minimumViewportHeight=Infinity,maximumViewportHeight=0,last,hiddenFrames=0,visibleFrames=0;
+  await ready(driver);
+  await waitForVisible(driver, '.fc-furniture-floating');
+  if (nativeTapDrivers.has(driver)) {
+    // Some remote iOS contexts do not retain callbacks between commands.
+    // Read actual pseudo-element styles across a complete animation cycle.
+    const start = Date.now();
+    let original, previous, last, visibleFrames = 0, hiddenFrames = 0, maxButtonShift = 0, sheenChanges = 0, glowChanges = 0;
+    let sheenMinOpacity = Infinity, sheenMaxOpacity = 0, glowMinOpacity = Infinity, glowMaxOpacity = 0;
+    let sheenConfigured = true, glowConfigured = true, animationsDisabled = true, minimumViewportHeight = Infinity, maximumViewportHeight = 0;
     do {
-      last=await driver.executeScript(()=>{
-        const entry=document.querySelector('.fc-furniture-floating'),scene=document.querySelector('.fc-furniture-arrival');
-        const box=entry?.getBoundingClientRect(),canvas=scene?.getBoundingClientRect(),outline=scene?.querySelector('[data-arrival-border] rect');
-        const style=entry?getComputedStyle(entry):null;
-        return {state:entry?.dataset.arrival,box:box?{x:box.x,y:box.y,width:box.width,height:box.height,right:box.right,bottom:box.bottom}:null,
-          visible:style?.visibility==='visible'&&style.display!=='none'&&Number(style.opacity)>0,
-          fixed:style?.position==='fixed',
-          viewportHeight:visualViewport?.height||innerHeight,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,
-          active:scene?.dataset.active==='true'&&outline?.hasAttribute('x'),hasViewBox:scene?.hasAttribute('viewBox')??true,
-          alignment:box&&canvas&&outline?Math.max(Math.abs(canvas.x+Number(outline.getAttribute('x'))-box.x-.5),Math.abs(canvas.y+Number(outline.getAttribute('y'))-box.y-.5),Math.abs(Number(outline.getAttribute('width'))-box.width+1),Math.abs(Number(outline.getAttribute('height'))-box.height+1)):0,
-          insideViewport:!!box&&box.x>=0&&box.right<=innerWidth+1&&box.y>=0&&box.bottom<=innerHeight+1};
+      last = await driver.executeScript(() => {
+        const entry = document.querySelector('.fc-furniture-floating');
+        const box = entry?.getBoundingClientRect(), style = entry ? getComputedStyle(entry) : null;
+        const sheen = entry ? getComputedStyle(entry, '::before') : null, glow = entry ? getComputedStyle(entry, '::after') : null;
+        const configured = (effect, name) => effect?.animationName === name && Math.abs(parseFloat(effect.animationDuration) - 5.6) < .01
+          && effect.animationIterationCount === 'infinite' && effect.animationPlayState === 'running';
+        return { box: box ? { x: box.x, y: box.y, width: box.width, height: box.height } : null,
+          visible: !!box && box.width > 1 && style.visibility === 'visible' && style.display !== 'none' && Number(style.opacity) > 0,
+          fixed: style?.position === 'fixed', viewportHeight: visualViewport?.height || innerHeight,
+          reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+          sheenConfigured: configured(sheen, 'furniture-button-sheen'), glowConfigured: configured(glow, 'furniture-button-glow'),
+          animationsDisabled: sheen?.animationName === 'none' && glow?.animationName === 'none',
+          sheenOpacity: Number(sheen?.opacity), glowOpacity: Number(glow?.opacity), sheenTransform: sheen?.transform,
+          insideViewport: !!box && box.x >= 0 && box.right <= innerWidth + 1 && box.y >= 0 && box.bottom <= innerHeight + 1 };
       });
-      if(last.state)states.add(last.state);
-      minimumViewportHeight=Math.min(minimumViewportHeight,last.viewportHeight);maximumViewportHeight=Math.max(maximumViewportHeight,last.viewportHeight);
-      if(last.box&&last.visible){visibleFrames++;original??=last.box;maxButtonShift=Math.max(maxButtonShift,Math.abs(last.box.x-original.x),Math.abs(last.box.y-original.y));}
-      else if(last.box)hiddenFrames++;
-      if(last.active&&last.visible){activeFrames++;maxAlignmentError=Math.max(maxAlignmentError,last.alignment);}
-      if(last.state==='done'||last.state==='skipped')break;
-    }while(Date.now()-start<15000);
-    return {states:[...states],activeFrames,maxAlignmentError,maxButtonShift,minimumViewportHeight,maximumViewportHeight,reducedMotion:last.reducedMotion,
-      hasViewBox:last.hasViewBox,squareRatio:last.box?.width/last.box?.height,insideViewport:last.insideViewport,hiddenFrames,visibleFrames,
-      firstVisibleX:original?.x,firstVisibleY:original?.y,finalX:last.box?.x,finalY:last.box?.y,finalFixed:last.fixed};
+      minimumViewportHeight = Math.min(minimumViewportHeight, last.viewportHeight); maximumViewportHeight = Math.max(maximumViewportHeight, last.viewportHeight);
+      if (last.visible) {
+        visibleFrames++; original ??= last.box;
+        maxButtonShift = Math.max(maxButtonShift, Math.abs(last.box.x - original.x), Math.abs(last.box.y - original.y));
+        sheenConfigured &&= last.sheenConfigured; glowConfigured &&= last.glowConfigured; animationsDisabled &&= last.animationsDisabled;
+        sheenMinOpacity = Math.min(sheenMinOpacity, last.sheenOpacity); sheenMaxOpacity = Math.max(sheenMaxOpacity, last.sheenOpacity);
+        glowMinOpacity = Math.min(glowMinOpacity, last.glowOpacity); glowMaxOpacity = Math.max(glowMaxOpacity, last.glowOpacity);
+        if (previous && (Math.abs(last.sheenOpacity - previous.sheenOpacity) > .01 || last.sheenTransform !== previous.sheenTransform)) sheenChanges++;
+        if (previous && Math.abs(last.glowOpacity - previous.glowOpacity) > .01) glowChanges++;
+        previous = last;
+      } else hiddenFrames++;
+    } while (Date.now() - start < (last.reducedMotion ? 350 : 6400));
+    return { visibleFrames, hiddenFrames, maxButtonShift, sheenChanges, glowChanges, sheenConfigured, glowConfigured, animationsDisabled,
+      sheenMinOpacity, sheenMaxOpacity, glowMinOpacity, glowMaxOpacity, observationMs: Date.now() - start,
+      minimumViewportHeight, maximumViewportHeight, reducedMotion: last.reducedMotion,
+      squareRatio: last.box?.width / last.box?.height, insideViewport: last.insideViewport,
+      firstVisibleX: original?.x, firstVisibleY: original?.y, finalX: last.box?.x, finalY: last.box?.y, finalFixed: last.fixed };
   }
   await driver.executeScript(() => {
-  delete document.documentElement.dataset.qaMotion;
-  const done = observation => { document.documentElement.dataset.qaMotion = JSON.stringify(observation); };
-  const start = performance.now();
-  const states = new Set();
-  let activeFrames = 0, maxAlignmentError = 0, maxButtonShift = 0, original, minimumViewportHeight = Infinity, maximumViewportHeight = 0;
-  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const sample = () => {
-    const entry = document.querySelector(".fc-furniture-floating");
-    const scene = document.querySelector(".fc-furniture-arrival");
-    const status = entry?.dataset.arrival;
-    if (status) states.add(status);
-    const box = entry?.getBoundingClientRect();
-    const viewportHeight = visualViewport?.height || innerHeight;
-    minimumViewportHeight = Math.min(minimumViewportHeight, viewportHeight);
-    maximumViewportHeight = Math.max(maximumViewportHeight, viewportHeight);
-    const style = entry ? getComputedStyle(entry) : null;
-    if (box?.width > 1 && style.visibility === 'visible' && style.display !== 'none' && Number(style.opacity) > 0) {
-      if (!original) original = box;
-      maxButtonShift = Math.max(maxButtonShift, Math.abs(box.x - original.x), Math.abs(box.y - original.y));
-      if (scene?.dataset.active === "true") {
-        const canvas = scene.getBoundingClientRect();
-        const outline = scene.querySelector("[data-arrival-border] rect");
-        const x = Number(outline?.getAttribute("x")), y = Number(outline?.getAttribute("y"));
-        const width = Number(outline?.getAttribute("width")), height = Number(outline?.getAttribute("height"));
-        if (outline?.hasAttribute("x")) {
-          activeFrames++;
-          maxAlignmentError = Math.max(maxAlignmentError, Math.abs(canvas.x + x - box.x - .5), Math.abs(canvas.y + y - box.y - .5),
-            Math.abs(width - box.width + 1), Math.abs(height - box.height + 1));
-        }
+    delete document.documentElement.dataset.qaMotion;
+    const start = performance.now(), reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let original, previous, visibleFrames = 0, hiddenFrames = 0, maxButtonShift = 0, sheenChanges = 0, glowChanges = 0;
+    let sheenMinOpacity = Infinity, sheenMaxOpacity = 0, glowMinOpacity = Infinity, glowMaxOpacity = 0;
+    let sheenConfigured = true, glowConfigured = true, animationsDisabled = true, minimumViewportHeight = Infinity, maximumViewportHeight = 0;
+    const configured = (effect, name) => effect?.animationName === name && Math.abs(parseFloat(effect.animationDuration) - 5.6) < .01
+      && effect.animationIterationCount === 'infinite' && effect.animationPlayState === 'running';
+    const sample = () => {
+      const entry = document.querySelector('.fc-furniture-floating'), box = entry?.getBoundingClientRect();
+      const style = entry ? getComputedStyle(entry) : null;
+      const sheen = entry ? getComputedStyle(entry, '::before') : null, glow = entry ? getComputedStyle(entry, '::after') : null;
+      const viewportHeight = visualViewport?.height || innerHeight;
+      minimumViewportHeight = Math.min(minimumViewportHeight, viewportHeight); maximumViewportHeight = Math.max(maximumViewportHeight, viewportHeight);
+      const visible = !!box && box.width > 1 && style.visibility === 'visible' && style.display !== 'none' && Number(style.opacity) > 0;
+      if (visible) {
+        visibleFrames++; original ??= { x: box.x, y: box.y };
+        maxButtonShift = Math.max(maxButtonShift, Math.abs(box.x - original.x), Math.abs(box.y - original.y));
+        sheenConfigured &&= configured(sheen, 'furniture-button-sheen'); glowConfigured &&= configured(glow, 'furniture-button-glow');
+        animationsDisabled &&= sheen.animationName === 'none' && glow.animationName === 'none';
+        const sheenOpacity = Number(sheen.opacity), glowOpacity = Number(glow.opacity);
+        sheenMinOpacity = Math.min(sheenMinOpacity, sheenOpacity); sheenMaxOpacity = Math.max(sheenMaxOpacity, sheenOpacity);
+        glowMinOpacity = Math.min(glowMinOpacity, glowOpacity); glowMaxOpacity = Math.max(glowMaxOpacity, glowOpacity);
+        if (previous && (Math.abs(sheenOpacity - previous.sheenOpacity) > .01 || sheen.transform !== previous.sheenTransform)) sheenChanges++;
+        if (previous && Math.abs(glowOpacity - previous.glowOpacity) > .01) glowChanges++;
+        previous = { sheenOpacity, glowOpacity, sheenTransform: sheen.transform };
+      } else hiddenFrames++;
+      const observationMs = performance.now() - start;
+      if (observationMs >= (reducedMotion ? 350 : 6400)) {
+        document.documentElement.dataset.qaMotion = JSON.stringify({ visibleFrames, hiddenFrames, maxButtonShift, sheenChanges, glowChanges,
+          sheenConfigured, glowConfigured, animationsDisabled, sheenMinOpacity, sheenMaxOpacity, glowMinOpacity, glowMaxOpacity, observationMs,
+          reducedMotion, minimumViewportHeight, maximumViewportHeight, squareRatio: box?.width / box?.height,
+          insideViewport: !!box && box.left >= 0 && box.right <= innerWidth + 1 && box.top >= 0 && box.bottom <= innerHeight + 1,
+          firstVisibleX: original?.x, firstVisibleY: original?.y, finalX: box?.x, finalY: box?.y, finalFixed: style?.position === 'fixed' });
+        return;
       }
-    }
-    if (status === "done" || status === "skipped" || performance.now() - start > 12000) {
-      done({ states: [...states], activeFrames, reducedMotion, maxAlignmentError, maxButtonShift,
-        minimumViewportHeight, maximumViewportHeight,
-        hasViewBox: scene?.hasAttribute("viewBox") ?? true, squareRatio: box?.width / box?.height,
-        insideViewport: !!box && box.left >= 0 && box.right <= innerWidth + 1 && box.top >= 0 && box.bottom <= innerHeight + 1 });
-      return;
-    }
-    requestAnimationFrame(sample);
-  };
-  sample();
+      requestAnimationFrame(sample);
+    };
+    sample();
   });
   try { await driver.wait(() => driver.executeScript(() => !!document.documentElement.dataset.qaMotion), 15000); }
-  catch(error) {
-    error.metrics=await driver.executeScript(() => ({ documentComplete:document.readyState==='complete',pageVisible:document.visibilityState==='visible',collectorResultPresent:!!document.documentElement.dataset.qaMotion,motionEntryPresent:!!document.querySelector('.fc-furniture-floating') }));
+  catch (error) {
+    error.metrics = await driver.executeScript(() => ({ documentComplete: document.readyState === 'complete', pageVisible: document.visibilityState === 'visible',
+      collectorResultPresent: !!document.documentElement.dataset.qaMotion, motionEntryPresent: !!document.querySelector('.fc-furniture-floating') }));
     throw error;
   }
   return driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaMotion));
@@ -456,8 +468,8 @@ const capturePublicScreenshot = async (driver, target, evidence) => {
 
 const mobileChecks = async (driver, target, identity, screenshotEvidence) => {
   const checks = [];
-  const publicCheckCodes = new Set(["DEVICE_IDENTITY_NOT_RETURNED", "DEVICE_IDENTITY_MISMATCH", "MOTION_NOT_OBSERVED", "MOTION_PHASE_MISSING",
-    "MOTION_FRAME_MISALIGNED", "FLOATING_BUTTON_JUMPED", "MOBILE_BUTTON_GEOMETRY_INVALID", "NATIVE_DEVICE_CONTEXT_UNAVAILABLE", "NATIVE_CONTROL_LABEL_UNSUPPORTED",
+  const publicCheckCodes = new Set(["DEVICE_IDENTITY_NOT_RETURNED", "DEVICE_IDENTITY_MISMATCH", "MOTION_NOT_OBSERVED", "BUTTON_ANIMATION_CONFIG_INVALID",
+    "REDUCED_MOTION_NOT_RESPECTED", "FLOATING_BUTTON_JUMPED", "MOBILE_BUTTON_GEOMETRY_INVALID", "NATIVE_DEVICE_CONTEXT_UNAVAILABLE", "NATIVE_CONTROL_LABEL_UNSUPPORTED",
     "NATIVE_CONTROL_NOT_UNIQUE", "NATIVE_CONTROL_NOT_VISIBLE", "TRUSTED_TARGET_TAP_NOT_OBSERVED", "CONTROL_MISSING", "CONTROL_NOT_REACHABLE_BY_TOUCH",
     "MENU_FOCUS_NOT_RESTORED", "LANGUAGE_CONTENT_NOT_UPDATED", "PRESS_FEEDBACK_NOT_OBSERVED", "KEYBOARD_COVERS_ACTIVE_INPUT", "NATIVE_KEYBOARD_INPUT_NOT_UPDATED",
     "NATIVE_KEYBOARD_DISMISS_CONTROL_UNAVAILABLE", "NEGATIVE_FORM_GUARD_NOT_EMPTY", "NEGATIVE_FORM_NETWORK_GUARD_UNAVAILABLE", "NEGATIVE_FORM_GUARD_ALREADY_ACTIVE",
@@ -475,7 +487,7 @@ const mobileChecks = async (driver, target, identity, screenshotEvidence) => {
     return { ...identity, realMobileRequested: target.options.realMobile === true };
   });
   if (!checks[0].passed) return checks;
-  await check("first_home_motion_and_landing", async () => {
+  await check("floating_button_glimmer", async () => {
     await driver.get(`${baseUrl}/zh`);
     const observation = await captureMotion(driver);
     try { assertMobileMotion(observation); } catch(error) { error.metrics = observation; throw error; }
@@ -764,7 +776,7 @@ const runTarget = async (target) => {
       const previousDocument = await driver.executeScript(() => performance.timeOrigin);
       await driver.navigate().refresh();
       // Safari's native refresh can return while the previous document still
-      // exists. Do not mix its completed animation with the new document.
+      // exists. Observe the button animation only in the new document.
       await driver.wait(() => driver.executeScript(previous=>performance.timeOrigin!==previous,previousDocument),waitTimeoutMs);
       let motion;
       if (target.options.deviceName) {
