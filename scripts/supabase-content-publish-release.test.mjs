@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { chmod, mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   APPROVAL_BINDING_VERSION,
   approvalBindingDigest,
@@ -361,7 +363,7 @@ test('runtime source rejects file and directory symlinks', async () => {
   }
 });
 
-test('workflow retains full shared closure and checks deployed and restored runtime bytes', async () => {
+test('workflow retains full shared closure, frozen recovery backup and strict forward readback', async () => {
   const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
   const release = workflow.slice(workflow.indexOf('  release:'));
   assert.match(release, /Install locked source-check dependencies\n\s+run: npm ci --ignore-scripts --no-audit --no-fund/);
@@ -372,15 +374,129 @@ test('workflow retains full shared closure and checks deployed and restored runt
   const success = release.slice(release.indexOf('if supabase functions deploy'), release.indexOf('            exit 0'));
   assert.match(success, /source-deployed supabase\/functions "\$RUNNER_TEMP\/edge-after\/supabase\/functions"/);
   assert.match(success, /source-manifest "\$RUNNER_TEMP\/edge-after\/supabase\/functions"/);
-  assert.match(release, /source-compare \\\n\s+"\$RUNNER_TEMP\/edge-before\/supabase\/functions" \\\n\s+"\$RUNNER_TEMP\/edge-restored\/supabase\/functions"/);
-  assert.match(release, /--no-verify-jwt --use-api --workdir "\$RUNNER_TEMP\/edge-before"/);
   const backupRecheck = release.indexOf('cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-before-recheck.sha256"');
-  const rollbackDeploy = release.indexOf('if ! supabase functions deploy');
-  assert.ok(backupRecheck > 0 && backupRecheck < rollbackDeploy, 'frozen backup hash must be checked before restoration deploy');
-  assert.match(release, /cmp -s "\$RUNNER_TEMP\/edge-source-before.sha256" "\$RUNNER_TEMP\/edge-source-restored.sha256"/);
-  assert.match(release, /rollback_succeeded_verified/);
+  const forwardDeploy = release.indexOf('if supabase functions deploy');
+  assert.ok(backupRecheck > 0 && backupRecheck < forwardDeploy, 'frozen full backup must be checked before the forward deploy');
+  assert.equal(release.match(/supabase functions deploy content-publish/g)?.length, 1);
+  assert.doesNotMatch(release, /supabase functions deploy[^\n]*--workdir|rollback_succeeded_verified|edge-restored/);
+  assert.ok(release.indexOf('edge-version-pre-edge.txt"; then') < release.indexOf('if supabase functions deploy'));
+  assert.ok(release.indexOf('website-version-pre-edge.json"; then') < release.indexOf('if supabase functions deploy'));
+  assert.match(release, /cmp -s "\$RUNNER_TEMP\/edge-version-before.txt" "\$RUNNER_TEMP\/edge-version-pre-edge.txt"/);
+  assert.match(release, /if\(r\.status!==200\)throw new Error\("Website version response failed"\)/);
+  assert.match(release, /v\.deploymentVersion!==process\.env\.GITHUB_SHA/);
+  assert.match(release, /cmp -s "\$RUNNER_TEMP\/edge-version-after.txt" "\$RUNNER_TEMP\/edge-version-after-download.txt"/);
+  assert.match(release, /No automatic prior-source deploy was attempted/);
   assert.match(release, /if: \$\{\{ always\(\) && inputs\.mode == 'deploy' \}\}/);
   assert.doesNotMatch(release, /SUPABASE_SERVICE_ROLE_KEY|db push/);
+});
+
+test('real workflow shell stops on every failure without deploying an older source', async (t) => {
+  const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
+  const match = workflow.match(/- name: Deploy Edge function and verify source without automatic rollback[\s\S]*?\n        run: \|\n([\s\S]*?)(?=\n      - name:)/);
+  assert.ok(match, 'the actual deployment shell block must be exercised');
+  const shell = match[1].replace(/^          /gm, '');
+  const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
+  const files = {
+    ...runtimeFixture,
+    'content-publish/index.ts': runtimeFixture['content-publish/index.ts'] + 'import type { A } from "./types.ts";',
+    'content-publish/types.ts': 'export type A = string;',
+  };
+  for (const scenario of ['success', 'deploy-fails', 'source-fails', 'version-not-advanced',
+    'version-competition', 'metadata-fails', 'metadata-after-download-fails', 'backup-drift',
+    'predeploy-version-competition', 'predeploy-metadata-fails', 'website-version-competition',
+    'website-version-unreadable', 'website-version-http-fails', 'website-version-http-201',
+    'website-version-http-202']) {
+    await t.test(scenario, async () => {
+      const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-workflow-'));
+      const bin = join(root, 'bin');
+      const before = join(root, 'edge-before/supabase/functions');
+      const log = join(root, 'commands.jsonl');
+      try {
+        await mkdir(bin);
+        await writeSourceFixture(join(root, 'supabase/functions'), files);
+        await writeSourceFixture(before, files);
+        await writeFile(join(root, 'edge-source-before.sha256'), await sourceTreeHash(before) + '\n');
+        await writeFile(join(root, 'functions-before.json'), JSON.stringify([{ slug: 'content-publish', status: 'ACTIVE', version: 7 }]));
+        await writeFile(join(root, 'edge-version-before.txt'), '7\n');
+        if (scenario === 'backup-drift') await writeFile(join(before, 'content-publish/types.ts'), 'export type A = number;');
+        const mockNode = `#!${process.execPath}
+const fs = require('node:fs');
+const { spawnSync } = require('node:child_process');
+const args = process.argv.slice(2);
+fs.appendFileSync(process.env.COMMAND_LOG, JSON.stringify({tool:'node',args})+'\\n');
+const mockFetch = 'global.fetch=async()=>{if(process.env.SCENARIO==="website-version-unreadable")throw new Error("Mock version unavailable");return {ok:process.env.SCENARIO!=="website-version-http-fails",status:process.env.SCENARIO==="website-version-http-fails"?503:process.env.SCENARIO==="website-version-http-201"?201:process.env.SCENARIO==="website-version-http-202"?202:200,json:async()=>({deploymentVersion:(process.env.SCENARIO==="website-version-competition"?"b":"a").repeat(40)})}};';
+const childArgs = args[0] === '-e' ? ['-e', mockFetch + args[1]] : [process.env.REAL_HELPER, ...args.slice(1)];
+const result = spawnSync(process.env.REAL_NODE, childArgs, {stdio:'inherit'});
+process.exit(result.status === null ? 99 : result.status);
+`;
+        const mockSupabase = `#!${process.execPath}
+const fs = require('node:fs');
+const path = require('node:path');
+const args = process.argv.slice(2);
+const scenario = process.env.SCENARIO;
+fs.appendFileSync(process.env.COMMAND_LOG, JSON.stringify({tool:'supabase',args})+'\\n');
+if (args[0] === 'functions' && args[1] === 'deploy') process.exit(scenario === 'deploy-fails' ? 1 : 0);
+if (args[0] === 'functions' && args[1] === 'list') {
+  const counter = path.join(process.env.RUNNER_TEMP, 'list-count');
+  const count = fs.existsSync(counter) ? Number(fs.readFileSync(counter, 'utf8')) : 0;
+  fs.writeFileSync(counter, String(count + 1));
+  if ((scenario === 'predeploy-metadata-fails' && count === 0) || (scenario === 'metadata-fails' && count === 1) || (scenario === 'metadata-after-download-fails' && count === 2)) process.exit(1);
+  const version = count === 0 ? (scenario === 'predeploy-version-competition' ? 8 : 7)
+    : scenario === 'version-not-advanced' ? 7 : scenario === 'version-competition' && count === 2 ? 9 : 8;
+  process.stdout.write(JSON.stringify([{slug:'content-publish',status:'ACTIVE',version}])+'\\n');
+  process.exit(0);
+}
+if (args[0] === 'init') process.exit(0);
+if (args[0] === 'functions' && args[1] === 'download') {
+  const directory = args[args.indexOf('--workdir') + 1];
+  const files = ${JSON.stringify(files)};
+  delete files['content-publish/types.ts'];
+  if (scenario === 'source-fails') files['_shared/nested/child.ts'] = 'export const value = 2;';
+  for (const [file, content] of Object.entries(files)) {
+    const target = path.join(directory, 'supabase/functions', file);
+    fs.mkdirSync(path.dirname(target), {recursive:true}); fs.writeFileSync(target, content);
+  }
+  process.exit(0);
+}
+process.exit(99);
+`;
+        await writeFile(join(bin, 'node.cjs'), mockNode);
+        await writeFile(join(bin, 'supabase.cjs'), mockSupabase);
+        await chmod(join(bin, 'node.cjs'), 0o700);
+        await chmod(join(bin, 'supabase.cjs'), 0o700);
+        await symlink('node.cjs', join(bin, 'node'));
+        await symlink('supabase.cjs', join(bin, 'supabase'));
+        const result = spawnSync('/bin/bash', ['-e', '-c', shell], {
+          cwd: root, encoding: 'utf8',
+          env: { PATH: bin + ':/usr/bin:/bin', RUNNER_TEMP: root,
+            GITHUB_STEP_SUMMARY: join(root, 'summary.txt'), COMMAND_LOG: log,
+            GITHUB_SHA: 'a'.repeat(40), REAL_NODE: process.execPath, REAL_HELPER: helper, SCENARIO: scenario },
+        });
+        const commands = (await readFile(log, 'utf8')).trim().split('\n').map((line) => JSON.parse(line));
+        const deployments = commands.filter((command) => command.tool === 'supabase' && command.args[1] === 'deploy');
+        const blockedBeforeDeploy = scenario === 'backup-drift' || scenario.startsWith('predeploy-') || scenario.startsWith('website-version-');
+        assert.equal(deployments.length, blockedBeforeDeploy ? 0 : 1, result.stderr);
+        assert.equal(deployments.filter((command) => command.args.includes('--workdir')).length, 0);
+        if (scenario === 'success') {
+          assert.equal(result.status, 0, result.stderr);
+          assert.ok(commands.some((command) => command.args.includes('source-deployed')));
+          assert.ok(commands.some((command) => command.args.includes('source-manifest')));
+          assert.equal(commands.filter((command) => command.tool === 'supabase' && command.args[1] === 'list').length, 3);
+          assert.equal(JSON.parse(await readFile(join(root, 'website-version-pre-edge.json'), 'utf8')).deploymentVersion, 'a'.repeat(40));
+          const manifest = JSON.parse(await readFile(join(root, 'edge-source-after.json'), 'utf8'));
+          assert.deepEqual(manifest.files.map((file) => file.path), Object.keys(runtimeFixture).sort());
+          assert.deepEqual(manifest.typeOnlyFileRecovery, []);
+        } else {
+          assert.notEqual(result.status, 0, 'every failed validation must stop the release');
+          assert.doesNotMatch(result.stdout, /rollback_succeeded_verified/);
+          const summary = await readFile(join(root, 'summary.txt'), 'utf8');
+          assert.match(summary, blockedBeforeDeploy ? /Deployment blocked/ : /no automatic Edge or SQL restore was attempted/);
+        }
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    });
+  }
 });
 
 test('frozen full backup hash rejects shared or present-type drift even if both restore trees drift equally', async () => {
