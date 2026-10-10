@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { readFile, readdir } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { lstat, readFile, readdir } from 'node:fs/promises';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import ts from 'typescript';
 
 export const PROJECT_REF = 'rbsnyexjifounogswrjp';
 export const MIGRATION_VERSION = '20260921194000';
@@ -145,23 +146,180 @@ export function verifyAdvancedFunctionVersion(currentOutput, previousOutput) {
   return current;
 }
 
-export async function sourceTreeHash(directory) {
-  const files = [];
-  async function collect(current) {
-    for (const entry of await readdir(current, { withFileTypes: true })) {
-      const path = join(current, entry.name);
-      if (entry.isDirectory()) await collect(path);
-      else if (entry.isFile()) files.push(path);
-      else throw new Error('Edge source contains an unsupported file type');
+const EDGE_ENTRYPOINT = 'content-publish/index.ts';
+
+function runtimeSourceRoot(directory) {
+  const root = resolve(directory);
+  // Keep the existing CLI's downloaded content-publish directory argument usable.
+  return basename(root) === 'content-publish' ? dirname(root) : root;
+}
+
+function ownedSourcePath(root, file) {
+  const path = relative(root, resolve(root, file)).split(sep).join('/');
+  assert(!isAbsolute(path) && path !== '..' && !path.startsWith('../')
+    && /^(content-publish|_shared)\/.+\.ts$/.test(path),
+  'Edge source dependency escapes its owned TypeScript directories');
+  return path;
+}
+
+async function readSource(root, file) {
+  let current = root;
+  const components = ['', ...file.split('/')];
+  let before;
+  for (let index = 0; index < components.length; index += 1) {
+    if (components[index]) current = join(current, components[index]);
+    const identity = await lstat(current);
+    assert(!identity.isSymbolicLink(), 'Edge source contains a symbolic link');
+    assert(index === components.length - 1 ? identity.isFile() : identity.isDirectory(),
+      'Edge source contains an unsupported file type');
+    if (index === components.length - 1) before = identity;
+  }
+  const content = await readFile(current);
+  const after = await lstat(current);
+  assert(after.isFile() && !after.isSymbolicLink() && before.dev === after.dev
+    && before.ino === after.ino && before.size === after.size && before.mtimeMs === after.mtimeMs,
+  'Edge source changed while being read');
+  return content;
+}
+
+function moduleDependencies(file, content) {
+  const source = ts.createSourceFile(file, content.toString('utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  assert(source.parseDiagnostics.length === 0, 'Edge source contains invalid TypeScript syntax');
+  const dependencies = [];
+  function visit(node) {
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+      if (node.moduleSpecifier) {
+        assert(ts.isStringLiteral(node.moduleSpecifier), 'Edge source module specifier must be literal');
+        // Inline type specifiers may retain a module's side effects after emission.
+        const typeOnly = node.isTypeOnly || (ts.isImportDeclaration(node) && node.importClause?.isTypeOnly);
+        dependencies.push({ specifier: node.moduleSpecifier.text, typeOnly: Boolean(typeOnly) });
+      }
+    } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      assert(node.arguments.length === 1 && ts.isStringLiteral(node.arguments[0]),
+        'Edge source dynamic import must use one literal path');
+      dependencies.push({ specifier: node.arguments[0].text, typeOnly: false });
+    } else if (ts.isImportEqualsDeclaration(node)
+      || (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'require')) {
+      throw new Error('Edge source contains an unsupported module loading form');
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(source);
+  return dependencies;
+}
+
+export async function sourceTreeManifest(directory) {
+  const root = runtimeSourceRoot(directory);
+  const files = new Map();
+  const typeOnlyFiles = new Set();
+  const externalImports = new Set();
+  async function collect(file) {
+    const path = ownedSourcePath(root, file);
+    if (files.has(path)) return;
+    const content = await readSource(root, path);
+    files.set(path, { path, bytes: content.length, sha256: createHash('sha256').update(content).digest('hex') });
+    for (const { specifier, typeOnly } of moduleDependencies(path, content)) {
+      assert(!specifier.includes('\\') && !specifier.includes('\0'), 'Edge source module path is invalid');
+      if (!specifier.startsWith('./') && !specifier.startsWith('../')) {
+        assert(specifier.startsWith('https://') && new URL(specifier).protocol === 'https:',
+          'Edge source external import must be an explicit HTTPS URL');
+        if (!typeOnly) externalImports.add(specifier);
+        continue;
+      }
+      const dependency = ownedSourcePath(root, join(dirname(path), specifier));
+      if (typeOnly) typeOnlyFiles.add(dependency);
+      else await collect(dependency);
     }
   }
-  await collect(directory);
-  assert(files.some((path) => relative(directory, path) === 'index.ts'), 'Edge source index.ts is missing');
-  const hash = createHash('sha256');
-  for (const path of files.sort((a, b) => relative(directory, a).localeCompare(relative(directory, b)))) {
-    hash.update(relative(directory, path)).update('\0').update(await readFile(path)).update('\0');
+  await collect(EDGE_ENTRYPOINT);
+  const omittedRuntimeTypes = [...typeOnlyFiles].filter((path) => !files.has(path)).sort();
+  const typeOnlyFileRecovery = [];
+  for (const path of omittedRuntimeTypes) {
+    try {
+      const content = await readSource(root, path);
+      typeOnlyFileRecovery.push({ path, bytes: content.length, sha256: createHash('sha256').update(content).digest('hex') });
+    } catch (error) {
+      // Optimized Edge downloads omit erased types; the exact checkout retains them.
+      if (error.code !== 'ENOENT') throw error;
+    }
   }
-  return hash.digest('hex');
+  return {
+    schema: 'content-publish-runtime-source/v1',
+    entrypoint: EDGE_ENTRYPOINT,
+    files: [...files.values()].sort((a, b) => a.path.localeCompare(b.path)),
+    typeOnlyFiles: omittedRuntimeTypes,
+    typeOnlyFileRecovery,
+    externalImports: [...externalImports].sort(),
+  };
+}
+
+export async function sourceExpectedManifest(directory) {
+  const manifest = await sourceTreeManifest(directory);
+  const recoveredTypes = new Set(manifest.typeOnlyFileRecovery.map((file) => file.path));
+  assert(manifest.typeOnlyFiles.every((file) => recoveredTypes.has(file)),
+    'reviewed Edge checkout is missing a type-only recovery file');
+  return manifest;
+}
+
+async function requireClosedDownload(directory, manifest) {
+  const root = runtimeSourceRoot(directory);
+  const capturedFiles = new Map([...manifest.files, ...manifest.typeOnlyFileRecovery].map((file) => [file.path, file]));
+  const seenFiles = new Set();
+  const allowedFiles = new Set([...manifest.files.map((file) => file.path), ...manifest.typeOnlyFiles]);
+  const allowedDirectories = new Set(['']);
+  for (const file of allowedFiles) {
+    let parent = dirname(file);
+    while (parent !== '.') {
+      allowedDirectories.add(parent);
+      parent = dirname(parent);
+    }
+  }
+  async function collect(path = '') {
+    const current = join(root, path);
+    const identity = await lstat(current);
+    assert(identity.isDirectory() && !identity.isSymbolicLink(), 'Edge download contains an unsupported directory');
+    for (const entry of await readdir(current, { withFileTypes: true })) {
+      const child = path ? path + '/' + entry.name : entry.name;
+      if (entry.isDirectory()) {
+        assert(allowedDirectories.has(child), 'Edge download contains a directory outside its dependency closure');
+        await collect(child);
+      } else if (entry.isFile()) {
+        assert(allowedFiles.has(child), 'Edge download contains a file outside its dependency closure');
+        const content = await readSource(root, child);
+        const expected = capturedFiles.get(child);
+        assert(expected && (content.length === expected.bytes
+          && createHash('sha256').update(content).digest('hex') === expected.sha256),
+        'Edge source changed after its dependency closure was read');
+        seenFiles.add(child);
+      } else throw new Error('Edge download contains an unsupported file type');
+    }
+  }
+  await collect();
+  assert([...capturedFiles.keys()].every((file) => seenFiles.has(file)),
+    'Edge source disappeared after its dependency closure was read');
+}
+
+function sourceDigest(manifest) {
+  const files = [...manifest.files, ...manifest.typeOnlyFileRecovery].sort((a, b) => a.path.localeCompare(b.path));
+  return createHash('sha256').update(JSON.stringify(files)).digest('hex');
+}
+
+export async function sourceTreeHash(directory) {
+  const manifest = await sourceTreeManifest(directory);
+  await requireClosedDownload(directory, manifest);
+  return sourceDigest(manifest);
+}
+
+export async function verifyDeployedSource(expectedDirectory, downloadedDirectory) {
+  const expected = await sourceExpectedManifest(expectedDirectory);
+  const actual = await sourceTreeManifest(downloadedDirectory);
+  await requireClosedDownload(downloadedDirectory, actual);
+  assert(JSON.stringify(actual.files) === JSON.stringify(expected.files),
+    'deployed Edge runtime source differs from the reviewed checkout');
+  const expectedTypes = new Map(expected.typeOnlyFileRecovery.map((file) => [file.path, file]));
+  assert(actual.typeOnlyFileRecovery.every((file) => JSON.stringify(file) === JSON.stringify(expectedTypes.get(file.path))),
+    'deployed Edge type-only source differs from the reviewed checkout');
+  return sourceDigest(actual);
 }
 
 export async function verifyRestoredSource(originalDirectory, restoredDirectory) {
@@ -274,6 +432,17 @@ async function main() {
     return;
   }
   assert(path, 'evidence file path is required');
+  if (command === 'source-expected' || command === 'source-manifest') {
+    const manifest = command === 'source-expected' ? await sourceExpectedManifest(path) : await sourceTreeManifest(path);
+    if (command === 'source-manifest') await requireClosedDownload(path, manifest);
+    process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);
+    return;
+  }
+  if (command === 'source-deployed') {
+    assert(comparison, 'downloaded source directory is required');
+    process.stdout.write(`${await verifyDeployedSource(path, comparison)}\n`);
+    return;
+  }
   if (command === 'source-hash') {
     process.stdout.write(`${await sourceTreeHash(path)}\n`);
     return;

@@ -1,17 +1,20 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import {
   APPROVAL_BINDING_VERSION,
   approvalBindingDigest,
   MIGRATION_FILE,
   functionVersion,
   sourceTreeHash,
+  sourceTreeManifest,
+  sourceExpectedManifest,
   verifyAdvancedFunctionVersion,
   verifyDryRun,
   verifyDryRunEvidence,
+  verifyDeployedSource,
   verifyEnvironment,
   verifyMigrationList,
   verifyReleaseIdentity,
@@ -150,18 +153,256 @@ test('Edge version readback requires one active target and a newer version', () 
   assert.throws(() => functionVersion(JSON.stringify([{ slug: 'content-publish', status: 'INACTIVE', version: 11 }])));
 });
 
-test('restored Edge source must hash-match the exact pre-release tree', async () => {
+const runtimeFixture = {
+  'content-publish/index.ts': 'import { value } from "../_shared/managed-targets.ts"; export { value };\n',
+  '_shared/managed-targets.ts': 'export { value } from "./nested/child.ts";\n',
+  '_shared/nested/child.ts': 'export const value = 1;\n',
+};
+
+async function writeSourceFixture(directory, files = runtimeFixture) {
+  await mkdir(directory, { recursive: true });
+  for (const [file, content] of Object.entries(files)) {
+    const path = join(directory, file);
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, content);
+  }
+}
+
+test('restored Edge source must hash-match every runtime dependency including shared children', async () => {
   const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-restore-'));
   const before = join(root, 'before');
   const restored = join(root, 'restored');
   try {
-    await mkdir(before);
-    await mkdir(restored);
-    await writeFile(join(before, 'index.ts'), 'export const value = 1;\n');
-    await writeFile(join(restored, 'index.ts'), 'export const value = 1;\n');
+    await writeSourceFixture(before);
+    await writeSourceFixture(restored);
     assert.equal(await verifyRestoredSource(before, restored), await sourceTreeHash(before));
-    await writeFile(join(restored, 'index.ts'), 'export const value = 2;\n');
+    assert.equal(await sourceTreeHash(join(before, 'content-publish')), await sourceTreeHash(before));
+    await writeFile(join(restored, '_shared/nested/child.ts'), 'export const value = 2;\n');
     await assert.rejects(verifyRestoredSource(before, restored), /rollback_failed/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('deployed readback must equal reviewed checkout runtime files, not only its entrypoint', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-deployed-'));
+  const expected = join(root, 'expected');
+  const downloaded = join(root, 'downloaded');
+  try {
+    await writeSourceFixture(expected, { ...runtimeFixture, 'other-function/index.ts': 'throw new Error("unrelated");' });
+    await writeSourceFixture(downloaded);
+    assert.equal(await verifyDeployedSource(expected, downloaded), await sourceTreeHash(downloaded));
+    await writeFile(join(downloaded, '_shared/managed-targets.ts'), runtimeFixture['_shared/managed-targets.ts'] + '// source drift\n');
+    await assert.rejects(verifyDeployedSource(expected, downloaded), /differs from the reviewed checkout/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('AST closure follows side-effect imports, re-exports, cycles and literal dynamic imports without execution', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-imports-'));
+  const files = {
+    'content-publish/index.ts': 'import "../_shared/start.ts"; export * from "./cycle.ts"; import("../_shared/lazy.ts"); throw new Error("must not execute");',
+    'content-publish/cycle.ts': 'export * from "./index.ts";',
+    '_shared/start.ts': 'export const start = true;',
+    '_shared/lazy.ts': 'export const lazy = true;',
+  };
+  try {
+    await writeSourceFixture(root, files);
+    const manifest = await sourceTreeManifest(root);
+    assert.deepEqual(manifest.files.map((file) => file.path), Object.keys(files).sort());
+    assert.match(await sourceTreeHash(root), /^[0-9a-f]{64}$/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('type-only dependencies may be omitted by optimized download while runtime names remain required', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-types-'));
+  const expected = join(root, 'expected');
+  const downloaded = join(root, 'downloaded');
+  const files = {
+    ...runtimeFixture,
+    'content-publish/index.ts': 'import type { A } from "./types.ts"; export type { A } from "./types.ts"; import { value, type C } from "../_shared/managed-targets.ts"; export { value };',
+  };
+  try {
+    await writeSourceFixture(expected, { ...files, 'content-publish/types.ts': 'export type A = string; export type B = string;' });
+    await writeSourceFixture(downloaded, files);
+    assert.deepEqual((await sourceTreeManifest(expected)).typeOnlyFiles, ['content-publish/types.ts']);
+    assert.equal(await verifyDeployedSource(expected, downloaded), await sourceTreeHash(downloaded));
+    await rm(join(downloaded, '_shared/managed-targets.ts'));
+    await assert.rejects(verifyDeployedSource(expected, downloaded), /ENOENT/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('inline type specifiers retain module side effects in the runtime closure', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-inline-types-'));
+  try {
+    await writeSourceFixture(root, {
+      'content-publish/index.ts': 'import { type A } from "../_shared/types.ts"; export { type A } from "../_shared/types.ts";',
+      '_shared/types.ts': 'export type A = string; throw new Error("side effect");',
+    });
+    const manifest = await sourceTreeManifest(root);
+    assert.deepEqual(manifest.files.map((file) => file.path), ['_shared/types.ts', 'content-publish/index.ts']);
+    assert.deepEqual(manifest.typeOnlyFiles, []);
+    await rm(join(root, '_shared/types.ts'));
+    await assert.rejects(sourceTreeHash(root), /ENOENT/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('reviewed checkout requires type-only recovery files even when optimized download may omit them', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-missing-checkout-type-'));
+  const expected = join(root, 'expected');
+  const downloaded = join(root, 'downloaded');
+  const files = {
+    ...runtimeFixture,
+    'content-publish/index.ts': runtimeFixture['content-publish/index.ts'] + 'import type { A } from "./types.ts";',
+  };
+  try {
+    await writeSourceFixture(expected, files);
+    await writeSourceFixture(downloaded, files);
+    assert.match(await sourceTreeHash(downloaded), /^[0-9a-f]{64}$/);
+    await assert.rejects(sourceExpectedManifest(expected), /missing a type-only recovery file/);
+    await assert.rejects(verifyDeployedSource(expected, downloaded), /missing a type-only recovery file/);
+    await writeFile(join(expected, 'content-publish/types.ts'), 'export type A = string;');
+    assert.equal((await sourceExpectedManifest(expected)).typeOnlyFileRecovery.length, 1);
+    assert.equal(await verifyDeployedSource(expected, downloaded), await sourceTreeHash(downloaded));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('present type-only files are hashed for complete recovery and checked against reviewed checkout', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-type-recovery-'));
+  const before = join(root, 'before');
+  const restored = join(root, 'restored');
+  const files = {
+    ...runtimeFixture,
+    'content-publish/index.ts': runtimeFixture['content-publish/index.ts'] + 'import type { A } from "./types.ts";',
+    'content-publish/types.ts': 'export type A = string;',
+  };
+  try {
+    await writeSourceFixture(before, files);
+    await writeSourceFixture(restored, files);
+    assert.equal((await sourceTreeManifest(before)).typeOnlyFileRecovery.length, 1);
+    assert.equal(await verifyRestoredSource(before, restored), await sourceTreeHash(before));
+    await writeFile(join(restored, 'content-publish/types.ts'), 'export type A = number;');
+    await assert.rejects(verifyRestoredSource(before, restored), /rollback_failed/);
+    await assert.rejects(verifyDeployedSource(before, restored), /type-only source differs/);
+    await rm(join(restored, 'content-publish/types.ts'));
+    await assert.rejects(verifyRestoredSource(before, restored), /rollback_failed/);
+    assert.equal(await verifyDeployedSource(before, restored), await sourceTreeHash(restored));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('download closure rejects missing shared children, extra files and unrelated directories', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-closed-'));
+  try {
+    await writeSourceFixture(root);
+    await rm(join(root, '_shared/nested/child.ts'));
+    await assert.rejects(sourceTreeHash(root), /ENOENT/);
+    await writeSourceFixture(root);
+    await writeFile(join(root, '_shared/unexpected.ts'), 'export const extra = true;');
+    await assert.rejects(sourceTreeHash(root), /outside its dependency closure/);
+    await rm(join(root, '_shared/unexpected.ts'));
+    await mkdir(join(root, 'other-function'));
+    await assert.rejects(sourceTreeHash(root), /outside its dependency closure/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('dependency parsing fails closed on path escapes, unknown loaders and invalid syntax', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-invalid-'));
+  try {
+    for (const source of [
+      'import "../../../outside.ts";',
+      'import "../other-function/index.ts";',
+      'import "./child.js";',
+      'import "bare-package";',
+      'import(path);',
+      'import(`../_shared/${name}.ts`);',
+      'import("../_shared/managed-targets.ts", {});',
+      'require("../_shared/managed-targets.ts");',
+      'import value = require("../_shared/managed-targets.ts");',
+      'export const = ;',
+    ]) {
+      await writeSourceFixture(root, { 'content-publish/index.ts': source });
+      await assert.rejects(sourceTreeManifest(root), /Edge source/);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('runtime source rejects file and directory symlinks', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-symlink-'));
+  const source = join(root, 'source');
+  try {
+    await writeSourceFixture(source);
+    const child = join(source, '_shared/nested/child.ts');
+    await rm(child);
+    await writeFile(join(root, 'outside.ts'), 'export const value = 1;');
+    await symlink(join(root, 'outside.ts'), child);
+    await assert.rejects(sourceTreeHash(source), /symbolic link/);
+    await rm(join(source, '_shared/nested'), { recursive: true });
+    await mkdir(join(root, 'outside'));
+    await writeFile(join(root, 'outside/child.ts'), 'export const value = 1;');
+    await symlink(join(root, 'outside'), join(source, '_shared/nested'));
+    await assert.rejects(sourceTreeHash(source), /symbolic link/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('workflow retains full shared closure and checks deployed and restored runtime bytes', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
+  const release = workflow.slice(workflow.indexOf('  release:'));
+  assert.match(release, /Install locked source-check dependencies\n\s+run: npm ci --ignore-scripts --no-audit --no-fund/);
+  assert.match(release, /source-expected supabase\/functions/);
+  assert.match(release, /\$\{\{ runner\.temp \}\}\/edge-before\/supabase\/functions\/\n/);
+  assert.doesNotMatch(release, /path: \$\{\{ runner\.temp \}\}\/edge-before\/supabase\/functions\/content-publish\//);
+  assert.match(release, /source-manifest "\$RUNNER_TEMP\/edge-before\/supabase\/functions"/);
+  const success = release.slice(release.indexOf('if supabase functions deploy'), release.indexOf('            exit 0'));
+  assert.match(success, /source-deployed supabase\/functions "\$RUNNER_TEMP\/edge-after\/supabase\/functions"/);
+  assert.match(success, /source-manifest "\$RUNNER_TEMP\/edge-after\/supabase\/functions"/);
+  assert.match(release, /source-compare \\\n\s+"\$RUNNER_TEMP\/edge-before\/supabase\/functions" \\\n\s+"\$RUNNER_TEMP\/edge-restored\/supabase\/functions"/);
+  assert.match(release, /--no-verify-jwt --use-api --workdir "\$RUNNER_TEMP\/edge-before"/);
+  const backupRecheck = release.indexOf('cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-before-recheck.sha256"');
+  const rollbackDeploy = release.indexOf('if ! supabase functions deploy');
+  assert.ok(backupRecheck > 0 && backupRecheck < rollbackDeploy, 'frozen backup hash must be checked before restoration deploy');
+  assert.match(release, /cmp -s "\$RUNNER_TEMP\/edge-source-before.sha256" "\$RUNNER_TEMP\/edge-source-restored.sha256"/);
+  assert.match(release, /rollback_succeeded_verified/);
+  assert.match(release, /if: \$\{\{ always\(\) && inputs\.mode == 'deploy' \}\}/);
+  assert.doesNotMatch(release, /SUPABASE_SERVICE_ROLE_KEY|db push/);
+});
+
+test('frozen full backup hash rejects shared or present-type drift even if both restore trees drift equally', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'flashcast-edge-frozen-'));
+  const before = join(root, 'before');
+  const restored = join(root, 'restored');
+  const files = {
+    ...runtimeFixture,
+    'content-publish/index.ts': runtimeFixture['content-publish/index.ts'] + 'import type { A } from "./types.ts";',
+    'content-publish/types.ts': 'export type A = string;',
+  };
+  try {
+    await writeSourceFixture(before, files);
+    const frozen = await sourceTreeHash(before);
+    for (const path of ['_shared/nested/child.ts', 'content-publish/types.ts']) {
+      const drifted = { ...files, [path]: files[path] + '// changed after backup capture\n' };
+      await writeSourceFixture(before, drifted);
+      await writeSourceFixture(restored, drifted);
+      assert.notEqual(await sourceTreeHash(before), frozen);
+      // Equality of two modified directories cannot substitute for the frozen hash.
+      assert.notEqual(await verifyRestoredSource(before, restored), frozen);
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }
