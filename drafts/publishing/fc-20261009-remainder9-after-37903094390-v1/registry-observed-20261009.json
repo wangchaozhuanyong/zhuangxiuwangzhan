@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "batch": "remaining-completion-after-37903094390",
+  "sourceRegistryPath": "drafts/publishing/fc-20261009-remaining-completion-v1/registry.json",
+  "sourceRegistrySha256": "8dec1fa819f93602470e4cf236973431261b26330309b43469660f43689a82eb",
+  "authorizationId": "owner-authorized-remaining-completion-20261009",
+  "executionDecision": {
+    "id": "owner-directed-remainder9-after-37903094390-v1",
+    "policyDecisionId": "exact-reviewed-remainder9-20261009-v1",
+    "departmentControllerReviewClaimed": false
+  },
+  "excludedCompletedTargets": [
+    "v17-owner-publisher-native-preparation-v2-20261007",
+    "v18-owner-publisher-native-preparation-v2-20261007",
+    "design-body-faq-unified-20261009-v1",
+    "bathroom-body-step-unified-20261009-v1",
+    "kitchen-initial-framework-body-v1",
+    "c01-bilingual-body-v1",
+    "c02-bilingual-body-v1",
+    "c03-bilingual-body-v1",
+    "c04-bilingual-body-v1",
+    "c05-bilingual-body-v1",
+    "c06-bilingual-body-v1"
+  ],
+  "remainingTargets": [
+    "c07-bilingual-body-v1",
+    "c08-bilingual-body-v1",
+    "c09-bilingual-body-v1",
+    "c10-bilingual-body-v1",
+    "c11-bilingual-body-v1",
+    "c12-bilingual-body-v1",
+    "c13-bilingual-body-v1",
+    "c14-bilingual-body-v1",
+    "c15-bilingual-body-v1"
+  ],
+  "remainingRowCount": 9,
+  "remainingQaCount": 9,
+  "completedProofPath": "drafts/publishing/fc-20261009-remainder9-after-37903094390-v1/completed-eleven-rechecked-proof.json",
+  "completedProofSha256": "bc6ac21909e661f26f25b0a85fbee20b653b7f41e243b3b49f7457fbcdb13c63",
+  "freshPermitReadRequiredBeforePublish": true,
+  "dryRunPrivatePermitRead": false,
+  "browserEvidencePolicy": "Fresh exact public row/13 QA and real mapped bilingual visible text every run. Three failed summaries remain provenance; publish refreshes all eleven full permit tuples before any new preview/issuer/write."
+}

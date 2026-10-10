@@ -1,16 +1,35 @@
 import { readFileSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { readFrozenRegistry, APPROVAL_ID } from "../../scripts/publish-remaining-completion-20261009.mjs";
-import { readRemainderRegistry, REMAINDER_NAME, REMAINDER_PATH, assertCompletedRow, assertCompletedPermits, verifyCompletedBeforeRemainder } from "../../scripts/publish-remainder18-after-37893433883.mjs";
+import { readRemainderRegistry, readRemainderHistoricalRegistry, assertRemainderRendererSource, REMAINDER_NAME, REMAINDER_PATH, assertCompletedRow, assertCompletedPermits, verifyCompletedBeforeRemainder } from "../../scripts/publish-remainder18-after-37893433883.mjs";
 import { inspectRawMetadata, assertRenderedEvidence, reviewedBodyPhrases } from "../../scripts/lib/publisher-public-readback.mjs";
 import { targetConfigs } from "../../scripts/publish-content-trust-fixes.mjs";
 
-const prepared = readRemainderRegistry();
+const prepared = readRemainderHistoricalRegistry();
 const completedEntries = prepared.original.entries.slice(0, 2);
 const proofFor = (entry) => prepared.proof.completed.find((item) => item.target === entry.target);
 const pagePass = { ok: true, rawStatus: 200, renderedOk: true, productionWrites: 0 };
 describe("the fixed forward 18-row remainder after an actual stopped run", () => {
+  it("allows historical permit regression while still rejecting an unreviewed executable renderer", () => {
+    const historical = readRemainderHistoricalRegistry();
+    expect(historical.proof.originalRunOutcome).toBe("FAILED_STOPPED");
+    const altered = structuredClone(historical);
+    altered.proof.sourceRendererSha256["src/pages/BlogDetail.tsx"] = "0".repeat(64);
+    expect(() => assertRemainderRendererSource(altered)).toThrow(/renderer source fingerprint differs/);
+    const currentMatches = Object.entries(historical.proof.sourceRendererSha256).every(([file, sha]) => {
+      return createHash("sha256").update(readFileSync(file)).digest("hex") === sha;
+    });
+    if (currentMatches) expect(readRemainderRegistry().proof).toEqual(historical.proof);
+    else {
+      expect(() => readRemainderRegistry()).toThrow(/renderer source fingerprint differs/);
+      const dir = `audits/content-publish-wrong-renderer-eighteen-${process.pid}`;
+      const result = spawnSync(process.execPath, ["--experimental-strip-types", "scripts/publish-remainder18-after-37893433883.mjs", `--artifact-dir=${dir}`],
+        { encoding: "utf8", env: { PATH: process.env.PATH, PUBLISH_TARGET: REMAINDER_NAME } });
+      expect(result.status).not.toBe(0); expect(result.stderr).toContain("renderer source fingerprint differs"); expect(existsSync(dir)).toBe(false);
+    }
+  });
   it("retains the failed original run while excluding only its two actually completed rows", () => {
     expect(readFrozenRegistry().entries).toHaveLength(20); expect(prepared.registry.entries).toHaveLength(18);
     expect(prepared.registry.sourceQaReceipts).toHaveLength(20);

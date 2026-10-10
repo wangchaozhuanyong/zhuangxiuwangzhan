@@ -100,6 +100,7 @@ on:
           - remaining-completion-20261009
           - remaining-completion-after-37893433883
           - remaining-completion-after-37898568406
+          - remaining-completion-after-37903094390
       approval_id:
         description: "Owner authorization reference used in the audit log."
         required: true
@@ -155,7 +156,7 @@ jobs:
             fi
             case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
           fi
-          if [ "$PUBLISH_TARGET" = "remaining-completion-after-37893433883" ] || [ "$PUBLISH_TARGET" = "remaining-completion-after-37898568406" ]; then
+          if [ "$PUBLISH_TARGET" = "remaining-completion-after-37893433883" ] || [ "$PUBLISH_TARGET" = "remaining-completion-after-37898568406" ] || [ "$PUBLISH_TARGET" = "remaining-completion-after-37903094390" ]; then
             if [ "$MANAGED_OPERATION" != "publish" ] || [ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ] || [ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]; then
               echo "::error::The fixed remainder requires the exact owner authorization and fresh completed-row guards without supplied permits."
               exit 1
@@ -207,7 +208,7 @@ jobs:
         run: npm ci
 
       - name: Check real Chrome before protected browser acceptance
-        if: ${{ inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'v18-owner-publisher-native-preparation-v2-20261007' }}
+        if: ${{ inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390' || inputs.target == 'v18-owner-publisher-native-preparation-v2-20261007' }}
         run: |
           node --input-type=module - <<'JS'
           import { chromium } from '@playwright/test';
@@ -228,7 +229,7 @@ jobs:
           test -n "$VITE_SUPABASE_ANON_KEY"
 
       - name: Validate or publish approved updates
-        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' }}
+        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -284,7 +285,7 @@ jobs:
           done
 
       - name: Preview the exact frozen completion batch without issuing permits
-        if: ${{ (inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406') && inputs.mode == 'dry-run' }}
+        if: ${{ (inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390') && inputs.mode == 'dry-run' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -300,10 +301,11 @@ jobs:
           batch_script=scripts/publish-remaining-completion-20261009.mjs
           if [ "$PUBLISH_TARGET" = "remaining-completion-after-37893433883" ]; then batch_script=scripts/publish-remainder18-after-37893433883.mjs; fi
           if [ "$PUBLISH_TARGET" = "remaining-completion-after-37898568406" ]; then batch_script=scripts/publish-remainder11-after-37898568406.mjs; fi
+          if [ "$PUBLISH_TARGET" = "remaining-completion-after-37903094390" ]; then batch_script=scripts/publish-remainder9-after-37903094390.mjs; fi
           node --experimental-strip-types "$batch_script" --mode=dry-run --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
 
       - name: Issue and consume one exact permit at a time for the frozen owner-directed batch
-        if: ${{ (inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406') && inputs.mode == 'publish' }}
+        if: ${{ (inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390') && inputs.mode == 'publish' }}
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
@@ -320,6 +322,7 @@ jobs:
           batch_script=scripts/publish-remaining-completion-20261009.mjs
           if [ "$PUBLISH_TARGET" = "remaining-completion-after-37893433883" ]; then batch_script=scripts/publish-remainder18-after-37893433883.mjs; fi
           if [ "$PUBLISH_TARGET" = "remaining-completion-after-37898568406" ]; then batch_script=scripts/publish-remainder11-after-37898568406.mjs; fi
+          if [ "$PUBLISH_TARGET" = "remaining-completion-after-37903094390" ]; then batch_script=scripts/publish-remainder9-after-37903094390.mjs; fi
           node --experimental-strip-types "$batch_script" --mode=publish --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
 
       - name: Upload audit package
