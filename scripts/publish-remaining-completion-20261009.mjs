@@ -232,6 +232,19 @@ export async function runFrozenBatch(registry, mode, environment, dependencies, 
   for (let index = 0; index < registry.entries.length; index += 1) {
     const entry = registry.entries[index]; const state = rows[index];
     try {
+      if (index === 0 && dependencies.verifyCompleted) {
+        assert(binding.batch === NATIVE_THREE_BATCH, "Completed-row recovery is restricted to the exact native three batch");
+        state.status = "RECOVERY_VERIFICATION_STARTED";
+        const recovered = await dependencies.verifyCompleted(entry);
+        assert(recovered.target === NATIVE_THREE_TARGETS[0] && recovered.priorRunId === 38066380587
+          && recovered.performedWrite === false && recovered.savedUpdatedAt
+          && recovered.privatePermitReadback === (mode === "publish"), "Exact original Saved recovery did not verify");
+        state.status = mode === "publish" ? "PUBLISH_RECOVERED" : "PREVIEW_SAVED_RECOVERED";
+        state.performedWrite = false; state.savedUpdatedAt = recovered.savedUpdatedAt;
+        state.priorRunId = recovered.priorRunId; state.priorPermitId = recovered.permitId;
+        dependencies.saveSummary({ batch: binding.batch, mode, registrySha256: binding.sha256, rows });
+        continue;
+      }
       state.status = "PREVIEW_STARTED";
       await dependencies.preview(entry);
       const artifacts = dependencies.readPreview(entry); const current = await dependencies.readCurrent(entry);
@@ -323,6 +336,7 @@ export async function runFrozenCommand(options = {}) {
   };
   const dependencies = {
     assertReadback: options.assertReadback,
+    verifyCompleted: options.verifyCompleted ? (entry) => options.verifyCompleted({ entry, mode, environment, dependencies, write, artifactRoot }) : undefined,
     now: Date.now,
     saveSummary: (summary) => write(join(artifactRoot, "frozen-batch-summary.json"), summary),
     savePermit: (entry, evidence) => write(join(targetDir(entry), "batch-permit-evidence.json"), evidence),

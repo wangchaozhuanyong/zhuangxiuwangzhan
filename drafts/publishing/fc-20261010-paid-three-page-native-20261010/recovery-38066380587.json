@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "runId": 38066380587,
+  "runAttempt": 1,
+  "workflowSha": "1b1909437c4de6e6c7764a416e92d6468276f23f",
+  "actorId": 276684684,
+  "workflowId": 351424533,
+  "batch": "paid-three-page-native-20261010",
+  "registrySha256": "79d5667a3a03d36b2ffa87b1355511a59ae6750f3799b09165da9b882169b3e0",
+  "exactRecoveredTarget": "paid-three-page-builtin-exact-fields-v1",
+  "permitId": "14ae24de-f39a-44cb-9dde-4d1a4a399edc",
+  "savedUpdatedAt": "2026-10-10T16:08:22.003433+00:00",
+  "officialOriginalArtifactDigest": "sha256:495d27ea35428e7df51e3f002f9f66a7a8c86d43ca165c556cdf0ddaba832c66",
+  "proofs": {
+    "workflow": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38066380587/workflow.json",
+      "sha256": "90d2d4bf5854476287228746af171bdd4f8595b67202fdd1936ffc87adab2cf3"
+    },
+    "summary": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38066380587/summary.json",
+      "sha256": "79c87517f1016e148258ae6d0661ef966e87a6e621195fce928645ffd4bd771b"
+    },
+    "receipt": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38066380587/receipt.json",
+      "sha256": "c8d3e3157bb6b2144db2b507566e1b994318e573962823598702b86f0c6467f2"
+    },
+    "permitEvidence": {
+      "path": "drafts/publishing/fc-20261010-paid-three-page-native-20261010/recovery-38066380587/permitEvidence.json",
+      "sha256": "6b7fe40a92c5b29eebf0e1195c3d2c6a55e9c460abca26ec03bee0f1d3b84c0f"
+    }
+  },
+  "originalRunConclusion": "failure",
+  "failureIsNotReclassified": true,
+  "maximumNewWrites": 2
+}
