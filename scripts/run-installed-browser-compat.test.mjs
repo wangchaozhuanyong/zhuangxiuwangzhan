@@ -59,11 +59,11 @@ test("negative request evidence fails closed when guard coverage is unavailable 
   assert.equal(scope.fetch, replacement);
 });
 
-test("QA metrics whitelist numeric evidence and known states without saving private driver payloads", () => {
-  const result = publicQaMetrics({ leadRequestAttempts: 0, guardInstalled: true, states: ["flying", "private-session", "done"],
+test("QA metrics whitelist numeric animation evidence without saving private driver payloads", () => {
+  const result = publicQaMetrics({ leadRequestAttempts: 0, guardInstalled: true, sheenConfigured: true, sheenChanges: 12, glowChanges: 8, states: ["private-session"],
     contactStage: "invalid_form_submit", deviceName: "https://private.test/session", accessKey: "synthetic-private-key", response: { value: "private-body" },
     inputTop: Infinity, menuStage: "synthetic-private-key", arbitraryCounter: 10 });
-  assert.deepEqual(result, { guardInstalled: true, leadRequestAttempts: 0, contactStage: "invalid_form_submit", states: ["flying", "done"] });
+  assert.deepEqual(result, { guardInstalled: true, leadRequestAttempts: 0, sheenConfigured: true, sheenChanges: 12, glowChanges: 8, contactStage: "invalid_form_submit" });
 });
 
 test("screenshots allow public pages and QA-only input while excluding Admin, provider and user data", () => {
@@ -514,8 +514,10 @@ test("device evidence includes returned versions but excludes provider credentia
   assert.equal(publicDeviceIdentity({ browserVersion: "https://private.test?token=secret" }).browserVersion, null);
 });
 
-const motion = { activeFrames: 14, states: ["waiting", "flying", "settling", "done"], reducedMotion: false,
-  maxAlignmentError: .5, maxButtonShift: 0, squareRatio: 1, insideViewport: true, hasViewBox: false };
+const motion = { visibleFrames: 400, reducedMotion: false, observationMs: 6400,
+  sheenConfigured: true, glowConfigured: true, animationsDisabled: false, sheenChanges: 80, glowChanges: 60,
+  sheenMinOpacity: 0, sheenMaxOpacity: .75, glowMinOpacity: 0, glowMaxOpacity: .85,
+  maxButtonShift: 0, squareRatio: 1, insideViewport: true, finalFixed: true };
 
 test("actual Selenium capabilities are read through their supported get API", () => {
   const caps = new Capabilities({ browserName: "chrome", browserVersion: "141.0.7390.65", platformName: "android", "appium:platformVersion": "13.0", "appium:deviceName": "Samsung Galaxy S23 Ultra", accessKey: "never-copy" });
@@ -523,15 +525,26 @@ test("actual Selenium capabilities are read through their supported get API", ()
   assert.deepEqual(publicDeviceIdentity(caps), { browserName: "chrome", browserVersion: "141.0.7390.65", os: "android", osVersion: "13.0", deviceName: "Samsung Galaxy S23 Ultra" });
 });
 
-test("motion evidence cannot pass without actual animation frames or with a shifted landing frame", () => {
+test("button animation evidence requires both effects to change across a complete cycle", () => {
   assert.equal(assertMobileMotion(motion), true);
-  assert.throws(() => assertMobileMotion({ ...motion, activeFrames: 0 }), /MOTION_NOT_OBSERVED/);
-  assert.throws(() => assertMobileMotion({ ...motion, maxAlignmentError: 3 }), /MOTION_FRAME_MISALIGNED/);
+  for (const changes of [{ visibleFrames: 0 }, { observationMs: 500 }, { sheenChanges: 0 }, { glowChanges: 0 },
+    { sheenMinOpacity: .75 }, { glowMinOpacity: .85 }]) {
+    assert.throws(() => assertMobileMotion({ ...motion, ...changes }), /MOTION_NOT_OBSERVED/);
+  }
+  for (const changes of [{ sheenConfigured: false }, { glowConfigured: false }]) {
+    assert.throws(() => assertMobileMotion({ ...motion, ...changes }), /BUTTON_ANIMATION_CONFIG_INVALID/);
+  }
   assert.throws(() => assertMobileMotion({ ...motion, maxButtonShift: 6 }), /FLOATING_BUTTON_JUMPED/);
   assert.throws(() => assertMobileMotion({ ...motion, squareRatio: 2 }), /MOBILE_BUTTON_GEOMETRY_INVALID/);
+  assert.throws(() => assertMobileMotion({ ...motion, insideViewport: false }), /MOBILE_BUTTON_GEOMETRY_INVALID/);
 });
 
-test("reduced motion requires measured settling frames without demanding a meteor flight", () => {
-  assert.equal(assertMobileMotion({ ...motion, reducedMotion: true, states: ["settling", "done"] }), true);
-  assert.throws(() => assertMobileMotion({ ...motion, states: ["settling", "done"] }), /MOTION_PHASE_MISSING/);
+test("reduced motion disables both effects while preserving the stable button", () => {
+  const reduced = { ...motion, reducedMotion: true, observationMs: 350, sheenConfigured: false, glowConfigured: false,
+    animationsDisabled: true, sheenChanges: 0, glowChanges: 0, sheenMaxOpacity: 0, glowMaxOpacity: 0 };
+  assert.equal(assertMobileMotion(reduced), true);
+  for (const changes of [{ animationsDisabled: false }, { sheenMaxOpacity: .75 }, { glowMaxOpacity: .85 }]) {
+    assert.throws(() => assertMobileMotion({ ...reduced, ...changes }), /REDUCED_MOTION_NOT_RESPECTED/);
+  }
+  assert.throws(() => assertMobileMotion({ ...reduced, maxButtonShift: 6 }), /FLOATING_BUTTON_JUMPED/);
 });

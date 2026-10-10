@@ -8,6 +8,7 @@ import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 
 const state = vi.hoisted(() => ({
   language: "en" as "en" | "zh",
+  whatsappHref: "https://wa.me/601100000000?text=Configured%20message",
   query: { data: [], isLoading: false, isFetching: false, isInitialError: false, refetch: vi.fn() },
 }));
 
@@ -18,6 +19,9 @@ vi.mock("@/hooks/usePublishedContent", () => ({
   usePublishedHomeServiceAreas: () => state.query,
 }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: state.language }) }));
+vi.mock("@/hooks/useSiteSettings", () => ({
+  useSiteSettings: () => ({ whatsapp_url: () => state.whatsappHref }),
+}));
 
 // Match the existing presentation tests' complete bundle shape so omissions do
 // not accidentally test fallback data in place of explicitly supplied CMS data.
@@ -59,6 +63,7 @@ describe("SchemeAHome composed CMS behavior", () => {
 
   beforeEach(() => {
     state.language = "en";
+    state.whatsappHref = "https://wa.me/601100000000?text=Configured%20message";
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -83,15 +88,21 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero).toHaveAttribute("data-hero-art", "custom");
     expect(hero?.querySelector("img")).toHaveAttribute("src", image);
     expect(hero?.querySelector("img")).toHaveAttribute("alt", alt);
-    const quoteLink = Array.from(hero!.querySelectorAll("a")).find((link) => link.textContent === buttonLabel);
-    expect(quoteLink).toHaveAttribute("href", `/${language}/quote?source=homepage-cms#quote-form`);
+    const heroLinks = hero!.querySelectorAll("a");
+    expect(heroLinks).toHaveLength(1);
+    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "联系 WhatsApp" : "Contact WhatsApp");
+    expect(heroLinks[0]).toHaveAttribute("href", state.whatsappHref);
+    expect(heroLinks[0]).toHaveAttribute("target", "_blank");
+    expect(heroLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
     for (const slug of originalServiceSlugs) {
       expect(container.querySelector(`[data-home-section="services"] a[href="/${language}/services/${slug}"]`)).not.toBeNull();
     }
 
-    // Changing the CMS action to a non-quote destination must not force a form hash.
+    // Legacy CMS actions cannot replace the requested WhatsApp entry point.
+    state.whatsappHref = "https://wa.me/601100000001?text=Updated%20message";
     render({ ...content, heroSlides: [{ ...content.heroSlides[0], buttonUrl: "/contact" }] });
-    expect(container.querySelector(`[data-home-section="hero"] a[href="/${language}/contact"]`)).toHaveTextContent(buttonLabel);
+    expect(container.querySelector('[data-home-section="hero"] a')).toHaveAttribute("href", state.whatsappHref);
+    expect(container.querySelector(`[data-home-section="hero"] a[href="/${language}/contact"]`)).toBeNull();
   });
 
   it("renders every passed FAQ answer and keeps the final answer operable", () => {

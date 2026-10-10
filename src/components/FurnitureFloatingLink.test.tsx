@@ -1,13 +1,11 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter, useNavigate } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { furnitureText } from "@/i18n/furnitureText";
 import { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
 import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
-
-vi.mock("@/components/FurnitureArrivalMotion", () => ({ default: () => null }));
 
 for (const language of ["en", "zh"] as const) {
   describe(`furniture entry ${language} route and accessibility preservation`, () => {

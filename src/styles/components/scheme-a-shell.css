@@ -483,6 +483,45 @@
     flex-shrink: 0;
   }
 
+  .scheme-a-chrome__desktop-contacts {
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .scheme-a-chrome__contact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border: 1px solid hsl(var(--input));
+    border-radius: var(--radius);
+    color: var(--public-accent);
+    background: var(--public-surface-card);
+    transition: background-color var(--motion-control) var(--motion-ease);
+  }
+
+  .scheme-a-chrome__contact:hover {
+    background: hsl(var(--secondary));
+  }
+
+  .scheme-a-chrome__contact:active {
+    background: var(--public-surface-section);
+  }
+
+  .scheme-a-chrome__contact svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (min-width: 1180px) {
+    .scheme-a-chrome__desktop-contacts {
+      display: flex;
+    }
+  }
+
   .scheme-a-language-switch {
     display: inline-flex;
     align-items: center;

@@ -354,8 +354,9 @@ export function publicQaMetrics(value) {
     "trustedTouchStartObserved", "trustedClickObserved", "pressedDuringEvent", "keyboardHeightBefore", "keyboardHeightAfter", "focusedName", "typedNamePresent",
     "height", "inputVisible", "inputTop", "inputBottom", "viewportOffset", "menuTop", "menuBottom", "viewportHeight", "keyboardDismissed", "invalidPhoneDisplayed",
     "leadRequestSent", "guardInstalled", "leadRequestAttempts", "networkGuardRestored", "validationMessagePresent", "firstInvalidFieldFocused", "whatsappTargetVerified",
-    "clickedExternalMessageLink", "inspectedScrollPositions", "overlaps", "distinctNativeScrollPositions", "activeFrames", "reducedMotion", "maxAlignmentError", "maxButtonShift",
-    "minimumViewportHeight", "maximumViewportHeight", "hasViewBox", "squareRatio", "insideViewport", "hiddenFrames", "visibleFrames", "firstVisibleX", "firstVisibleY",
+    "clickedExternalMessageLink", "inspectedScrollPositions", "overlaps", "distinctNativeScrollPositions", "reducedMotion", "maxButtonShift",
+    "sheenConfigured", "glowConfigured", "animationsDisabled", "sheenChanges", "glowChanges", "sheenMinOpacity", "sheenMaxOpacity", "glowMinOpacity", "glowMaxOpacity", "observationMs",
+    "minimumViewportHeight", "maximumViewportHeight", "squareRatio", "insideViewport", "hiddenFrames", "visibleFrames", "firstVisibleX", "firstVisibleY",
     "finalX", "finalY", "finalFixed", "documentComplete", "pageVisible", "collectorResultPresent", "motionEntryPresent"];
   const result = Object.fromEntries(fields.filter(key => typeof value[key] === "boolean" || (typeof value[key] === "number" && Number.isFinite(value[key])))
     .map(key => [key, value[key]]));
@@ -369,7 +370,6 @@ export function publicQaMetrics(value) {
     contactStage: /^(open_contact|keyboard_appearance|native_typing|native_keyboard_dismissal|menu_after_keyboard|keyboard_dismissal|invalid_form_submit)$/,
   };
   for (const [key, pattern] of Object.entries(strings)) if (typeof value[key] === "string" && pattern.test(value[key])) result[key] = value[key];
-  if (Array.isArray(value.states)) result.states = [...new Set(value.states.filter(state => ["flying", "settling", "done", "skipped", "idle"].includes(state)))];
   return result;
 }
 
@@ -385,9 +385,14 @@ export function publicScreenshotPage(baseOrigin, scope = globalThis) {
 }
 
 export function assertMobileMotion(observation) {
-  if (!observation || observation.activeFrames < 3 || !observation.states?.includes("done")) throw new Error("MOTION_NOT_OBSERVED");
-  if (!observation.reducedMotion && (!observation.states.includes("flying") || !observation.states.includes("settling"))) throw new Error("MOTION_PHASE_MISSING");
-  if (!Number.isFinite(observation.maxAlignmentError) || observation.maxAlignmentError > 1.25 || observation.hasViewBox) throw new Error("MOTION_FRAME_MISALIGNED");
+  if (!observation || !Number.isFinite(observation.visibleFrames) || observation.visibleFrames < 1 || !observation.finalFixed) throw new Error("MOTION_NOT_OBSERVED");
+  if (observation.reducedMotion) {
+    if (!observation.animationsDisabled || observation.sheenMaxOpacity !== 0 || observation.glowMaxOpacity !== 0) throw new Error("REDUCED_MOTION_NOT_RESPECTED");
+  } else {
+    if (!observation.sheenConfigured || !observation.glowConfigured) throw new Error("BUTTON_ANIMATION_CONFIG_INVALID");
+    if (!(observation.observationMs >= 5600 && observation.sheenChanges >= 2 && observation.glowChanges >= 2
+      && observation.sheenMaxOpacity - observation.sheenMinOpacity > .05 && observation.glowMaxOpacity - observation.glowMinOpacity > .05)) throw new Error("MOTION_NOT_OBSERVED");
+  }
   if (!Number.isFinite(observation.maxButtonShift) || observation.maxButtonShift > 1) throw new Error("FLOATING_BUTTON_JUMPED");
   if (!Number.isFinite(observation.squareRatio) || Math.abs(observation.squareRatio - 1) > .025 || !observation.insideViewport) throw new Error("MOBILE_BUTTON_GEOMETRY_INVALID");
   return true;
