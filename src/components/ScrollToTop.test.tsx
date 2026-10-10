@@ -51,6 +51,68 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.useRealTimers(); });
 
 describe("single public scroll owner", () => {
+  it("temporarily suppresses browser anchoring until the target language paints, then restores the original policy", async () => {
+    const style = document.documentElement.style;
+    // JSDOM does not implement this CSS property. Exercise lifecycle ownership
+    // here; the actual scroll effect is checked in native Chrome separately.
+    const anchor = { value: "auto", priority: "important" };
+    const get = style.getPropertyValue.bind(style);
+    const priority = style.getPropertyPriority.bind(style);
+    const set = style.setProperty.bind(style);
+    const remove = style.removeProperty.bind(style);
+    vi.spyOn(style, "getPropertyValue").mockImplementation((key) => key === "overflow-anchor" ? anchor.value : get(key));
+    vi.spyOn(style, "getPropertyPriority").mockImplementation((key) => key === "overflow-anchor" ? anchor.priority : priority(key));
+    vi.spyOn(style, "setProperty").mockImplementation((key, value, importance) => {
+      if (key === "overflow-anchor") { anchor.value = value ?? ""; anchor.priority = importance ?? ""; }
+      else set(key, value, importance);
+    });
+    vi.spyOn(style, "removeProperty").mockImplementation((key) => {
+      if (key !== "overflow-anchor") return remove(key);
+      const previous = anchor.value; anchor.value = ""; anchor.priority = ""; return previous;
+    });
+    try {
+      await mount("/zh/contact");
+      readAt(1750);
+      await go("/en/contact");
+      expect(style.getPropertyValue("overflow-anchor")).toBe("none");
+      window.dispatchEvent(new CustomEvent("public-route-ready", { detail: { routeKey: "/zh/contact" } }));
+      await act(async () => vi.advanceTimersByTime(40));
+      expect(style.getPropertyValue("overflow-anchor")).toBe("none");
+      window.dispatchEvent(new CustomEvent("public-route-ready", { detail: { routeKey: "/en/contact" } }));
+      await act(async () => vi.advanceTimersByTime(40));
+      expect(style.getPropertyValue("overflow-anchor")).toBe("auto");
+      expect(style.getPropertyPriority("overflow-anchor")).toBe("important");
+      expect(window.scrollY).toBe(1750);
+      await go("/zh/contact");
+      expect(style.getPropertyValue("overflow-anchor")).toBe("none");
+      window.dispatchEvent(new Event("wheel"));
+      expect(style.getPropertyValue("overflow-anchor")).toBe("auto");
+    } finally { vi.restoreAllMocks(); }
+  });
+
+  it("keeps language-only updates at the current position and does not refocus the unchanged fragment", async () => {
+    await mount("/zh/blog?filter=budget#articles");
+    readAt(1750);
+    const button = document.getElementById("topic")!;
+    button.focus();
+    await go("/en/blog?filter=budget#articles");
+    expect(window.scrollY).toBe(1750);
+    expect(document.activeElement).toBe(button);
+    window.dispatchEvent(new CustomEvent("public-route-layout", { detail: { routeKey: "/en/blog?filter=budget" } }));
+    window.dispatchEvent(new CustomEvent("public-route-ready", { detail: { routeKey: "/en/blog?filter=budget" } }));
+    expect(window.scrollY).toBe(1750);
+    expect(document.activeElement).toBe(button);
+  });
+
+  it("records both language entries for back/forward without changing detail navigation", async () => {
+    await mount("/zh/services/design"); readAt(640);
+    await go("/en/services/design"); expect(window.scrollY).toBe(640);
+    readAt(910);
+    await go("/en/services/kitchen"); expect(window.scrollY).toBe(0);
+    await go(-1); expect(window.scrollY).toBe(910);
+    await go(-1); expect(window.scrollY).toBe(640);
+    await go(1); expect(window.scrollY).toBe(910);
+  });
   it("records an admin filtered entry for detail/back without resetting its scroll", async () => {
     await mount("/admin/services"); readAt(520);
     await go("/admin/services?status=published&page=1"); expect(window.scrollY).toBe(520);

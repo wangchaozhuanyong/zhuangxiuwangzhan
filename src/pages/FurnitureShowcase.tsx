@@ -1,3 +1,4 @@
+import "@/lib/furnitureQuerySeed";
 import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { MouseEvent } from "react";

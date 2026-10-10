@@ -46,6 +46,7 @@ export function DeferredSmartImage({
       <SmartImage
         {...imageProps}
         loading={nearViewport || imageProps.loading === "eager" ? "eager" : "lazy"}
+        loadAdmitted={nearViewport || imageProps.loading === "eager"}
         revealOnLoad={imageProps.revealOnLoad ?? false}
         showFailureFallback
         className={className}

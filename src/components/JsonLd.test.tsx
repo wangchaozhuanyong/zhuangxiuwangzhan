@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
-import { JsonLdBlogPosting, JsonLdLocalBusiness } from "@/components/JsonLd";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { JsonLdBlogPosting, JsonLdLocalBusiness, JsonLdOrganization } from "@/components/JsonLd";
 import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
 import { MemoryRouter } from "react-router-dom";
 import { SchemeAFooter, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
@@ -10,6 +10,9 @@ import { contactPageText } from "@/i18n/contactPageText";
 import { footerCopy } from "@/i18n/footerText";
 
 vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); });
+const languageState = vi.hoisted(() => ({ language: "en" as "en" | "zh" }));
+vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: languageState.language }) }));
+beforeEach(() => { languageState.language = "en"; });
 
 describe("JsonLdBlogPosting", () => {
   it("retains article metadata without advertising an unverified cover", () => {
@@ -54,6 +57,62 @@ describe("JsonLdBlogPosting", () => {
 });
 
 describe("JsonLdLocalBusiness", () => {
+  it.each(["en", "zh"] as const)("associates all confirmed Chinese names with the same organization and business in %s", (language) => {
+    languageState.language = language;
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(["site-settings"], fallbackSiteSettings);
+    const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}><JsonLdOrganization /><JsonLdLocalBusiness /></QueryClientProvider>);
+    const document = new DOMParser().parseFromString(html, "text/html");
+    const identities = Array.from(document.querySelectorAll('script[type="application/ld+json"]')).map((script) => JSON.parse(script.textContent || "{}"));
+    expect(identities.map((identity) => identity["@type"])).toEqual(["Organization", "HomeAndConstructionBusiness"]);
+    for (const identity of identities) {
+      expect(identity.name).toBe(fallbackSiteSettings.company_name);
+      expect(identity.url).toBe("https://flashcast.com.my");
+      expect(identity.alternateName).toEqual(expect.arrayContaining(["FLASH CAST", "闪铸装饰", "闪铸设计", "闪铸装修"]));
+      expect(identity.alternateName).not.toContain(identity.name);
+      expect(new Set(identity.alternateName).size).toBe(identity.alternateName.length);
+    }
+  });
+
+  it.each(["en", "zh"] as const)("renders the Chinese brand association as ordinary footer text only in Chinese (%s)", (language) => {
+    languageState.language = language;
+    const route = `/${language}/`;
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(["site-settings"], fallbackSiteSettings);
+    const html = renderToStaticMarkup(<MemoryRouter initialEntries={[route]}><QueryClientProvider client={queryClient}>
+      <PublicChromeProvider isAdminRoute={false} routeKey={route}><SchemeAFooter /></PublicChromeProvider>
+    </QueryClientProvider></MemoryRouter>);
+    const document = new DOMParser().parseFromString(html, "text/html");
+    const footer = document.querySelector(".scheme-a-footer__studio")!;
+    const line = "中文品牌：闪铸装饰 · 闪铸设计 · 闪铸装修";
+    expect(footer).not.toBeNull();
+    if (language === "zh") {
+      const brandText = Array.from(footer.querySelectorAll("*")).find((element) => element.textContent === line);
+      expect(brandText).not.toBeUndefined();
+      expect(brandText?.closest('[aria-hidden="true"], [hidden], .sr-only, script, noscript')).toBeNull();
+      expect(footer.textContent).toContain(line);
+    } else {
+      for (const name of ["闪铸装饰", "闪铸设计", "闪铸装修"]) expect(footer.textContent).not.toContain(name);
+      expect(footer.textContent).not.toContain("中文品牌");
+    }
+  });
+
+  it("does not assign FLASH CAST Chinese names to another configured company", () => {
+    languageState.language = "zh";
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(["site-settings"], { ...fallbackSiteSettings, company_name: "Different company", brand_name: "Different brand" });
+    const html = renderToStaticMarkup(<MemoryRouter initialEntries={["/zh/"]}><QueryClientProvider client={queryClient}>
+      <PublicChromeProvider isAdminRoute={false} routeKey="/zh/"><SchemeAFooter /><JsonLdOrganization /><JsonLdLocalBusiness /></PublicChromeProvider>
+    </QueryClientProvider></MemoryRouter>);
+    for (const name of ["闪铸装饰", "闪铸设计", "闪铸装修"]) expect(html).not.toContain(name);
+    const document = new DOMParser().parseFromString(html, "text/html");
+    for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
+      const identity = JSON.parse(script.textContent || "{}");
+      expect(identity.name).toBe("Different company");
+      expect(identity.alternateName).toEqual(["Different brand"]);
+    }
+  });
+
   it("shows the owner-confirmed daily hours in English and Chinese contact and footer copy", () => {
     expect(contactPageText.en.hoursText).toBe("Daily, 10:00 AM–7:00 PM (Malaysia time). Visits and consultations by prior arrangement");
     expect(contactPageText.zh.hoursText).toBe("每天10:00–19:00（马来西亚时间）。到访与咨询请提前联系安排");

@@ -30,6 +30,7 @@ import { siteConfig } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { buildQuotePath } from "@/lib/quoteContext";
 import { plainTextParagraphs, stripHtml } from "@/lib/text";
+import { findSelangorWarehouseIntroLink } from "@/lib/selangorWarehouseIntroLink";
 
 export default function LocationPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -62,6 +63,10 @@ export default function LocationPage() {
 
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
   const introParagraphs = plainTextParagraphs(translateDisplayText(location.intro || "", language));
+  const warehouseLink = findSelangorWarehouseIntroLink(introParagraphs, location.slug, language);
+  const introContent = introParagraphs.map((paragraph, index) => warehouseLink?.paragraphIndex === index
+    ? <>{warehouseLink.before}<Link to={warehouseLink.to} className="underline underline-offset-4">{warehouseLink.anchor}</Link>{warehouseLink.after}</>
+    : paragraph);
   const faqs = location.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) }));
   const projectItems: SchemeAListingItem[] = location.projects.map((project, index) => ({
     id: `${project.title}-${index}`,
@@ -106,7 +111,7 @@ export default function LocationPage() {
         { label: language === "zh" ? "服务" : "Service", value: language === "zh" ? "设计 / 装修" : "Design / Build" },
         { label: language === "zh" ? "协调" : "Coordination", value: language === "zh" ? "管理处申请" : "Management approval" },
       ]} />
-      <SchemeASection title={copy.trusted(location.name)} description={introParagraphs}>
+      <SchemeASection title={copy.trusted(location.name)} description={introContent}>
         <SchemeAFeatureList items={location.commonNeeds.map(display)} />
       </SchemeASection>
       {location.constructionNotes ? <SchemeASection title={copy.permitNotes} description={display(location.constructionNotes)}><SchemeAFeatureList items={location.propertyTypes.map(display)} /></SchemeASection> : null}

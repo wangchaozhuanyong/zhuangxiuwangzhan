@@ -133,6 +133,11 @@ export const prefetchPublishedRouteContent = async (
   language: Language,
 ) => {
   const tasks = getPublicRoutePrefetchTasks(pathname, language);
+  // claimPublicQuerySeed consumes each client/key once. Register the furniture
+  // mapper before claiming, including hover/keyboard prefetch before page mount.
+  if (tasks.some((task) => task.queryKey[1] === "furniture_catalog")) {
+    await import("./furnitureQuerySeed");
+  }
   await Promise.allSettled(tasks.map((task) => queryClient.prefetchQuery({
     ...task,
     initialData: () => claimPublicQuerySeed(queryClient, task.queryKey),

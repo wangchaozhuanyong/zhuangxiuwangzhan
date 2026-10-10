@@ -44,7 +44,7 @@ export default function ServiceDetail() {
   // form while localized data arrives, rather than replacing it with a loader.
   if (slug === "surface-repair" && service && (cmsService || !isLoading || repairContentMounted.current)) {
     repairContentMounted.current = true;
-    return <SurfaceRepairContent service={service} />;
+    return <SurfaceRepairContent service={service} pending={isLoading} />;
   }
 
   if (isLoading && (!service || ((slug === "design" || slug === "surface-repair") && !cmsService))) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState variant="loading">{copy.loadingDescription}</SchemeAContentState></main>;

@@ -22,6 +22,7 @@ import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
 import { translateDisplayText } from "../src/i18n/displayLabels";
 import { stripHtml } from "../src/lib/text";
 import { getSocialProfileUrls } from "../src/lib/socialProfiles";
+import { getPublicSiteName, getPublicBrandAliases, getChineseBrandLine, withChineseBrandMetadata } from "../src/i18n/brandIdentity";
 import {
   PUBLIC_LANGUAGE_COOKIE,
   readCookieValue,
@@ -646,6 +647,8 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
   const canonical = new URL(meta.canonical);
   const origin = canonical.origin;
   const siteName = siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.";
+  const websiteName = getPublicSiteName(siteSettings);
+  const aliases = getPublicBrandAliases(siteSettings);
   const logo = normalizeBuiltInLogoUrl(siteSettings?.logo_url, origin) || `${origin}${DEFAULT_LOGO_VERSIONED_WEBP_PATH}`;
   const image = meta.ogImage === DEFAULT_OG_IMAGE
     ? siteSettings?.og_image_url || meta.ogImage || DEFAULT_OG_IMAGE
@@ -721,7 +724,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         "@type": "HomeAndConstructionBusiness",
         "@id": businessId,
         name: siteName,
-        alternateName: siteSettings?.brand_name || "FLASH CAST",
+        alternateName: aliases.filter((name) => name !== siteName),
         url: origin,
         sameAs: getSocialProfileUrls(siteSettings),
         logo,
@@ -788,7 +791,8 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         "@type": "WebSite",
         "@id": websiteId,
         url: origin,
-        name: siteName,
+        name: websiteName,
+        alternateName: aliases.filter((name) => name !== websiteName),
         inLanguage: ["en", "zh-CN"],
         publisher: { "@id": businessId },
       },
@@ -833,7 +837,7 @@ const injectEdgeStructuredData = (html: string, meta: SeoEntry, siteSettings?: S
   );
 };
 
-const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "") => {
+const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "", brandLine: string | null = null) => {
   if (html.includes("data-flashcast-geo-summary")) return html;
 
   const publicKey = new URL(meta.canonical).pathname;
@@ -844,7 +848,8 @@ const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "") => {
   const canonical = escapeHtml(meta.canonical);
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
   const preparation = buildQuotePreparationBody(publicKey);
-  const summary = readableBody ? `<noscript data-flashcast-geo-summary>${readableBody}${preparation}</noscript>` : `<noscript data-flashcast-geo-summary><section lang="${lang}" aria-label="Page summary"><h1>${title}</h1><p>${description}</p><p><a href="${canonical}">${canonical}</a></p></section>${preparation}</noscript>`;
+  const brand = brandLine ? `<p>${escapeHtml(brandLine)}</p>` : "";
+  const summary = readableBody ? `<noscript data-flashcast-geo-summary>${readableBody}${brand}${preparation}</noscript>` : `<noscript data-flashcast-geo-summary><section lang="${lang}" aria-label="Page summary"><h1>${title}</h1><p>${description}</p>${brand}<p><a href="${canonical}">${canonical}</a></p></section>${preparation}</noscript>`;
   return html.replace(/<body([^>]*)>/i, `<body$1>\n    ${summary}`);
 };
 
@@ -1300,7 +1305,8 @@ const fetchDynamicRouteState = async (
     };
   }
 
-  const [sitePageRows, cmsPageRows] = await Promise.all([
+  const collectionTable = dynamicCollectionTableByPath[path];
+  const [sitePageRows, cmsPageRows, latestRows] = await Promise.all([
     fetchFreshPublicRows(env, "site_pages", (url) => {
       url.searchParams.set("select", "*");
       url.searchParams.set("status", "eq.published");
@@ -1314,16 +1320,15 @@ const fetchDynamicRouteState = async (
       url.searchParams.set("path", `eq.${path}`);
       url.searchParams.set("limit", "1");
     }),
-  ]);
-  const row = sitePageRows?.[0] || cmsPageRows?.[0];
-  const collectionTable = dynamicCollectionTableByPath[path];
-  if (!row && collectionTable && fallback) {
-    const latestRows = await fetchFreshPublicRows(env, collectionTable, (url) => {
+    collectionTable ? fetchFreshPublicRows(env, collectionTable, (url) => {
       url.searchParams.set("select", "id,updated_at");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("order", "updated_at.desc");
       url.searchParams.set("limit", "1");
-    });
+    }) : Promise.resolve(null),
+  ]);
+  const row = sitePageRows?.[0] || cmsPageRows?.[0];
+  if (!row && collectionTable && fallback) {
     const latest = latestRows?.[0];
     if (latest) {
       return {
@@ -1337,15 +1342,7 @@ const fetchDynamicRouteState = async (
   if (!row) return null;
   const kind: DynamicRouteKind = sitePageRows?.[0] ? "site_page" : "cms_page";
   const versionParts: unknown[] = [...collectContentTimestamps(row), row.id, row.path];
-  if (collectionTable) {
-    const latestRows = await fetchFreshPublicRows(env, collectionTable, (url) => {
-      url.searchParams.set("select", "updated_at");
-      url.searchParams.set("status", "eq.published");
-      url.searchParams.set("order", "updated_at.desc");
-      url.searchParams.set("limit", "1");
-    });
-    if (latestRows?.[0]?.updated_at) versionParts.push(latestRows[0].updated_at);
-  }
+  if (latestRows?.[0]?.updated_at) versionParts.push(latestRows[0].updated_at);
   return { kind, row, meta: buildDynamicSeoEntry(key, row, kind, fallback), contentVersion: hashContentVersion(versionParts) };
 };
 
@@ -1683,13 +1680,15 @@ const isRedirectOnlySitemapPath = (pathname: string) => Boolean(
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null, readableBody = "") => {
   const safeMeta = {
     ...meta,
-    title: sanitizePublicDraftMarkers(meta.title),
-    description: sanitizePublicDraftMarkers(meta.description),
+    ...withChineseBrandMetadata({
+      title: sanitizePublicDraftMarkers(meta.title),
+      description: sanitizePublicDraftMarkers(meta.description),
+    }, meta.lang, new URL(meta.canonical).pathname, siteSettings),
   };
   const title = escapeHtml(safeMeta.title);
   const description = escapeHtml(safeMeta.description);
   const canonical = escapeHtml(meta.canonical);
-  const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
+  const siteName = escapeHtml(getPublicSiteName(siteSettings));
   const version = siteSettings?.updated_at || undefined;
   const { favicon, touchIcon } = resolveHeadIcons(siteSettings);
   const defaultOgImage = siteSettings?.og_image_url || normalizeBuiltInLogoUrl(siteSettings?.logo_url, new URL(canonical).origin) || meta.ogImage;
@@ -1721,7 +1720,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
   out = injectHeadIcons(out, favicon, touchIcon);
   out = injectEdgeStructuredData(out, safeMeta, siteSettings);
-  out = injectGeoSummary(out, safeMeta, readableBody);
+  out = injectGeoSummary(out, safeMeta, readableBody, getChineseBrandLine(siteSettings, meta.lang));
 
   return out;
 };
@@ -1749,7 +1748,7 @@ const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null)
   const version = siteSettings.updated_at || undefined;
   const { favicon, touchIcon } = resolveHeadIcons(siteSettings);
   const ogImage = escapeHtml(addCacheBuster(siteSettings.og_image_url || normalizeBuiltInLogoUrl(siteSettings.logo_url) || DEFAULT_OG_IMAGE, version));
-  const siteName = escapeHtml(siteSettings.company_name || siteSettings.brand_name || "FLASH CAST SDN. BHD.");
+  const siteName = escapeHtml(getPublicSiteName(siteSettings));
 
   let out = html;
   out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta data-rh="true" property="og:site_name" content="${siteName}" />`);
@@ -2053,6 +2052,15 @@ export const onRequest: PagesFunction = async (context) => {
   const staticMeta = (manifest as Record<string, SeoEntry>)[key];
   const isPublicLanguagePath = /^\/(?:en|zh)(?:\/|$)/.test(key);
   const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;
+  // Look up the last known revision while settings are revalidated. This is
+  // speculative only: a changed revision must select a different cache entry.
+  const knownRevision = siteSettingsCache && siteSettingsCache.key === env.VITE_SUPABASE_URL
+    ? siteSettingsCache.value?.updated_at : undefined;
+  const speculativeCacheRequest = edgeCache ? getPublicHtmlCacheRequest(request, env, knownRevision) : null;
+  const speculativeCacheRead = edgeCache && speculativeCacheRequest ? Promise.all([
+    edgeCache.match(speculativeCacheRequest),
+    edgeCache.match(getPublicHtmlFreshnessRequest(speculativeCacheRequest)),
+  ]).catch(() => [undefined, undefined] as const) : null;
   const prefetchedSiteSettings = edgeCache
     ? await fetchSiteSettings(env as Record<string, string | undefined>)
     : undefined;
@@ -2065,12 +2073,21 @@ export const onRequest: PagesFunction = async (context) => {
 
   const generatePublicHtml = async (existingLastModified?: string | null) => {
     let unpublishedBlog = false;
-    const dynamicRouteState = await fetchDynamicRouteState(
-      env as Record<string, string | undefined>,
-      key,
-      staticMeta,
-      () => { unpublishedBlog = true; },
-    );
+    const appShellUrl = new URL(request.url);
+    appShellUrl.pathname = "/";
+    appShellUrl.search = "";
+    const earlyHome = Boolean(staticMeta && isHomePageKey(key));
+    const earlyPageKey = staticMeta ? getTopLevelPublicPageKey(key) : null;
+    // These independent projections are still included in the same document;
+    // start them before route metadata instead of adding another serial round.
+    const earlyPageBundle = earlyPageKey ? fetchPublicSitePageBundle(env as Record<string, string | undefined>, earlyPageKey) : null;
+    const earlyHomeFurniture = earlyHome ? fetchHomeFurniture(env as Record<string, string | undefined>) : null;
+    const earlyHomeJournal = earlyHome ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : null;
+    const earlyHomeAreas = earlyHome ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : null;
+    const [dynamicRouteState, response] = await Promise.all([
+      fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta, () => { unpublishedBlog = true; }),
+      env.ASSETS ? env.ASSETS.fetch(new Request(appShellUrl.toString(), request)) : next("/"),
+    ]);
     const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
     // Match the page's published FAQ projection; use its reviewed locale fallback
     // only when the public service record is unavailable, not for an empty locale.
@@ -2081,12 +2098,6 @@ export const onRequest: PagesFunction = async (context) => {
           : oldHouseRenovationPageText[oldHouseLanguage].faqs) }
       : resolvedMeta;
 
-  const appShellUrl = new URL(request.url);
-  appShellUrl.pathname = "/";
-  appShellUrl.search = "";
-  const response = env.ASSETS
-    ? await env.ASSETS.fetch(new Request(appShellUrl.toString(), request))
-    : await next("/");
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) {
     return { response, cacheWrite: null };
@@ -2150,7 +2161,7 @@ export const onRequest: PagesFunction = async (context) => {
         : fetchProjectDetailBySlug(env as Record<string, string | undefined>, projectDetailSlug)
       : Promise.resolve(null),
     shouldInjectPublicPageBundle && topLevelPublicPageKey
-      ? fetchPublicSitePageBundle(env as Record<string, string | undefined>, topLevelPublicPageKey)
+      ? earlyPageBundle || fetchPublicSitePageBundle(env as Record<string, string | undefined>, topLevelPublicPageKey)
       : Promise.resolve(null),
     shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>, key === "/en/services") : Promise.resolve(null),
     shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>, reviewedMaterialBody) : Promise.resolve(null),
@@ -2165,9 +2176,9 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
     shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug ? decodeURIComponent(furnitureDetailSlug) : undefined) : Promise.resolve(null),
-    shouldInjectHomeBundle ? fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
-    shouldInjectHomeBundle ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
-    shouldInjectHomeBundle ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),
+    shouldInjectHomeBundle ? earlyHomeFurniture || fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectHomeBundle ? earlyHomeJournal || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
+    shouldInjectHomeBundle ? earlyHomeAreas || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),
   ]);
 
   const furnitureListingRoute = getFurnitureListingRoute(key);
@@ -2253,7 +2264,7 @@ export const onRequest: PagesFunction = async (context) => {
   transformed = injectDynamicImagePreloads(
     transformed,
     getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail, {
-      isHomePage: isHomePageKey(key), projectDetailSlug, topLevelPublicPageKey,
+      isHomePage: isHomePageKey(key), projectDetailSlug, topLevelPublicPageKey, publicPageBundle,
     }),
   );
   transformed = injectPerformanceHints(
@@ -2342,10 +2353,9 @@ export const onRequest: PagesFunction = async (context) => {
   };
 
   if (edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest) {
-    const [cachedPublicHtml, freshnessMarker] = await Promise.all([
-      edgeCache.match(publicHtmlCacheRequest),
-      edgeCache.match(publicHtmlFreshnessRequest),
-    ]);
+    const [cachedPublicHtml, freshnessMarker] = speculativeCacheRequest?.url === publicHtmlCacheRequest.url && speculativeCacheRead
+      ? await speculativeCacheRead
+      : await Promise.all([edgeCache.match(publicHtmlCacheRequest), edgeCache.match(publicHtmlFreshnessRequest)]);
     if (cachedPublicHtml) {
       if (!freshnessMarker) {
         const refreshKey = publicHtmlCacheRequest.url;

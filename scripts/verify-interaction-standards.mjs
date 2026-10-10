@@ -21,7 +21,9 @@ for (const row of actual) {
 if (registered.size !== matrix.routes.length) failures.push('Duplicate route registrations');
 for (const key of registered.keys()) if (!actual.some(row=>`${row.surface}:${row.path}`===key)) failures.push(`Stale route registration: ${key}`);
 const walk = dir => fs.readdirSync(dir,{withFileTypes:true}).flatMap(item=> item.isDirectory()?walk(path.join(dir,item.name)):/\.(ts|tsx)$/.test(item.name)&&!item.name.includes('.test.')?[path.join(dir,item.name)]:[]);
-const snapshotReaders = new Set(['src/lib/publicPreload.ts','src/lib/publicQuerySeed.ts','src/lib/publicQuerySeedCache.ts','src/lib/publicVersion.ts']);
+// Furniture's lazy resolver has the same one-time cache-seeding contract as the
+// common resolver; loading it on ordinary pages would pull in the full catalog.
+const snapshotReaders = new Set(['src/lib/publicPreload.ts','src/lib/publicQuerySeed.ts','src/lib/furnitureQuerySeed.ts','src/lib/publicQuerySeedCache.ts','src/lib/publicVersion.ts']);
 for (const file of walk(path.join(root,'src'))) {
  const relative = path.relative(root,file); const text = fs.readFileSync(file,'utf8');
  if (relative !== 'src/lib/navigationProtection.ts' && /(?:window\.)?location\.reload\s*\(/.test(text)) failures.push(`${relative}: document reload must use reloadDocumentSafely`);

@@ -252,6 +252,9 @@ describe("homepage showcase query lifecycle", () => {
     vi.mocked(getPublishedHomeJournal).mockImplementation(() => new Promise(() => {}));
     vi.mocked(getPublishedHomeServiceAreas).mockImplementation(() => new Promise(() => {}));
     const pending = prefetchPublishedRouteContent(client, "/en", "en");
+    // Furniture now loads only when its reader runs; wait for that module handoff
+    // before checking the signal passed to the actual source.
+    await vi.waitFor(() => expect(getPublishedHomeFurniture).toHaveBeenCalledTimes(1));
     const signals = [
       vi.mocked(getPublishedHomeFurniture).mock.calls[0]?.[1],
       vi.mocked(getPublishedHomeJournal).mock.calls[0]?.[1],

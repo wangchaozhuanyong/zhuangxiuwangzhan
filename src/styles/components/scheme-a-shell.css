@@ -357,6 +357,30 @@
     transition: none;
   }
 
+  .scheme-a-chrome__wordmark {
+    position: relative;
+    display: block;
+  }
+
+  .scheme-a-chrome__wordmark--design img {
+    /* Retain the original symbol and English line; replace only the Chinese line. */
+    clip-path: polygon(0 0, 30% 0, 30% 66%, 100% 66%, 100% 100%, 0 100%);
+  }
+
+  .scheme-a-chrome__wordmark-name {
+    position: absolute;
+    top: 0;
+    left: 35%;
+    width: 65%;
+    color: #000;
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
   .scheme-a-chrome__primary {
     display: flex;
     align-items: center;
@@ -1327,6 +1351,8 @@
       max-height: 34px;
     }
 
+    .scheme-a-chrome__wordmark-name { font-size: 19px; }
+
     .scheme-a-chrome__primary {
       gap: clamp(0.7rem, 1.1vw, 0.95rem);
       margin-inline: 1rem;
@@ -1394,6 +1420,8 @@
       width: auto !important;
       object-fit: contain !important;
     }
+
+    .scheme-a-chrome__wordmark-name { font-size: 18px; }
 
     .scheme-a-chrome__actions {
       display: flex !important;
@@ -1969,5 +1997,20 @@ html[data-public-theme] #root :is(.scheme-a-hero__intro, .fcd-design-hero__copy)
 }
 
 html[data-public-theme] #root :is(.scheme-a-hero__media, .fcd-design-hero__media)::after {
+  content: none;
+}
+
+.scheme-a-footer__studio > .scheme-a-footer__brand-names {
+  display: block;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: normal;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+.scheme-a-footer__studio > .scheme-a-footer__brand-names::before {
   content: none;
 }

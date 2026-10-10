@@ -39,6 +39,21 @@ async function input(selector: string, value: string) {
 async function generate() { await click(".generate"); }
 
 describe("Repair service interactions", () => {
+  it("registers pending localized content without replacing the focused form", async () => {
+    await render(); await input("#repair-region", "KL");
+    const region = query<HTMLInputElement>("#repair-region"); region.focus();
+    state.language = "en";
+    await act(async () => root.render(<MemoryRouter><SurfaceRepairContent service={surfaceRepairServiceForLanguage("en")} pending /></MemoryRouter>));
+    expect(query("main")).toHaveAttribute("data-route-pending", "true");
+    expect(query("main")).toHaveAttribute("aria-busy", "true");
+    expect(query("#repair-region")).toBe(region); expect(region.value).toBe("KL");
+    expect(document.activeElement).toBe(region);
+    await act(async () => root.render(<MemoryRouter><SurfaceRepairContent service={surfaceRepairServiceForLanguage("en")} /></MemoryRouter>));
+    expect(query("main")).not.toHaveAttribute("data-route-pending");
+    expect(query("main")).not.toHaveAttribute("aria-busy");
+    expect(query("#repair-region")).toBe(region); expect(region.value).toBe("KL");
+    expect(document.activeElement).toBe(region);
+  });
   it("keeps the focused draft, risk and edited message through language changes and a cancelled exit", async () => {
     await render(); await input("#repair-region", "KL"); await input("#repair-description", "My authored description");
     await click(".check input"); await generate(); await input("#repair-message", "My authored message");

@@ -37,6 +37,8 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
   showFailureFallback?: boolean;
   /** Keeps a stable image frame and gently hands off decoded replacements. */
   revealOnLoad?: boolean;
+  /** A deferred wrapper can report when it admits media into its loading range. */
+  loadAdmitted?: boolean;
 };
 
 type NativeFetchPriority = "high" | "low" | "auto";
@@ -58,7 +60,7 @@ const retrySrcSet = (srcSet: string | undefined, retry: number) =>
 export function SmartImage({
   src, alt, className, loading, decoding, fetchPriority, width, height, sizes,
   candidateWidths, sourceWidth, quality, resize, targetAspectRatio,
-  pictureSources, pictureClassName, critical = false, showFailureFallback = false, revealOnLoad = false,
+  pictureSources, pictureClassName, critical = false, showFailureFallback = false, revealOnLoad = false, loadAdmitted,
   onLoad, onError, ...rest
 }: SmartImageProps) {
   const isSupabase = isSupabasePublicObjectUrl(src);
@@ -90,27 +92,49 @@ export function SmartImage({
   const finalPictureSources = pictureSources?.map((source) => ({
     ...source, srcSet: retrySrcSet(source.srcSet, retry),
   }));
-  const sourceKey = [finalSrc, finalSrcSet, finalPictureSources?.map((source) => `${source.media || "default"}:${source.srcSet || ""}`).join("|")].filter(Boolean).join("::");
+  const sourceKey = [finalSrc, finalSrcSet, resolvedSizes, finalPictureSources?.map((source) => `${source.media || "default"}:${source.srcSet || ""}:${source.sizes || ""}:${source.type || ""}`).join("|")].filter(Boolean).join("::");
   const imgRef = React.useRef<HTMLImageElement | null>(null);
   const [state, setState] = React.useState<ImageState>({ sourceKey, status: "loading" });
   const [previous, setPrevious] = React.useState<string | null>(null);
   const requestId = React.useRef(0);
+  const lastSelectedCandidate = React.useRef<string | null>(null);
   const framed = critical || showFailureFallback || revealOnLoad;
   const selectedSrc = imgRef.current?.currentSrc;
   const imageState = state.sourceKey === sourceKey &&
     (!state.currentSrc || !selectedSrc || state.currentSrc === selectedSrc)
     ? state.status : "loading";
   const [slowSource, setSlowSource] = React.useState<string | null>(null);
+  const [candidateAttempt, setCandidateAttempt] = React.useState(0);
+  const feedbackKey = `${sourceKey}::${candidateAttempt}`;
+  const [admittedSource, setAdmittedSource] = React.useState<string | null>(null);
+  const requestAdmitted = loadAdmitted ?? (loading === "eager" || admittedSource === sourceKey);
   React.useEffect(() => {
-    if (!framed || imageState !== "loading") return;
-    const timer = window.setTimeout(() => setSlowSource(sourceKey), PUBLIC_MOTION.timeout);
+    if (!framed || imageState !== "loading" || loadAdmitted !== undefined || requestAdmitted) return;
+    const img = imgRef.current;
+    if (!img) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setAdmittedSource(sourceKey);
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      setAdmittedSource(sourceKey);
+      observer.disconnect();
+    }, { rootMargin: "900px 0px" });
+    observer.observe(img);
+    return () => observer.disconnect();
+  }, [framed, imageState, loadAdmitted, requestAdmitted, sourceKey]);
+  React.useEffect(() => {
+    if (!framed || !requestAdmitted || imageState !== "loading") return;
+    const timer = window.setTimeout(() => setSlowSource(feedbackKey), PUBLIC_MOTION.timeout);
     return () => window.clearTimeout(timer);
-  }, [framed, imageState, sourceKey]);
-  const slowImage = imageState === "loading" && slowSource === sourceKey;
+  }, [framed, requestAdmitted, imageState, feedbackKey]);
+  const slowImage = requestAdmitted && imageState === "loading" && slowSource === feedbackKey;
 
   React.useLayoutEffect(() => {
     const img = imgRef.current;
     if (!img) return;
+    lastSelectedCandidate.current = null;
     const request = ++requestId.current;
     if (framed && state.status === "loaded" && state.currentSrc && state.sourceKey !== sourceKey) {
       setPrevious(state.currentSrc);
@@ -118,14 +142,16 @@ export function SmartImage({
     if (state.sourceKey !== sourceKey) setState({ sourceKey, status: "loading" });
 
     if (img.complete && img.naturalWidth > 0) {
+      const selected = img.currentSrc || img.src;
+      lastSelectedCandidate.current = selected;
       void Promise.resolve(typeof img.decode === "function" ? img.decode() : undefined)
         .then(() => {
-          if (request !== requestId.current || !img.isConnected) return;
-          setState({ sourceKey, status: "loaded", currentSrc: img.currentSrc || img.src });
+          if (request !== requestId.current || !img.isConnected || (img.currentSrc || img.src) !== selected) return;
+          setState({ sourceKey, status: "loaded", currentSrc: selected });
 
         })
         .catch(() => {
-          if (request === requestId.current) setState({ sourceKey, status: "error" });
+          if (request === requestId.current && (img.currentSrc || img.src) === selected) setState({ sourceKey, status: "error" });
         });
     }
     return () => { if (requestId.current === request) requestId.current = request + 1; };
@@ -150,6 +176,11 @@ export function SmartImage({
     const img = event.currentTarget;
     const selected = img.currentSrc || img.src;
     const request = ++requestId.current;
+    setAdmittedSource(sourceKey);
+    if (lastSelectedCandidate.current && lastSelectedCandidate.current !== selected) {
+      setCandidateAttempt((attempt) => attempt + 1);
+    }
+    lastSelectedCandidate.current = selected;
     if (framed && state.status === "loaded" && state.currentSrc && state.currentSrc !== selected) {
       setPrevious(state.currentSrc);
     }

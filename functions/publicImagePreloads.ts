@@ -6,6 +6,7 @@ import {
   toLocalResponsiveImageSrc,
 } from "../src/lib/localResponsiveImage";
 import { getFurnitureListingRoute } from "../src/lib/furnitureCatalogPresentation";
+import { pageHeroImages, resolvePageHeroImage } from "../src/lib/pageHeroImages";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 
 type ProjectSummaryRow = Record<string, unknown>;
@@ -319,12 +320,49 @@ const getProjectDetailImagePreloads = (
   return preloads;
 };
 
+const getServiceHeroPreloads = (key: string, pageBundle: HomeContentBundleRow | null): ImagePreload[] => {
+  const language = key.startsWith("/zh") ? "zh" : "en";
+  const cms = readRecordArray(pageBundle?.cms_pages)[0];
+  const hero = readRecordArray(cms?.cms_sections)
+    .filter((section) => section.status === "published" && !section.deleted_at)
+    .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
+    .find((section) => section.section_key === "hero" || readString(section, "section_type").trim().toLowerCase().replace(/-/g, "_") === "hero");
+  const localizedHero = hero?.[`content_${language}`];
+  const content = isRecord(localizedHero) ? localizedHero : null;
+  const settings = isRecord(hero?.settings) ? hero.settings : null;
+  // Match mapSitePageRows: only the selected locale's published CMS hero can
+  // replace the legacy page image; draft/deleted sections cannot be preloaded.
+  const publishedImage = readString(content, "image_url").trim() || readString(settings, "image_url").trim()
+    || readString(readRecordArray(pageBundle?.site_pages)[0], "image_url").trim();
+  const image = resolvePageHeroImage(publishedImage, pageHeroImages.services);
+  const build = (source: string, widths: number[], sourceWidth: number | undefined, sizes: string, media: string, quality: number, pictureSource = false): ImagePreload => {
+    if (isSupabasePublicObjectUrl(source)) return buildSupabaseImagePreload(source, widths, {
+      height: 1100, quality, sizes, media, resize: "cover", aspectRatio: { width: 16, height: 11 }, fetchPriority: "high",
+    });
+    // SchemeARouteHero's <source> candidates use the supplied CMS URL directly;
+    // SmartImage normalizes only its desktop <img> fallback.
+    const normalized = pictureSource ? source : normalizePreloadImageUrl(source);
+    return {
+      href: isLocalResponsiveImageCandidate(normalized) ? toLocalResponsiveImageSrc(normalized, widths[0]) : normalized,
+      srcSet: isLocalResponsiveImageCandidate(normalized) ? buildLocalResponsiveSrcSet(normalized, widths, sourceWidth) : undefined,
+      sizes, media, fetchPriority: "high",
+    };
+  };
+  return [
+    build(image.mobile, [560, 720, 900, 1200, 1600], image.mobileWidth, "100vw", "(max-width: 767px)", 86, true),
+    build(image.tablet || image.desktop, [720, 900, 1200, 1600, 2000], image.tabletWidth, "100vw", "(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)", 84, true),
+    build(image.desktop, [560, 720, 960, 1200, 1600], image.desktopWidth,
+      resolveLocalCoverSizes(normalizePreloadImageUrl(image.desktop), "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw", { width: 16, height: 11 }),
+      "(min-width: 1024px), (min-width: 768px) and (max-width: 1023px) and (orientation: landscape)", 86),
+  ];
+};
+
 export const getDynamicImagePreloads = (
   key: string,
   projectSummaries: ProjectSummaryRow[] | null,
   homeContentBundle: HomeContentBundleRow | null,
   projectDetail: ProjectDetailRow | null,
-  route: { isHomePage: boolean; projectDetailSlug: string | null; topLevelPublicPageKey: string | null },
+  route: { isHomePage: boolean; projectDetailSlug: string | null; topLevelPublicPageKey: string | null; publicPageBundle?: HomeContentBundleRow | null },
 ) => {
   if (getFurnitureListingRoute(key)) {
     // The current listing hero is discovered only after its route chunk loads.
@@ -337,6 +375,10 @@ export const getDynamicImagePreloads = (
       }),
       fetchPriority: "high" as const,
     }];
+  }
+
+  if (route.topLevelPublicPageKey === "services") {
+    return getServiceHeroPreloads(key, route.publicPageBundle || null);
   }
 
   if (route.isHomePage) {

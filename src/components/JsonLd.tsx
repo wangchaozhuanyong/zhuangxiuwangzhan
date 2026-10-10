@@ -3,6 +3,7 @@ import { getSocialProfileUrls } from "@/lib/socialProfiles";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
+import { getPublicBrandAliases } from "@/i18n/brandIdentity";
 
 const shouldRenderClientJsonLd = import.meta.env.DEV;
 const getSameAs = getSocialProfileUrls;
@@ -22,7 +23,7 @@ const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) =>
   "@context": "https://schema.org",
   "@type": "Organization",
   name: settings.company_name,
-  alternateName: settings.brand_name,
+  alternateName: getPublicBrandAliases(settings).filter((name) => name !== settings.company_name),
   url: siteConfig.url,
   logo: settings.logo_url || siteConfig.logoUrl,
   contactPoint: {
@@ -48,7 +49,7 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
   "@type": "HomeAndConstructionBusiness",
   "@id": `${siteConfig.url}/#localbusiness`,
   name: settings.company_name,
-  alternateName: settings.brand_name,
+  alternateName: getPublicBrandAliases(settings).filter((name) => name !== settings.company_name),
   description: settings.default_seo_description_en,
   url: siteConfig.url,
   telephone: settings.phone_e164,
