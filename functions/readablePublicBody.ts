@@ -11,7 +11,7 @@ import { furnitureListingPagePath, furnitureProductPath, localizeFurnitureProduc
 import { findSelangorWarehouseIntroLink } from "../src/lib/selangorWarehouseIntroLink";
 import { plainTextParagraphs } from "../src/lib/text";
 // Same public content for every user agent; this fallback is rendered only without JS.
-export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
+export const readableBodyPaths = ["/services/builtin", "/services/kitchen", "/services/renovation", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
 const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const decode = (s: string) => s.replace(/&#(x[\da-f]+|\d+);?|&(amp|lt|gt|quot|apos|colon|Tab|NewLine);/gi, (m, n: string, name: string) => {
