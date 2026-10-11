@@ -117,6 +117,14 @@ describe("quotation initial, contextual and submitted draft baselines", () => {
     expect(state.submit).not.toHaveBeenCalled();
   });
 
+  it("restores automatic context updates when an edit is returned to its clean prefill", async () => {
+    await render();
+    await input("project-type", "Office Renovation"); expectProtected(true);
+    await input("project-type", "Kitchen Cabinet"); expectProtected(false);
+    await changeContext("/en/quote?source=service&title=Bathroom+fixture&projectType=Bathroom+Renovation#quote-form");
+    expect(field("project-type").value).toBe("Bathroom Renovation"); expectProtected(false);
+  });
+
   it("protects clearing every automatic prefill even when every field becomes empty", async () => {
     await render();
     await input("project-type", ""); await input("details", "");
@@ -164,6 +172,29 @@ describe("quotation initial, contextual and submitted draft baselines", () => {
     await render(); await input("details", "Handwritten fixture requirement");
     await changeContext(kitchenPath.replace("/en/", "/zh/"), "zh");
     expect(field("details").value).toBe("Handwritten fixture requirement"); expectProtected(true);
+  });
+
+  it("does not acknowledge a handwritten location when later context matches it", async () => {
+    await render(); await input("location", "Fixture PJ");
+    const nextPath = "/en/quote?source=service&title=Bathroom+fixture&projectType=Bathroom+Renovation&location=Fixture+PJ#quote-form";
+    await changeContext(nextPath); expectProtected(true);
+    await changeContext(nextPath.replace("/en/", "/zh/"), "zh");
+    expect(field("location").value).toBe("Fixture PJ"); expectProtected(true);
+    await input("location", ""); expectProtected(false);
+    expect(state.submit).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["location", "Fixture PJ", "location=Fixture+PJ", "location=Fixture+KL"],
+    ["project-type", "Office Renovation", "projectType=Office+Renovation", "projectType=Bathroom+Renovation"],
+    ["details", "Handwritten fixture requirement", "details=Handwritten+fixture+requirement", "details=Other+fixture+requirement"],
+  ])("preserves a handwritten %s across matching and subsequent contexts", async (name, value, matching, next) => {
+    await render(); await input(name, value);
+    await changeContext(`/en/quote?${matching}#quote-form`);
+    expect(field(name).value).toBe(value); expectProtected(true);
+    await changeContext(`/en/quote?${next}#quote-form`);
+    expect(field(name).value).toBe(value); expectProtected(true);
+    expect(state.submit).not.toHaveBeenCalled();
   });
 
   it("protects a pending submission even after inputs return to the initial baseline", async () => {
@@ -224,6 +255,21 @@ describe("quotation initial, contextual and submitted draft baselines", () => {
     expect(field("project-type").value).toBe("Bathroom Renovation");
     expect(state.submit.mock.calls[0][0].projectType).toBe("Kitchen Cabinet");
     expectProtected(true);
+    state.submit.mockResolvedValue(undefined); await send();
+    expect(container.querySelector("form")).toBeNull(); expectProtected(false);
+  });
+
+  it("keeps unsubmitted context protected through language changes after an earlier request succeeds", async () => {
+    const pending = deferred(); state.submit.mockReturnValue(pending.promise);
+    await render(); await fill(); await send();
+    const nextPath = "/en/quote?source=service&title=Bathroom+fixture&projectType=Bathroom+Renovation#quote-form";
+    await changeContext(nextPath);
+    await act(async () => pending.resolve()); expectProtected(true);
+    await changeContext(nextPath.replace("/en/", "/zh/"), "zh");
+    expect(field("project-type").value).toBe("Bathroom Renovation");
+    expect(field("details").value).toBe("我想咨询：Bathroom fixture。"); expectProtected(true);
+    await changeContext(nextPath, "en"); expectProtected(true);
+    expect(state.submit).toHaveBeenCalledTimes(1);
     state.submit.mockResolvedValue(undefined); await send();
     expect(container.querySelector("form")).toBeNull(); expectProtected(false);
   });
