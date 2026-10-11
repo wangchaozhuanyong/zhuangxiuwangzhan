@@ -105,6 +105,7 @@ const Quote = () => {
   });
   const currentForm = useRef(form); currentForm.current = form;
   const formBaseline = useRef(form);
+  const editedContextFields = useRef(new Set<"projectType" | "location" | "details">());
   const lastSavedForm = useRef<typeof form | null>(null);
   const [errorKeys, setErrorKeys] = useState<FormErrors>({});
   const errors = localizeLeadFormErrors(errorKeys, t);
@@ -144,11 +145,15 @@ const Quote = () => {
 
     setForm((current) => {
       const automaticFields: Partial<typeof current> = {};
+      const automaticBaselineFields: Partial<typeof current> = {};
       for (const field of ["projectType", "location", "details"] as const) {
-        if (current[field] === previous[field]) automaticFields[field] = quoteContext[field];
+        if (!editedContextFields.current.has(field) && current[field] === previous[field]) {
+          automaticFields[field] = quoteContext[field];
+          if (formBaseline.current[field] === previous[field]) automaticBaselineFields[field] = quoteContext[field];
+        }
       }
-      // Context owns only untouched prefill fields, not the user's other edits.
-      formBaseline.current = { ...formBaseline.current, ...automaticFields };
+      // Localize automatic inputs without acknowledging edits or a newer, unsubmitted context.
+      formBaseline.current = { ...formBaseline.current, ...automaticBaselineFields };
       return { ...current, ...automaticFields };
     });
 
@@ -156,6 +161,10 @@ const Quote = () => {
   }, [quoteContext]);
 
   const updateForm = (key: keyof typeof form, value: string) => {
+    if (key === "projectType" || key === "location" || key === "details") {
+      if (value === quoteContext[key] && value === formBaseline.current[key]) editedContextFields.current.delete(key);
+      else editedContextFields.current.add(key);
+    }
     setForm((current) => ({ ...current, [key]: value }));
     setErrorKeys((current) => {
       const next = { ...current };
