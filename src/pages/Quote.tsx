@@ -104,12 +104,13 @@ const Quote = () => {
     details: quoteContext.details,
   });
   const currentForm = useRef(form); currentForm.current = form;
+  const formBaseline = useRef(form);
   const lastSavedForm = useRef<typeof form | null>(null);
   const [errorKeys, setErrorKeys] = useState<FormErrors>({});
   const errors = localizeLeadFormErrors(errorKeys, t);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
-  useUnsavedChangesWarning(isSubmitting || status === "submitting" || Object.values(form).some((value) => String(value).trim() !== "") && JSON.stringify(form) !== JSON.stringify(lastSavedForm.current));
+  useUnsavedChangesWarning(isSubmitting || status === "submitting" || JSON.stringify(form) !== JSON.stringify(formBaseline.current));
   const [honeypot, setHoneypot] = useState("");
   const requiredCompletion = useMemo(
     () => ({
@@ -142,12 +143,13 @@ const Quote = () => {
     const previous = previousQuoteContextRef.current;
 
     setForm((current) => {
-      return {
-        ...current,
-        projectType: current.projectType === previous.projectType ? quoteContext.projectType : current.projectType,
-        location: current.location === previous.location ? quoteContext.location : current.location,
-        details: current.details === previous.details ? quoteContext.details : current.details,
-      };
+      const automaticFields: Partial<typeof current> = {};
+      for (const field of ["projectType", "location", "details"] as const) {
+        if (current[field] === previous[field]) automaticFields[field] = quoteContext[field];
+      }
+      // Context owns only untouched prefill fields, not the user's other edits.
+      formBaseline.current = { ...formBaseline.current, ...automaticFields };
+      return { ...current, ...automaticFields };
     });
 
     previousQuoteContextRef.current = quoteContext;
@@ -210,6 +212,7 @@ const Quote = () => {
         budget_range: form.budget,
       }, submittedSourcePath, receipt);
       lastSavedForm.current = form;
+      formBaseline.current = form;
       setStatus(JSON.stringify(currentForm.current) === JSON.stringify(form) ? "success" : "idle");
     } catch (error) {
       console.error(error);

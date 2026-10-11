@@ -1,8 +1,10 @@
 import { useLayoutEffect, useState, type RefObject } from "react";
+import { QUOTE_FORM_ID } from "@/lib/quoteContext";
 
 const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][aria-modal="true"],dialog[open]';
 const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
+const quoteControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
 
 const intersects = (left: DOMRect, right: DOMRect) => left.width > 0 && left.height > 0
   && right.width > 0 && right.height > 0 && left.left < right.right && left.right > right.left
@@ -21,8 +23,8 @@ const isVisible = (element: HTMLElement) => {
   return true;
 };
 
-/** Keep the promotion stable during reading. Only active dialogs, recovery
- * actions and a focused form control take priority over this shared entry. */
+/** Keep the promotion stable during reading. Active dialogs, recovery actions,
+ * focused inputs and overlapping quote controls take priority over this entry. */
 export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string) {
   const [obstructed, setObstructed] = useState(false);
   useLayoutEffect(() => {
@@ -40,7 +42,10 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       const active = document.activeElement;
       const inputObstructed = active instanceof HTMLElement && !entry.contains(active)
         && active.matches(focusedInput) && isVisible(active) && intersects(box, active.getBoundingClientRect());
-      setObstructed(modalOpen || recoveryObstructed || inputObstructed);
+      const quoteObstructed = Array.from(document.getElementById(QUOTE_FORM_ID)?.querySelectorAll<HTMLElement>(quoteControls) || [])
+        .some(element => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
+          && !element.matches(":disabled") && isVisible(element) && intersects(box, element.getBoundingClientRect()));
+      setObstructed(modalOpen || recoveryObstructed || inputObstructed || quoteObstructed);
     };
     const schedule = () => { if (!frame && !disposed) frame = requestAnimationFrame(check); };
     check();
@@ -59,7 +64,7 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
     resize?.observe(entry);
     const changes = new MutationObserver(schedule);
     changes.observe(document.body, { childList: true, subtree: true, characterData: true,
-      attributes: true, attributeFilter: ["aria-hidden", "aria-modal", "hidden", "inert", "class", "style", "open", "role", "data-state", "data-interaction-feedback"] });
+      attributes: true, attributeFilter: ["aria-hidden", "aria-modal", "hidden", "inert", "class", "style", "open", "role", "data-state", "data-interaction-feedback", "disabled", "aria-disabled", "type", "contenteditable"] });
     document.fonts?.ready.then(schedule);
     return () => {
       disposed = true;

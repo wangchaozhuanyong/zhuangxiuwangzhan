@@ -129,4 +129,59 @@ describe("floating promotion stays available while reading", () => {
     parent.style.opacity = "1"; await settle(); expectObstructed(true);
     parent.remove(); await settle(); expectObstructed(false);
   });
+
+  it.each([
+    '<input aria-label="Name" />', '<textarea aria-label="Details"></textarea>',
+    '<select aria-label="Project"><option>Kitchen</option></select>',
+    '<button>Submit</button>', '<a href="/contact">Contact</a>',
+  ])("yields to an idle quote control, stays hidden after blur, and restores outside overlap (%s)", async (markup) => {
+    content.innerHTML = `<section id="quote-form">${markup}</section>`;
+    const control = content.querySelector<HTMLElement>("#quote-form > *")!;
+    mount(); expectObstructed(true);
+    control.focus(); await settle(); expectObstructed(true);
+    control.blur(); await settle(); expectObstructed(true);
+    boxes.set(control, rect(300));
+    window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
+    boxes.set(control, rect());
+    window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(true);
+    control.remove(); await settle(); expectObstructed(false);
+  });
+
+  it("rechecks disabled quote controls and preserves ordinary idle controls", async () => {
+    content.innerHTML = '<section id="quote-form"><input disabled /></section><input aria-label="Ordinary input" />';
+    const control = content.querySelector<HTMLInputElement>("#quote-form input")!;
+    mount(); expectObstructed(false);
+    control.disabled = false; await settle(); expectObstructed(true);
+    control.disabled = true; await settle(); expectObstructed(false);
+    control.disabled = false; control.setAttribute("aria-disabled", "true"); await settle(); expectObstructed(false);
+    control.removeAttribute("aria-disabled"); await settle(); expectObstructed(true);
+    control.type = "hidden"; await settle(); expectObstructed(false);
+  });
+
+  it.each([
+    ["hidden", ""], ["aria-hidden", "true"], ["inert", ""],
+    ["style", "opacity: 0"], ["style", "display: none"], ["style", "visibility: hidden"],
+  ])("ignores idle quote controls beneath hidden ancestors (%s=%s)", async (attribute, value) => {
+    content.innerHTML = '<section id="quote-form"><div><input /></div></section>';
+    const ancestor = content.querySelector("#quote-form > div")!;
+    ancestor.setAttribute(attribute, value); mount(); expectObstructed(false);
+    ancestor.removeAttribute(attribute); await settle(); expectObstructed(true);
+    ancestor.setAttribute(attribute, value); await settle(); expectObstructed(false);
+  });
+
+  it("rechecks viewport and recovery changes without hiding controls outside the viewport", async () => {
+    const viewport = new EventTarget();
+    vi.stubGlobal("visualViewport", viewport);
+    content.innerHTML = '<section id="quote-form"><input /></section>';
+    const control = content.querySelector("input")!;
+    boxes.set(control, rect(1200)); mount(); expectObstructed(false);
+    boxes.set(control, rect()); viewport.dispatchEvent(new Event("resize")); await settle(); expectObstructed(true);
+    boxes.set(control, rect(300)); viewport.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
+    content.insertAdjacentHTML("beforeend", '<aside data-interaction-feedback="public"><button>Retry</button></aside>');
+    await settle(); expectObstructed(true);
+    content.querySelector("aside")!.remove(); await settle(); expectObstructed(false);
+    boxes.set(control, rect()); window.dispatchEvent(new Event("resize")); await settle(); expectObstructed(true);
+    act(() => root.render(<Entry route="/zh/quote" />)); expectObstructed(true);
+    content.querySelector("section")!.remove(); await settle(); expectObstructed(false);
+  });
 });
