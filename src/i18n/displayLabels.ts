@@ -799,6 +799,14 @@ export const translateDisplayText = (value: string, language: Language) => {
 
 // Exact shared project labels only; CMS prose and unrelated slugs remain untouched.
 const reviewedProjectLabels: Record<string, Partial<Record<"scope" | "materials", Record<string, string>>>> = {
+  "mont-kiara-luxury-condo-renovation": {
+    scope: {
+      "Living and dining layout concept": "客餐厅布局概念",
+      "Feature-wall direction": "背景墙设计方向",
+      "Built-in storage planning": "定制收纳规划",
+      "Lighting concept": "灯光设计概念",
+    },
+  },
   "kota-damansara-clinic-fit-out": {
     scope: {
       "Reception counter": "接待柜台",

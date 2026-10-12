@@ -34,6 +34,24 @@ html[data-public-theme] {
   --public-border: #D4D9CF;
 }
 html[data-public-theme] { color-scheme: light; }
+@media (max-width: 767px) {
+  html[data-public-theme] #root:has(.fc-route-quote-page) .fc-furniture-floating {
+    color: var(--public-text-primary);
+    background-color: var(--public-surface-card);
+    border-color: var(--public-border);
+    outline-color: var(--public-accent);
+    box-shadow: none;
+  }
+  html[data-public-theme] #root:has(.fc-route-quote-page) .fc-furniture-floating :is(.fc-furniture-floating__icon, .fc-furniture-floating__action) {
+    color: var(--public-accent);
+    background-color: transparent;
+  }
+  html[data-public-theme] #root:has(.fc-route-quote-page) .fc-furniture-floating::before,
+  html[data-public-theme] #root:has(.fc-route-quote-page) .fc-furniture-floating::after {
+    animation: none;
+    opacity: 0;
+  }
+}
 html[data-public-theme] body { background: var(--public-surface-base); color: var(--public-text-primary); }
 html[data-public-theme] #root :is(.scheme-a-mobile-dock, .scheme-a-contact-dock) {
   color: var(--public-text-primary) !important;

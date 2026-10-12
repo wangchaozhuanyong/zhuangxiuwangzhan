@@ -2,6 +2,10 @@ import { expect, it } from "vitest";
 import { translateDisplayText, translateProjectScopedLabel } from "./displayLabels";
 
 const approvedCases = [
+  ["mont-kiara-luxury-condo-renovation", "scope", "Living and dining layout concept", "客餐厅布局概念"],
+  ["mont-kiara-luxury-condo-renovation", "scope", "Feature-wall direction", "背景墙设计方向"],
+  ["mont-kiara-luxury-condo-renovation", "scope", "Built-in storage planning", "定制收纳规划"],
+  ["mont-kiara-luxury-condo-renovation", "scope", "Lighting concept", "灯光设计概念"],
   ["kota-damansara-clinic-fit-out", "scope", "Reception counter", "接待柜台"],
   ["kota-damansara-clinic-fit-out", "scope", "Waiting area", "候诊区"],
   ["kota-damansara-clinic-fit-out", "scope", "Consultation corridor", "诊室走廊"],
@@ -107,4 +111,12 @@ it("does not translate substrings of CMS prose or unknown project labels", () =>
   const prose = "Choose Bookcase and Integrated desk after site assessment.";
   expect(translateProjectScopedLabel(prose, "zh", "puchong-home-library-built-in", "scope")).toBe(translateDisplayText(prose, "zh"));
   expect(translateProjectScopedLabel("Unknown next label", "zh", "puchong-home-library-built-in", "scope")).toBe(translateDisplayText("Unknown next label", "zh"));
+});
+
+it("keeps concept prose and new scope values outside the reviewed exact labels", () => {
+  const slug = "mont-kiara-luxury-condo-renovation";
+  for (const value of ["Review Living and dining layout concept after site assessment.", "Future concept label", "已确认的中文范围"]) {
+    expect(translateProjectScopedLabel(value, "zh", slug, "scope")).toBe(translateDisplayText(value, "zh"));
+    expect(translateProjectScopedLabel(value, "en", slug, "scope")).toBe(value);
+  }
 });
