@@ -16,6 +16,9 @@ const middlewarePath = "functions/_middleware.ts";
 const readableBodyPath = "functions/readablePublicBody.ts";
 const historicalReadableBodySha = "4d67bd215b6e5c050d0be9d8bb562c0efdfaf7ae56fc01610a12323885f61293";
 const reviewedCurrentReadableBodySha = "a9297e52fa9f7e892faea23bbd3a22a6d554d814a6091c1741984ddaf9ce27e1";
+const displayLabelsPath = "src/i18n/displayLabels.ts";
+const historicalDisplayLabelsSha = "af4259387632733ddd96a75c2d5cec7aefc6c876c7c13dc4aa51cb5b2278000a";
+const reviewedCurrentDisplayLabelsSha = "49cb866ef8d30edb3562b0b13ec53bc0cda0ef12ee2f78d80b0b1636bbbedd9b";
 
 export function restoreFrozenPublisherMiddleware(bytes, expectedFrozenSha = historicalMiddlewareSha) {
   // Admit only this exact summary candidate, then restore the already reviewed baseline bytes.
@@ -79,6 +82,27 @@ export function restoreFrozenPublisherReadableBody(bytes, expectedHistoricalSha)
   return restored;
 }
 
+export function restoreFrozenPublisherDisplayLabels(bytes, expectedHistoricalSha) {
+  assert(expectedHistoricalSha === historicalDisplayLabelsSha && hash(bytes) === reviewedCurrentDisplayLabelsSha,
+    "Historical publisher fixture only admits the exact reviewed current display label bytes");
+  const reviewedAddition = [
+    '  "mont-kiara-luxury-condo-renovation": {',
+    '    scope: {',
+    '      "Living and dining layout concept": "客餐厅布局概念",',
+    '      "Feature-wall direction": "背景墙设计方向",',
+    '      "Built-in storage planning": "定制收纳规划",',
+    '      "Lighting concept": "灯光设计概念",',
+    '    },',
+    '  },',
+    '',
+  ].join("\n");
+  const current = bytes.toString("utf8");
+  assert(current.split(reviewedAddition).length === 2, "Only the four exact reviewed concept label additions may be reversed");
+  const restored = Buffer.from(current.replace(reviewedAddition, ""));
+  assert(hash(restored) === expectedHistoricalSha, "Restored historical display labels must equal the existing frozen proof hash");
+  return restored;
+}
+
 export function createFrozenPublisherSourceFixture() {
   const sourcePath = file => {
     assert(typeof file === "string" && !file.startsWith("/") && !file.split(/[\\/]/).includes(".."), "Only explicit project paths are allowed");
@@ -129,7 +153,8 @@ export function createFrozenPublisherSourceFixture() {
     for (const [file, digest] of Object.entries(pins)) {
       const current = readFileSync(sourcePath(file));
       const bytes = file === middlewarePath ? restoreFrozenPublisherMiddleware(current, digest)
-        : file === readableBodyPath ? restoreFrozenPublisherReadableBody(current, digest) : current;
+        : file === readableBodyPath ? restoreFrozenPublisherReadableBody(current, digest)
+        : file === displayLabelsPath ? restoreFrozenPublisherDisplayLabels(current, digest) : current;
       assert(hash(bytes) === digest, "Every historical source byte must match its unchanged proof"); write(file, bytes);
     }
     const evidence = new Set([eightPath, ninePath, originalPath, eight.completedProofPath, nine.completedProofPath,
