@@ -86,6 +86,21 @@ function deferred() {
 }
 
 describe("quotation initial, contextual and submitted draft baselines", () => {
+  it.each(["en", "zh"] as const)("focuses the form from the %s hero without discarding a draft", async (language) => {
+    state.language = language;
+    await render(`/${language}/quote`);
+    await input("name", "Synthetic fixture");
+    const start = container.querySelector<HTMLAnchorElement>('a[href="#quote-form"]')!;
+    expect(start.textContent).toBe(quotePageText[language].startForm);
+    expect(start.getAttribute("aria-controls")).toBe("quote-form");
+    await act(async () => start.click());
+    await vi.waitFor(() => expect(document.activeElement).toBe(container.querySelector("#quote-form-title")));
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ behavior: "auto", block: "start", inline: "nearest" });
+    expect(field("name").value).toBe("Synthetic fixture");
+    expectProtected(true);
+    expect(state.submit).not.toHaveBeenCalled();
+  });
+
   it("keeps the kitchen prefill clean through focus and blur without claiming a save", async () => {
     await render();
     expect(field("project-type").value).toBe("Kitchen Cabinet");

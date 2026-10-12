@@ -310,11 +310,21 @@ const Quote = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/quote" }]} />
 
-      <SchemeARouteHero kind="form" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.heroEyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
+      <SchemeARouteHero kind="form" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.heroEyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText}
+        actions={
+          <a href={`#${QUOTE_FORM_ID}`} aria-controls={QUOTE_FORM_ID} onClick={(event) => {
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+            event.preventDefault();
+            focusElementByIdWhenReady("quote-form-title", "start");
+          }}>
+            {t.startForm}<ArrowRight aria-hidden="true" />
+          </a>
+        }
+      />
 
       <section className="fc-route-quote-body section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
         <div className="fc-route-quote-layout container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <Reveal className="fc-route-quote-form-wrap">
+          <Reveal className="fc-route-quote-form-wrap" direction="none">
             <div id={QUOTE_FORM_ID} className="fc-route-quote-form subpage-form-panel p-5 md:p-8" aria-labelledby="quote-form-title">
               <div className="subpage-local-heading scheme-a-heading">
                 <h2 id="quote-form-title" tabIndex={-1} className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>

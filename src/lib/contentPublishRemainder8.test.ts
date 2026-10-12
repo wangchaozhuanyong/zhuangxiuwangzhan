@@ -5,7 +5,7 @@ import { readRemainder8Registry, REMAINDER8_NAME, REMAINDER8_PATH, assertTwelveC
 import { APPROVAL_ID } from "../../scripts/publish-remaining-completion-20261009.mjs";
 import { assertCompletedRow } from "../../scripts/publish-remainder18-after-37893433883.mjs";
 import { stableDigest, targetConfigs } from "../../scripts/publish-content-trust-fixes.mjs";
-import { createFrozenPublisherSourceFixture, restoreFrozenPublisherMiddleware } from "../test/helpers/frozenPublisherSource.mjs";
+import { createFrozenPublisherSourceFixture, restoreFrozenPublisherMiddleware, restoreFrozenPublisherDisplayLabels } from "../test/helpers/frozenPublisherSource.mjs";
 
 const historicalSource=createFrozenPublisherSourceFixture();
 afterAll(()=>historicalSource.dispose());
@@ -24,6 +24,15 @@ const checkPageFixture=async({path,title,description,strictMetadata,hydratedMeta
 };
 
 describe("fixed eight after a truthful native save and failed identity hook",()=>{
+  it("replays only the exact reviewed display label delta without changing live source or historical pins",()=>{
+    const file="src/i18n/displayLabels.ts", current=readFileSync(file), expected=historicalSource.sourceSha256[file];
+    expect(restoreFrozenPublisherDisplayLabels(current,expected)).toEqual(readFileSync(`${historicalSource.root}/${file}`));
+    expect(readFileSync(file)).toEqual(current);
+    expect(current.toString()).toContain('"Living and dining layout concept": "客餐厅布局概念"');
+    expect(()=>restoreFrozenPublisherDisplayLabels(Buffer.concat([current,Buffer.from("\n// unknown source drift\n")]),expected)).toThrow(/only admits/);
+    expect(()=>restoreFrozenPublisherDisplayLabels(Buffer.from(current.toString().replace("客餐厅布局概念","未审标签")),expected)).toThrow(/only admits/);
+    expect(()=>restoreFrozenPublisherDisplayLabels(current,"0".repeat(64))).toThrow(/only admits/);
+  });
   it("keeps real current-source admission closed and refuses unknown historical fixture bytes",()=>{
     expect(()=>readRemainder8Registry()).toThrow(/Current exact metadata source fingerprint differs/);
     const current=readFileSync("functions/_middleware.ts");

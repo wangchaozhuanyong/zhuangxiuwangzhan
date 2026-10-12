@@ -254,6 +254,9 @@
     .fc-furniture-floating[lang="en"] { grid-template-rows: 24px 26px; gap: 3px; padding-block: 7px; }
     .fc-furniture-floating[lang="en"] .fc-furniture-floating__label { max-width: 60px; white-space: normal; font-size: 11px; line-height: 13px; }
     .fc-furniture-floating[lang="en"] .fc-furniture-floating__icon svg { width: 24px; height: 24px; }
+    .scheme-a-public-shell:has(.fc-route-quote-page) .fc-furniture-floating {
+      transition-property: border-color, transform;
+    }
     /* Keep the fixed mobile square anchored; press feedback lives inside it. */
     .fc-furniture-floating:is(:active, [data-pressed="true"]) { transform: none; }
     .fc-furniture-floating:is(:active, [data-pressed="true"]) .fc-furniture-floating__icon { transform: scale(.88); transition-duration: 70ms; }
