@@ -494,9 +494,9 @@ export const SchemeANavbar = () => {
             </button>
           </nav>
           <div className="scheme-a-chrome__actions">
-            <div className="scheme-a-chrome__desktop-contacts">
+            <div className="scheme-a-chrome__contacts">
               <a
-                className="scheme-a-chrome__contact"
+                className="scheme-a-chrome__contact scheme-a-chrome__contact--whatsapp"
                 href={settings.whatsapp_url(furnitureMessage)}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -507,7 +507,7 @@ export const SchemeANavbar = () => {
                 <WhatsAppIcon />
               </a>
               <a
-                className="scheme-a-chrome__contact"
+                className="scheme-a-chrome__contact scheme-a-chrome__contact--phone"
                 href={settings.phone_href}
                 aria-label={t.call}
                 title={t.call}

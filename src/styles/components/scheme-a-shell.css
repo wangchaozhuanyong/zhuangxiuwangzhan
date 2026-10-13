@@ -481,7 +481,7 @@
     flex-shrink: 0;
   }
 
-  .scheme-a-chrome__desktop-contacts {
+  .scheme-a-chrome__contacts {
     display: none;
     align-items: center;
     gap: 8px;
@@ -515,7 +515,7 @@
   }
 
   @media (min-width: 1180px) {
-    .scheme-a-chrome__desktop-contacts {
+    .scheme-a-chrome__contacts {
       display: flex;
     }
   }
@@ -1466,6 +1466,24 @@
       gap: 6px !important;
     }
 
+    .scheme-a-chrome__contacts {
+      display: flex;
+    }
+
+    .scheme-a-chrome__contact--phone {
+      display: none;
+    }
+
+    .scheme-a-chrome__contact--whatsapp {
+      height: 44px;
+      color: color-mix(in srgb, hsl(var(--whatsapp)) 70%, black);
+    }
+
+    .scheme-a-chrome__contact--whatsapp svg {
+      width: 22px;
+      height: 22px;
+    }
+
     .scheme-a-language-switch {
       height: 44px !important;
       padding: 0 3px !important;
@@ -1839,6 +1857,15 @@
   @media (max-width: 359px) {
     .scheme-a-chrome__brand {
       width: 126px;
+    }
+
+    .scheme-a-chrome__brand img {
+      height: 26px !important;
+      max-height: 26px !important;
+    }
+
+    .scheme-a-chrome__wordmark-name {
+      font-size: 15px;
     }
 
     .scheme-a-chrome__language {
