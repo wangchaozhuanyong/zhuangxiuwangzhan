@@ -90,21 +90,15 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero?.querySelector("img")).toHaveAttribute("alt", alt);
     const heroLinks = hero!.querySelectorAll("a");
     expect(heroLinks).toHaveLength(2);
-    const whatsappLink = hero!.querySelector('a[target="_blank"]');
-    expect(whatsappLink).toHaveTextContent(language === "zh" ? "联系 WhatsApp" : "Contact WhatsApp");
-    expect(whatsappLink).toHaveAttribute("href", state.whatsappHref);
-    expect(whatsappLink).toHaveAttribute("rel", "noopener noreferrer");
-    if (language === "zh") {
-      expect(heroLinks[0]).toHaveTextContent(buttonLabel);
-      expect(heroLinks[0]).toHaveAttribute("href", "/zh/quote?source=homepage-cms#quote-form");
-      expect(hero).toHaveTextContent("逐项确认设计、材料与施工范围");
-      expect(hero).toHaveTextContent("项目地点与现场照片");
-    } else {
-      expect(heroLinks[1]).toHaveTextContent("View projects");
-      expect(heroLinks[1]).toHaveAttribute("href", "/en/projects");
-      expect(hero!.querySelector(".scheme-a-hero__scope")).toBeNull();
-      expect(hero!.querySelector(".scheme-a-hero__enquiry")).toBeNull();
-    }
+    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "联系 WhatsApp" : "Contact WhatsApp");
+    expect(heroLinks[0]).toHaveAttribute("href", state.whatsappHref);
+    expect(heroLinks[0]).toHaveAttribute("target", "_blank");
+    expect(heroLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
+    expect(heroLinks[0]).toHaveClass("scheme-a-button--paper");
+    expect(heroLinks[1]).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
+    expect(heroLinks[1]).toHaveAttribute("href", `/${language}/projects`);
+    expect(heroLinks[1]).toHaveClass("scheme-a-button--glass");
+    expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();
     for (const slug of originalServiceSlugs) {
       expect(container.querySelector(`[data-home-section="services"] a[href="/${language}/services/${slug}"]`)).not.toBeNull();
     }
@@ -113,17 +107,18 @@ describe("SchemeAHome composed CMS behavior", () => {
     state.whatsappHref = "https://wa.me/601100000001?text=Updated%20message";
     render({ ...content, heroSlides: [{ ...content.heroSlides[0], buttonUrl: "/contact" }] });
     expect(container.querySelector('[data-home-section="hero"] a[target="_blank"]')).toHaveAttribute("href", state.whatsappHref);
-    if (language === "en") expect(container.querySelector('[data-home-section="hero"] a[href="/en/contact"]')).toBeNull();
+    expect(container.querySelector(`[data-home-section="hero"] a[href="/${language}/contact"]`)).toBeNull();
   });
 
-  it("provides a Chinese quote entry when no CMS hero action is published", () => {
-    state.language = "zh";
+  it.each(["zh", "en"] as const)("retains the original hero actions without a language-specific panel in %s", (language) => {
+    state.language = language;
     render(bundle());
     const hero = container.querySelector('[data-home-section="hero"]');
-    expect(hero!.querySelector('a[href="/zh/quote#quote-form"]')).toHaveTextContent("获取免费报价");
+    expect(hero!.querySelectorAll("a")).toHaveLength(2);
     expect(hero!.querySelector('a[target="_blank"]')).toHaveAttribute("href", state.whatsappHref);
-    expect(hero!.querySelector("h1")).toHaveTextContent(/更好的空间，\s*更美好的生活。/);
-    expect(container.querySelector('a[href="/zh/projects"]')).not.toBeNull();
+    expect(hero!.querySelector(`a[href="/${language}/projects"]`)).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
+    expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();
+    expect(hero!.querySelector("h1")).toHaveTextContent(language === "zh" ? /更好的空间，\s*更美好的生活。/ : /A Better Space.\s*A Brighter Life./);
   });
 
   it("renders every passed FAQ answer and keeps the final answer operable", () => {
