@@ -106,7 +106,7 @@ export async function exercisePublicLanguageSwitch(page, fromPath) {
       };
       const captureClick = (event) => {
         const option = event.target instanceof Element ? event.target.closest(".scheme-a-language-option") : null;
-        if (option?.getAttribute("lang") === (language === "zh" ? "zh-CN" : "en")) {
+        if (option?.getAttribute("hreflang") === (language === "zh" ? "zh-CN" : "en")) {
           const now = performance.now();
           probe.startedMs = event.timeStamp > 0 && event.timeStamp <= now ? event.timeStamp : now;
           queueMicrotask(sample);
@@ -120,7 +120,7 @@ export async function exercisePublicLanguageSwitch(page, fromPath) {
       window.__flashcastLanguageProbe = probe;
     }, { targetPath, language, before });
     try {
-      await page.locator(`.scheme-a-language-option[lang="${language === "zh" ? "zh-CN" : "en"}"]:visible`).first().click();
+      await page.locator(`.scheme-a-language-option[hreflang="${language === "zh" ? "zh-CN" : "en"}"]:visible`).first().click();
       await page.waitForFunction(() => window.__flashcastLanguageProbe?.completedMs !== null, undefined, { timeout: 15_000 });
       const receipt = await page.evaluate(() => {
         const { startedMs, completedMs } = window.__flashcastLanguageProbe;

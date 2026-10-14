@@ -14,6 +14,60 @@ const languageState = vi.hoisted(() => ({ language: "en" as "en" | "zh" }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: languageState.language }) }));
 beforeEach(() => { languageState.language = "en"; });
 
+describe("public header brand", () => {
+  const renderHeader = (language: "zh" | "en", settings = fallbackSiteSettings) => {
+    languageState.language = language;
+    const route = `/${language}/`;
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(["site-settings"], settings);
+    const html = renderToStaticMarkup(<MemoryRouter initialEntries={[route]}><QueryClientProvider client={queryClient}>
+      <PublicChromeProvider isAdminRoute={false} routeKey={route}><SchemeANavbar /></PublicChromeProvider>
+    </QueryClientProvider></MemoryRouter>);
+    return new DOMParser().parseFromString(html, "text/html").querySelector(".scheme-a-chrome__brand")!;
+  };
+
+  it.each([
+    ["zh", "闪铸装饰", "zh-CN"],
+    ["en", "FLASH CAST", "en"],
+  ] as const)("shows only the active %s brand name beside the symbol", (language, name, lang) => {
+    const brand = renderHeader(language);
+    const wordmark = brand.querySelector(".scheme-a-chrome__wordmark-name")!;
+    expect(wordmark.textContent).toBe(name);
+    expect(wordmark.getAttribute("lang")).toBe(lang);
+    expect(brand.getAttribute("aria-label")).toBe(name);
+    expect(brand.getAttribute("href")).toBe(`/${language}`);
+    expect(brand.textContent).toBe(name);
+    expect(brand.querySelectorAll(".scheme-a-chrome__wordmark-name")).toHaveLength(1);
+    expect(brand.querySelector(".scheme-a-chrome__symbol img")).not.toBeNull();
+  });
+
+  it("preserves the uploaded logo and configured company name", () => {
+    const brand = renderHeader("en", {
+      ...fallbackSiteSettings,
+      company_name: "Different company",
+      brand_name: "Different brand",
+      logo_url: "https://example.com/custom-logo.webp",
+    });
+    expect(brand.querySelector(".scheme-a-chrome__wordmark-name")).toBeNull();
+    expect(brand.querySelector(".scheme-a-chrome__symbol")).toBeNull();
+    expect(brand.getAttribute("aria-label")).toBe("Different company");
+    expect(brand.querySelector("img")?.getAttribute("src")).toContain("custom-logo.webp");
+  });
+
+  it.each([
+    ["zh", ["中文", "英文"], "zh-CN"],
+    ["en", ["CN", "EN"], "en"],
+  ] as const)("uses the current %s interface language for both language options", (language, labels, lang) => {
+    const header = renderHeader(language).closest("header")!;
+    const options = [...header.querySelectorAll(".scheme-a-language-option")];
+    expect(options.map((option) => option.textContent)).toEqual(labels);
+    expect(options.map((option) => option.getAttribute("lang"))).toEqual([lang, lang]);
+    expect(options.map((option) => option.getAttribute("hreflang"))).toEqual(["zh-CN", "en"]);
+    expect(options.map((option) => option.getAttribute("href"))).toEqual(["/zh", "/en"]);
+    expect(options[language === "zh" ? 0 : 1].getAttribute("aria-current")).toBe("true");
+  });
+});
+
 describe("JsonLdBlogPosting", () => {
   it("retains article metadata without advertising an unverified cover", () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });

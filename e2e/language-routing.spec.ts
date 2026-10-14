@@ -66,7 +66,7 @@ test.describe("public language routing", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/en$/);
 
-    await page.locator('.scheme-a-language-option[lang="zh-CN"]:visible').first().click();
+    await page.locator('.scheme-a-language-option[hreflang="zh-CN"]:visible').first().click();
 
     await expect(page).toHaveURL(/\/zh$/);
     await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");

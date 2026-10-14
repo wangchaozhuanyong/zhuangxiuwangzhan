@@ -41,7 +41,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
 import { schemeAChromeText } from "@/i18n/schemeAText";
-import { getChineseBrandLine, getHeaderChineseBrandName } from "@/i18n/brandIdentity";
+import { CHINESE_BRAND_NAMES, getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } from "@/i18n/brandIdentity";
 import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
 import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
@@ -84,26 +84,28 @@ const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
   publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(pathname, item.path)))?.key
   ?? "services";
 
-const BrandMark = ({ logo, name, chineseName }: { logo: string; name: string; chineseName: string | null }) => {
+const BrandMark = ({ logo, name, displayName, language }: { logo: string; name: string; displayName: string | null; language: "zh" | "en" }) => {
   const [failedLogo, setFailedLogo] = useState<string | null>(null);
   const displayedLogo = failedLogo === logo ? logoFallback : logo;
   const builtInLogo = displayedLogo === logoFallback
     || /^(?:https?:\/\/[^/]+)?\/logo-flashcast(?:-20260605)?\.(?:png|webp)(?:[?#].*)?$/i.test(displayedLogo);
-  const showChineseName = Boolean(chineseName && builtInLogo);
+  const showLocalizedName = Boolean(displayName && builtInLogo);
   return (
-    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={showChineseName ? `${chineseName} | ${name}` : name}>
-      <span className={`scheme-a-chrome__wordmark${showChineseName ? " scheme-a-chrome__wordmark--design" : ""}`} data-builtin-logo={builtInLogo || undefined}>
-        <SmartImage
-          src={displayedLogo}
-          alt=""
-          width={190}
-          height={52}
-          loading="eager"
-          onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
-        />
-        {showChineseName && <span className="scheme-a-chrome__wordmark-name" lang="zh-CN">{chineseName}</span>}
+    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={showLocalizedName && displayName ? displayName : name}>
+      <span className={`scheme-a-chrome__wordmark${showLocalizedName ? " scheme-a-chrome__wordmark--localized" : ""}`} data-builtin-logo={builtInLogo || undefined}>
+        <span className={showLocalizedName ? "scheme-a-chrome__symbol" : undefined} aria-hidden="true">
+          <SmartImage
+            src={displayedLogo}
+            alt=""
+            width={190}
+            height={52}
+            loading="eager"
+            onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
+          />
+        </span>
+        {showLocalizedName && <span className="scheme-a-chrome__wordmark-name" lang={language === "zh" ? "zh-CN" : "en"}>{displayName}</span>}
       </span>
-      <span className="sr-only">{name}</span>
+      {!showLocalizedName && <span className="sr-only">{name}</span>}
     </LocalizedLink>
   );
 };
@@ -148,7 +150,8 @@ const LanguageSwitch = ({
             prefetchOnReady={!active}
             aria-current={active ? "true" : undefined}
             aria-label={option.label}
-            lang={option.code === "zh" ? "zh-CN" : "en"}
+            lang={language === "zh" ? "zh-CN" : "en"}
+            hrefLang={option.code === "zh" ? "zh-CN" : "en"}
             onClick={(event) => {
               if (active) event.preventDefault();
             }}
@@ -222,6 +225,9 @@ export const SchemeANavbar = () => {
   const returnFocus = useRef(true);
   const logo = settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
   const companyName = settings.company_name || "FLASH CAST SDN. BHD.";
+  const headerBrandName = getHeaderChineseBrandName(settings)
+    ? language === "zh" ? CHINESE_BRAND_NAMES[0] : getPublicSiteName(settings)
+    : null;
   const languagePaths = {
     zh: switchLanguagePath(location.pathname, "zh", location.search, location.hash),
     en: switchLanguagePath(location.pathname, "en", location.search, location.hash),
@@ -481,7 +487,7 @@ export const SchemeANavbar = () => {
       <span ref={sentinelRef} className="scheme-a-chrome__sentinel" aria-hidden="true" />
       <header ref={headerRef} className={`scheme-a-chrome is-fixed ${overlay ? "is-overlay" : "is-solid"}`} data-route-pending={settingsPending || undefined}>
         <div className="scheme-a-chrome__bar scheme-a-frame">
-          <BrandMark logo={logo} name={companyName} chineseName={getHeaderChineseBrandName(settings)} />
+          <BrandMark logo={logo} name={companyName} displayName={headerBrandName} language={language} />
           <nav className="scheme-a-chrome__primary" aria-label={t.mainNavigation}>
             {primaryPublicNavigationItems.map((item) => (
               <LocalizedLink key={item.path} to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
@@ -718,7 +724,7 @@ export const SchemeAFooter = () => {
         </div>
         <div className="scheme-a-footer__legal scheme-a-frame">
           <span>{t.copyright} {footer.rights}</span>
-          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageRouteLink to={languagePath} targetLanguage={nextLanguage}>{t.language}: {nextLanguage === "zh" ? "中文" : "EN"}</LanguageRouteLink><button type="button" onClick={() => scrollWindowToSmoothly(0)}>{t.backToTop}<ArrowUp /></button></nav>
+          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageRouteLink to={languagePath} targetLanguage={nextLanguage} lang={language === "zh" ? "zh-CN" : "en"} hrefLang={nextLanguage === "zh" ? "zh-CN" : "en"}>{t.language}: {nextLanguage === "zh" ? navText.chineseShort : navText.englishShort}</LanguageRouteLink><button type="button" onClick={() => scrollWindowToSmoothly(0)}>{t.backToTop}<ArrowUp /></button></nav>
         </div>
       </div>
     </footer>

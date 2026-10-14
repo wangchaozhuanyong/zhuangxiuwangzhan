@@ -525,11 +525,11 @@ const mobileChecks = async (driver, target, identity, screenshotEvidence) => {
   });
   await check("native_language_switch", async () => {
     await driver.get(`${baseUrl}/zh/projects`); await ready(driver);
-    await touch(driver, '.scheme-a-language-option[lang="en"]');
+    await touch(driver, '.scheme-a-language-option[hreflang="en"]');
     await driver.wait(() => driver.executeScript(() => location.pathname === "/en/projects" && document.documentElement.lang.startsWith("en") && !document.documentElement.dataset.publicRouteLoading), waitTimeoutMs);
     const title = await driver.executeScript(() => document.querySelector("main h1")?.textContent || "");
     if (!/[A-Za-z]{3}/.test(title) || /[\u4e00-\u9fff]/.test(title)) throw new Error("LANGUAGE_CONTENT_NOT_UPDATED");
-    await touch(driver, '.scheme-a-language-option[lang="zh-CN"]');
+    await touch(driver, '.scheme-a-language-option[hreflang="zh-CN"]');
     await driver.wait(() => driver.executeScript(() => location.pathname === "/zh/projects" && document.documentElement.lang.startsWith("zh")), waitTimeoutMs);
     return { switchedToEnglish: true, switchedBackToChinese: true };
   });
