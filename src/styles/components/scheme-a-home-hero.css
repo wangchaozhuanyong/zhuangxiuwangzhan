@@ -89,6 +89,30 @@
     text-wrap: pretty;
   }
 
+  .scheme-a-hero__enquiry-panel {
+    max-width: 30rem;
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--public-surface-base) 94%, transparent);
+  }
+
+  .scheme-a-hero__scope,
+  .scheme-a-hero__enquiry {
+    max-width: 30rem;
+    margin: 0;
+    color: inherit;
+    font-size: 14px;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .scheme-a-hero__enquiry { padding-top: 14px; }
+
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero__enquiry-panel .scheme-a-actions {
+    padding-top: 16px;
+  }
+
   html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-actions {
     display: flex;
     flex-wrap: wrap;

@@ -139,20 +139,32 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
               </h1>
               <p className="scheme-a-hero__service">{copy.heroService}</p>
               <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
-              <div className="scheme-a-actions">
-                <a
-                  className="scheme-a-button scheme-a-button--paper"
-                  href={settings.whatsapp_url()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackCtaClick("whatsapp", "home_hero", { destination: "whatsapp" })}
-                >
-                  {copy.whatsappCta}
-                </a>
-                <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
-                  {copy.projectsCta}
-                  <ArrowUpRight aria-hidden="true" />
-                </LocalizedLink>
+              <div className={language === "zh" ? "scheme-a-hero__enquiry-panel" : undefined}>
+                {language === "zh" && <p className="scheme-a-hero__scope">{copy.heroScope}</p>}
+                <div className="scheme-a-actions">
+                  {language === "zh" && (
+                    <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
+                      {presentation.heroAction.label}
+                      <ArrowUpRight aria-hidden="true" />
+                    </LocalizedLink>
+                  )}
+                  <a
+                    className={`scheme-a-button scheme-a-button--${language === "zh" ? "glass" : "paper"}`}
+                    href={settings.whatsapp_url()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackCtaClick("whatsapp", "home_hero", { destination: "whatsapp" })}
+                  >
+                    {copy.whatsappCta}
+                  </a>
+                  {language !== "zh" && (
+                    <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
+                      {copy.projectsCta}
+                      <ArrowUpRight aria-hidden="true" />
+                    </LocalizedLink>
+                  )}
+                </div>
+                {language === "zh" && <p className="scheme-a-hero__enquiry">{copy.heroEnquiry}</p>}
               </div>
             </div>
           </div>
