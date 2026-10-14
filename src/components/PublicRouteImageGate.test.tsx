@@ -204,6 +204,7 @@ describe("public route visual readiness", () => {
     expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
     expect(container.querySelector(".public-route-content")).not.toHaveAttribute("aria-hidden", "true");
     expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-pending");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
     await act(async () => vi.advanceTimersByTime(5100));
     expect(state()).toBe("timeout");
     expect(loader()).toHaveClass("public-route-feedback");
@@ -217,7 +218,9 @@ describe("public route visual readiness", () => {
     await render(<div data-route-pending="true" />, "/en/services/kitchen");
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
     expect(loader()).toHaveClass("public-route-feedback");
-    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
+    expect(loader()).toHaveAttribute("data-feedback-scope", "page");
+    expect(container.querySelector('[data-route-loader="initial"]')).toBeNull();
   });
 
   it("keeps consecutive uncached language updates local and emits readiness only for the final language", async () => {
@@ -432,9 +435,11 @@ describe("public route visual readiness", () => {
     expect(container.querySelector(".public-route-feedback__pending")).toBeNull();
     expect(pageFeedback()).toBe(loader());
     expect(document.documentElement.dataset.publicRouteLoading).toBe("navigation");
-    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
-    expect(container.querySelector(".public-route-feedback__skeleton")).toHaveAttribute("aria-hidden", "true");
-    expect(container.querySelector(".public-route-feedback > span")).toHaveClass("sr-only");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
+    expect(loader()).toHaveClass("scheme-a-page-loader--navigation");
+    expect(container.querySelectorAll("[data-loading-progress]")).toHaveLength(1);
+    expect(container.querySelector(".public-route-feedback__skeleton")).toBeNull();
+    expect(container.querySelector('[data-route-loader="initial"]')).toBeNull();
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
     await render(<Image ready />);
     expect(state()).toBe("ready");
@@ -479,7 +484,7 @@ describe("public route visual readiness", () => {
     expect(loader()).toBeNull();
   });
 
-  it("never mounts document branding again during navigation, timeout, retry or return", async () => {
+  it("reuses the original brand for real page waits without restarting document boot, and releases it at ready or timeout", async () => {
     await render(<div data-route-pending="true" />, "/zh/services");
     expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
     await render(<Image ready />, "/zh/services");
@@ -494,17 +499,23 @@ describe("public route visual readiness", () => {
     observer.observe(container, { childList: true, subtree: true });
     try {
       await render(<div data-route-pending="true" />, "/zh/materials");
-      expect(container.querySelector(".public-route-feedback__skeleton")).not.toBeNull();
+      expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
+      expect(container.querySelector('[data-route-loader="initial"]')).toBeNull();
       await act(async () => vi.advanceTimersByTime(5100));
+      expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
       const retry = container.querySelector<HTMLButtonElement>(".public-route-feedback__recovery button")!;
       await act(async () => retry.click());
       expect(state()).toBe("waiting");
+      expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
+      expect(container.querySelector('[data-route-loader="initial"]')).toBeNull();
       await render(<Image ready />, "/zh/materials");
+      expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
       await render(<Image />, "/zh/projects");
+      expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
       await render(<Image ready />, "/zh/services");
       expect(state()).toBe("ready");
       expect(loader()).toBeNull();
-      expect(addedBrands).toHaveLength(0);
+      expect(addedBrands).toHaveLength(3);
     } finally { observer.disconnect(); }
   });
 

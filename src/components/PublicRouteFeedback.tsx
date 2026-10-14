@@ -1,8 +1,9 @@
 import { PublicLoadingBar } from "@/components/PublicLoadingBar";
+import { PublicLoadingBrand } from "@/components/PublicLoadingBrand";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 
-/** Navigation feedback has no document-entry presentation or ownership. */
+/** Real page waits reuse the brand; local updates never restart document boot. */
 export function PublicRouteFeedback({ scope, busy, timedOut, onFinished, onRetry, onCancel }: {
   scope: "page" | "region";
   busy: boolean;
@@ -13,16 +14,14 @@ export function PublicRouteFeedback({ scope, busy, timedOut, onFinished, onRetry
 }) {
   const { language } = useLanguage();
   const copy = publicContentStatusText[language];
-  return <div className="public-route-feedback" role="status" aria-live="polite" aria-busy={busy}
+  const pageWait = scope === "page" && busy && !timedOut;
+  return <div className={pageWait
+    ? "public-route-feedback scheme-a-page-loader scheme-a-page-loader--overlay scheme-a-page-loader--navigation"
+    : "public-route-feedback"} role="status" aria-live="polite" aria-busy={busy}
     data-route-loader="navigation" data-feedback-scope={scope}>
-    {!timedOut && <PublicLoadingBar complete={!busy} onFinished={onFinished} />}
-    <span className="sr-only">{copy.loaderRoutePending}</span>
-    {scope === "page" && busy && <div className="public-route-feedback__skeleton" aria-hidden="true">
-      <span className="public-route-feedback__skeleton-title" />
-      <span className="public-route-feedback__skeleton-copy" />
-      <span className="public-route-feedback__skeleton-media" />
-      <span /><span /><span />
-    </div>}
+    {pageWait && <PublicLoadingBrand busy={busy} />}
+    {!pageWait && !timedOut && <PublicLoadingBar complete={!busy} onFinished={onFinished} />}
+    {!pageWait && <span className="sr-only">{copy.loaderRoutePending}</span>}
     {timedOut && <div className="public-route-feedback__recovery">
       <p>{copy.loaderTimeout}</p>
       <div className="public-route-feedback__actions">

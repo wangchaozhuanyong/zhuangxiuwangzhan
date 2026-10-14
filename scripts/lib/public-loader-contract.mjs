@@ -5,6 +5,7 @@ import ts from 'typescript';
 const initialFile = 'src/components/PublicInitialLoader.tsx';
 const navigationFile = 'src/components/PublicRouteFeedback.tsx';
 const gateFile = 'src/components/PublicRouteImageGate.tsx';
+const brandFile = 'src/components/PublicLoadingBrand.tsx';
 const unwrap = node => ts.isParenthesizedExpression(node) ? unwrap(node.expression) : node;
 
 /** Verify render/import ownership rather than trusting loader labels or comments. */
@@ -65,11 +66,67 @@ export function checkPublicLoaderContract(sources) {
     if (!binding) return tag === 'PublicInitialLoader' && file === initialFile ? initialFile : undefined;
     return exportedFrom(binding.target, binding.name === '*' ? tag.split('.')[1] : binding.name);
   };
-  for (const file of [initialFile, navigationFile, gateFile]) if (!trees.has(file)) failures.push(`${file}: required loading owner is missing`);
+  for (const file of [initialFile, navigationFile, gateFile, brandFile]) if (!trees.has(file)) failures.push(`${file}: required loading owner is missing`);
+
+  const declarationsByFile = new Map();
+  for (const [file, tree] of trees) {
+    const declarations = new Map();
+    const collect = node => {
+      if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer) declarations.set(node.name.text, node.initializer);
+      ts.forEachChild(node, collect);
+    };
+    collect(tree);
+    declarationsByFile.set(file, declarations);
+  }
+  // Only facts guaranteed by every true branch count. In particular, an OR
+  // cannot make region/ready/timeout states eligible for page branding.
+  const pageWaitFacts = (file, expression, seen = new Set()) => {
+    const node = unwrap(expression);
+    if (ts.isIdentifier(node)) {
+      if (seen.has(node.text)) return new Set();
+      const initializer = declarationsByFile.get(file)?.get(node.text);
+      if (initializer) return pageWaitFacts(file, initializer, new Set([...seen, node.text]));
+      return new Set(node.text === 'busy' ? ['busy'] : []);
+    }
+    if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken
+      && ts.isIdentifier(unwrap(node.operand)) && unwrap(node.operand).text === 'timedOut') return new Set(['not-timeout']);
+    if (ts.isBinaryExpression(node)) {
+      if (node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) return new Set([...pageWaitFacts(file, node.left, new Set(seen)), ...pageWaitFacts(file, node.right, new Set(seen))]);
+      if (node.operatorToken.kind === ts.SyntaxKind.BarBarToken) {
+        const left = pageWaitFacts(file, node.left, new Set(seen));
+        const right = pageWaitFacts(file, node.right, new Set(seen));
+        return new Set([...left].filter(fact => right.has(fact)));
+      }
+      if (node.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken) {
+        const left = unwrap(node.left); const right = unwrap(node.right);
+        if (ts.isIdentifier(left) && left.text === 'scope' && ts.isStringLiteral(right) && right.text === 'page'
+          || ts.isIdentifier(right) && right.text === 'scope' && ts.isStringLiteral(left) && left.text === 'page') return new Set(['page']);
+      }
+    }
+    return new Set();
+  };
+  const hasPageWait = facts => ['page', 'busy', 'not-timeout'].every(fact => facts.has(fact));
+  const guardedPageWait = (file, node) => {
+    const facts = new Set();
+    for (let child = node, parent = node.parent; parent; child = parent, parent = parent.parent) {
+      if (ts.isBinaryExpression(parent) && parent.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken && parent.right === child) for (const fact of pageWaitFacts(file, parent.left)) facts.add(fact);
+      if (ts.isConditionalExpression(parent) && parent.whenTrue === child) for (const fact of pageWaitFacts(file, parent.condition)) facts.add(fact);
+    }
+    return hasPageWait(facts);
+  };
+  const brandLayout = /scheme-a-page-loader/;
+  const guardedNavigationLayout = (file, node, tree) => {
+    if (file !== navigationFile) return false;
+    if (guardedPageWait(file, node)) return true;
+    const expression = ts.isJsxExpression(node.initializer) && node.initializer.expression && unwrap(node.initializer.expression);
+    return expression && ts.isConditionalExpression(expression) && hasPageWait(pageWaitFacts(file, expression.condition))
+      && brandLayout.test(expression.whenTrue.getText(tree)) && !brandLayout.test(expression.whenFalse.getText(tree));
+  };
 
   // Follow local imports and re-exports so moving the brand into a child or a
-  // barrel cannot evade the navigation restriction. Only inspect render syntax
-  // for brand copy; shared translation dictionaries may contain first-load copy.
+  // barrel cannot evade document ownership. The one shared visual is allowed;
+  // its mounts are checked separately against actual page-wait render guards.
+  // Shared translation dictionaries may contain first-load copy.
   const visited = new Set();
   const inspectNavigation = file => {
     if (visited.has(file)) return;
@@ -81,9 +138,10 @@ export function checkPublicLoaderContract(sources) {
     const tree = trees.get(file);
     if (!tree) return;
     const check = node => {
-      if (ts.isJsxText(node) && /\b(?:FLASH|CAST|FLASHCAST)\b/i.test(node.text)) failures.push(`${file}: brand text cannot be rendered by navigation feedback`);
-      if (ts.isJsxAttribute(node) && node.initializer && /scheme-a-page-loader|flashcast-public-boot/.test(node.initializer.getText(tree))) failures.push(`${file}: initial brand styles cannot be used by navigation feedback`);
-      if (ts.isJsxExpression(node) && node.expression && /\b(?:loaderBrand|loaderPending)\b|["'`]\s*(?:FLASH|CAST|FLASHCAST)\b/i.test(node.expression.getText(tree))) failures.push(`${file}: initial brand copy cannot be rendered by navigation feedback`);
+      if (file !== brandFile && ts.isJsxText(node) && /\b(?:FLASH|CAST|FLASHCAST)\b/i.test(node.text)) failures.push(`${file}: brand text must use the guarded shared brand visual, not inline navigation feedback`);
+      if (ts.isJsxAttribute(node) && node.initializer && /flashcast-public-boot/.test(node.initializer.getText(tree))) failures.push(`${file}: document boot styles cannot be used by navigation feedback`);
+      if (file !== brandFile && ts.isJsxAttribute(node) && node.initializer && brandLayout.test(node.initializer.getText(tree)) && !guardedNavigationLayout(file, node, tree)) failures.push(`${file}: brand layout must be guarded by a busy non-timeout page branch in navigation feedback`);
+      if (file !== brandFile && ts.isJsxExpression(node) && node.expression && /\b(?:loaderBrand|loaderPending)\b|["'`]\s*(?:FLASH|CAST|FLASHCAST)\b/i.test(node.expression.getText(tree))) failures.push(`${file}: brand copy must use the guarded shared brand visual, not inline navigation feedback`);
       ts.forEachChild(node, check);
     };
     check(tree);
@@ -95,13 +153,10 @@ export function checkPublicLoaderContract(sources) {
   };
   inspectNavigation(navigationFile);
 
+  let initialBrandMounts = 0;
+  let navigationBrandMounts = 0;
   for (const [file, tree] of trees) {
-    const declarations = new Map();
-    const collect = node => {
-      if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer) declarations.set(node.name.text, node.initializer);
-      ts.forEachChild(node, collect);
-    };
-    collect(tree);
+    const declarations = declarationsByFile.get(file);
     const impliesInitial = (expression, seen = new Set()) => {
       const node = unwrap(expression);
       if (ts.isIdentifier(node)) {
@@ -130,7 +185,13 @@ export function checkPublicLoaderContract(sources) {
       return false;
     };
     const inspect = node => {
-      if (file !== initialFile && ts.isJsxAttribute(node) && node.initializer && /scheme-a-page-loader__brand/.test(node.initializer.getText(tree))) failures.push(`${file}: brand markup belongs to PublicInitialLoader only`);
+      if (file !== brandFile && ts.isJsxAttribute(node) && node.initializer && /scheme-a-page-loader__brand/.test(node.initializer.getText(tree))) failures.push(`${file}: brand markup belongs to PublicLoadingBrand only`);
+      if (ts.isCallExpression(node) && jsxSource(file, node.expression.getText(tree)) === brandFile) failures.push(`${file}: PublicLoadingBrand must mount through a checked JSX branch`);
+      if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && jsxSource(file, node.tagName.getText(tree)) === brandFile) {
+        if (file === initialFile) initialBrandMounts++;
+        else if (file === navigationFile && guardedPageWait(file, node)) navigationBrandMounts++;
+        else failures.push(`${file}: PublicLoadingBrand may only mount in initial feedback or a busy non-timeout page navigation branch`);
+      }
       if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && jsxSource(file, node.tagName.getText(tree)) === initialFile) {
         let guarded = false;
         for (let child = node, parent = node.parent; parent; child = parent, parent = parent.parent) {
@@ -143,6 +204,8 @@ export function checkPublicLoaderContract(sources) {
     };
     inspect(tree);
   }
+  if (!initialBrandMounts) failures.push(`${initialFile}: initial feedback must retain the shared brand visual`);
+  if (!navigationBrandMounts) failures.push(`${navigationFile}: real page waits must retain a guarded shared brand visual`);
   return [...new Set(failures)];
 }
 

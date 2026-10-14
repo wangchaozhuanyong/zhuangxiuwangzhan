@@ -3,6 +3,7 @@ import { publicContentStatusText } from "../i18n/publicContentStatusText";
 import { getDefaultLanguage, getLanguageFromPath, stripLanguagePrefix } from "../i18n/routes";
 import { PUBLIC_MOTION, prefersReducedMotion } from "./publicMotion";
 import { startPublicLoadingProgress } from "./publicLoadingProgress";
+import { PUBLIC_NAVIGATION_EVENT } from "./publicNavigation";
 
 export type PublicBootState = "waiting" | "timeout" | "handoff" | "ready" | "degraded";
 type Recovery = { retry: () => void; continue: () => void; timeout: () => void };
@@ -130,11 +131,23 @@ export function initializePublicBoot(): PublicBoot | undefined {
       recovery?.timeout();
     }, Math.max(0, deadline - performance.now()));
   };
+  let handoffDegraded = false;
   const finish = (degraded: boolean) => {
     window.clearTimeout(fadeTimer);
+    window.removeEventListener(PUBLIC_NAVIGATION_EVENT, finishHandoff, true);
+    window.removeEventListener("popstate", finishHandoff, true);
     observer.disconnect();
     state = degraded ? "degraded" : "ready";
     render();
+  };
+  const finishHandoff = () => {
+    // Input is already released; retire only the completed document's fade
+    // before a new route can mount its own real waiting presentation.
+    if (state !== "handoff") return;
+    revision++;
+    window.clearTimeout(fadeTimer);
+    animation?.cancel();
+    finish(handoffDegraded);
   };
   const boot: PublicBoot = {
     get state() { return state; },
@@ -158,6 +171,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
       if (completion) return completion;
       window.clearTimeout(timer);
       if (state === "ready" || state === "degraded") return Promise.resolve();
+      handoffDegraded = degraded;
       state = "handoff";
       render();
       // Prepare only the destination's explicit photo glyphs, underneath the
@@ -206,6 +220,10 @@ export function initializePublicBoot(): PublicBoot | undefined {
     },
   };
   window.__flashcastPublicBoot = boot;
+  if (!isAdmin) {
+    window.addEventListener(PUBLIC_NAVIGATION_EVENT, finishHandoff, true);
+    window.addEventListener("popstate", finishHandoff, true);
+  }
   const asset = (event: Event) => {
     const link = event.target;
     if (!(link instanceof HTMLLinkElement)) return;

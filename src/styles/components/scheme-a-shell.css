@@ -70,6 +70,17 @@
     min-height: 100svh;
   }
 
+  /* Real page waits keep the original brand below the usable navigation. */
+  .public-route-feedback.scheme-a-page-loader--navigation {
+    inset: 76px 0 0;
+    z-index: 80;
+    min-height: 0;
+    padding: 0 24px;
+    align-content: center;
+    pointer-events: none;
+    transition: opacity 140ms linear;
+  }
+
   .public-route-content { display: contents; }
   .public-route-scene { display: block; }
 
@@ -109,30 +120,6 @@
     transition: transform 180ms linear;
   }
   .public-route-feedback > i[data-progress-state="fading"] { opacity: 0; }
-  /* Route waits use neutral placeholders; document-entry branding is separate. */
-  .public-route-feedback[data-feedback-scope="page"] {
-    inset: 76px 0 32px;
-    display: grid;
-    align-content: center;
-    justify-items: center;
-    gap: 1rem;
-    padding: 1.5rem;
-  }
-  .public-route-feedback__skeleton {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-    width: min(1120px, 100%);
-  }
-  .public-route-feedback__skeleton > span {
-    height: 72px;
-    border-radius: 4px;
-    background: var(--public-border);
-    opacity: .5;
-  }
-  .public-route-feedback__skeleton > .public-route-feedback__skeleton-title { grid-column: 1 / -1; width: 42%; height: 28px; }
-  .public-route-feedback__skeleton > .public-route-feedback__skeleton-copy { grid-column: 1 / -1; width: 65%; height: 14px; }
-  .public-route-feedback__skeleton > .public-route-feedback__skeleton-media { grid-column: 1 / -1; height: clamp(120px, 24vh, 220px); }
   .public-route-feedback__recovery {
     width: fit-content;
     max-width: calc(100vw - 2rem);
@@ -147,9 +134,8 @@
   .public-route-feedback__recovery :is(.scheme-a-page-loader__actions, .public-route-feedback__actions) { margin-top: .75rem; }
   @media (max-width: 767px) {
     .public-route-feedback { top: 56px; }
-    .public-route-feedback[data-feedback-scope="page"] {
+    .public-route-feedback.scheme-a-page-loader--navigation {
       top: 56px;
-      bottom: calc(82px + env(safe-area-inset-bottom));
     }
   }
   @media (prefers-reduced-motion: reduce) {

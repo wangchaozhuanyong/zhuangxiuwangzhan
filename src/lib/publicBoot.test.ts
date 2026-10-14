@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { initializePublicBoot, syncPublicTheme } from "./publicBoot";
 import { publicContentStatusText } from "../i18n/publicContentStatusText";
+import { PUBLIC_NAVIGATION_EVENT } from "./publicNavigation";
 
 const markup = '<div id="flashcast-public-boot" data-route-loader="initial"><p data-boot-copy="loaderPending"></p><div data-boot-recovery hidden><button data-boot-action="retry" data-boot-copy="loaderRetry"></button><button data-boot-action="continue" hidden></button></div></div><div id="root"></div>';
 let listeners: ReturnType<typeof vi.spyOn>;
@@ -23,6 +24,35 @@ afterEach(() => {
 });
 
 describe("public document boot", () => {
+  it.each([[PUBLIC_NAVIGATION_EVENT, false], [PUBLIC_NAVIGATION_EVENT, true], ["popstate", false], ["popstate", true]] as const)("ends only the completed decorative fade on %s, preserving degraded=%s", async (event, degraded) => {
+      vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+      const cancel = vi.fn();
+      Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true,
+        value: () => ({ finished: new Promise<void>(() => {}), cancel }) });
+      const boot = initializePublicBoot()!;
+      await boot.complete(degraded);
+      expect(boot.state).toBe("handoff");
+      expect(document.getElementById("flashcast-public-boot")).not.toBeNull();
+      window.dispatchEvent(new Event(event));
+      expect(cancel).toHaveBeenCalledOnce();
+      expect(document.getElementById("flashcast-public-boot")).toBeNull();
+      expect(boot.state).toBe(degraded ? "degraded" : "ready");
+      expect(document.getElementById("root")).not.toHaveAttribute("inert");
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(boot.state).toBe(degraded ? "degraded" : "ready");
+    });
+  it.each([PUBLIC_NAVIGATION_EVENT, "popstate"])("does not release unfinished document loading on %s", async (event) => {
+    const boot = initializePublicBoot()!;
+    window.dispatchEvent(new Event(event));
+    expect(boot.state).toBe("waiting");
+    expect(document.getElementById("root")).toHaveAttribute("inert");
+    await vi.advanceTimersByTimeAsync(5100);
+    expect(boot.state).toBe("timeout");
+    window.dispatchEvent(new Event(event));
+    expect(boot.state).toBe("timeout");
+    expect(document.getElementById("root")).toHaveAttribute("inert");
+    expect(document.getElementById("flashcast-public-boot")).not.toBeNull();
+  });
   it("releases root and hit testing immediately while the bar and fade remain decorative", async () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
     const screen = document.getElementById("flashcast-public-boot")!;
