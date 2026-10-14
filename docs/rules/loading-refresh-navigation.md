@@ -12,9 +12,9 @@
 
 集中配置 `src/lib/interactionPolicy.ts`：反馈延迟 180ms，慢请求恢复操作 5s，读取超时 15s，搜索防抖 300ms；公开缓存 60s，后台列表 5min，其他后台默认 2min，保留 30min。读取消信号必须传到 repository 和实际 transport；读取最多自动重试一次，写入不得自动重试。
 
-公开首次进入文档和手动刷新保留品牌画面，由 `publicBoot` 管文档交接；没有 HTML boot 时，仅首次文档分支可挂载 `PublicInitialLoader`。`PublicRouteImageGate` 管路由真实就绪，不能把“路由正在等待”当成“文档首次进入”。站内切页、缓存返回、语言切换、前进后退、慢 chunk、慢数据、慢图片以及导航超时重试均不得重现品牌加载画面。不得仅通过把品牌画面的 `data-route-loader` 改成 `navigation` 来声称满足规则。
+公开首次进入文档和手动刷新保留原品牌画面，由 `publicBoot` 管文档交接；没有 HTML boot 时，仅首次文档分支可挂载 `PublicInitialLoader`。`PublicRouteImageGate` 管路由真实就绪，不能把“路由正在等待”当成“文档首次进入”。依据 2026-10-15 用户修正，站内页面因必要 chunk、数据或关键图片产生真实整页等待时，继续使用原品牌视觉；该展示不重启文档 boot。成功缓存返回、image-only 展示、局部结果更新及同一已呈现业务页的语言更新不显示品牌。不能只修改 `data-route-loader` 标签来代替真实就绪条件。
 
-站内等待由独立的 `PublicRouteFeedback` 负责：页面等待使用无品牌的骨架和细进度条，局部结果更新仅使用细进度条，保留 `aria-busy`、超时重试和取消。该组件及其实际渲染依赖不能引用 `PublicInitialLoader`、`publicBoot`、品牌加载样式或品牌文案。公共导航、语言切换和手机底栏始终可操作。已确认的首次品牌与站内无品牌行为是固定验收条件；修改共享加载组件、测试或发布门禁时，不能自行反转这些条件。
+站内等待由独立的 `PublicRouteFeedback` 负责：仅 `scope === "page" && busy && !timedOut` 真分支挂载 `PublicLoadingBrand`，复用原品牌内层、文案与进度条；局部结果更新仅使用细进度条。`PublicInitialLoader` 同样复用该视觉组件，但仍由首次文档分支独占。`PublicLoadingBrand` 不拥有就绪判断、deadline、重试或文档交接；导航反馈及其依赖不能引用 `PublicInitialLoader` 或 `publicBoot` 控制器。品牌 markup 与文案只能在专用共享视觉中声明，不能放在未受真实整页等待条件保护的 JSX、子包装或局部反馈中。ready 立即移除站内品牌，不等待进度条收尾，也不添加最短展示时间；timeout 停止忙碌品牌，继续显示可操作的重试与取消。保留 `aria-busy`，公共导航、语言切换和手机底栏始终可操作。
 
 必要数据由 `data-route-pending` 登记，关键图片由 `SmartImage critical` 登记。非首屏、非关键图片不得锁住整页；关键图片慢时降级为占位，失败显示单图重试。首屏不得按固定时间假装完成；路由准备不等待后台更新。保留导航和公共布局。CSS、chunk 错误必须保留可恢复入口。导航点击只结束旧页面的就绪检查，不能预先把旧页面改成等待并隐藏正文；等待状态必须来自新页面真实未就绪的数据、chunk 或关键图片。路由 URL 与对应正文应在同一次提交中切换，不能先改 URL、再在下一帧补正文。
 
@@ -26,7 +26,7 @@
 
 图片缓存证据必须来自真实图片成功传输及解码，并绑定实际选中的图片地址与对应的响应式来源描述；仅记住页面访问过或 `img.complete` 不足以认定图片就绪。成功证据仅在当前文档内复用；来源、候选图片、断点或图片版本变化时必须核对新的实际候选，不能拿旧图片的成功状态放行新图片。失败、超时、占位和后台数据更新不得制造成功图片证据。首次文档品牌交接继续验证当前可见图片，不因导航缓存优化提前结束。
 
-`verify:interaction-standards` 解析加载组件的本地引用关系与 JSX 分支：检查导航反馈及子组件不得重新引入首次品牌，`PublicInitialLoader` 只能由路由门的首次文档条件挂载。静态检查不能替代浏览器验收。`public-image-readiness` 和 `public-route-handoff` 必须先验证首次进入/刷新品牌，再通过 DOM `MutationObserver` 检查实际品牌节点（不依赖 initial/navigation 标签），覆盖连续真实点击、缓存返回、语言、POP、慢依赖和超时重试；测试不得把站内品牌出现当成成功条件。缓存切换验收须在 390px 和 1440px、中英文分别预热真实成功数据与关键图片，再通过真实导航及浏览器前进后退反复往返并用同一个 `requestAnimationFrame` 监视器逐帧检查：无整页 pending、正文隐藏/锁定、骨架或旧页层，正文透明度始终为 1，标题与图片来源配置属于当前路由；原生图片等待帧仅允许上述 image-only 条件，已 loaded 的图片仍须严格满足 complete、naturalWidth 和实际候选 decodedSrc 一致，public-route-ready 事件不得先于真实图片和数据就绪。每次切换最后必须确认全部关键图片真实成功加载与解码；仅在切换完成后检查最终 DOM 不能证明没有整页闪跳。测试不能要求每次导航必有 waiting 或整页动画；慢数据、慢 chunk、改变关键图片来源仍须验证真实等待、公共导航可用及品牌插入次数为零。不得增加固定等待来避开错误帧。本地浏览器测试拦截写请求，仅允许已经核实为纯 SELECT 的 `POST /rest/v1/rpc/get_public_home_bundle` 读取真实首页数据，不向生产写入访问统计、分析事件或业务数据。
+`verify:interaction-standards` 解析加载组件的本地引用关系与 JSX 分支：`PublicInitialLoader` 只能由路由门的首次文档条件挂载，导航及共享视觉不能依赖文档 boot；共享品牌仅允许首次反馈或导航反馈中受 busy、page、非 timeout 三项条件共同保护的分支挂载。保留子组件、别名、barrel 和 inline markup 的负面契约测试，不能为恢复视觉移除所有门禁。静态检查不能替代浏览器验收。`public-image-readiness` 和 `public-route-handoff` 必须先验证首次进入/刷新品牌，再通过 DOM `MutationObserver` 检查实际品牌节点（不依赖 initial/navigation 标签），覆盖连续真实点击、缓存返回、语言、POP、慢依赖和超时重试。真实整页等待必须呈现品牌且仍保留公共导航，ready 与 timeout 后移除忙碌品牌；缓存成功、image-only 和局部更新的品牌插入次数必须为零。缓存切换验收须在 390px 和 1440px、中英文分别预热真实成功数据与关键图片，再通过真实导航及浏览器前进后退反复往返并用同一个 `requestAnimationFrame` 监视器逐帧检查：无品牌、整页 pending、正文隐藏/锁定、骨架或旧页层，正文透明度始终为 1，标题与图片来源配置属于当前路由；原生图片等待帧仅允许上述 image-only 条件，已 loaded 的图片仍须严格满足 complete、naturalWidth 和实际候选 decodedSrc 一致，public-route-ready 事件不得先于真实图片和数据就绪。每次切换最后必须确认全部关键图片真实成功加载与解码；仅在切换完成后检查最终 DOM 不能证明没有整页闪跳。测试不能要求每次导航必有 waiting 或整页动画；慢数据、慢 chunk、改变关键图片来源仍须验证真实等待、品牌仅在真实 page 等待出现、公共导航可用及超时恢复。不得增加固定等待来避开错误帧。本地浏览器测试拦截写请求，仅允许已经核实为纯 SELECT 的 `POST /rest/v1/rpc/get_public_home_bundle` 读取真实首页数据，不向生产写入访问统计、分析事件或业务数据。
 
 温缓存验收必须使用真实缓存环境，同时保持写请求拦截。Playwright `page.route` 会禁用 HTTP 缓存，不能把这种网络故障环境当作温缓存前提；Chromium 温缓存场景可用原生 `Fetch` 读取请求拦截，GET/HEAD 和 OPTIONS 预检传透真实响应，仅已经核实的首页纯读取 RPC 允许 POST，其余写方法继续拦截。不得伪造图片加载成功、修改真实读接口的 CORS 或响应内容来制造缓存命中。记录实际浏览器版本、UA、图片缓存响应头及真实 `fromDiskCache` 证据；发送启用缓存命令不代表缓存已经恢复。本地资源缓存策略须与项目 `public/_headers` 核对，Vite 默认 `no-cache` 预览与应用资产的正式缓存策略分开记录。
 

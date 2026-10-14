@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import path from "node:path";
 import { readFileSync } from "node:fs";
-import { expectNoNavigationBrand, observeNavigationBrand, protectPublicTestWrites } from './public-loader-audit';
+import { expectNoNavigationBrand, expectPageNavigationBrand, observeNavigationBrand, protectPublicTestWrites } from './public-loader-audit';
 
 const furnitureCatalog = JSON.parse(readFileSync(path.resolve("src/data/furnitureCatalog.json"), "utf8")) as {
   products: { slug: string; images: string[] }[];
@@ -26,6 +26,8 @@ test('brand audit detects navigation-tagged branding inserted and removed within
       container.remove();
     }, brandedMarkup);
     await expect(page.locator('body')).not.toHaveAttribute('data-navigation-brand-insertions', '0');
+    await observeNavigationBrand(page);
+    await expectNoNavigationBrand(page);
   }
 });
 
@@ -74,7 +76,7 @@ test("does not hold a mobile product detail for offscreen gallery thumbnails", a
   } finally { release(); }
 });
 
-test("shows branding only for direct entry and refresh; SPA navigation never reopens it", async ({ page }) => {
+test("keeps initial branding unique, brands real page waits and leaves warmed navigation unbranded", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const initial = page.locator('[data-route-loader="initial"]');
   const navigation = page.locator('.public-route-feedback[data-route-loader="navigation"]');
@@ -98,6 +100,8 @@ test("shows branding only for direct entry and refresh; SPA navigation never reo
     await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
     await expect(initial).toBeVisible();
     await expect(initial.locator(".scheme-a-page-loader__brand strong")).toHaveText("FLASHCAST");
+    await expect(page.locator('.scheme-a-page-loader__brand')).toHaveCount(1);
+    await expect(navigation).toHaveCount(0);
     await expect(page.locator(".public-route-feedback__pending")).toHaveCount(0);
     releaseImages();
     await ready();
@@ -109,21 +113,17 @@ test("shows branding only for direct entry and refresh; SPA navigation never reo
     await page.reload({ waitUntil: "domcontentloaded" });
     await expect(initial).toBeVisible();
     await expect(initial.locator(".scheme-a-page-loader__brand strong")).toHaveText("FLASHCAST");
+    await expect(page.locator('.scheme-a-page-loader__brand')).toHaveCount(1);
+    await expect(navigation).toHaveCount(0);
     await expect(page.locator(".public-route-feedback__pending")).toHaveCount(0);
     releaseImages();
     await ready();
     await expect(page.locator(loader)).toHaveCount(0);
 
-    await observeNavigationBrand(page);
-
     await page.locator(".scheme-a-chrome__nav-more").click();
     await page.locator('.scheme-a-directory a[href="/zh/about"]').click();
     await expect(page).toHaveURL(/\/zh\/about$/);
-    await expect(navigation).toBeVisible();
-    await expect(navigation.locator('.public-route-feedback__skeleton')).toHaveAttribute('aria-hidden', 'true');
-    await expect(navigation.locator('[data-loading-progress="true"]')).toBeVisible();
-    await expect(navigation).not.toContainText(/FLASH\s*CAST/i);
-    await expectNoNavigationBrand(page);
+    await expectPageNavigationBrand(page);
     await expect(initial).toHaveCount(0);
     await expect(page.locator(".public-route-feedback__pending")).toHaveCount(0);
     // A real click must still reach the shared navigation while About is pending.
@@ -141,6 +141,8 @@ test("shows branding only for direct entry and refresh; SPA navigation never reo
     await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
     expect(await page.locator(criticalImage).evaluate((img: HTMLImageElement) => img.currentSrc && img.naturalWidth > 0)).toBeTruthy();
 
+    // The real About page is now ready; audit cached POP and local language work.
+    await observeNavigationBrand(page);
     await page.goBack({ waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/zh\/services$/);
     await ready();
@@ -156,6 +158,96 @@ test("shows branding only for direct entry and refresh; SPA navigation never reo
     releaseAbout();
   }
 });
+
+for (const width of [390, 1440]) {
+test(`a real click during initial handoff never overlaps document and page brands at ${width}px`, async ({ page }, info) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => {
+    const clicks: { bootState: string; href: string }[] = [];
+    (window as unknown as { initialHandoffClicks: typeof clicks }).initialHandoffClicks = clicks;
+    document.addEventListener('click', event => {
+      const link = event.target instanceof Element ? event.target.closest('a') : null;
+      if (link?.getAttribute('href') === '/zh/materials') clicks.push({
+        bootState: (window as unknown as { __flashcastPublicBoot?: { state: string } }).__flashcastPublicBoot?.state || '',
+        href: link.getAttribute('href')!,
+      });
+    }, true);
+  });
+  let releaseImages = () => {};
+  const imagesReady = new Promise<void>(resolve => { releaseImages = resolve; });
+  let releaseData = () => {};
+  const dataReady = new Promise<void>(resolve => { releaseData = resolve; });
+  await page.route('**/*', async route => {
+    if (route.request().resourceType() !== 'image') return route.fallback();
+    await imagesReady;
+    await route.continue();
+  });
+  await page.route('**/rest/v1/materials*', async route => { await dataReady; await route.continue(); });
+  await page.route('**/rest/v1/site_pages*', async route => {
+    if (new URL(route.request().url()).searchParams.get('page_key') !== 'eq.materials') return route.fallback();
+    await dataReady;
+    await route.continue();
+  });
+  try {
+    await page.goto('/zh', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#flashcast-public-boot .scheme-a-page-loader__brand')).toBeVisible();
+    await page.evaluate(() => {
+      const audit = { stop: false, overlappingMutations: 0, blank: 0, frames: [] as { path: string; bootState: string; brands: number; sceneOpacity: number; coverOpacity: number }[] };
+      (window as unknown as { initialHandoffAudit: typeof audit }).initialHandoffAudit = audit;
+      const brandsIn = (node: Node) => node instanceof Element
+        ? [...(node.matches('.scheme-a-page-loader__brand') ? [node] : []), ...node.querySelectorAll('.scheme-a-page-loader__brand')]
+        : [];
+      const activeBrands = new Set(document.querySelectorAll('.scheme-a-page-loader__brand'));
+      new MutationObserver(records => {
+        if (audit.stop) return;
+        for (const record of records) {
+          for (const node of record.removedNodes) for (const brand of brandsIn(node)) activeBrands.delete(brand);
+          for (const node of record.addedNodes) {
+            for (const brand of brandsIn(node)) activeBrands.add(brand);
+            if (activeBrands.size > 1) audit.overlappingMutations++;
+          }
+        }
+      }).observe(document.body, { childList: true, subtree: true });
+      const sample = () => {
+        if (audit.stop) return;
+        const scene = document.querySelector('.public-route-scene');
+        const covers = [...document.querySelectorAll('#flashcast-public-boot, .public-route-feedback[data-feedback-scope="page"]')];
+        const sceneOpacity = scene ? Number(getComputedStyle(scene).opacity) : 0;
+        const coverOpacity = Math.max(0, ...covers.map(cover => Number(getComputedStyle(cover).opacity)));
+        if (sceneOpacity < 0.01 && coverOpacity < 0.01) audit.blank++;
+        audit.frames.push({ path: location.pathname,
+          bootState: (window as unknown as { __flashcastPublicBoot?: { state: string } }).__flashcastPublicBoot?.state || '',
+          brands: document.querySelectorAll('.scheme-a-page-loader__brand').length, sceneOpacity, coverOpacity });
+        requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
+    releaseImages();
+    // Observe the real 420ms homepage handoff and issue an actual pointer click
+    // immediately. No sleep, clock override or extended decorative animation.
+    await page.waitForFunction(() => (window as unknown as { __flashcastPublicBoot?: { state: string } }).__flashcastPublicBoot?.state === 'handoff');
+    await page.locator(`${width < 768 ? '.scheme-a-mobile-dock' : '.scheme-a-chrome__primary'} a[href="/zh/materials"]`).click();
+    await expect(page).toHaveURL(/\/zh\/materials$/);
+    expect(await page.evaluate(() => (window as unknown as { initialHandoffClicks: { bootState: string; href: string }[] }).initialHandoffClicks)).toEqual([{ bootState: 'handoff', href: '/zh/materials' }]);
+    await expectPageNavigationBrand(page);
+    expect(await page.evaluate(() => (window as unknown as { __flashcastPublicBoot?: { state: string } }).__flashcastPublicBoot?.state)).toBe('ready');
+    releaseData();
+    await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state', 'ready', { timeout: 10_000 });
+    await expect(page.locator('.scheme-a-page-loader__brand')).toHaveCount(0);
+    const audit = await page.evaluate(() => {
+      const audit = (window as unknown as { initialHandoffAudit: { stop: boolean; overlappingMutations: number; blank: number; frames: object[] } }).initialHandoffAudit;
+      audit.stop = true;
+      return audit;
+    });
+    expect(audit.frames.length).toBeGreaterThan(0);
+    expect(audit.blank).toBe(0);
+    expect(audit.overlappingMutations).toBe(0);
+    for (const frame of audit.frames as { brands: number }[]) expect(frame.brands).toBeLessThanOrEqual(1);
+    await info.attach('initial-handoff-brand-frames', { body: JSON.stringify(audit), contentType: 'application/json' });
+  } finally { releaseImages(); releaseData(); }
+});
+}
 
 test("supports both languages at the requested viewport widths", async ({ page }) => {
   for (const width of [360, 390, 768, 1024, 1440]) {
@@ -205,7 +297,6 @@ test("releases a slow hero to its placeholder and exposes single-image retry", a
 test("covers every navigation frame until the selected visible images have decoded", async ({ page }) => {
   await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
   await expect(page.locator("[data-route-loader]")).toBeHidden();
-  await observeNavigationBrand(page);
   await page.route("**/rest/v1/site_pages*", async (route) => {
     if (new URL(route.request().url()).searchParams.get("page_key") !== "eq.materials") return route.fallback();
     // This case controls image decoding, not live CMS content. Use the existing
@@ -236,12 +327,19 @@ test("covers every navigation frame until the selected visible images have decod
     requestAnimationFrame(sample);
   });
   await page.locator('a[href="/zh/materials"]').first().click();
-  await expect(page.locator('[data-route-loader="navigation"]')).toBeVisible();
-  await expect(page.locator(loader)).toHaveCount(0);
+  await expectPageNavigationBrand(page);
+  await expect(page.locator('#flashcast-public-boot, [data-route-loader="initial"]')).toHaveCount(0);
   await expect(page.locator('[data-route-loader="navigation"]')).toBeHidden({ timeout: 15_000 });
   expect(await page.locator("body").getAttribute("data-empty-hero-frames")).toBe("0");
-  await expectNoNavigationBrand(page);
   await page.evaluate(() => { document.body.dataset.sampleNavigation = "stop"; });
+  await observeNavigationBrand(page);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/zh\/services$/);
+  await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state', 'ready', { timeout: 15_000 });
+  await page.goForward();
+  await expect(page).toHaveURL(/\/zh\/materials$/);
+  await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state', 'ready', { timeout: 15_000 });
+  await expectNoNavigationBrand(page);
 });
 
 test("keeps detail loading geometry stable until the first published data result", async ({ page }) => {

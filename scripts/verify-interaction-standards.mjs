@@ -69,4 +69,4 @@ for (const file of walk(path.join(root,'src'))) {
  check(tree);
 }
 if(failures.length){ console.error(failures.join('\n')); process.exitCode=1; }
-else console.log(`Interaction static checks passed: ${actual.length} registered routes; shared reads, navigation, initial-brand ownership, brand-free navigation feedback, cache seeding and detail identity checked. Route acceptance is historical (${matrix.validation.baselineDate}); current whole-site browser acceptance is ${matrix.validation.currentWholeSiteAcceptance}.`);
+else console.log(`Interaction static checks passed: ${actual.length} registered routes; shared reads, navigation, document-boot ownership, guarded real-page-wait branding, cache seeding and detail identity checked. Route acceptance is historical (${matrix.validation.baselineDate}); current whole-site browser acceptance is ${matrix.validation.currentWholeSiteAcceptance}.`);
