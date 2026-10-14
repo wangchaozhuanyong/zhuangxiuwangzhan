@@ -201,7 +201,8 @@ describe("topic-cluster Blog publish records", () => {
       "v18-owner-publisher-native-preparation-v2-20261007", "v20-owner-publisher-native-preparation-v2-20261007"];
     const unifiedTargets = ["design-body-faq-unified-20261009-v1", "bathroom-body-step-unified-20261009-v1"];
     const paidThreeTargets = ["paid-three-page-builtin-exact-fields-v1", "paid-three-page-kitchen-exact-fields-v1", "paid-three-page-renovation-exact-fields-v1"];
-    const publishTargets = [...paidThreeTargets, ...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
+    const wardrobeTarget = "builtin-wardrobe-layout-content-zh-20261014-v1";
+    const publishTargets = [wardrobeTarget, ...paidThreeTargets, ...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
     expect(cases).toHaveLength(2);
@@ -209,7 +210,7 @@ describe("topic-cluster Blog publish records", () => {
     expect(cases[1]).toEqual(publishTargets);
     for (const target of publishTargets) expect(workflow).toContain(`          - ${target}`);
     for (const target of mediaTargets) expect(cases[0]).not.toContain(target);
-    for (const target of [...publisherThreeTargets, ...unifiedTargets]) expect(cases[0]).not.toContain(target);
+    for (const target of [wardrobeTarget, ...publisherThreeTargets, ...unifiedTargets]) expect(cases[0]).not.toContain(target);
     for (const targets of cases) for (const fixedBatch of ["remaining-completion-20261009", "remaining-completion-after-37893433883", "remaining-completion-after-37898568406", "remaining-completion-after-37903094390", "remaining-completion-after-38037667102", "paid-three-page-native-20261010"]) expect(targets).not.toContain(fixedBatch);
     expect(workflow).toContain('if [ "$PUBLISH_TARGET" = "remaining-completion-20261009" ]; then');
     expect(workflow).toContain('[ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ]');
