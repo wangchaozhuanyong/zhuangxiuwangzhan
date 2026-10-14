@@ -41,7 +41,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
 import { schemeAChromeText } from "@/i18n/schemeAText";
-import { getChineseBrandLine, getHeaderBrandName } from "@/i18n/brandIdentity";
+import { CHINESE_BRAND_NAMES, getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } from "@/i18n/brandIdentity";
 import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
 import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
@@ -225,6 +225,9 @@ export const SchemeANavbar = () => {
   const returnFocus = useRef(true);
   const logo = settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
   const companyName = settings.company_name || "FLASH CAST SDN. BHD.";
+  const headerBrandName = getHeaderChineseBrandName(settings)
+    ? language === "zh" ? CHINESE_BRAND_NAMES[0] : getPublicSiteName(settings)
+    : null;
   const languagePaths = {
     zh: switchLanguagePath(location.pathname, "zh", location.search, location.hash),
     en: switchLanguagePath(location.pathname, "en", location.search, location.hash),
@@ -484,7 +487,7 @@ export const SchemeANavbar = () => {
       <span ref={sentinelRef} className="scheme-a-chrome__sentinel" aria-hidden="true" />
       <header ref={headerRef} className={`scheme-a-chrome is-fixed ${overlay ? "is-overlay" : "is-solid"}`} data-route-pending={settingsPending || undefined}>
         <div className="scheme-a-chrome__bar scheme-a-frame">
-          <BrandMark logo={logo} name={companyName} displayName={getHeaderBrandName(settings, language)} language={language} />
+          <BrandMark logo={logo} name={companyName} displayName={headerBrandName} language={language} />
           <nav className="scheme-a-chrome__primary" aria-label={t.mainNavigation}>
             {primaryPublicNavigationItems.map((item) => (
               <LocalizedLink key={item.path} to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
