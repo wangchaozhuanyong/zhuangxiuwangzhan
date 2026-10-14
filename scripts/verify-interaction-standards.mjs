@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 import { readInteractionRoutes } from './lib/interaction-route-inventory.mjs';
+import { readPublicLoaderContract } from './lib/public-loader-contract.mjs';
 const root = process.cwd(); const failures = [];
+failures.push(...readPublicLoaderContract(root));
 const matrix = JSON.parse(fs.readFileSync(path.join(root, 'docs/interaction-route-compliance.json'), 'utf8'));
 if (matrix.version !== 2 || matrix.validation?.kind !== 'static-registration-and-source-checks'
   || matrix.validation?.acceptanceEvidence !== 'historical-local'
@@ -67,4 +69,4 @@ for (const file of walk(path.join(root,'src'))) {
  check(tree);
 }
 if(failures.length){ console.error(failures.join('\n')); process.exitCode=1; }
-else console.log(`Interaction static checks passed: ${actual.length} registered routes; shared reads, navigation, cache seeding and detail identity checked. Route acceptance is historical (${matrix.validation.baselineDate}); current whole-site browser acceptance is ${matrix.validation.currentWholeSiteAcceptance}.`);
+else console.log(`Interaction static checks passed: ${actual.length} registered routes; shared reads, navigation, initial-brand ownership, brand-free navigation feedback, cache seeding and detail identity checked. Route acceptance is historical (${matrix.validation.baselineDate}); current whole-site browser acceptance is ${matrix.validation.currentWholeSiteAcceptance}.`);

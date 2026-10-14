@@ -1,15 +1,54 @@
 import { expect, test } from "@playwright/test";
 import path from "node:path";
 import { readFileSync } from "node:fs";
+import { expectNoNavigationBrand, observeNavigationBrand, protectPublicTestWrites } from './public-loader-audit';
 
 const furnitureCatalog = JSON.parse(readFileSync(path.resolve("src/data/furnitureCatalog.json"), "utf8")) as {
   products: { slug: string; images: string[] }[];
 };
 
+test.use({ serviceWorkers: 'block' });
+test.beforeEach(async ({ page }) => { await protectPublicTestWrites(page); });
 test.afterEach(async ({ page }) => { await page.unrouteAll({ behavior: "wait" }); });
 
 const loader = ".scheme-a-page-loader--overlay";
 const criticalImage = "#main-content img[data-critical-image='true']";
+
+test('brand audit detects navigation-tagged branding inserted and removed within one frame', async ({ page }) => {
+  await page.setContent('<main>Navigation audit fixture</main>');
+  await observeNavigationBrand(page);
+  for (const brandedMarkup of ['<div class="scheme-a-page-loader__brand" data-route-loader="navigation">FLASHCAST</div>', '<div role="status" data-route-loader="navigation"><strong>FLASH CAST</strong></div>']) {
+    await page.evaluate(markup => {
+      document.body.dataset.navigationBrandInsertions = '0';
+      const container = document.createElement('div');
+      container.innerHTML = markup;
+      document.body.append(container);
+      container.remove();
+    }, brandedMarkup);
+    await expect(page.locator('body')).not.toHaveAttribute('data-navigation-brand-insertions', '0');
+  }
+});
+
+test('brand audit retains transient rewritten text after its feedback node is removed', async ({ page }) => {
+  for (const update of ['textContent', 'characterData', 'detachedCharacterData']) {
+    await page.setContent('<div id="audit-feedback" role="status">Loading</div>');
+    await observeNavigationBrand(page);
+    await page.evaluate(mode => {
+      const feedback = document.getElementById('audit-feedback')!;
+      if (mode === 'textContent') {
+        feedback.textContent = 'FLASH CAST';
+        feedback.textContent = 'Loading';
+      } else {
+        const text = feedback.firstChild as Text;
+        text.data = 'FLASH CAST';
+        if (mode === 'detachedCharacterData') text.remove();
+        text.data = 'Loading';
+      }
+      feedback.remove();
+    }, update);
+    await expect(page.locator('body'), update).not.toHaveAttribute('data-navigation-brand-insertions', '0');
+  }
+});
 
 test("does not hold a mobile product detail for offscreen gallery thumbnails", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -35,10 +74,10 @@ test("does not hold a mobile product detail for offscreen gallery thumbnails", a
   } finally { release(); }
 });
 
-test("uses the brand screen for direct load, refresh and full-page navigation without a text card", async ({ page }) => {
+test("shows branding only for direct entry and refresh; SPA navigation never reopens it", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const initial = page.locator('[data-route-loader="initial"]');
-  const navigation = page.locator('[data-route-loader="navigation"]');
+  const navigation = page.locator('.public-route-feedback[data-route-loader="navigation"]');
   const ready = () => expect(page.locator(".public-route-content")).toHaveAttribute("data-route-visual-state", "ready", { timeout: 10_000 });
   const navLink = (href: string) => page.locator(`.scheme-a-chrome__primary a[href="${href}"]`).first();
   let releaseImages = () => {};
@@ -75,27 +114,16 @@ test("uses the brand screen for direct load, refresh and full-page navigation wi
     await ready();
     await expect(page.locator(loader)).toHaveCount(0);
 
-    await page.evaluate(() => {
-      document.body.dataset.initialBrandReopened = "false";
-      document.body.dataset.plainLoadingCardAdded = "false";
-      new MutationObserver((records) => {
-        for (const record of records) for (const node of record.addedNodes) {
-          if (!(node instanceof Element)) continue;
-          if (node.matches('[data-route-loader="initial"]') || node.querySelector('[data-route-loader="initial"]')) {
-            document.body.dataset.initialBrandReopened = "true";
-          }
-          if (node.matches(".public-route-feedback__pending") || node.querySelector(".public-route-feedback__pending")) {
-            document.body.dataset.plainLoadingCardAdded = "true";
-          }
-        }
-      }).observe(document.body, { childList: true, subtree: true });
-    });
+    await observeNavigationBrand(page);
 
     await page.locator(".scheme-a-chrome__nav-more").click();
     await page.locator('.scheme-a-directory a[href="/zh/about"]').click();
     await expect(page).toHaveURL(/\/zh\/about$/);
     await expect(navigation).toBeVisible();
-    await expect(navigation.locator(".scheme-a-page-loader__brand strong")).toHaveText("FLASHCAST");
+    await expect(navigation.locator('.public-route-feedback__skeleton')).toHaveAttribute('aria-hidden', 'true');
+    await expect(navigation.locator('[data-loading-progress="true"]')).toBeVisible();
+    await expect(navigation).not.toContainText(/FLASH\s*CAST/i);
+    await expectNoNavigationBrand(page);
     await expect(initial).toHaveCount(0);
     await expect(page.locator(".public-route-feedback__pending")).toHaveCount(0);
     // A real click must still reach the shared navigation while About is pending.
@@ -122,8 +150,7 @@ test("uses the brand screen for direct load, refresh and full-page navigation wi
     await ready();
     await expect(page.locator(loader)).toHaveCount(0);
     await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
-    await expect(page.locator("body")).toHaveAttribute("data-initial-brand-reopened", "false");
-    await expect(page.locator("body")).toHaveAttribute("data-plain-loading-card-added", "false");
+    await expectNoNavigationBrand(page);
   } finally {
     releaseImages();
     releaseAbout();
@@ -178,6 +205,7 @@ test("releases a slow hero to its placeholder and exposes single-image retry", a
 test("covers every navigation frame until the selected visible images have decoded", async ({ page }) => {
   await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
   await expect(page.locator("[data-route-loader]")).toBeHidden();
+  await observeNavigationBrand(page);
   await page.route("**/rest/v1/site_pages*", async (route) => {
     if (new URL(route.request().url()).searchParams.get("page_key") !== "eq.materials") return route.fallback();
     // This case controls image decoding, not live CMS content. Use the existing
@@ -212,6 +240,7 @@ test("covers every navigation frame until the selected visible images have decod
   await expect(page.locator(loader)).toHaveCount(0);
   await expect(page.locator('[data-route-loader="navigation"]')).toBeHidden({ timeout: 15_000 });
   expect(await page.locator("body").getAttribute("data-empty-hero-frames")).toBe("0");
+  await expectNoNavigationBrand(page);
   await page.evaluate(() => { document.body.dataset.sampleNavigation = "stop"; });
 });
 

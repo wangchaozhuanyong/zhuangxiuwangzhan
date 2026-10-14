@@ -1,25 +1,29 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useLanguage } from "@/i18n/LanguageContext";
-import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 import { getPublicBoot } from "@/lib/publicBoot";
 import { isFurnitureListingPath } from "@/lib/publicScrollRestoration";
 import { isPublicLanguageUpdate, isSamePublicBusinessPath } from "@/lib/publicRouteScope";
 import { PUBLIC_MOTION } from "@/lib/publicMotion";
 import { PublicRouteTransitionFrame } from "@/components/PublicRouteTransitionFrame";
-import { PublicLoadingBar } from "@/components/PublicLoadingBar";
-
-
-
+import { PublicInitialLoader } from "@/components/PublicInitialLoader";
+import { PublicRouteFeedback } from "@/components/PublicRouteFeedback";
+import { getPublicImageSelectedSource, hasDecodedPublicImage, rememberDecodedPublicImage } from "@/lib/publicImageDecodeCache";
 const isInViewport = (image: HTMLImageElement) => {
   const rect = image.getBoundingClientRect();
   return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight
     && rect.right > 0 && rect.left < window.innerWidth;
 };
+const visibleCriticalImages = (main: HTMLElement) => [...main.querySelectorAll<HTMLImageElement>('img[data-critical-image="true"]')]
+  .filter((image) => !image.classList.contains("smart-image-previous") && isInViewport(image));
+const imageConfiguration = (main: HTMLElement) => JSON.stringify([
+  window.innerWidth, window.innerHeight, window.devicePixelRatio,
+  visibleCriticalImages(main).map((image) => [image.src, image.srcset, image.sizes,
+    [...(image.closest("picture")?.querySelectorAll("source") || [])]
+      .map((source) => [source.media, source.srcset, source.sizes, source.type])]),
+]);
 
 /** One readiness owner for all public routes; prepare the destination before revealing it. */
 export function PublicRouteImageGate({ children, routeKey, onCancel }: { children: ReactNode; routeKey: string; onCancel?: (route: string) => void }) {
-  const { language } = useLanguage();
   const queryClient = useQueryClient();
   const boot = getPublicBoot();
   const presentedRoute = useRef<string | null>(null);
@@ -55,7 +59,10 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   const [state, setState] = useState({ cycle, status: "waiting" as "waiting" | "handoff" | "ready" | "timeout" | "degraded" });
   const status = state.cycle === cycle ? state.status : "waiting";
   const contentRef = useRef<HTMLDivElement>(null);
+  const presentedImages = useRef(new Map<string, string>());
+  const [imageOnlyCycle, setImageOnlyCycle] = useState<number | null>(null);
   const blocked = status === "waiting" || status === "timeout";
+  const imageOnly = status === "waiting" && imageOnlyCycle === cycle;
   const presenting = status === "waiting" || status === "handoff";
   const currentCycle = useRef(cycle);
   currentCycle.current = cycle;
@@ -66,9 +73,12 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
 
   useLayoutEffect(() => {
     const content = regionOnly ? contentRef.current?.querySelector<HTMLElement>("[data-public-results]") : contentRef.current;
-    content?.toggleAttribute("inert", blocked && (!languageUpdate || regionOnly));
+    content?.toggleAttribute("inert", blocked && !imageOnly && (!languageUpdate || regionOnly));
     content?.setAttribute("aria-busy", String(blocked));
     if (!blocked) {
+      // Keep the last real wait reason until this ready/degraded DOM commit.
+      // Dependency callbacks can finish before React commits their state.
+      if (contentRef.current) delete contentRef.current.dataset.routeWaitReason;
       if (emitted.current === cycle) return;
       emitted.current = cycle;
       const release = () => {
@@ -76,6 +86,17 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
         content?.removeAttribute("inert");
         content?.setAttribute("aria-busy", "false");
         presentedRoute.current = routeKey;
+        const main = contentRef.current;
+        if (status !== "degraded" && visibleCriticalImages(main).every((image) => {
+          const selected = getPublicImageSelectedSource(image);
+          return image.complete && image.naturalWidth > 0 && selected && (image.dataset.imageState
+            ? image.dataset.imageState === "loaded" && image.dataset.decodedSrc === selected
+            : hasDecodedPublicImage(image));
+        })) {
+          presentedImages.current.delete(routeKey);
+          presentedImages.current.set(routeKey, imageConfiguration(main));
+          if (presentedImages.current.size > 64) presentedImages.current.delete(presentedImages.current.keys().next().value!);
+        } else presentedImages.current.delete(routeKey);
         if (status === "handoff") setState({ cycle, status: "ready" });
         window.dispatchEvent(new CustomEvent("public-route-ready", { detail: { routeKey, attempt, degraded: status === "degraded" } }));
         if (!localFeedback && !window.location.hash && !document.documentElement.dataset.menuOpen
@@ -101,7 +122,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       if (!boot || document.documentElement.dataset.publicRouteLoading === "navigation") delete document.documentElement.dataset.publicRouteLoading;
       content?.removeAttribute("inert");
     };
-  }, [blocked, regionOnly, languageUpdate, localFeedback, routeKey, showBrandScreen, boot, cycle, attempt, status]);
+  }, [blocked, imageOnly, regionOnly, languageUpdate, localFeedback, routeKey, showBrandScreen, boot, cycle, attempt, status]);
 
   useLayoutEffect(() => {
     const main = contentRef.current;
@@ -111,6 +132,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     }, PUBLIC_MOTION.feedbackDelay);
     let stopped = false;
     let settled = false;
+    let preservingImages = false;
     let readyFrames = 0;
     const failedImages = new WeakSet<HTMLImageElement>();
     let frame = 0;
@@ -120,9 +142,12 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
 
     const check = () => {
       if (stopped || settled) return;
+      preservingImages = false;
       const expired = performance.now() >= deadline;
       const wait = (reason: string) => {
         readyFrames = 0;
+        setImageOnlyCycle((previous) => previous === cycle ? null : previous);
+        if (!showBrandScreen && !localFeedback) setFeedbackCycle(cycle);
         main.dataset.routeWaitReason = reason;
         if (expired) setState((previous) => previous.cycle === cycle && previous.status === "timeout"
           ? previous : { cycle, status: "timeout" });
@@ -138,22 +163,23 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       }
       // Site settings can replace the fallback logo element after mount.
       const brand = brandContainer?.querySelector<HTMLImageElement>("img");
-      const images = [...main.querySelectorAll<HTMLImageElement>('img[data-critical-image="true"]'), ...(brand ? [brand] : [])]
-        .filter((image) => !image.classList.contains("smart-image-previous") && isInViewport(image));
+      const images = [...visibleCriticalImages(main), ...(brand && isInViewport(brand) ? [brand] : [])];
       const ready = images.every((image) => {
         if (failedImages.has(image) || image.dataset.imageState === "error") return true; // The image owns its retry UI.
-        const selected = image.currentSrc || image.src;
+        const selected = getPublicImageSelectedSource(image);
         if (!image.complete || image.naturalWidth === 0 || !selected) { main.dataset.routeWaitReason = "image-transfer"; return false; }
         if (image.dataset.imageState) {
           main.dataset.routeWaitReason = "image-decode";
           return image.dataset.imageState === "loaded" && image.dataset.decodedSrc === selected;
         }
+        if (hasDecodedPublicImage(image)) return true;
         if (decoded.get(image) === selected) return true;
         if (decoding.get(image) !== selected) {
           decoding.set(image, selected);
           void Promise.resolve(typeof image.decode === "function" ? image.decode() : undefined).then(() => {
-            if (stopped || (image.currentSrc || image.src) !== selected) return;
+            if (stopped || getPublicImageSelectedSource(image) !== selected) return;
             decoded.set(image, selected);
+            if (typeof image.decode === "function") rememberDecodedPublicImage(selected);
             update();
           }, () => {
             if (stopped) return;
@@ -164,10 +190,25 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
         }
         return false;
       });
-      if (!ready) readyFrames = 0;
+      if (!ready) {
+        readyFrames = 0;
+        // A remounted responsive image may select its cached candidate after
+        // layout. Keep the already-known destination readable while its image
+        // owns that real wait; never emit ready or invent decode evidence.
+        const knownImages = !showBrandScreen && !localFeedback
+          && presentedImages.current.get(routeKey) === imageConfiguration(main);
+        if (knownImages) {
+          preservingImages = true;
+          setImageOnlyCycle(cycle);
+          window.clearTimeout(feedback);
+          setFeedbackCycle((previous) => previous === cycle ? null : previous);
+        } else {
+          setImageOnlyCycle((previous) => previous === cycle ? null : previous);
+          if (!showBrandScreen && !localFeedback) setFeedbackCycle(cycle);
+        }
+      }
       if (ready && showBrandScreen && ++readyFrames < 2) { schedule(); return; }
       if (ready || expired) {
-        delete main.dataset.routeWaitReason;
         settled = true;
         window.clearTimeout(timeout);
         window.clearTimeout(feedback);
@@ -183,7 +224,16 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     readinessCheck.current = update;
     // The same deadline is checked again after every dependency change, including
     // data that arrives after timeout and starts a new image/decode wait.
-    const timeout = window.setTimeout(update, Math.max(0, deadline - performance.now()));
+    let timeout = 0;
+    const checkDeadline = () => {
+      if (stopped || settled) return;
+      const remaining = deadline - performance.now();
+      // Browser timers can fire before a fractional deadline. Re-arm against
+      // that same deadline rather than relying on a later dependency event.
+      if (remaining > 0) timeout = window.setTimeout(checkDeadline, Math.ceil(remaining));
+      else update();
+    };
+    timeout = window.setTimeout(checkDeadline, Math.max(0, Math.ceil(deadline - performance.now())));
     const observer = new MutationObserver(update);
     observer.observe(main, { childList: true, subtree: true, attributes: true,
       attributeFilter: ["data-image-state", "data-decoded-src", "data-route-pending", "src", "srcset", "sizes", "media"] });
@@ -203,7 +253,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     check();
     // A full-page wait must be covered in this commit, before the browser paints.
     // Only local results retain delayed feedback; they do not hide the whole page.
-    if (!settled && !showBrandScreen && !localFeedback) setFeedbackCycle(cycle);
+    if (!settled && !showBrandScreen && !localFeedback && !preservingImages) setFeedbackCycle(cycle);
     schedule();
     return () => {
       stopped = true;
@@ -220,7 +270,6 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     };
   }, [routeKey, showBrandScreen, localFeedback, attempt, boot, blocked, cycle, deadline]);
 
-  const copy = publicContentStatusText[language];
   const retry = () => {
     if (showBrandScreen) boot?.retry();
     setState({ cycle, status: "waiting" });
@@ -245,9 +294,12 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     // Recovery handlers belong to this route/attempt; the boot owns its deadline.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boot, showBrandScreen, routeKey, attempt, blocked]);
+  const showInitialFeedback = showBrandScreen && !boot && (blocked || status === "handoff");
+  const showNavigationFeedback = !showBrandScreen && !imageOnly && (status === "timeout"
+    || feedbackCycle === cycle && finishedFeedbackCycle !== cycle && (blocked || localFeedback));
   return (
     <>
-      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} preserveContent={languageUpdate && !regionOnly} regionOnly={localFeedback} initial={showBrandScreen}
+      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} preserveContent={imageOnly || languageUpdate && !regionOnly} regionOnly={localFeedback} initial={showBrandScreen}
         onCancelDeparture={() => {
           // The router may not have rendered the departing destination yet.
           // Selecting this URL again must release that retired readiness cycle.
@@ -258,40 +310,19 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
         }}
         onBeforeCommit={() => {
           departingCycle.current = cycle;
-          setFeedbackCycle(cycle);
-          setFinishedFeedbackCycle(null);
-          // Retire the outgoing data before history changes; its cached data
-          // cannot release the new destination during asynchronous Router commit.
-          setState({ cycle, status: "waiting" });
+          // Retire only the old readiness cycle. Public links commit the target
+          // DOM synchronously; only that target's actual dependencies may wait.
         }}>
         <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
-          aria-hidden={blocked && !localFeedback || undefined} aria-busy={blocked || undefined}>
+          data-route-presentation={imageOnly ? "image-only" : undefined}
+          aria-hidden={blocked && !localFeedback && !imageOnly || undefined} aria-busy={blocked || undefined}>
           {children}
         </div>
       </PublicRouteTransitionFrame>
-      {(showBrandScreen ? !boot && (blocked || status === "handoff")
-        : status === "timeout" || feedbackCycle === cycle && finishedFeedbackCycle !== cycle && (blocked || localFeedback)) ? (
-        <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay"
-          : localFeedback ? "public-route-feedback" : "scheme-a-page-loader scheme-a-page-loader--overlay scheme-a-page-loader--navigation"}
-          role="status" aria-live="polite" aria-busy={presenting} data-route-loader={showBrandScreen ? "initial" : "navigation"}
-          data-feedback-scope={localFeedback ? "region" : "page"}>
-          {localFeedback && status !== "timeout" && <PublicLoadingBar key={cycle} complete={status !== "waiting"}
-            onFinished={() => setFinishedFeedbackCycle(cycle)} />}
-          {!localFeedback ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span>
-            {status !== "timeout" && <PublicLoadingBar key={cycle} complete={status !== "waiting"}
-              onFinished={() => setFinishedFeedbackCycle(cycle)} />}
-          </div> : <span className="sr-only">{copy.loaderRoutePending}</span>}
-          {status === "timeout" && (
-            <div className="public-route-feedback__recovery">
-              <p>{copy.loaderTimeout}</p>
-              <div className="scheme-a-page-loader__actions">
-                <button type="button" onClick={retry}>{copy.loaderRetry}</button>
-                <button type="button" onClick={cancel}>{showBrandScreen ? copy.loaderContinue : copy.loaderCancel}</button>
-              </div>
-            </div>
-          )}
-        </div>
-      ) : null}
+      {showInitialFeedback && <PublicInitialLoader busy={presenting} onRetry={retry} onContinue={cancel} />}
+      {showNavigationFeedback && <PublicRouteFeedback key={cycle} scope={localFeedback ? "region" : "page"}
+        busy={presenting} timedOut={status === "timeout"} onFinished={() => setFinishedFeedbackCycle(cycle)}
+        onRetry={retry} onCancel={cancel} />}
     </>
   );
 }

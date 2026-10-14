@@ -31,6 +31,7 @@ beforeEach(() => {
   Object.defineProperty(document, "startViewTransition", { configurable: true, value: undefined });
   Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 });
 afterEach(async () => {
   if (!unmounted) await act(async () => root.unmount());
@@ -55,14 +56,12 @@ describe("interruptible public scene handoff", () => {
     expect(start).not.toHaveBeenCalled();
     expect(document.documentElement.dataset.publicViewTransition).toBeUndefined();
     await render("/zh/projects");
-    expect(animate).toHaveBeenCalledOnce();
-    expect(animate.mock.instances[0]).toBe(container.querySelector(".public-route-scene"));
-    expect(animate.mock.calls[0]?.[0]).toEqual([{ opacity: .86 }, { opacity: 1 }]);
+    expect(animate).not.toHaveBeenCalled();
   });
 
   it("accepts a new destination before the current visual animation finishes", async () => {
     await render("/zh");
-    await render("/zh/materials");
+    await render("/zh/materials", false, false, true);
     expect(animate).toHaveBeenCalledOnce();
     const first = vi.fn();
     const last = vi.fn();
@@ -77,7 +76,7 @@ describe("interruptible public scene handoff", () => {
 
   it.each(["pointerdown", "keydown"])("cancels decorative motion on %s without taking over the interaction", async (type) => {
     await render("/zh");
-    await render("/zh/projects");
+    await render("/zh/projects", false, false, true);
     const interaction = type === "keydown"
       ? new KeyboardEvent(type, { key: "Enter", bubbles: true, cancelable: true })
       : new Event(type, { bubbles: true, cancelable: true });
@@ -89,7 +88,7 @@ describe("interruptible public scene handoff", () => {
 
   it("remembers a ready destination before its animation finishes for timeout cancellation", async () => {
     await render("/zh");
-    await render("/zh/materials");
+    await render("/zh/materials", false, false, true);
     expect(animate).toHaveBeenCalledOnce();
     await render("/zh/projects", true);
     expect(frame.current?.previousRoute).toBe("/zh/materials");
@@ -98,7 +97,7 @@ describe("interruptible public scene handoff", () => {
 
   it.each(["pop", "unmount"] as const)("cancels active decorative motion on %s", async (action) => {
     await render("/zh");
-    await render("/zh/materials");
+    await render("/zh/materials", false, false, true);
     await act(async () => {
       if (action === "pop") window.dispatchEvent(new PopStateEvent("popstate"));
       else { root.unmount(); unmounted = true; }
@@ -121,7 +120,7 @@ describe("public visual handoff", () => {
     await render("/zh", false, true);
     expect(animate).not.toHaveBeenCalled();
   });
-  it("prepares one destination before starting its nonblocking full-page fade", async () => {
+  it("waits only for a pending destination and never fades an entire ready page", async () => {
     await render("/zh");
     const commit = vi.fn();
     requestPublicNavigation("/zh/projects", commit);
@@ -140,8 +139,7 @@ describe("public visual handoff", () => {
     expect(container.querySelector("main")?.textContent).not.toContain("/zhResults");
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     await render("/zh/projects");
-    expect(animate).toHaveBeenCalledOnce();
-    expect(animate.mock.calls[0]?.[1]).toMatchObject({ duration: 200 });
+    expect(animate).not.toHaveBeenCalled();
   });
   it.each([false, true])("only commits the latest same-turn full-page click, pending=%s", async (pending) => {
     await render("/zh", pending);

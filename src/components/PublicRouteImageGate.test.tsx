@@ -16,14 +16,14 @@ let originalUrl: string;
 let originalHistoryState: unknown;
 const src = "http://localhost/image.webp";
 
-function Image({ ready = false, transferred = false, offscreen = false, failed = false, raw = false }: { ready?: boolean; transferred?: boolean; offscreen?: boolean; failed?: boolean; raw?: boolean }) {
-  return <img src={src} alt="Example" data-critical-image="true"
+function Image({ ready = false, transferred = false, offscreen = false, failed = false, raw = false, source = src }: { ready?: boolean; transferred?: boolean; offscreen?: boolean; failed?: boolean; raw?: boolean; source?: string }) {
+  return <img src={source} alt="Example" data-critical-image="true"
     data-image-state={raw ? undefined : failed ? "error" : ready ? "loaded" : "loading"}
-    data-decoded-src={ready ? src : undefined}
+    data-decoded-src={ready ? source : undefined}
     ref={(image) => {
       if (!image) return;
       Object.defineProperties(image, {
-        currentSrc: { configurable: true, value: src },
+        currentSrc: { configurable: true, value: source },
         complete: { configurable: true, value: ready || transferred },
         naturalWidth: { configurable: true, value: ready || transferred ? 1000 : 0 },
       });
@@ -67,6 +67,83 @@ afterEach(async () => {
 });
 
 describe("public route visual readiness", () => {
+  it("rearms an early deadline watchdog without requiring another frame or dependency event", async () => {
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", vi.fn((callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    }));
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+    const now = vi.spyOn(performance, "now").mockReturnValue(0);
+    try {
+      await render(<div data-route-pending="true" />);
+      expect(state()).toBe("waiting");
+
+      // The timer and one already queued paint can both run just before the
+      // monotonic deadline. Do not deliver newly queued frames recursively.
+      now.mockReturnValue(4999.5);
+      await act(async () => {
+        vi.advanceTimersByTime(4960);
+        for (const callback of frames.splice(0)) callback(4999.5);
+      });
+      expect(state()).toBe("waiting");
+
+      // A timer must independently enforce the same deadline when neither a
+      // dependency event nor a new animation frame arrives afterward.
+      now.mockReturnValue(5001);
+      await act(async () => vi.advanceTimersByTime(2));
+      expect(state()).toBe("timeout");
+    } finally {
+      now.mockRestore();
+    }
+  });
+
+  it("keeps a known destination readable during native image selection without declaring it ready", async () => {
+    await render(<Image ready />);
+    await render(<Image ready />, "/zh/projects");
+    const ready = vi.fn();
+    window.addEventListener("public-route-ready", ready);
+    try {
+      await render(<Image />);
+      expect(state()).toBe("waiting");
+      expect(container.querySelector(".public-route-content")).toHaveAttribute("data-route-presentation", "image-only");
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("aria-hidden");
+      expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-pending");
+      expect(container.querySelector("img")).toHaveAttribute("data-image-state", "loading");
+      expect(container.querySelector("img")).not.toHaveAttribute("data-decoded-src");
+      await act(async () => vi.advanceTimersByTime(200));
+      expect(loader()).toBeNull();
+      expect(ready).not.toHaveBeenCalled();
+      await render(<Image ready />);
+      expect(state()).toBe("ready");
+      expect(ready).toHaveBeenCalledOnce();
+    } finally { window.removeEventListener("public-route-ready", ready); }
+  });
+
+  it.each(["cold route", "changed source"])("keeps whole-page protection for a %s even after another successful presentation", async (kind) => {
+    await render(<Image ready />);
+    await render(<Image ready />, "/zh/projects");
+    await render(<Image source={kind === "changed source" ? "http://localhost/changed-image.webp" : src} />,
+      kind === "cold route" ? "/zh/materials" : "/zh/services");
+    expect(state()).toBe("waiting");
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("data-route-presentation");
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    expect(pageFeedback()).not.toBeNull();
+  });
+
+  it("revokes readable image-only presentation as soon as necessary data waits again", async () => {
+    await render(<Image ready />);
+    await render(<Image ready />, "/zh/projects");
+    await render(<Image />);
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("data-route-presentation", "image-only");
+    await render(<><div data-route-pending="true" /><Image /></>);
+    expect(state()).toBe("waiting");
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("data-route-presentation");
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    expect(pageFeedback()).not.toBeNull();
+  });
+
   it.each(["transfer", "decode"])("degrades a late %s wait as soon as previously timed-out data arrives", async (stage) => {
     await render(<div data-route-pending="true" />);
     await act(async () => vi.advanceTimersByTime(5100));
@@ -139,7 +216,8 @@ describe("public route visual readiness", () => {
     await render(<Image ready />, "/zh/services/design");
     await render(<div data-route-pending="true" />, "/en/services/kitchen");
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
-    expect(loader()).toHaveClass("scheme-a-page-loader--navigation");
+    expect(loader()).toHaveClass("public-route-feedback");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
   });
 
   it("keeps consecutive uncached language updates local and emits readiness only for the final language", async () => {
@@ -172,7 +250,7 @@ describe("public route visual readiness", () => {
     await act(async () => buttons[1].click());
     expect(cancel).toHaveBeenCalledWith("/zh/contact");
   });
-  it("retires cached content before navigation and immediately covers a real wait with a fresh brand bar", async () => {
+  it("retires the old readiness owner without loading until the destination actually waits", async () => {
     const previousAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
     const cancel = vi.fn();
     const animate = vi.fn(() => ({ finished: Promise.resolve(), cancel }));
@@ -198,13 +276,16 @@ describe("public route visual readiness", () => {
       }));
       await act(async () => requestPublicNavigation("/zh/materials", commit));
       expect(commit).toHaveBeenCalledOnce();
-      expect(commit.mock.results[0]?.value).toEqual({ state: "waiting", feedbackVisible: true, busy: "true", hasPendingLabel: false, inert: true, hidden: "true", hasRecoveryActions: false });
+      expect(commit.mock.results[0]?.value).toEqual({ state: "ready", feedbackVisible: false, busy: undefined, hasPendingLabel: false, inert: false, hidden: null, hasRecoveryActions: false });
       expect(cancel).not.toHaveBeenCalled();
-      // Router can commit the URL before a deferred destination render finishes.
-      // The outgoing route's cached images must not mark it ready again.
+      // A click alone does not prove the destination has any unmet dependency.
       await act(async () => vi.advanceTimersByTime(200));
+      expect(state()).toBe("ready");
+      expect(pageFeedback()).toBeNull();
+      expect(loader()).toBeNull();
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+      await render(<div data-route-pending="true" />, "/zh/materials");
       expect(state()).toBe("waiting");
-      expect(pageFeedback()).not.toBeNull();
       expect(pageFeedback()).toBe(loader());
       expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
       expect(animate).not.toHaveBeenCalled();
@@ -223,9 +304,9 @@ describe("public route visual readiness", () => {
     const depart = vi.fn();
     await act(async () => requestPublicNavigation("/zh/projects", depart));
     expect(depart).toHaveBeenCalledOnce();
-    expect(state()).toBe("waiting");
-    expect(loader()).not.toBeNull();
-    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
     const returnToCurrent = vi.fn();
     // Deliberately never render B: Router may reuse A for this newest request.
     await act(async () => requestPublicNavigation(current, returnToCurrent));
@@ -245,8 +326,8 @@ describe("public route visual readiness", () => {
     await render(<Image ready />, current);
     const depart = vi.fn(() => window.history.replaceState(null, "", "/zh/projects"));
     await act(async () => requestPublicNavigation("/zh/projects", depart));
-    expect(state()).toBe("waiting");
-    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    expect(state()).toBe("ready");
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
     // Emulate the browser URL change and POP event without rendering B in Router.
     await act(async () => {
       window.history.replaceState(null, "", `${current}#details`);
@@ -260,7 +341,7 @@ describe("public route visual readiness", () => {
     expect(loader()).toBeNull();
   });
 
-  it.each(["/zh/materials?category=stone", "/zh/projects?category=wood"])("keeps retired content locked when POP targets a different URL: %s", async (destination) => {
+  it.each(["/zh/materials?category=stone", "/zh/projects?category=wood"])("does not reuse retired data to release a pending POP destination: %s", async (destination) => {
     const current = "/zh/materials?category=wood";
     window.history.replaceState(null, "", current);
     await render(<Image ready />, current);
@@ -270,6 +351,7 @@ describe("public route visual readiness", () => {
       window.dispatchEvent(new PopStateEvent("popstate"));
       vi.advanceTimersByTime(200);
     });
+    await render(<div data-route-pending="true" />, destination);
     expect(state()).toBe("waiting");
     expect(loader()).not.toBeNull();
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
@@ -346,11 +428,13 @@ describe("public route visual readiness", () => {
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     // Cover a genuine wait before the first paint, without a 180ms blank interval.
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
-    expect(loader()).toHaveClass("scheme-a-page-loader--navigation");
-    expect(container.textContent).not.toContain("页面加载中");
+    expect(loader()).toHaveClass("public-route-feedback");
+    expect(container.querySelector(".public-route-feedback__pending")).toBeNull();
     expect(pageFeedback()).toBe(loader());
     expect(document.documentElement.dataset.publicRouteLoading).toBe("navigation");
-    expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
+    expect(container.querySelector(".public-route-feedback__skeleton")).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector(".public-route-feedback > span")).toHaveClass("sr-only");
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
     await render(<Image ready />);
     expect(state()).toBe("ready");
@@ -379,7 +463,8 @@ describe("public route visual readiness", () => {
     expect(state()).toBe("timeout");
     expect(pageFeedback()).toBeNull();
     expect(loader()).toHaveAttribute("aria-busy", "false");
-    expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
+    expect(container.querySelector(".public-route-feedback__skeleton")).toBeNull();
     expect(container.querySelector(".public-route-feedback__recovery p")?.textContent).toBeTruthy();
     expect(container.querySelectorAll(".public-route-feedback__recovery button")).toHaveLength(2);
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
@@ -392,6 +477,35 @@ describe("public route visual readiness", () => {
     expect(state()).toBe("ready");
     await act(async () => vi.advanceTimersByTimeAsync(500));
     expect(loader()).toBeNull();
+  });
+
+  it("never mounts document branding again during navigation, timeout, retry or return", async () => {
+    await render(<div data-route-pending="true" />, "/zh/services");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
+    await render(<Image ready />, "/zh/services");
+    const addedBrands: Element[] = [];
+    const observer = new MutationObserver((records) => {
+      for (const record of records) for (const node of record.addedNodes) {
+        if (!(node instanceof Element)) continue;
+        if (node.matches(".scheme-a-page-loader__brand")) addedBrands.push(node);
+        addedBrands.push(...node.querySelectorAll(".scheme-a-page-loader__brand"));
+      }
+    });
+    observer.observe(container, { childList: true, subtree: true });
+    try {
+      await render(<div data-route-pending="true" />, "/zh/materials");
+      expect(container.querySelector(".public-route-feedback__skeleton")).not.toBeNull();
+      await act(async () => vi.advanceTimersByTime(5100));
+      const retry = container.querySelector<HTMLButtonElement>(".public-route-feedback__recovery button")!;
+      await act(async () => retry.click());
+      expect(state()).toBe("waiting");
+      await render(<Image ready />, "/zh/materials");
+      await render(<Image />, "/zh/projects");
+      await render(<Image ready />, "/zh/services");
+      expect(state()).toBe("ready");
+      expect(loader()).toBeNull();
+      expect(addedBrands).toHaveLength(0);
+    } finally { observer.disconnect(); }
   });
 
   it("excludes offscreen critical gallery images from first viewport readiness", async () => {
@@ -482,7 +596,7 @@ describe("public route visual readiness", () => {
   });
 
   it("releases content controls while its visual animation is still unfinished", async () => {
-    await render(<Image ready />, "/zh/start");
+    await render(<div data-public-results><Image ready /></div>, "/zh/materials");
     const finished = new Promise<void>(() => {});
     const cancel = vi.fn();
     const animate = vi.fn(() => ({ finished, cancel }));
@@ -491,12 +605,13 @@ describe("public route visual readiness", () => {
     const ready = vi.fn();
     window.addEventListener("public-route-ready", ready);
     try {
-      await render(<Image />, "/zh/materials");
+      await render(<div data-public-results><Image /></div>, "/zh/materials?page=2");
+      await act(async () => vi.advanceTimersByTime(180));
       expect(loader()).not.toBeNull();
-      await render(<><Image ready /><button onClick={clicked}>Choose material</button></>, "/zh/materials");
+      await render(<div data-public-results><Image ready /><button onClick={clicked}>Choose material</button></div>, "/zh/materials?page=2");
       expect(animate).toHaveBeenCalledOnce();
       expect(state()).toBe("ready");
-      expect(loader()).toBeNull();
+      expect(pageFeedback()).toBeNull();
       expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
       expect(container.querySelector(".public-route-content")).not.toHaveAttribute("aria-busy", "true");
       expect(ready).toHaveBeenCalledOnce();
@@ -560,13 +675,13 @@ describe("public route visual readiness", () => {
       expect(state()).toBe("ready");
       expect(ready).toHaveBeenCalledTimes(1);
       await render(<Image />, "/zh/projects");
-      await render(<Image />, "/zh/materials");
+      await render(<Image source="http://localhost/newer-materials.webp" />, "/zh/materials");
       expect(state()).toBe("waiting");
       await act(async () => finish());
       expect(state()).toBe("waiting");
       expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
       expect(ready).toHaveBeenCalledTimes(1);
-      await render(<Image ready />, "/zh/materials");
+      await render(<Image ready source="http://localhost/newer-materials.webp" />, "/zh/materials");
       expect(state()).toBe("ready");
       expect(loader()).toBeNull();
       expect(ready).toHaveBeenCalledTimes(2);

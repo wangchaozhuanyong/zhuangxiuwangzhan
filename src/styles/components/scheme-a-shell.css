@@ -70,23 +70,6 @@
     min-height: 100svh;
   }
 
-  /* Reuse the entry brand while keeping the shared navigation available. */
-  .scheme-a-page-loader--navigation {
-    inset: 76px 0 0;
-    z-index: 80;
-    min-height: 0;
-    padding: 0 24px;
-    align-content: center;
-    pointer-events: none;
-    transition: opacity 140ms linear;
-  }
-
-  .scheme-a-page-loader--navigation:has(i[data-progress-state="fading"]) { opacity: 0; }
-
-  @media (max-width: 767px) {
-    .scheme-a-page-loader--navigation { top: 56px; }
-  }
-
   .public-route-content { display: contents; }
   .public-route-scene { display: block; }
 
@@ -126,8 +109,7 @@
     transition: transform 180ms linear;
   }
   .public-route-feedback > i[data-progress-state="fading"] { opacity: 0; }
-  /* Visible full-route feedback stays between the shared header and mobile dock.
-     Region-only updates retain the slim indicator beside the existing content. */
+  /* Route waits use neutral placeholders; document-entry branding is separate. */
   .public-route-feedback[data-feedback-scope="page"] {
     inset: 76px 0 32px;
     display: grid;
@@ -136,25 +118,21 @@
     gap: 1rem;
     padding: 1.5rem;
   }
-  .public-route-feedback[data-feedback-scope="page"] > span {
-    position: static;
-    display: block;
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    margin: 0;
-    padding: .875rem 1.25rem;
-    overflow: visible;
-    clip: auto;
-    white-space: normal;
-    border: 1px solid var(--public-border);
-    border-radius: 8px;
-    background: var(--public-surface-card);
-    color: var(--public-text-primary);
-    font-size: .9375rem;
-    line-height: 1.6;
-    text-align: center;
+  .public-route-feedback__skeleton {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    width: min(1120px, 100%);
   }
+  .public-route-feedback__skeleton > span {
+    height: 72px;
+    border-radius: 4px;
+    background: var(--public-border);
+    opacity: .5;
+  }
+  .public-route-feedback__skeleton > .public-route-feedback__skeleton-title { grid-column: 1 / -1; width: 42%; height: 28px; }
+  .public-route-feedback__skeleton > .public-route-feedback__skeleton-copy { grid-column: 1 / -1; width: 65%; height: 14px; }
+  .public-route-feedback__skeleton > .public-route-feedback__skeleton-media { grid-column: 1 / -1; height: clamp(120px, 24vh, 220px); }
   .public-route-feedback__recovery {
     width: fit-content;
     max-width: calc(100vw - 2rem);
@@ -166,7 +144,7 @@
     box-shadow: 0 4px 24px rgb(41 46 41 / .12);
     pointer-events: auto;
   }
-  .public-route-feedback__recovery .scheme-a-page-loader__actions { margin-top: .75rem; }
+  .public-route-feedback__recovery :is(.scheme-a-page-loader__actions, .public-route-feedback__actions) { margin-top: .75rem; }
   @media (max-width: 767px) {
     .public-route-feedback { top: 56px; }
     .public-route-feedback[data-feedback-scope="page"] {
@@ -175,18 +153,19 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .scheme-a-page-loader--navigation,
     .public-route-feedback > i,
     .public-route-feedback > i::after { transition: none; }
   }
 
-  .scheme-a-page-loader__actions {
+  .scheme-a-page-loader__actions,
+  .public-route-feedback__actions {
     display: flex;
     gap: 0.75rem;
     margin-top: 1.5rem;
   }
 
-  .scheme-a-page-loader__actions button {
+  .scheme-a-page-loader__actions button,
+  .public-route-feedback__actions button {
     min-height: 44px;
     border: 1px solid var(--public-border);
     border-radius: var(--radius);

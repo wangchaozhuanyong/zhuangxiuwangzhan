@@ -68,7 +68,13 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
     void prefetch();
     requestPublicNavigation(to, () => {
       setLanguage(targetLanguage);
-      navigate(to);
+      navigate(to, {
+        replace: props.replace,
+        state: props.state,
+        relative: props.relative,
+        preventScrollReset: props.preventScrollReset,
+        flushSync: true,
+      });
     });
   };
 
