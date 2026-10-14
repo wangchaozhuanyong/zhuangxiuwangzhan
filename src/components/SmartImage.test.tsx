@@ -3,19 +3,321 @@ import { createRoot } from "react-dom/client";
 import { describe, expect, it, vi } from "vitest";
 import SmartImage from "@/components/SmartImage";
 
+function mockCompleteImages(decode: () => Promise<void>) {
+  vi.spyOn(HTMLImageElement.prototype, "complete", "get").mockReturnValue(true);
+  vi.spyOn(HTMLImageElement.prototype, "naturalWidth", "get").mockReturnValue(100);
+  vi.spyOn(HTMLImageElement.prototype, "currentSrc", "get").mockImplementation(function (this: HTMLImageElement) { return this.src; });
+  const originalDecode = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "decode");
+  Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: decode });
+  return () => {
+    vi.restoreAllMocks();
+    if (originalDecode) Object.defineProperty(HTMLImageElement.prototype, "decode", originalDecode);
+    else Reflect.deleteProperty(HTMLImageElement.prototype, "decode");
+  };
+}
+
 describe("SmartImage", () => {
-  it("tracks the cached candidate while decode is pending and gives its replacement a fresh deadline", async () => {
-    vi.useFakeTimers();
-    vi.spyOn(HTMLImageElement.prototype, "complete", "get").mockReturnValue(true);
-    vi.spyOn(HTMLImageElement.prototype, "naturalWidth", "get").mockReturnValue(100);
-    const originalDecode = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "decode");
-    const decode = vi.fn(() => new Promise<void>(() => {}));
-    Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: decode });
+  it("keeps a successfully decoded candidate ready after a real unmount and remount", async () => {
+    const decode = vi.fn(() => Promise.resolve());
+    const restore = mockCompleteImages(decode);
     const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
     try {
-      await act(async () => root.render(<SmartImage src="/cached.webp" alt="Cached" loading="eager" critical />));
+      await act(async () => root.render(<SmartImage src="/remount-decoded.webp" alt="Cached" critical revealOnLoad />));
+      expect(container.querySelector("img")).toHaveAttribute("data-image-state", "loaded");
+      expect(decode).toHaveBeenCalledOnce();
+      await act(async () => root.render(null));
+      decode.mockImplementation(() => new Promise<void>(() => {}));
+
+      await act(async () => root.render(<SmartImage src="/remount-decoded.webp" alt="Cached" critical revealOnLoad />));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      expect(image.dataset.imageState).toBe("loaded");
+      expect(container.querySelector(".smart-image-frame")).toHaveAttribute("data-image-ready", "true");
+      expect(decode).toHaveBeenCalledOnce();
+
+      const stateChanges: MutationRecord[] = [];
+      const observer = new MutationObserver((records) => stateChanges.push(...records));
+      observer.observe(image, { attributes: true, attributeFilter: ["data-image-state"] });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      observer.disconnect();
+      expect(stateChanges).toHaveLength(0);
+      expect(image.dataset.imageState).toBe("loaded");
+      expect(decode).toHaveBeenCalledOnce();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it.each(["plain", "picture"] as const)("keeps a new %s source loading while currentSrc still describes the successful old image", async (kind) => {
+    let finishDecode: (() => void) | undefined;
+    const decode = vi.fn(() => Promise.resolve());
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    const firstSource = `/stale-success-${kind}-first.webp`;
+    const secondSource = `/stale-success-${kind}-second.webp`;
+    try {
+      await act(async () => root.render(<SmartImage src={firstSource} alt="First" pictureSources={kind === "picture" ? [{ srcSet: firstSource }] : undefined} critical />));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      const oldSelected = image.currentSrc;
+      expect(image.dataset.imageState).toBe("loaded");
+      expect(decode).toHaveBeenCalledOnce();
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: oldSelected });
+      decode.mockImplementation(() => new Promise<void>((resolve) => { finishDecode = resolve; }));
+
+      await act(async () => root.render(<SmartImage src={secondSource} alt="Second" pictureSources={kind === "picture" ? [{ srcSet: secondSource }] : undefined} critical />));
+      expect(image.complete).toBe(true);
+      expect(image.currentSrc).toBe(oldSelected);
+      expect(image.dataset.imageState).toBe("loading");
+      expect(image.dataset.decodedSrc).toBeUndefined();
+      expect(decode).toHaveBeenCalledOnce();
+      expect(container.querySelector<HTMLImageElement>(".smart-image-previous")?.src).toBe(oldSelected);
+
+      // A subsequent sizes-only render must not clear a still-pending real
+      // source change and reuse its old picture candidate.
+      await act(async () => root.render(<SmartImage src={secondSource} sizes="50vw" alt="Second" pictureSources={kind === "picture" ? [{ srcSet: secondSource }] : undefined} critical />));
+      expect(image.dataset.imageState).toBe("loading");
+      expect(decode).toHaveBeenCalledOnce();
+
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: image.src });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      expect(image.dataset.imageState).toBe("loading");
+      expect(decode).toHaveBeenCalledTimes(2);
+      await act(async () => finishDecode?.());
+      expect(image.dataset.imageState).toBe("loaded");
+      expect(image.dataset.decodedSrc).toBe(image.src);
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it.each(["plain", "srcset", "picture"] as const)("keeps a complete decoded %s candidate ready when only sizes changes without a new load event", async (kind) => {
+    const decode = vi.fn(() => Promise.resolve());
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    const src = kind === "srcset"
+      ? "https://example.supabase.co/storage/v1/object/public/images/sizes-only-candidate.webp"
+      : `/sizes-only-${kind}-candidate.webp`;
+    const onLoad = vi.fn();
+    const renderImage = (size: string) => <SmartImage src={src} alt="Image" sizes={size} pictureSources={kind === "picture" ? [{ srcSet: src, sizes: size }] : undefined} critical onLoad={onLoad} />;
+    try {
+      await act(async () => root.render(renderImage("100vw")));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      const selected = image.currentSrc;
+      const initialSrcSet = image.srcset;
+      expect(image.dataset.imageState).toBe("loaded");
+      expect(decode).toHaveBeenCalledOnce();
+
+      await act(async () => root.render(renderImage("50vw")));
+      expect(image.currentSrc).toBe(selected);
+      expect(image.srcset).toBe(initialSrcSet);
+      expect(image.getAttribute("sizes")).toBe(kind === "srcset" ? "50vw" : null);
+      if (kind === "picture") expect(container.querySelector("source")).toHaveAttribute("sizes", "50vw");
+      expect(image.dataset.imageState).toBe("loaded");
+      expect(image.dataset.decodedSrc).toBe(selected);
+      expect(container.querySelector(".smart-image-frame")).toHaveAttribute("data-image-ready", "true");
+      expect(decode).toHaveBeenCalledOnce();
+      expect(onLoad).not.toHaveBeenCalled();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it("does not remember a complete image when the browser has no decode function", async () => {
+    const decode = vi.fn(() => new Promise<void>(() => {}));
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: undefined });
+      await act(async () => root.render(<SmartImage src="/decode-not-supported.webp" alt="Image" critical />));
+      expect(container.querySelector(".smart-image")).toHaveAttribute("data-image-state", "loaded");
+      await act(async () => root.render(null));
+      Object.defineProperty(HTMLImageElement.prototype, "decode", { configurable: true, value: decode });
+      await act(async () => root.render(<SmartImage src="/decode-not-supported.webp" alt="Image" critical />));
+      expect(container.querySelector(".smart-image")).toHaveAttribute("data-image-state", "loading");
+      expect(decode).toHaveBeenCalledOnce();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it("does not use the fallback's successful decode for a newly selected picture candidate", async () => {
+    vi.useFakeTimers();
+    const decode = vi.fn(() => Promise.resolve());
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/known-fallback.webp" alt="Picture" pictureSources={[{ srcSet: "https://example.com/unknown-picture-candidate.webp" }]} loading="eager" critical />));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      expect(image.dataset.imageState).toBe("loaded");
+      decode.mockImplementation(() => new Promise<void>(() => {}));
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/unknown-picture-candidate.webp" });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      expect(image.dataset.imageState).toBe("loading");
+      expect(decode).toHaveBeenCalledTimes(2);
+      expect(container.querySelector(".smart-image-previous")).not.toBeNull();
+      await act(async () => vi.advanceTimersByTime(4999));
+      expect(container.querySelector(".smart-image-slow")).toBeNull();
+      await act(async () => vi.advanceTimersByTime(1));
+      expect(container.querySelector(".smart-image-slow")).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+      vi.useRealTimers();
+    }
+  });
+
+  it("forgets failed image evidence and decodes its retry URL independently", async () => {
+    const decode = vi.fn(() => Promise.resolve());
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/retry-evidence.webp" alt="Retry" critical />));
+      const firstImage = container.querySelector<HTMLImageElement>(".smart-image")!;
+      const firstUrl = firstImage.src;
+      expect(firstImage.dataset.imageState).toBe("loaded");
+      await act(async () => firstImage.dispatchEvent(new Event("error", { bubbles: true })));
+      expect(firstImage.dataset.imageState).toBe("error");
+      decode.mockImplementation(() => new Promise<void>(() => {}));
+
+      await act(async () => root.render(null));
+      await act(async () => root.render(<SmartImage src="/retry-evidence.webp" alt="Retry" critical />));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      expect(image.src).toBe(firstUrl);
+      expect(image.dataset.imageState).toBe("loading");
+      expect(decode).toHaveBeenCalledTimes(2);
+
+      await act(async () => image.dispatchEvent(new Event("error", { bubbles: true })));
+      await act(async () => (container.querySelector(".smart-image-failure button") as HTMLButtonElement).click());
+      expect(image.src).toContain("image_retry=");
+      expect(image.dataset.imageState).toBe("loading");
+      expect(decode).toHaveBeenCalledTimes(3);
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it("does not remember a failed decode as successful when the same image remounts", async () => {
+    const decode = vi.fn<() => Promise<void>>(() => Promise.reject(new Error("Bitmap unavailable")));
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/failed-decode-evidence.webp" alt="Failed" critical />));
+      expect(container.querySelector(".smart-image")).toHaveAttribute("data-image-state", "error");
+      await act(async () => root.render(null));
+      decode.mockImplementation(() => new Promise<void>(() => {}));
+      await act(async () => root.render(<SmartImage src="/failed-decode-evidence.webp" alt="Failed" critical />));
+      expect(container.querySelector(".smart-image")).toHaveAttribute("data-image-state", "loading");
+      expect(decode).toHaveBeenCalledTimes(2);
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it("does not remember a decode that completes after its image unmounts", async () => {
+    let finishDecode: (() => void) | undefined;
+    const decode = vi.fn(() => new Promise<void>((resolve) => { finishDecode = resolve; }));
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/unmounted-decode-evidence.webp" alt="Pending" critical />));
+      await act(async () => root.render(null));
+      await act(async () => finishDecode?.());
+      decode.mockImplementation(() => new Promise<void>(() => {}));
+      await act(async () => root.render(<SmartImage src="/unmounted-decode-evidence.webp" alt="Pending" critical />));
+      expect(container.querySelector(".smart-image")).toHaveAttribute("data-image-state", "loading");
+      expect(decode).toHaveBeenCalledTimes(2);
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it("ignores a stale candidate's failed decode after the browser selects a replacement", async () => {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    const onError = vi.fn();
+    let failDecode: ((reason: Error) => void) | undefined;
+    try {
+      await act(async () => root.render(<SmartImage src="/candidate-race.webp" alt="Picture" pictureSources={[{ srcSet: "https://example.com/stale-candidate.webp 480w, https://example.com/replacement-race.webp 1440w" }]} critical onError={onError} />));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/stale-candidate.webp" });
+      Object.defineProperty(image, "decode", { configurable: true, value: () => new Promise<void>((_resolve, reject) => { failDecode = reject; }) });
+      await act(async () => image.dispatchEvent(new Event("load", { bubbles: true })));
+      Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/replacement-race.webp" });
+      await act(async () => failDecode?.(new Error("Stale decode failed")));
+      expect(image.dataset.imageState).toBe("loading");
+      expect(onError).not.toHaveBeenCalled();
+      expect(container.querySelector(".smart-image-failure")).toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+    }
+  });
+
+  it("does not remember a decode from an obsolete source request", async () => {
+    let finishOldDecode: (() => void) | undefined;
+    const decode = vi.fn(() => new Promise<void>((resolve) => { finishOldDecode = resolve; }));
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/obsolete-source-evidence.webp" alt="First" critical />));
+      const finishFirst = finishOldDecode;
+      await act(async () => root.render(<SmartImage src="/replacement-source-evidence.webp" alt="Second" critical />));
+      await act(async () => finishFirst?.());
+      expect(container.querySelector(".smart-image")).toHaveAttribute("data-image-state", "loading");
+      await act(async () => root.render(null));
+      decode.mockImplementation(() => new Promise<void>(() => {}));
+      await act(async () => root.render(<SmartImage src="/obsolete-source-evidence.webp" alt="First" critical />));
+      expect(container.querySelector(".smart-image")).toHaveAttribute("data-image-state", "loading");
+      expect(decode).toHaveBeenCalledTimes(3);
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      restore();
+    }
+  });
+
+  it("tracks the cached candidate while decode is pending and gives its replacement a fresh deadline", async () => {
+    vi.useFakeTimers();
+    const decode = vi.fn(() => new Promise<void>(() => {}));
+    const restore = mockCompleteImages(decode);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/cached.webp" alt="Cached" pictureSources={[{ srcSet: "https://example.com/replacement.webp" }]} loading="eager" critical />));
       expect(decode).toHaveBeenCalledOnce();
       await act(async () => vi.advanceTimersByTime(5000));
       expect(container.querySelector(".smart-image-slow")).not.toBeNull();
@@ -30,9 +332,7 @@ describe("SmartImage", () => {
     } finally {
       await act(async () => root.unmount());
       container.remove();
-      vi.restoreAllMocks();
-      if (originalDecode) Object.defineProperty(HTMLImageElement.prototype, "decode", originalDecode);
-      else Reflect.deleteProperty(HTMLImageElement.prototype, "decode");
+      restore();
       vi.useRealTimers();
     }
   });
@@ -43,7 +343,7 @@ describe("SmartImage", () => {
     document.body.appendChild(container);
     const root = createRoot(container);
     try {
-      await act(async () => root.render(<SmartImage src="/picture.webp" alt="Picture" loading="eager" critical />));
+      await act(async () => root.render(<SmartImage src="/picture.webp" alt="Picture" pictureSources={[{ srcSet: "https://example.com/mobile.webp 480w, https://example.com/desktop.webp 1440w" }]} loading="eager" critical />));
       const image = container.querySelector<HTMLImageElement>(".smart-image")!;
       Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/mobile.webp" });
       Object.defineProperty(image, "decode", { configurable: true, value: () => new Promise<void>(() => {}) });
@@ -70,7 +370,7 @@ describe("SmartImage", () => {
     document.body.appendChild(container);
     const root = createRoot(container);
     try {
-      await act(async () => root.render(<SmartImage src="/picture.webp" alt="Picture" loading="eager" critical />));
+      await act(async () => root.render(<SmartImage src="/picture.webp" alt="Picture" pictureSources={[{ srcSet: "https://example.com/mobile.webp 480w, https://example.com/desktop.webp 1440w" }]} loading="eager" critical />));
       await act(async () => vi.advanceTimersByTime(5000));
       expect(container.querySelector(".smart-image-slow")).not.toBeNull();
       const image = container.querySelector<HTMLImageElement>(".smart-image")!;
@@ -126,7 +426,7 @@ describe("SmartImage", () => {
     document.body.appendChild(container);
     const root = createRoot(container);
     const onLoad = vi.fn();
-    await act(async () => root.render(<SmartImage src="/first.webp" alt="First" critical onLoad={onLoad} />));
+    await act(async () => root.render(<SmartImage src="/first.webp" alt="First" pictureSources={[{ srcSet: "https://example.com/selected-first.webp" }]} critical onLoad={onLoad} />));
 
     let image = container.querySelector<HTMLImageElement>(".smart-image");
     let finishDecode: (() => void) | undefined;
@@ -140,7 +440,7 @@ describe("SmartImage", () => {
     expect(image?.dataset.imageState).toBe("loaded");
     expect(onLoad).toHaveBeenCalledOnce();
 
-    await act(async () => root.render(<SmartImage src="/second.webp" alt="Second" critical onLoad={onLoad} />));
+    await act(async () => root.render(<SmartImage src="/second.webp" alt="Second" pictureSources={[{ srcSet: "https://example.com/selected-second.webp" }]} critical onLoad={onLoad} />));
     image = container.querySelector<HTMLImageElement>(".smart-image");
     expect(image?.dataset.imageState).toBe("loading");
     expect(container.querySelector<HTMLImageElement>(".smart-image-previous")?.src).toBe("https://example.com/selected-first.webp");

@@ -17,6 +17,7 @@ import {
   type SupabaseTargetAspectRatio,
 } from "@/lib/supabaseImage";
 import { cn } from "@/lib/utils";
+import { forgetDecodedPublicImage, getPublicImageSelectedSource, hasDecodedPublicImage, rememberDecodedPublicImage } from "@/lib/publicImageDecodeCache";
 
 type SmartImagePictureSource = Pick<React.SourceHTMLAttributes<HTMLSourceElement>, "media" | "sizes" | "srcSet" | "type">;
 
@@ -93,11 +94,15 @@ export function SmartImage({
     ...source, srcSet: retrySrcSet(source.srcSet, retry),
   }));
   const sourceKey = [finalSrc, finalSrcSet, resolvedSizes, finalPictureSources?.map((source) => `${source.media || "default"}:${source.srcSet || ""}:${source.sizes || ""}:${source.type || ""}`).join("|")].filter(Boolean).join("::");
+  // Sizes alone can keep the same selected bitmap and need not produce load.
+  // Only a changed candidate list requires protection from an old currentSrc.
+  const selectionKey = [finalSrc, finalSrcSet, finalPictureSources?.map((source) => `${source.media || "default"}:${source.srcSet || ""}:${source.type || ""}`).join("|")].filter(Boolean).join("::");
   const imgRef = React.useRef<HTMLImageElement | null>(null);
   const [state, setState] = React.useState<ImageState>({ sourceKey, status: "loading" });
   const [previous, setPrevious] = React.useState<string | null>(null);
   const requestId = React.useRef(0);
   const lastSelectedCandidate = React.useRef<string | null>(null);
+  const lastSelectionKey = React.useRef(selectionKey);
   const framed = critical || showFailureFallback || revealOnLoad;
   const selectedSrc = imgRef.current?.currentSrc;
   const imageState = state.sourceKey === sourceKey &&
@@ -134,24 +139,43 @@ export function SmartImage({
   React.useLayoutEffect(() => {
     const img = imgRef.current;
     if (!img) return;
-    lastSelectedCandidate.current = null;
+    const previousCandidate = lastSelectedCandidate.current ?? state.currentSrc;
     const request = ++requestId.current;
     if (framed && state.status === "loaded" && state.currentSrc && state.sourceKey !== sourceKey) {
       setPrevious(state.currentSrc);
     }
     if (state.sourceKey !== sourceKey) setState({ sourceKey, status: "loading" });
 
-    if (img.complete && img.naturalWidth > 0) {
-      const selected = img.currentSrc || img.src;
+    const selected = getPublicImageSelectedSource(img);
+    // After changing source configuration, a browser can temporarily retain
+    // the previous selected candidate. Await its next load rather than bless
+    // the new configuration with the previous bitmap's decode evidence.
+    const waitingForNewSelection = lastSelectionKey.current !== selectionKey && (!selected || selected === previousCandidate);
+    if (!waitingForNewSelection) {
+      lastSelectionKey.current = selectionKey;
+      lastSelectedCandidate.current = null;
+    }
+    if (img.complete && img.naturalWidth > 0 && selected && !waitingForNewSelection) {
       lastSelectedCandidate.current = selected;
+      if (hasDecodedPublicImage(img)) {
+        // The route gate reads the committed DOM in its own layout effect.
+        // Reflect this proven cache hit before React flushes our state update.
+        if (img.dataset.imageState !== "loaded") img.dataset.imageState = "loaded";
+        if (img.dataset.decodedSrc !== selected) img.dataset.decodedSrc = selected;
+        setState({ sourceKey, status: "loaded", currentSrc: selected });
+        return () => { if (requestId.current === request) requestId.current = request + 1; };
+      }
       void Promise.resolve(typeof img.decode === "function" ? img.decode() : undefined)
         .then(() => {
-          if (request !== requestId.current || !img.isConnected || (img.currentSrc || img.src) !== selected) return;
+          if (request !== requestId.current || !img.isConnected || getPublicImageSelectedSource(img) !== selected) return;
+          if (typeof img.decode === "function" && img.complete && img.naturalWidth > 0 && getPublicImageSelectedSource(img) === selected) rememberDecodedPublicImage(selected);
           setState({ sourceKey, status: "loaded", currentSrc: selected });
 
         })
         .catch(() => {
-          if (request === requestId.current && (img.currentSrc || img.src) === selected) setState({ sourceKey, status: "error" });
+          if (request !== requestId.current || !img.isConnected || getPublicImageSelectedSource(img) !== selected) return;
+          forgetDecodedPublicImage(selected);
+          setState({ sourceKey, status: "error" });
         });
     }
     return () => { if (requestId.current === request) requestId.current = request + 1; };
@@ -174,9 +198,14 @@ export function SmartImage({
 
   const handleLoad: React.ReactEventHandler<HTMLImageElement> = (event) => {
     const img = event.currentTarget;
-    const selected = img.currentSrc || img.src;
+    const selected = getPublicImageSelectedSource(img);
     const request = ++requestId.current;
     setAdmittedSource(sourceKey);
+    if (!selected) {
+      setState({ sourceKey, status: "loading" });
+      return;
+    }
+    lastSelectionKey.current = selectionKey;
     if (lastSelectedCandidate.current && lastSelectedCandidate.current !== selected) {
       setCandidateAttempt((attempt) => attempt + 1);
     }
@@ -184,16 +213,25 @@ export function SmartImage({
     if (framed && state.status === "loaded" && state.currentSrc && state.currentSrc !== selected) {
       setPrevious(state.currentSrc);
     }
+    if (hasDecodedPublicImage(img)) {
+      if (img.dataset.imageState !== "loaded") img.dataset.imageState = "loaded";
+      if (img.dataset.decodedSrc !== selected) img.dataset.decodedSrc = selected;
+      setState({ sourceKey, status: "loaded", currentSrc: selected });
+      onLoad?.(event);
+      return;
+    }
     setState({ sourceKey, status: "loading" });
     void Promise.resolve(typeof img.decode === "function" ? img.decode() : undefined)
       .then(() => {
-        if (request !== requestId.current || !img.isConnected || (img.currentSrc || img.src) !== selected) return;
+        if (request !== requestId.current || !img.isConnected || getPublicImageSelectedSource(img) !== selected) return;
+        if (typeof img.decode === "function" && img.complete && img.naturalWidth > 0 && getPublicImageSelectedSource(img) === selected) rememberDecodedPublicImage(selected);
         setState({ sourceKey, status: "loaded", currentSrc: selected });
 
         onLoad?.(event);
       })
       .catch(() => {
-        if (request !== requestId.current) return;
+        if (request !== requestId.current || !img.isConnected || getPublicImageSelectedSource(img) !== selected) return;
+        forgetDecodedPublicImage(selected);
         setState({ sourceKey, status: "error" });
         onError?.(event);
       });
@@ -201,6 +239,7 @@ export function SmartImage({
 
   const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
     requestId.current++;
+    forgetDecodedPublicImage(event.currentTarget.currentSrc || event.currentTarget.src);
     setState({ sourceKey, status: "error" });
     onError?.(event);
   };

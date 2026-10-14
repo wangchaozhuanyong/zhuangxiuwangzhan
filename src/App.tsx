@@ -12,6 +12,7 @@ import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { createPublicPageViewLifecycle } from "@/lib/analytics";
 import { createAnalyticsRouterWindow } from "@/lib/analyticsRouterWindow";
+import { withSynchronousPublicHistory } from "@/lib/synchronousPublicHistory";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminPreferences";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
@@ -285,12 +286,13 @@ const AppShell = () => {
 };
 
 const appRouter = createBrowserRouter([{ path: "*", element: <NavigationProtectionProvider><AnalyticsRouteTracker /><AppShell /></NavigationProtectionProvider> }], { window: analyticsRouterWindow });
+const renderedRouter = withSynchronousPublicHistory(appRouter);
 
 const App = () => (
   <LanguageProvider>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={appRouter} />
+        <RouterProvider router={renderedRouter} />
       </QueryClientProvider>
     </HelmetProvider>
   </LanguageProvider>

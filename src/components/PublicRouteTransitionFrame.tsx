@@ -60,8 +60,8 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     // Coalesce same-turn requests without waiting for an exit or snapshot.
     queueMicrotask(() => {
       if (this.navigationRevision !== revision) return;
-      // Retire the old route synchronously so it cannot reveal stale content
-      // while React Router commits the next location.
+      // Retire the previous readiness owner without hiding an already-ready
+      // scene. Public links atomically commit the destination DOM and URL.
       this.content.current?.setAttribute("data-leaving", "true");
       flushSync(() => this.props.onBeforeCommit?.());
       request.detail.commit();
@@ -86,9 +86,10 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     }
     if (this.props.pending || !changed && !previous.pending) return;
     this.presented = this.props.routeKey;
-    const target = this.props.regionOnly
-      ? this.content.current?.querySelector<HTMLElement>("[data-public-results]")
-      : this.content.current;
+    // Full-page opacity changes make cached navigation visibly flash. Only a
+    // local results replacement has decorative entrance motion.
+    if (!this.props.regionOnly) return;
+    const target = this.content.current?.querySelector<HTMLElement>("[data-public-results]");
     if (!target || this.props.initial || prefersReducedMotion() || typeof target.animate !== "function") {
       return;
     }

@@ -5,12 +5,13 @@ import { createMemoryRouter, RouterProvider, useLocation } from "react-router-do
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import NavigationProtectionProvider from "./NavigationProtectionProvider";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { withSynchronousPublicHistory } from "@/lib/synchronousPublicHistory";
 function Editor() { useUnsavedChangesWarning(true); const { pathname } = useLocation(); return <input aria-label="Fixture title" defaultValue={pathname} />; }
 let node: HTMLDivElement, root: Root, router: ReturnType<typeof createMemoryRouter>;
 beforeEach(async () => {
   node=document.createElement("div");document.body.append(node);root=createRoot(node);
   router=createMemoryRouter([{path:'*',element:<NavigationProtectionProvider><Editor /></NavigationProtectionProvider>}],{initialEntries:['/en/services','/en/contact'],initialIndex:1});
-  await act(async()=>root.render(<RouterProvider router={router}/>));
+  await act(async()=>root.render(<RouterProvider router={withSynchronousPublicHistory(router)}/>));
 });
 afterEach(async()=>{await act(async()=>root.unmount());router.dispose();node.remove();});
 const click = async (text: string) => act(async()=> { (Array.from(document.querySelectorAll('button')).find(button=>button.textContent===text) as HTMLButtonElement).click(); });
