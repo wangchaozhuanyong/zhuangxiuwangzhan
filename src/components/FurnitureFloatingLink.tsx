@@ -20,7 +20,7 @@ export default function FurnitureFloatingLink() {
       className="fc-furniture-floating"
       data-obstructed={obstructed || undefined}
       lang={language}
-      href={furnitureShopUrl}
+      href={new URL(`${language}/`, furnitureShopUrl).href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={copy.floatingShop}

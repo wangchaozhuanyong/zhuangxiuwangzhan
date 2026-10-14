@@ -1,3 +1,5 @@
+import type { Language } from "@/i18n/routes";
+
 type BrandSettings = {
   company_name?: string | null;
   brand_name?: string | null;
@@ -39,8 +41,10 @@ export const getChineseBrandLine = (settings: BrandSettings | null | undefined, 
     ? `中文品牌：${CHINESE_BRAND_NAMES.join(" · ")}`
     : null;
 
-export const getHeaderChineseBrandName = (settings?: BrandSettings | null): string | null =>
-  isFlashCastIdentity(settings) ? CHINESE_BRAND_NAMES[1] : null;
+export const getHeaderBrandName = (settings: BrandSettings | null | undefined, language: Language): string | null =>
+  isFlashCastIdentity(settings)
+    ? language === "zh" ? CHINESE_BRAND_NAMES[0] : DEFAULT_BRAND_NAME
+    : null;
 
 export const withChineseBrandMetadata = (
   metadata: { title: string; description: string },
