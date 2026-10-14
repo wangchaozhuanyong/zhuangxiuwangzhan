@@ -38,6 +38,10 @@ on:
       - scripts/managed-cms-targets-native-body-v1.mjs
       - scripts/managed-cms-targets-owner-publisher-three-v1.mjs
       - scripts/managed-cms-targets-unified-content-v1.mjs
+      - scripts/managed-cms-targets-builtin-wardrobe-v1.mjs
+      - drafts/publishing/fc-20261014-builtin-wardrobe-layout-cms-publication-v1/**
+      - src/lib/contentPublishBuiltinWardrobe.test.ts
+      - supabase/functions/_shared/builtin-wardrobe-targets.ts
       - scripts/publish-remaining-completion-20261009.mjs
       - scripts/publish-paid-three-page-native-20261010.mjs
       - scripts/paid-three-page-native-batch.test.mjs
@@ -146,6 +150,7 @@ jobs:
       - name: Run focused managed CMS tests
         run: |
           npm test -- \
+            src/lib/contentPublishBuiltinWardrobe.test.ts \
             src/lib/contentPublishOrg020V7.test.ts \
             src/lib/contentPublishNativeBody.test.ts \
             src/lib/contentPublishOwnerPublisherThree.test.ts \
