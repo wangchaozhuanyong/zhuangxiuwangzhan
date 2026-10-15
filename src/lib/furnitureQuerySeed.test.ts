@@ -1,7 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { PublicDataPayload } from "./publicPreload";
-import { furnitureCatalog, getPublishedFurnitureCatalog, type FurnitureMaterialRow, type FurnitureProduct } from "./furnitureCatalog";
+import { furnitureCatalog, getPublishedFurnitureCatalog, getPublishedFurnitureProductBySlug, type FurnitureMaterialRow, type FurnitureProduct } from "./furnitureCatalog";
+import { normalizeFurnitureSlug } from "./furnitureCatalogOverrides";
 import { getFurnitureQuerySeed } from "./furnitureQuerySeed";
 import { publicContentQueries } from "./publicContentQueries";
 import { getPublicQuerySeed } from "./publicQuerySeed";
@@ -37,6 +38,66 @@ beforeEach(() => {
 });
 
 describe("route-specific furniture HTML seeds", () => {
+  it.each(["en", "zh"] as const)("matches all 158 non-ASCII %s details to the ordinary published reader", async (language) => {
+    const products = furnitureCatalog.products.filter((product) => Array.from(decodeURIComponent(product.slug)).some((character) => character.charCodeAt(0) > 127));
+    expect(products).toHaveLength(158);
+    for (const product of products) {
+      const decoded = decodeURIComponent(product.slug);
+      fixture.payload = { furnitureCatalog: { materials: [], setting: null, detailSlug: decoded } };
+      const seed = getFurnitureQuerySeed(publicContentQueries.furnitureProduct(decoded, language).queryKey) as FurnitureProduct;
+      expect(seed).toEqual(await getPublishedFurnitureProductBySlug(decoded, language));
+      expect(seed.slug).toBe(product.slug);
+      expect(seed.sourceUrl).toBe(product.sourceUrl);
+    }
+  });
+
+  it.each(["云团沙发", "1803齐边床", "331-wooden-garment-rack"])("keeps URL and decoded representations of %s on the same product", async (decoded) => {
+    const encoded = encodeURIComponent(decoded);
+    const variants = [...new Set([decoded, encoded, encoded.replace(/%[0-9A-F]{2}/g, (value) => value.toLowerCase()),
+      encoded.replace(/%[0-9A-F]{2}/g, (value, index) => index % 2 ? value.toLowerCase() : value)])];
+    for (const language of ["en", "zh"] as const) {
+      const expected = await getPublishedFurnitureProductBySlug(decoded, language);
+      expect(expected).not.toBeNull();
+      for (const marker of variants) for (const query of variants) {
+        fixture.payload = { furnitureCatalog: { materials: [], setting: null, detailSlug: marker } };
+        expect(getFurnitureQuerySeed(publicContentQueries.furnitureProduct(query, language).queryKey)).toEqual(expected);
+      }
+    }
+  });
+
+  it.each(["en", "zh"] as const)("does not revive a hidden non-ASCII %s product through a managed slug alias", async (language) => {
+    const decoded = "云团沙发";
+    const product = furnitureCatalog.products.find((item) => decodeURIComponent(item.slug) === decoded)!;
+    const hidden = { ...override, slug: product.slug, enabled: false };
+    const rows = [{ ...managed, slug: encodeURIComponent(decoded) }];
+    const setting = { items_zh: [hidden] };
+    fixture.payload = { furnitureCatalog: { materials: rows, setting, detailSlug: decoded } };
+    vi.mocked(fetchPublishedMaterialRowsByCategory).mockResolvedValue(rows);
+    vi.mocked(fetchPublishedHomeSectionRow).mockResolvedValue(setting as never);
+    expect(getFurnitureQuerySeed(publicContentQueries.furnitureProduct(decoded, language).queryKey)).toBeNull();
+    expect(await getPublishedFurnitureProductBySlug(decoded, language)).toBeNull();
+    delete fixture.payload.furnitureCatalog!.detailSlug;
+    const listing = getFurnitureQuerySeed(publicContentQueries.furnitureCatalog(language).queryKey) as FurnitureProduct[];
+    expect(listing.some((item) => decodeURIComponent(item.slug) === decoded)).toBe(false);
+    expect(await getPublishedFurnitureCatalog(language)).toEqual(listing);
+  });
+
+  it("rejects malformed, double-encoded or mismatched detail projections without fabricating null", () => {
+    fixture.payload = { furnitureCatalog: { materials: [], setting: null, detailSlug: "云团沙发" } };
+    expect(getFurnitureQuerySeed(["published", "furniture_catalog", "detail", 123, "en"])).toBeUndefined();
+    for (const invalid of ["%", "%ZZ", "%E0%A4%A"]) {
+      fixture.payload = { furnitureCatalog: { materials: [], setting: null, detailSlug: invalid } };
+      expect(normalizeFurnitureSlug(invalid)).toBeUndefined();
+      expect(getFurnitureQuerySeed(publicContentQueries.furnitureProduct(invalid, "en").queryKey)).toBeUndefined();
+      expect(getFurnitureQuerySeed(publicContentQueries.furnitureCatalog("en").queryKey)).toBeUndefined();
+    }
+    fixture.payload = { furnitureCatalog: { materials: [], setting: null, detailSlug: encodeURIComponent(encodeURIComponent("云团沙发")) } };
+    expect(getFurnitureQuerySeed(publicContentQueries.furnitureProduct("云团沙发", "en").queryKey)).toBeUndefined();
+    fixture.payload.furnitureCatalog!.detailSlug = "1803齐边床";
+    expect(getFurnitureQuerySeed(publicContentQueries.furnitureProduct("云团沙发", "zh").queryKey)).toBeUndefined();
+    expect(normalizeFurnitureSlug("SKU-A")).not.toBe(normalizeFurnitureSlug("sku-a"));
+  });
+
   it.each(["en", "zh"] as const)("retains the %s live reader's managed order, duplicate exclusion, edits and hidden products", async (language) => {
     const hidden = { ...override, slug: furnitureCatalog.products[1]!.slug, enabled: false };
     const rows = [managed, { ...managed, slug: baseline.slug }];

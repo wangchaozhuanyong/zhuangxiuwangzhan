@@ -1,5 +1,5 @@
 import { fetchPublishedHomeSectionRow, fetchPublishedMaterialBySlugAndCategory, fetchPublishedMaterialRowsByCategory } from "@/backend/modules/cms/repository/publicContentRepository";
-import { applyFurnitureCatalogOverrides, FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
+import { applyFurnitureCatalogOverrides, FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
 import type { Language } from "../i18n/routes";
 import { FURNITURE_MATERIAL_CATEGORY } from "./furnitureCatalogConfig";
 import { furnitureCatalog, getFurnitureProduct, hasBaselineFurnitureSlug, localizeFurnitureProduct, mapManagedFurnitureProduct, type FurnitureProduct } from "./furnitureCatalogPresentation";
@@ -34,8 +34,10 @@ export async function getPublishedManagedFurnitureProducts(language: Language, s
 
 export async function getPublishedManagedFurnitureProductBySlug(slug: string, language: Language, signal?: AbortSignal): Promise<FurnitureProduct | null> {
   if (hasBaselineFurnitureSlug(slug)) return null;
-  const row = await fetchPublishedMaterialBySlugAndCategory(slug, FURNITURE_MATERIAL_CATEGORY, signal);
-  return row ? mapManagedFurnitureProduct(row, language) : null;
+  const decodedSlug = normalizeFurnitureSlug(slug);
+  if (decodedSlug === undefined) return null;
+  const row = await fetchPublishedMaterialBySlugAndCategory(decodedSlug, FURNITURE_MATERIAL_CATEGORY, signal);
+  return row && !hasBaselineFurnitureSlug(row.slug) ? mapManagedFurnitureProduct(row, language) : null;
 }
 
 export async function getPublishedFurnitureCatalog(language: Language, signal?: AbortSignal): Promise<FurnitureProduct[]> {

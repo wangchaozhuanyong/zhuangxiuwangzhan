@@ -4,6 +4,13 @@ import { toRecord } from "./recordUtils";
 import { resolveFurnitureDisplay } from "./furnitureDisplaySafety.mjs";
 
 export const FURNITURE_CATALOG_SECTION_KEY = "furniture_catalog";
+
+/** Match one URL-encoded representation without changing the stored slug or ASCII case. */
+export const normalizeFurnitureSlug = (slug: string | undefined): string | undefined => {
+  if (!slug) return undefined;
+  try { return decodeURIComponent(slug); } catch { return undefined; }
+};
+
 export type FurnitureCatalogOverride = {
   slug: string; enabled: boolean;
   name_zh: string; name_en: string;
@@ -22,9 +29,13 @@ export const readFurnitureCatalogOverrides = (items: unknown): FurnitureCatalogO
   });
 
 export const applyFurnitureCatalogOverrides = (products: FurnitureProduct[], overrides: FurnitureCatalogOverride[], language: Language) => {
-  const bySlug = new Map(overrides.map((item) => [item.slug, item]));
+  const bySlug = new Map(overrides.flatMap((item) => {
+    const slug = normalizeFurnitureSlug(item.slug);
+    return slug === undefined ? [] : [[slug, item] as const];
+  }));
   return products.flatMap((product) => {
-    const saved = bySlug.get(product.slug);
+    const slug = normalizeFurnitureSlug(product.slug);
+    const saved = slug === undefined ? undefined : bySlug.get(slug);
     if (!saved) return [product];
     if (!saved.enabled) return [];
     const reviewed = resolveFurnitureDisplay(product, language);

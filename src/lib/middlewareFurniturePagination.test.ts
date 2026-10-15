@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
 import catalog from "@/data/furnitureCatalog.json";
 import { furnitureText } from "@/i18n/furnitureText";
+import { localizeFurnitureProduct } from "@/lib/furnitureCatalogPresentation";
 
 const shell = '<!doctype html><html><head><title>Fixture</title></head><body><div id="root"></div></body></html>';
 const originalCaches = Object.getOwnPropertyDescriptor(globalThis, "caches");
@@ -45,6 +46,14 @@ afterEach(() => {
 });
 
 const productHrefs = (document: Document) => [...document.querySelectorAll('[data-flashcast-readable-furniture-listing] h2 a')].map(a => a.getAttribute("href"));
+const encodedProduct = catalog.products.find((product) => product.slug !== decodeURIComponent(product.slug))!;
+const decodedProductSlug = decodeURIComponent(encodedProduct.slug);
+const canonicalProductSlug = encodeURIComponent(decodedProductSlug);
+const productOverride = (enabled: boolean) => ({
+  slug: encodedProduct.slug, enabled, name_en: "Current saved product", name_zh: "当前保存商品",
+  shortDescription_en: "Current saved summary", shortDescription_zh: "当前保存简介",
+  description_en: "Current saved detail", description_zh: "当前保存详情", price: encodedProduct.price || "", images: encodedProduct.images,
+});
 
 describe("furniture pagination in original Edge HTML", () => {
   it.each(["en", "zh"] as const)("keeps distinct %s page 1/3/9/14 identities, products, alternates and cache hits", async (language) => {
@@ -102,5 +111,71 @@ describe("furniture pagination in original Edge HTML", () => {
     const { document } = await read(`/en/furniture?page=${value}`);
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe("https://flashcast.com.my/en/furniture");
     expect(productHrefs(document)).toEqual(catalog.products.slice(0, 18).map(p => `/en/furniture/product/${encodeURIComponent(decodeURIComponent(p.slug))}`));
+  });
+
+  it.each(["en", "zh"] as const)("retains the %s baseline detail and canonical metadata across equivalent slug representations", async (language) => {
+    const read = fixture();
+    for (const slug of [encodedProduct.slug, canonicalProductSlug, decodedProductSlug]) {
+      const { response, document } = await read(`/${language}/furniture/product/${slug}`);
+      expect(response.status).toBe(200);
+      expect(document.title).toContain(localizeFurnitureProduct(encodedProduct, language).name);
+      expect(document.querySelector('meta[name="robots"]')?.getAttribute("content") || "").not.toContain("noindex");
+      expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://flashcast.com.my/${language}/furniture/product/${canonicalProductSlug}`);
+      for (const [locale, prefix] of [["en", "en"], ["zh-CN", "zh"], ["x-default", "en"]]) {
+        expect(document.querySelector(`link[hreflang="${locale}"]`)?.getAttribute("href")).toBe(`https://flashcast.com.my/${prefix}/furniture/product/${canonicalProductSlug}`);
+      }
+      const payload = JSON.parse(document.querySelector("#flashcast-public-data")!.textContent!);
+      expect(payload.furnitureCatalog.detailSlug).toBe(canonicalProductSlug);
+      expect(payload.furnitureCatalog.materials).toEqual([]);
+      const preloadRequests = vi.mocked(fetch).mock.calls.map(([input]) => new URL(input instanceof Request ? input.url : String(input)))
+        .filter((url) => url.pathname.endsWith("/materials") && url.searchParams.has("material_images.is_active"));
+      expect(preloadRequests.length).toBeGreaterThan(0);
+      for (const request of preloadRequests) expect(request.searchParams.get("slug")).toBe(`eq.${decodedProductSlug}`);
+      const summary = document.querySelector("[data-flashcast-geo-summary]");
+      expect(summary).not.toBeNull();
+      expect(summary!.querySelector("h1")?.textContent).toBe(document.title);
+      expect(summary!.textContent).not.toContain("404");
+    }
+  });
+
+  it.each(["en", "zh"] as const)("uses the same %s encoded override for current metadata and explicit withdrawal", async (language) => {
+    const visible = fixture({ overrides: [productOverride(true)] });
+    const enabled = await visible(`/${language}/furniture/product/${canonicalProductSlug}`);
+    expect(enabled.response.status).toBe(200);
+    expect(enabled.document.title).toContain(language === "en" ? "Current saved product" : "当前保存商品");
+    expect(enabled.document.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(language === "en" ? "Current saved summary" : "当前保存简介");
+    const hidden = fixture({ overrides: [productOverride(false)] });
+    for (const slug of [encodedProduct.slug, canonicalProductSlug, decodedProductSlug]) {
+      const withdrawn = await hidden(`/${language}/furniture/product/${slug}`);
+      expect(withdrawn.response.status).toBe(404);
+      expect(withdrawn.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, nofollow");
+      expect(withdrawn.document.querySelector('link[rel="canonical"], link[rel="alternate"]')).toBeNull();
+    }
+  });
+
+  it.each(["en", "zh"] as const)("matches the %s client reader's last saved override across slug aliases", async (language) => {
+    const earlier = productOverride(true);
+    const later = { ...productOverride(false), slug: decodedProductSlug };
+    const hidden = await fixture({ overrides: [earlier, later] })(`/${language}/furniture/product/${canonicalProductSlug}`);
+    expect(hidden.response.status).toBe(404);
+    expect(hidden.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, nofollow");
+    const enabled = await fixture({ overrides: [later, earlier] })(`/${language}/furniture/product/${canonicalProductSlug}`);
+    expect(enabled.response.status).toBe(200);
+    expect(enabled.document.title).toContain(language === "en" ? earlier.name_en : earlier.name_zh);
+    expect(enabled.document.querySelector('meta[name="robots"]')?.getAttribute("content") || "").not.toContain("noindex");
+  });
+
+  it("does not turn malformed or double-encoded detail identities into a different product or listing seed", async () => {
+    const read = fixture({ overrides: [productOverride(true)] });
+    for (const slug of ["invalid-%E4%ZZ", encodeURIComponent(encodedProduct.slug), `other-${canonicalProductSlug}`]) {
+      const result = await read(`/en/furniture/product/${slug}`);
+      expect(result.response.status).toBe(404);
+      expect(result.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, nofollow");
+      expect(result.document.title).not.toContain("Current saved product");
+      const seedScript = result.document.querySelector("#flashcast-public-data");
+      const payload = seedScript ? JSON.parse(seedScript.textContent!) : {};
+      if (slug.startsWith("invalid-")) expect(payload.furnitureCatalog).toBeUndefined();
+      else expect(payload.furnitureCatalog?.detailSlug).toBeTruthy();
+    }
   });
 });
