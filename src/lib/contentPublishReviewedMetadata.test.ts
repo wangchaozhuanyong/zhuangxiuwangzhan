@@ -1,11 +1,25 @@
 import { spawnSync } from "node:child_process";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 import { inspectRawMetadata, inspectHydratedMetadata } from "../../scripts/lib/publisher-public-readback.mjs";
-import { createFrozenPublisherSourceFixture } from "../test/helpers/frozenPublisherSource.mjs";
+import { createFrozenPublisherSourceFixture, restoreFrozenPublisherMiddleware } from "../test/helpers/frozenPublisherSource.mjs";
 
 describe("source-derived exact public metadata", () => {
+  it("restores the exact furniture candidate without admitting source drift or changing the real middleware", () => {
+    const path = join(dirname(fileURLToPath(import.meta.url)), "../../functions/_middleware.ts");
+    const current = readFileSync(path);
+    const restored = restoreFrozenPublisherMiddleware(current);
+    expect(createHash("sha256").update(restored).digest("hex"))
+      .toBe("2c4c0e84bf3160ab60ac9e386a1084509158ec63f5ef4f56eefa3ef2928f382b");
+    expect(readFileSync(path).equals(current)).toBe(true);
+    expect(() => restoreFrozenPublisherMiddleware(Buffer.concat([current, Buffer.from("\n// unreviewed drift\n")])))
+      .toThrow(/only admits the exact reviewed/);
+    expect(() => restoreFrozenPublisherMiddleware(current, "0".repeat(64)))
+      .toThrow(/only admits the exact reviewed/);
+  });
   it("rejects extra text, altered spaces, and an old brand description in strict raw and hydrated checks", () => {
     const expected = { title: "闪铸设计 | FLASH CAST", description: "完整说明。闪铸设计关联 FLASH CAST。" };
     const html = (title: string, description: string) => `<title>${title}</title><meta name="description" content="${description}">`;

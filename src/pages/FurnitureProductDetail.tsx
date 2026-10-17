@@ -16,9 +16,12 @@ import { usePageWhatsAppMessage } from "@/contexts/PublicChromeContext";
 import { getFurnitureListingOrigin, LISTING_SCROLL_INTENT } from "@/lib/publicScrollRestoration";
 
 export default function FurnitureProductDetail() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug: routeSlug } = useParams<{ slug: string }>();
+  const location = useLocation();
+  // Keep the same raw route identity as prefetch; the catalog reader decodes once.
+  const slug = location.pathname.match(/^\/(?:en|zh)\/furniture\/product\/([^/]+)\/?$/)?.[1] || routeSlug;
   const { language } = useLanguage();
-  const origin = getFurnitureListingOrigin(useLocation().state);
+  const origin = getFurnitureListingOrigin(location.state);
   const returnState = origin ? { scrollIntent: LISTING_SCROLL_INTENT, scrollTop: origin.top } : undefined;
   const copy = furnitureText[language];
   const settings = useSiteSettings();

@@ -21,6 +21,21 @@ const historicalDisplayLabelsSha = "af4259387632733ddd96a75c2d5cec7aefc6c876c7c1
 const reviewedCurrentDisplayLabelsSha = "49cb866ef8d30edb3562b0b13ec53bc0cda0ef12ee2f78d80b0b1636bbbedd9b";
 
 export function restoreFrozenPublisherMiddleware(bytes, expectedFrozenSha = historicalMiddlewareSha) {
+  // Reverse only the exact furniture identity candidate inside this offline fixture.
+  // Both endpoints stay pinned; unknown middleware bytes still fail closed below.
+  if (hash(bytes) === "8276dc6b6f79975f4318bfdf27e6558882273d7a63401e36bed79c2b7042997d") {
+    const reversal = JSON.parse(readFileSync(join(projectRoot, "src/test/fixtures/product316-middleware-reversal.json"), "utf8"));
+    assert(reversal.candidate_sha256 === hash(bytes)
+      && reversal.parent_sha256 === "4f4227d45137df084b3e80c7f161841ba2e660a0d923ab1b6a6a1fe83b9a2061",
+    "Only the exact furniture candidate and its reviewed parent may be reversed");
+    let current = bytes.toString("utf8");
+    for (const [candidate, reviewed] of reversal.substitutions) {
+      assert(current.split(candidate).length === 2, "Only the exact reviewed furniture substitutions may be reversed");
+      current = current.replace(candidate, reviewed);
+    }
+    bytes = Buffer.from(current);
+    assert(hash(bytes) === reversal.parent_sha256, "Furniture reversal must equal the exact existing reviewed parent");
+  }
   // Admit only this exact summary candidate, then restore the already reviewed baseline bytes.
   if (hash(bytes) === "4f4227d45137df084b3e80c7f161841ba2e660a0d923ab1b6a6a1fe83b9a2061") {
     let current = bytes.toString("utf8");

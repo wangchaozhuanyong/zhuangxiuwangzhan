@@ -8,7 +8,7 @@ import {
 import { applyHtmlNoStoreHeaders, applyPublicHtmlEdgeCacheHeaders, createHtmlEtag, createPublicHtmlBrowserResponse, withHtmlCacheDebugHeader, getEdgeCache, getPublicHtmlDeploymentVersion, getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest, createPublicHtmlFreshnessResponse, PUBLIC_HTML_CACHE_TAG } from "./publicHtmlCache";
 import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreloads";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
-import { FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
+import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
@@ -1258,8 +1258,9 @@ const fetchDynamicRouteState = async (
   const path = match[2] || "/";
   if (/^\/furniture\/product\/[^/]+$/.test(path)) {
     const setting = await fetchFurnitureCatalogSetting(env);
-    const slug = decodeURIComponent(path.split("/").at(-1) || "");
-    const saved = readFurnitureCatalogOverrides(setting?.items_zh).find((item) => item.slug === slug);
+    const slug = normalizeFurnitureSlug(path.split("/").at(-1));
+    if (!slug) return null;
+    const saved = readFurnitureCatalogOverrides(setting?.items_zh).reverse().find((item) => normalizeFurnitureSlug(item.slug) === slug);
     if (saved) {
     const row = { slug, title_zh: saved.name_zh, title_en: saved.name_en, excerpt_zh: saved.shortDescription_zh,
       excerpt_en: saved.shortDescription_en, content_zh: saved.description_zh, content_en: saved.description_en,
@@ -1513,6 +1514,11 @@ const fetchProjectDetailBySlug = async (env: Record<string, string | undefined>,
 const normalizePath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
   if (cleaned === "/") return "/en";
+  const furnitureDetail = cleaned.match(/^(\/(?:en|zh)\/furniture\/product\/)([^/]+)$/);
+  if (furnitureDetail) {
+    const slug = normalizeFurnitureSlug(furnitureDetail[2]);
+    if (slug !== undefined) return `${furnitureDetail[1]}${encodeURIComponent(slug)}`;
+  }
   return cleaned;
 };
 
@@ -1833,13 +1839,15 @@ const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefin
 };
 
 const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefined>, detailSlug?: string) => {
+  const decodedDetailSlug = normalizeFurnitureSlug(detailSlug);
+  if (detailSlug !== undefined && decodedDetailSlug === undefined) return null;
   try {
   const [materials, setting] = await Promise.all([
     fetchPublicRows(env, `furniture-catalog-${detailSlug || "list"}`, "materials", (url) => {
       url.searchParams.set("select", detailSlug ? "*,material_images(image_url,sort_order)" : "id,slug,title_zh,title_en,excerpt_zh,excerpt_en,content_zh,content_en,image_url,subcategory,material_type,reference_price,price_mode,price_min,price_max,price_currency,price_unit,seo_title_zh,seo_title_en,seo_description_zh,seo_description_en");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("category", "eq.furniture");
-      if (detailSlug) { url.searchParams.set("slug", `eq.${detailSlug}`); url.searchParams.set("material_images.is_active", "eq.true"); }
+      if (detailSlug) { url.searchParams.set("slug", `eq.${decodedDetailSlug}`); url.searchParams.set("material_images.is_active", "eq.true"); }
       // Match the client catalog order so equal-priority cards do not swap on refresh.
       url.searchParams.set("order", "sort_order.asc,created_at.desc");
     }), fetchFurnitureCatalogSetting(env),
@@ -1869,7 +1877,10 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
   );
   const liveSitemapAvailable = /<urlset\b[\s\S]*<\/urlset>/i.test(dynamicXml)
     && isFreshCompleteDynamicSitemap(dynamicXml);
-  const hiddenSlugSet = new Set(hiddenSlugs);
+  const hiddenSlugSet = new Set(hiddenSlugs.flatMap((slug) => {
+    const normalized = normalizeFurnitureSlug(slug);
+    return normalized === undefined ? [] : [normalized];
+  }));
   const byLocation = new Map<string, string>();
   for (const match of blocks) {
     const block = match[0].trim();
@@ -1882,7 +1893,10 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
       if (isRedirectOnlySitemapPath(pathname)) continue;
       if (liveSitemapAvailable && !(manifest as Record<string, SeoEntry>)[pathname]?.owned_static && !dynamicLocations.has(location)) continue;
       const furnitureSlug = pathname.match(/^\/(?:en|zh)\/furniture\/product\/([^/]+)$/)?.[1];
-      if (furnitureSlug && hiddenSlugSet.has(decodeURIComponent(furnitureSlug))) continue;
+      if (furnitureSlug) {
+        const normalized = normalizeFurnitureSlug(furnitureSlug);
+        if (normalized === undefined || hiddenSlugSet.has(normalized)) continue;
+      }
     } catch {
       continue;
     }
@@ -1947,7 +1961,11 @@ const serveDynamicSeoAsset = async (
     });
   }
   const [staticResponse, dynamicXml, furnitureSetting] = values;
-  const hiddenSlugs = readFurnitureCatalogOverrides(furnitureSetting?.items_zh).filter((row) => !row.enabled).map((row) => row.slug);
+  const currentFurnitureOverrides = new Map(readFurnitureCatalogOverrides(furnitureSetting?.items_zh).flatMap((row) => {
+    const slug = normalizeFurnitureSlug(row.slug);
+    return slug === undefined ? [] : [[slug, row] as const];
+  }));
+  const hiddenSlugs = [...currentFurnitureOverrides.values()].filter((row) => !row.enabled).map((row) => row.slug);
   const staticText = staticResponse.ok ? await staticResponse.text() : "";
   if (pathname === "/sitemap.xml") {
     const xml = mergeSitemapXml(staticText, dynamicXml, hiddenSlugs);
@@ -2182,7 +2200,7 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectServiceAreas ? fetchPublicServiceAreas(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
-    shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug ? decodeURIComponent(furnitureDetailSlug) : undefined) : Promise.resolve(null),
+    shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeFurniture || fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeJournal || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeAreas || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),

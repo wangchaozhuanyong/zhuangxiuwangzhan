@@ -3,7 +3,11 @@ import { onRequest } from "../../functions/_middleware";
 import { sourceKinds, type PublicSourceTable } from "@/lib/publicContentQualification.mjs";
 
 vi.mock("../../functions/seo-manifest.json", () => ({ default: Object.fromEntries(
-  ["/en/about", "/zh/about", "/en/furniture/product/catalogue", "/zh/furniture/product/catalogue"].map(path => [path, { owned_static: true }]),
+  ["/en/about", "/zh/about", "/en/furniture/product/catalogue", "/zh/furniture/product/catalogue",
+    "/en/furniture/product/catalogue-%E6%A4%85", "/zh/furniture/product/catalogue-%E6%A4%85",
+    "/en/furniture/product/catalogue-%e6%a4%85", "/zh/furniture/product/catalogue-%e6%a4%85",
+    "/en/furniture/product/catalogue-%25e6%25a4%2585", "/en/furniture/product/another-%E6%A4%85",
+  ].map(path => [path, { owned_static: true }]),
 ) }));
 const site = "https://flashcast.com.my";
 type Row = Record<string, unknown> & { id: string };
@@ -18,12 +22,12 @@ const records = (count = 0) => Object.fromEntries(tables.map(table => [table, Ar
 const xml = (paths: string[]) => `<urlset>${paths.map(path => `<url><loc>${site}${path}</loc></url>`).join("")}</urlset>`;
 const staticPaths = ["/en/about", "/zh/about", "/en/furniture/product/catalogue", "/zh/furniture/product/catalogue", ...tables.map(table => `/en${prefixes[table]}${prefixes[table] ? "/withdrawn" : "/withdrawn-" + table}`)];
 
-async function readDiscovery(rows = records(), options: { cap?: number; failureTable?: PublicSourceTable; later?: boolean; malformed?: unknown; hidden?: boolean; noConfig?: boolean; asset?: "sitemap.xml" | "llms.txt" } = {}) {
+async function readDiscovery(rows = records(), options: { cap?: number; failureTable?: PublicSourceTable; later?: boolean; malformed?: unknown; hidden?: boolean; hiddenSlug?: string; overrides?: Record<string, unknown>[]; extraStaticPaths?: string[]; noConfig?: boolean; asset?: "sitemap.xml" | "llms.txt" } = {}) {
   const emptyTerminals = new Set<string>();
   const fetcher = vi.fn(async (input: RequestInfo | URL) => {
     const url = new URL(input instanceof Request ? input.url : String(input));
     const table = url.pathname.split("/").pop() as PublicSourceTable | "home_sections";
-    if (table === "home_sections") return new Response(JSON.stringify(options.hidden ? [{ items_zh: [{ slug: "catalogue", enabled: false, name_zh: "", name_en: "", shortDescription_zh: "", shortDescription_en: "", description_zh: "", description_en: "", price: "", images: [] }] }] : []));
+    if (table === "home_sections") return new Response(JSON.stringify(options.overrides || options.hidden || options.hiddenSlug ? [{ items_zh: options.overrides || [{ slug: options.hiddenSlug || "catalogue", enabled: false, name_zh: "", name_en: "", shortDescription_zh: "", shortDescription_en: "", description_zh: "", description_en: "", price: "", images: [] }] }] : []));
     const cursor = url.searchParams.get("id")?.slice(3) || "";
     if (table === options.failureTable && (!options.later || cursor)) return new Response("unavailable", { status: 503 });
     if (options.malformed !== undefined && table === "projects") return new Response(JSON.stringify(options.malformed));
@@ -33,7 +37,7 @@ async function readDiscovery(rows = records(), options: { cap?: number; failureT
   });
   vi.stubGlobal("fetch", fetcher);
   const env = { ...(options.noConfig ? {} : { VITE_SUPABASE_URL: "https://fixture.supabase.co", VITE_SUPABASE_ANON_KEY: "fixture-public-key" }),
-    ASSETS: { fetch: async (request: Request) => new Response(request.url.endsWith("/sitemap.xml") ? xml(staticPaths) : "# FLASH CAST\n\n## Canonical URL List\n- stale\n\n## Notes For AI Assistants\nUse official sources.") },
+    ASSETS: { fetch: async (request: Request) => new Response(request.url.endsWith("/sitemap.xml") ? xml([...staticPaths, ...(options.extraStaticPaths || [])]) : "# FLASH CAST\n\n## Canonical URL List\n- stale\n\n## Notes For AI Assistants\nUse official sources.") },
   };
   const response = await onRequest({ request: new Request(`${site}/${options.asset || "sitemap.xml"}`), env, next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
   return { response, text: await response.text(), emptyTerminals, fetcher };
@@ -100,6 +104,27 @@ describe("complete current runtime discovery", () => {
     const hidden = await readDiscovery(records(), { hidden: true });
     expect(hidden.text).not.toContain("furniture/product/catalogue");
     expect(hidden.text).toContain(`${site}/en/about`);
+  });
+  it.each(["sitemap.xml", "llms.txt"] as const)("withdraws equivalent encoded furniture URLs from %s without hiding other identities", async (asset) => {
+    const equivalents = ["en", "zh"].flatMap((language) => [
+      `/${language}/furniture/product/catalogue-%E6%A4%85`,
+      `/${language}/furniture/product/catalogue-%e6%a4%85`,
+    ]);
+    const separate = ["/en/furniture/product/catalogue-%25e6%25a4%2585", "/en/furniture/product/another-%E6%A4%85"];
+    const options = { asset, extraStaticPaths: [...equivalents, ...separate] };
+    const visible = await readDiscovery(records(), options);
+    for (const path of [...equivalents, ...separate]) expect(visible.text).toContain(`${site}${path}`);
+    const hidden = await readDiscovery(records(), { ...options, hiddenSlug: "catalogue-%e6%a4%85" });
+    expect(hidden.response.status).toBe(200);
+    for (const path of equivalents) expect(hidden.text).not.toContain(`${site}${path}`);
+    for (const path of separate) expect(hidden.text).toContain(`${site}${path}`);
+    expect(hidden.text).toContain(`${site}/en/about`);
+    const disabled = { slug: "catalogue-%e6%a4%85", enabled: false, name_zh: "", name_en: "", shortDescription_zh: "", shortDescription_en: "", description_zh: "", description_en: "", price: "", images: [] };
+    const enabled = { ...disabled, slug: "catalogue-椅", enabled: true };
+    const enabledAgain = await readDiscovery(records(), { ...options, overrides: [disabled, enabled] });
+    for (const path of equivalents) expect(enabledAgain.text).toContain(`${site}${path}`);
+    const disabledAgain = await readDiscovery(records(), { ...options, overrides: [enabled, disabled] });
+    for (const path of equivalents) expect(disabledAgain.text).not.toContain(`${site}${path}`);
   });
   it("returns the same qualified set in AI discovery and sitemap without stale counts", async () => {
     const rows = records(1);

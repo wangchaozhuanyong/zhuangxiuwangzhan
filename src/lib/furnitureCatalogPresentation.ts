@@ -1,7 +1,7 @@
 import catalogJson from "../data/furnitureCatalog.json";
 import catalogZhJson from "../data/furnitureCatalogZh.json";
 import catalogEnJson from "../data/furnitureCatalogEn.json";
-import { applyFurnitureCatalogOverrides, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
+import { applyFurnitureCatalogOverrides, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
 import type { Language } from "../i18n/routes";
 import type { Database } from "./database.types";
 import { formatMaterialPrice } from "./materialPrice";
@@ -67,7 +67,10 @@ const productsByUrl = new Map(furnitureCatalog.products.map((product) => [produc
 const productsBySlug = new Map(furnitureCatalog.products.map((product) => [decodeURIComponent(product.slug), product]));
 
 /** Preserve the exact baseline-slug lookup used by managed catalog readers. */
-export const hasBaselineFurnitureSlug = (slug: string) => productsBySlug.has(slug);
+export const hasBaselineFurnitureSlug = (slug: string) => {
+  const normalized = normalizeFurnitureSlug(slug);
+  return normalized !== undefined && productsBySlug.has(normalized);
+};
 
 export const getFurnitureCategory = (key?: string) =>
   furnitureCatalog.taxonomy.find((category) => category.key === key);
@@ -79,12 +82,8 @@ export const getFurnitureProducts = (urls: string[]) =>
   urls.map((url) => productsByUrl.get(url)).filter((product): product is FurnitureProduct => Boolean(product));
 
 export const getFurnitureProduct = (slug?: string) => {
-  if (!slug) return undefined;
-  try {
-    return productsBySlug.get(decodeURIComponent(slug));
-  } catch {
-    return undefined;
-  }
+  const normalized = normalizeFurnitureSlug(slug);
+  return normalized === undefined ? undefined : productsBySlug.get(normalized);
 };
 
 export const mapManagedFurnitureProduct = (row: FurnitureMaterialRow, language: Language): FurnitureProduct => {
@@ -126,7 +125,7 @@ export const getManagedFurnitureProductsForCategory = (products: FurnitureProduc
   );
 
 export const mapFurnitureCatalogSeed = (rows: FurnitureMaterialRow[], setting: { items_zh?: unknown } | null, language: Language) => [
-  ...rows.filter((row) => !productsBySlug.has(row.slug)).map((row) => mapManagedFurnitureProduct(row, language)),
+  ...rows.filter((row) => !hasBaselineFurnitureSlug(row.slug)).map((row) => mapManagedFurnitureProduct(row, language)),
   ...applyFurnitureCatalogOverrides(furnitureCatalog.products.map((product) => localizeFurnitureProduct(product, language)), readFurnitureCatalogOverrides(setting?.items_zh), language),
 ];
 

@@ -73,6 +73,37 @@ describe("published admin furniture catalog", () => {
     expect(getFurnitureProduct(staticProduct.slug)).toBe(staticProduct);
   });
 
+  it.each(["云团沙发", "1803齐边床"])("keeps %s baseline ownership across decoded and percent-case aliases", async (decoded) => {
+    const product = getFurnitureProduct(decoded)!;
+    for (const slug of [decoded, product.slug, encodeURIComponent(decoded)]) {
+      vi.mocked(fetchPublishedMaterialRowsByCategory).mockResolvedValue([{ ...managedRow, slug }]);
+      expect(await getPublishedManagedFurnitureProducts("en")).toEqual([]);
+      expect(await getPublishedManagedFurnitureProductBySlug(slug, "zh")).toBeNull();
+      expect(getFurnitureProduct(slug)).toBe(product);
+    }
+    expect(fetchPublishedMaterialBySlugAndCategory).not.toHaveBeenCalled();
+  });
+
+  it("preserves saved edits and explicit disablement across non-ASCII override representations", async () => {
+    const decoded = "云团沙发";
+    const product = getFurnitureProduct(decoded)!;
+    for (const slug of [decoded, product.slug, encodeURIComponent(decoded)]) {
+      const saved = { slug, enabled: true, name_zh: "已保存测试商品", name_en: "Saved test product",
+        shortDescription_zh: "已保存简介", shortDescription_en: "Saved summary", description_zh: "已保存详情",
+        description_en: "Saved full description", price: "RM 999", images: ["/saved-test.webp"] };
+      vi.mocked(fetchPublishedMaterialRowsByCategory).mockResolvedValue([{ ...managedRow, slug }]);
+      vi.mocked(fetchPublishedHomeSectionRow).mockResolvedValue({ items_zh: [saved] } as never);
+      for (const language of ["en", "zh"] as const) {
+        const detail = await getPublishedFurnitureProductBySlug(decoded, language);
+        expect(detail).toMatchObject({ slug: product.slug, name: saved[`name_${language}`], description: saved[`description_${language}`], price: "RM 999" });
+        expect((await getPublishedFurnitureCatalog(language)).find((item) => item.slug === product.slug)).toEqual(detail);
+      }
+      saved.enabled = false;
+      expect(await getPublishedFurnitureProductBySlug(decoded, "en")).toBeNull();
+      expect((await getPublishedFurnitureCatalog("zh")).some((item) => decodeURIComponent(item.slug) === decoded)).toBe(false);
+    }
+  });
+
   it("loads the published detail gallery for an admin product", async () => {
     vi.mocked(fetchPublishedMaterialBySlugAndCategory).mockResolvedValue({
       ...managedRow,
@@ -86,6 +117,25 @@ describe("published admin furniture catalog", () => {
 
     expect(fetchPublishedMaterialBySlugAndCategory).toHaveBeenCalledWith(managedRow.slug, "furniture", undefined);
     expect(detail?.images).toEqual(["/chair-cover.webp", "/chair-side.webp", "/chair-back.webp"]);
+  });
+
+  it.each(["en", "zh"] as const)("reads a managed non-ASCII %s detail by its once-decoded database slug", async (language) => {
+    const slug = "后台椅子";
+    vi.mocked(fetchPublishedMaterialBySlugAndCategory).mockImplementation(async (candidate) => candidate === slug ? { ...managedRow, slug } : null);
+    for (const representation of [slug, encodeURIComponent(slug), encodeURIComponent(slug).toLowerCase()]) {
+      expect(await getPublishedFurnitureProductBySlug(representation, language)).toMatchObject({ slug });
+      expect(fetchPublishedMaterialBySlugAndCategory).toHaveBeenLastCalledWith(slug, "furniture", undefined);
+    }
+    expect(await getPublishedFurnitureProductBySlug(encodeURIComponent(encodeURIComponent(slug)), language)).toBeNull();
+    expect(fetchPublishedMaterialBySlugAndCategory).toHaveBeenLastCalledWith(encodeURIComponent(slug), "furniture", undefined);
+  });
+
+  it("does not read malformed managed slugs or revive a baseline alias returned by the repository", async () => {
+    for (const slug of ["%", "%ZZ", "%E0%A4%A"]) expect(await getPublishedFurnitureProductBySlug(slug, "en")).toBeNull();
+    expect(fetchPublishedMaterialBySlugAndCategory).not.toHaveBeenCalled();
+    const encodedBaseline = encodeURIComponent("云团沙发");
+    vi.mocked(fetchPublishedMaterialBySlugAndCategory).mockResolvedValue({ ...managedRow, slug: encodedBaseline });
+    expect(await getPublishedFurnitureProductBySlug(encodeURIComponent(encodedBaseline), "zh")).toBeNull();
   });
 
   it("shares bilingual edits, prices and images between the catalog and product detail", async () => {
