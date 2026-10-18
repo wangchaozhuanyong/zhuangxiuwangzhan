@@ -21,11 +21,11 @@ export default function LanguageSelector({ placement = "header" }: { placement?:
 
   return <>
     <button ref={triggerRef} type="button" className={`language-selector language-selector--${placement}`}
-      aria-label={`${text.trigger}: ${selected.name}`} aria-haspopup="dialog" aria-expanded={open}
+      aria-label={`${text.trigger}: ${text.names[language]}`} aria-haspopup="dialog" aria-expanded={open}
       onPointerEnter={warmDrawer} onFocus={warmDrawer}
       onKeyDown={(event) => { if (event.key === "Escape") setOpenPath(null); }}
       onClick={() => setOpenPath(routeKey)}>
-      <Globe2 aria-hidden="true" /><span lang={selected.tag}>{selected.shortName}</span><ChevronDown aria-hidden="true" />
+      <Globe2 aria-hidden="true" /><span lang={selected.tag}>{text.shortNames[language]}</span><ChevronDown aria-hidden="true" />
     </button>
     {open && <Suspense fallback={null}><LanguageDrawer triggerRef={triggerRef} close={() => setOpenPath(null)} /></Suspense>}
   </>;

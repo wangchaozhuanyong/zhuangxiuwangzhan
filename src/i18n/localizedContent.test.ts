@@ -30,11 +30,12 @@ describe("Malay public content", () => {
     expect(mapPublishedService({ ...record, content_ms: null }, "ms")).toMatchObject({ description: record.content_en, translationComplete: false });
   });
 
-  it("provides all three native names and complete picker copy", () => {
+  it("provides all three language options and complete localized picker copy", () => {
     expect(languageOptions.map(({ code }) => code)).toEqual(["zh", "en", "ms"]);
     for (const language of ["zh", "en", "ms"] as const) {
       expect(Object.keys(languageSelectorText[language]).sort()).toEqual(Object.keys(languageSelectorText.en).sort());
       expect(Object.values(languageSelectorText[language].names).every((name) => name.trim())).toBe(true);
+      expect(Object.keys(languageSelectorText[language].shortNames).sort()).toEqual(["en", "ms", "zh"]);
     }
   });
 });
