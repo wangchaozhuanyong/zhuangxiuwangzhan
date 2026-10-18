@@ -60,6 +60,7 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "blog_post": return payload.blogPosts ? mapPublishedBlogPostRows(payload.blogPosts, language).find((post) => post.slug === parameters.slug && Boolean(post.content?.trim())) : undefined;
     case "service_areas": return payload.serviceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));
     case "home_bundle": return payload.homeContentBundle ? createRemoteContent(mapRemoteHomeContentBundle(payload.homeContentBundle, language)) : undefined;
+    case "process_steps": return payload.processSteps ? mapRemoteHomeContentBundle({ process_steps: payload.processSteps }, language).processSteps : undefined;
     case "site_page": { const bundle = payload.sitePages?.[String(parameters.pageKey)]; return bundle ? mapSitePageRows(bundle, language) : undefined; }
     case "cta": { const row = payload.ctaBlocks?.[String(parameters.blockKey)]; return row ? mapPublishedCtaBlockRow(row, language) : undefined; }
     default: return undefined;

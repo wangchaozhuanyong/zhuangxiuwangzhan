@@ -7,7 +7,7 @@ import FurnitureShowcase from "./FurnitureShowcase";
 import { furnitureCatalog, mapFurnitureCatalogSeed, type FurnitureProduct, type FurnitureMaterialRow } from "@/lib/furnitureCatalogPresentation";
 import furnitureTaxonomyLabels from "@/i18n/furnitureTaxonomyLabels.json";
 
-const source = vi.hoisted(() => ({ language: "en" as "en" | "zh", products: undefined as FurnitureProduct[] | undefined }));
+const source = vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); return { language: "en" as "en" | "zh", products: undefined as FurnitureProduct[] | undefined }; });
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: source.language }) }));
 vi.mock("@/hooks/usePublishedContent", () => ({ usePublishedFurnitureCatalog: () => ({ data: source.products, isLoading: source.products === undefined, isFetching: source.products === undefined, isInitialError: false, refetch: vi.fn() }) }));
 vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettings: () => ({ company_name: "FLASH CAST", brand_name: "FLASH CAST" }) }));

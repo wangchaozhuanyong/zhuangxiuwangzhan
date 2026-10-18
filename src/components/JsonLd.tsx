@@ -4,17 +4,18 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 import { getPublicBrandAliases } from "@/i18n/brandIdentity";
+import { useStructuredDataNode } from "@/contexts/StructuredDataContext";
 
-const shouldRenderClientJsonLd = import.meta.env.DEV;
 const getSameAs = getSocialProfileUrls;
 
 const JsonLdScript = ({ data }: { data: unknown }) => {
-  if (!shouldRenderClientJsonLd) return null;
+  const managed = useStructuredDataNode(data);
+  if (managed || data === null) return null;
 
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
     />
   );
 };
@@ -152,6 +153,7 @@ export const JsonLdService = ({
   areaServed?: string;
 }) => {
   const settings = useSiteSettings();
+  const { language } = useLanguage();
   const data = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -166,7 +168,7 @@ export const JsonLdService = ({
     areaServed: areaServed || "Kuala Lumpur, Selangor, Malaysia",
     availableChannel: {
       "@type": "ServiceChannel",
-      serviceUrl: `${siteConfig.url}/quote`,
+      serviceUrl: `${siteConfig.url}${withLanguagePrefix("/quote", language)}`,
       servicePhone: settings.phone_e164,
     },
   };
@@ -239,6 +241,7 @@ export const JsonLdBlogPosting = ({
 };
 
 export const JsonLdBreadcrumb = ({ items }: { items: { name: string; url: string }[] }) => {
+  const { language } = useLanguage();
   const data = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -246,7 +249,7 @@ export const JsonLdBreadcrumb = ({ items }: { items: { name: string; url: string
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: `${siteConfig.url}${item.url}`,
+      item: `${siteConfig.url}${withLanguagePrefix(stripLanguagePrefix(item.url), language)}`,
     })),
   };
 

@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { withChineseBrandMetadata } from "@/i18n/brandIdentity";
+import { useStructuredDataNode } from "@/contexts/StructuredDataContext";
 
 interface PageMetaProps {
   title: string;
@@ -51,6 +52,11 @@ const PageMeta = ({
   const canonicalUrl = `${siteConfig.url}${withLanguagePrefix(path, language)}`;
   const zhUrl = `${siteConfig.url}${withLanguagePrefix(path, "zh")}`;
   const enUrl = `${siteConfig.url}${withLanguagePrefix(path, "en")}`;
+  useStructuredDataNode(noIndex ? null : {
+    "@type": "WebPage", url: canonicalUrl, name: metadata.title, description: metadata.description,
+    inLanguage: language === "zh" ? "zh-CN" : "en",
+    primaryImageOfPage: { "@type": "ImageObject", url: image },
+  });
 
   return (
     <Helmet>

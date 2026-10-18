@@ -115,7 +115,7 @@ const Quote = () => {
   const [honeypot, setHoneypot] = useState("");
   const requiredCompletion = useMemo(
     () => ({
-      done: [form.name.trim(), form.phone.trim(), form.projectType, form.location.trim()].filter(Boolean).length,
+      done: [form.name.trim(), isValidLeadPhone(form.phone), form.projectType, form.location.trim()].filter(Boolean).length,
       total: 4,
     }),
     [form.location, form.name, form.phone, form.projectType],
@@ -378,7 +378,7 @@ const Quote = () => {
                   </div>
                   <div>
                     <label htmlFor="quote-phone" className="mb-1.5 block text-sm">{t.phone}</label>
-                    <Input id="quote-phone" name="phone" type="tel" autoComplete="tel" value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} placeholder={t.contactLabel} required aria-required="true" aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
+                    <Input id="quote-phone" name="phone" type="tel" autoComplete="tel" value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} onBlur={() => setErrorKeys((current) => ({ ...current, phone: !form.phone.trim() ? "requiredPhone" : !isValidLeadPhone(form.phone) ? "invalidPhone" : undefined }))} placeholder={t.contactLabel} required aria-required="true" aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
                     {errors.phone && <p id="quote-phone-error" role="alert" className="mt-1 text-xs text-destructive">{errors.phone}</p>}
                   </div>
                 </div>

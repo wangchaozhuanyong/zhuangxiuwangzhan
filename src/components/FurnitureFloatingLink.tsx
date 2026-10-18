@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
 import { furnitureText } from "@/i18n/furnitureText";
-import { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
+import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
 
 export default function FurnitureFloatingLink() {
   const { language } = useLanguage();
@@ -20,7 +20,7 @@ export default function FurnitureFloatingLink() {
       className="fc-furniture-floating"
       data-obstructed={obstructed || undefined}
       lang={language}
-      href={new URL(`${language}/`, furnitureShopUrl).href}
+      href={furnitureShopUrlForLanguage(language)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={copy.floatingShop}

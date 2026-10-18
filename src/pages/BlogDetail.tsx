@@ -349,7 +349,7 @@ const BlogDetail = () => {
       </SchemeASection>
 
       <SchemeASection title={t.moreArticles}>
-        <SchemeAListingGrid actionLabel={t.backToBlog} items={otherPosts.map((item) => ({ id: String(item.id), title: displayText(item.title), meta: translateBlogCategory(resolveBlogTopic(item.category, item.slug), language), image: item.image, imageAlt: item.imageAlt || item.title, href: `/blog/${item.slug}` }))} />
+        <SchemeAListingGrid actionLabel={t.readArticle} items={otherPosts.map((item) => ({ id: String(item.id), title: displayText(item.title), meta: translateBlogCategory(resolveBlogTopic(item.category, item.slug), language), image: item.image, imageAlt: item.imageAlt || item.title, href: `/blog/${item.slug}` }))} />
       </SchemeASection>
     </main>
   );

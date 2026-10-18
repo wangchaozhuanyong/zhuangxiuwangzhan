@@ -11,7 +11,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { withLanguagePrefix } from "@/i18n/routes";
 import { usePublishedFurnitureProduct } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureText, formatFurnitureEnquiryMessage } from "@/i18n/furnitureText";
-import { furnitureShopUrl, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
 import { usePageWhatsAppMessage } from "@/contexts/PublicChromeContext";
 import { getFurnitureListingOrigin, LISTING_SCROLL_INTENT } from "@/lib/publicScrollRestoration";
 
@@ -101,7 +102,7 @@ export default function FurnitureProductDetail() {
             {localizedProduct.shortDescription ? <p className="fc-furniture-detail__summary">{localizedProduct.shortDescription.split("\n").slice(0, 2).join("\n")}</p> : null}
             <div className="fc-furniture-detail__actions">
               <a className="is-whatsapp" href={settings.whatsapp_url(message)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon />{copy.enquire}</a>
-              <a className="is-shop" href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={`${copy.buyNow} · ${copy.shopLabel}`}>{copy.buyNow}</a>
+              <a className="is-shop" href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer" aria-label={`${copy.buyNow} · ${copy.shopLabel}`}>{copy.buyNow}</a>
             </div>
             <p className="fc-furniture-detail__note">{localizedProduct.availabilityNote || copy.note}</p>
             {displaySku && displaySku !== "N/A" ? <dl><dt>{localizedProduct.skuLabel || copy.sku}</dt><dd>{displaySku}</dd></dl> : null}

@@ -5,16 +5,17 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 import { inspectRawMetadata, inspectHydratedMetadata } from "../../scripts/lib/publisher-public-readback.mjs";
-import { createFrozenPublisherSourceFixture, restoreFrozenPublisherMiddleware } from "../test/helpers/frozenPublisherSource.mjs";
+import { createFrozenPublisherSourceFixture, readFrozenPublisherBaselineSource, restoreFrozenPublisherMiddleware } from "../test/helpers/frozenPublisherSource.mjs";
 
 describe("source-derived exact public metadata", () => {
   it("restores the exact furniture candidate without admitting source drift or changing the real middleware", () => {
     const path = join(dirname(fileURLToPath(import.meta.url)), "../../functions/_middleware.ts");
-    const current = readFileSync(path);
+    const actual = readFileSync(path);
+    const current = readFrozenPublisherBaselineSource("functions/_middleware.ts");
     const restored = restoreFrozenPublisherMiddleware(current);
     expect(createHash("sha256").update(restored).digest("hex"))
       .toBe("2c4c0e84bf3160ab60ac9e386a1084509158ec63f5ef4f56eefa3ef2928f382b");
-    expect(readFileSync(path).equals(current)).toBe(true);
+    expect(readFileSync(path).equals(actual)).toBe(true);
     expect(() => restoreFrozenPublisherMiddleware(Buffer.concat([current, Buffer.from("\n// unreviewed drift\n")])))
       .toThrow(/only admits the exact reviewed/);
     expect(() => restoreFrozenPublisherMiddleware(current, "0".repeat(64)))

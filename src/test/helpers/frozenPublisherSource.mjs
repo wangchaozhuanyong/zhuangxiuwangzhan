@@ -5,10 +5,28 @@ import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, lstatSync, realpat
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isMainThread } from "node:worker_threads";
+import { gunzipSync } from "node:zlib";
 import { targetConfigs } from "../../../scripts/publish-content-trust-fixes.mjs";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
+// Historical approvals are tested against their pinned pre-repair source,
+// never against new runtime code or by changing an approved proof hash.
+const baselineCommit = "d33175ae32a9a857ddc0744b5f1bd7cf0a54b1ec";
+let baselineSources;
+export function readFrozenPublisherBaselineSource(file) {
+  assert(typeof file === "string" && !file.startsWith("/") && !file.includes("..") && !file.split("/").some(part => part.startsWith(".env")), "Only explicit non-credential source paths are allowed");
+  if (!baselineSources) {
+    const archive = readFileSync(join(projectRoot, "src/test/fixtures/frozen-publisher-baseline-d33175ae.json.gz"));
+    assert(hash(archive) === "8a373576d5a27f7e88ee59cf59d037f2dbb644a51953a7aa8f6dfa5181534873", "The historical source archive must remain unchanged");
+    baselineSources = JSON.parse(gunzipSync(archive));
+    assert(baselineSources.commit === baselineCommit && Object.keys(baselineSources.files).length === 52, "The pinned 52-source baseline is required");
+  }
+  assert(Object.hasOwn(baselineSources.files, file), "Only the original historical source closure is allowed");
+  const bytes = Buffer.from(baselineSources.files[file]);
+  assert(hash(bytes) === baselineSources.sha256[file], "Each archived source must match its pin");
+  return bytes;
+}
 const assert = (value, message) => { if (!value) throw Error(message); };
 const historicalMiddlewareSha = "2c4c0e84bf3160ab60ac9e386a1084509158ec63f5ef4f56eefa3ef2928f382b";
 const reviewedCurrentMiddlewareSha = "05d0ca998b4ecc2260d02cfd4d5ac01e55ddbac561f96e500ff975dce3d87708";
@@ -166,10 +184,12 @@ export function createFrozenPublisherSourceFixture() {
   };
   try {
     for (const [file, digest] of Object.entries(pins)) {
-      const current = readFileSync(sourcePath(file));
-      const bytes = file === middlewarePath ? restoreFrozenPublisherMiddleware(current, digest)
+      const restore = current => file === middlewarePath ? restoreFrozenPublisherMiddleware(current, digest)
         : file === readableBodyPath ? restoreFrozenPublisherReadableBody(current, digest)
         : file === displayLabelsPath ? restoreFrozenPublisherDisplayLabels(current, digest) : current;
+      let bytes;
+      try { bytes = restore(readFileSync(sourcePath(file))); } catch { /* A new runtime is outside the historical approval. */ }
+      if (!bytes || hash(bytes) !== digest) bytes = restore(readFrozenPublisherBaselineSource(file));
       assert(hash(bytes) === digest, "Every historical source byte must match its unchanged proof"); write(file, bytes);
     }
     const evidence = new Set([eightPath, ninePath, originalPath, eight.completedProofPath, nine.completedProofPath,

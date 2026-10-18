@@ -12,6 +12,7 @@ import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCat
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
+import { buildExpandedReadableBody } from "./expandedReadableBody";
 import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
 import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
@@ -212,6 +213,7 @@ const publicHtmlRefreshes = new Map<string, Promise<void>>();
 
 const PROJECT_SUMMARY_SELECT = [
   "id",
+  "status",
   "slug",
   "title_en",
   "title_zh",
@@ -1284,7 +1286,7 @@ const fetchDynamicRouteState = async (
     if (!routeMatch?.[1]) continue;
     const slug = decodeURIComponent(routeMatch[1]);
     const readResult = await fetchFreshPublicRowsResult(env, route.table, (url) => {
-      url.searchParams.set("select", route.kind === "blog" && (slug === "renovation-materials-malaysia" || slug === "small-condo-storage-design-ideas") ? `${BLOG_EDGE_META_SELECT},content_en,content_zh,status` : route.select || "*");
+      url.searchParams.set("select", route.kind === "blog" ? `${BLOG_EDGE_META_SELECT},content_en,content_zh,status` : route.select || "*");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("slug", `eq.${slug}`);
       if (route.category) url.searchParams.set("category", `eq.${route.category}`);
@@ -2151,7 +2153,7 @@ export const onRequest: PagesFunction = async (context) => {
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
   const reviewedMaterialBody = isReviewedMaterialBodyPath(key);
-  const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug) || reviewedMaterialBody;
+  const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug) || reviewedMaterialBody || /^\/(en|zh)\/materials\/category\//.test(key);
   const shouldInjectServiceAreas = topLevelPublicPageKey === "locations";
   const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
   const furniturePath = key.replace(/^\/(?:en|zh)/, "");
@@ -2174,6 +2176,7 @@ export const onRequest: PagesFunction = async (context) => {
     homeFurniture,
     homeJournalPosts,
     homeServiceAreas,
+    processSteps,
   ] = await Promise.all([
     prefetchedSiteSettings !== undefined
       ? Promise.resolve(prefetchedSiteSettings)
@@ -2204,6 +2207,10 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectHomeBundle ? earlyHomeFurniture || fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeJournal || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeAreas || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),
+    /^\/(en|zh)\/process$/.test(key) ? fetchPublicRows(env as Record<string, string | undefined>, "process_steps", "process_steps", (url) => {
+      url.searchParams.set("select", "step_number,title_en,title_zh,description_en,description_zh,status");
+      url.searchParams.set("status", "eq.published"); url.searchParams.set("order", "step_number.asc");
+    }) : Promise.resolve(null),
   ]);
 
   const furnitureListingRoute = getFurnitureListingRoute(key);
@@ -2232,7 +2239,8 @@ export const onRequest: PagesFunction = async (context) => {
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
-  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);
+  const expandedBody = readableBody || buildExpandedReadableBody(key, { row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, processSteps });
+  let transformed = meta ? injectSeo(html, meta, siteSettings, expandedBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
   if (siteSettings) {
@@ -2272,6 +2280,7 @@ export const onRequest: PagesFunction = async (context) => {
   if (blogPosts?.length) {
     publicDataPayload.blogPosts = projectBlogPostSummariesForPreload(blogPosts);
   }
+  if (processSteps) publicDataPayload.processSteps = processSteps;
   if (footerCtaBlock) {
     publicDataPayload.ctaBlocks = {
       home_final: projectCtaBlockForPreload(footerCtaBlock),
