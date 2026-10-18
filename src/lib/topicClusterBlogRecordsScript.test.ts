@@ -215,7 +215,7 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain('if [ "$PUBLISH_TARGET" = "remaining-completion-20261009" ]; then');
     expect(workflow).toContain('[ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ]');
     expect(workflow).toContain('[ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]');
-    expect(workflow).toContain("if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' }}");
+    expect(workflow).toContain("if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' }}");
     expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
       .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
     for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {

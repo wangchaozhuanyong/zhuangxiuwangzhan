@@ -1,0 +1,18 @@
+{
+  "original_task_id": "fc-20261019-malay-cms-published-content-v1",
+  "candidate_version": "rental-unit-renovation-kl-malay-v1",
+  "record_id": "ef92b60e-3541-40c7-8997-621df78cbdea",
+  "restore_fields": {
+    "title_ms": null,
+    "excerpt_ms": null,
+    "content_ms": null,
+    "alt_ms": null,
+    "seo_title_ms": null,
+    "seo_description_ms": null
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

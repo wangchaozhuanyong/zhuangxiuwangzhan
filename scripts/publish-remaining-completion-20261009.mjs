@@ -209,7 +209,7 @@ export function assertActualPublish(entry, receipt, current, permit, identity, a
     && stableDigest(project(current, entry.retainedProjectionFields)) === entry.retainedFieldsSha256
     && receipt.postcheck.ok === true && receipt.postcheck.rowMismatches.length === 0
     && same(receipt.postcheck.pageChecks.map((page) => page.path), targetConfigs[entry.target].publicPaths.map((page) => page.path))
-    && receipt.postcheck.pageChecks.length === 2 && receipt.postcheck.pageChecks.every((page) => page.status === 200
+    && receipt.postcheck.pageChecks.length === targetConfigs[entry.target].publicPaths.length && receipt.postcheck.pageChecks.every((page) => page.status === 200
       && page.found === true && page.forbiddenFound.length === 0 && page.missingRequired.length === 0 && (!targetConfigs[entry.target].publicPaths.find((config) => config.path === page.path)?.renderedRequiredPhrases?.length || page.rendered?.ok === true))
     && permit?.status === "completed" && permit.operation === "publish"
     && permit.taskId === entry.taskId && permit.actionId === entry.actionId && permit.candidateVersion === entry.candidateVersion

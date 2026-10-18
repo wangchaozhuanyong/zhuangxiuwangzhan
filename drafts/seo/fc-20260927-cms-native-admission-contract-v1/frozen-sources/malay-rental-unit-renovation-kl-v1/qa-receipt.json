@@ -1,0 +1,34 @@
+{
+  "qa_receipt_id": "malay-review-rental-unit-renovation-kl-v1",
+  "result": "PASS_MALAY_TRANSLATION_REVIEW",
+  "record_id": "ef92b60e-3541-40c7-8997-621df78cbdea",
+  "slug": "rental-unit-renovation-kl",
+  "current_updated_at": "2026-10-10T10:00:01.220898+00:00",
+  "exact_payload_sha256": "50005c9ee0deffd8e2fd9646decadcbcea8528d9a70abedc79d8d8ced79b59b3",
+  "coverage_fields": [
+    "title_ms",
+    "excerpt_ms",
+    "content_ms",
+    "alt_ms",
+    "seo_title_ms",
+    "seo_description_ms"
+  ],
+  "reviewer": "Codex (appointed by the website owner)",
+  "reviewed_at": "2026-10-19",
+  "decision": "PASS_MALAY_TRANSLATION_REVIEW",
+  "review_method": "Compared each section against the current Chinese and English CMS source; checked terminology, unsupported claims, localized internal links, and title/metadata consistency.",
+  "source_languages": [
+    "zh",
+    "en"
+  ],
+  "verified_ms_routes": [
+    "/ms/blog/renovation-handover-defect-checklist-malaysia",
+    "/ms/services/renovation"
+  ],
+  "notes": [
+    "The translation preserves the source's maintenance, budgeting, quotation-preparation and handover guidance.",
+    "The no-guarantee qualification is retained.",
+    "Internal links use verified /ms routes.",
+    "This is a linguistic and source-fidelity review, not a technical inspection or price guarantee."
+  ]
+}
