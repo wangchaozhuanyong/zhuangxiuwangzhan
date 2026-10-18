@@ -97,12 +97,18 @@ export async function exercisePublicLanguageSwitch(page, fromPath) {
         if (probe.startedMs === null || probe.completedMs !== null) return;
         const content = document.querySelector("[data-route-visual-state]");
         const heading = document.querySelector("#main-content h1");
+        const fallbackNotice = document.querySelector('.language-content-notice[lang="ms-MY"]');
+        const expectedMalayFallback = language === "ms" && Boolean(fallbackNotice?.textContent?.trim()) &&
+          fallbackNotice.getClientRects().length > 0 && getComputedStyle(fallbackNotice).visibility !== "hidden";
         if (content && ["ready", "handoff", "degraded"].includes(content.getAttribute("data-route-visual-state")) &&
           location.pathname === targetPath && document.documentElement.lang === (language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en") &&
-          Boolean(heading?.textContent?.trim()) && heading.textContent.trim() !== before.trim() &&
+          Boolean(heading?.textContent?.trim()) && (heading.textContent.trim() !== before.trim() || expectedMalayFallback) &&
           !content.querySelector('[data-route-pending="true"]') && !content.hasAttribute("inert") &&
           !content.querySelector('[data-public-results][inert]') &&
-          !document.getElementById("root")?.hasAttribute("inert")) probe.completedMs = performance.now();
+          !document.getElementById("root")?.hasAttribute("inert")) {
+          probe.completedMs = performance.now();
+          probe.contentMode = expectedMalayFallback ? "english-fallback" : "translated";
+        }
       };
       const captureClick = (event) => {
         const option = event.target instanceof Element ? event.target.closest(".language-drawer__option, .scheme-a-language-option") : null;
@@ -125,9 +131,9 @@ export async function exercisePublicLanguageSwitch(page, fromPath) {
       await page.locator(`.language-drawer__option[hreflang="${language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en"}"]:visible, .scheme-a-language-option[hreflang="${language === "zh" ? "zh-CN" : "en"}"]:visible`).first().click();
       await page.waitForFunction(() => window.__flashcastLanguageProbe?.completedMs !== null, undefined, { timeout: 15_000 });
       const receipt = await page.evaluate(() => {
-        const { startedMs, completedMs } = window.__flashcastLanguageProbe;
+        const { startedMs, completedMs, contentMode } = window.__flashcastLanguageProbe;
         const metrics = window.__flashcastInteractionMetrics?.read();
-        return { clickToTranslatedContentMs: completedMs - startedMs,
+        return { clickToTranslatedContentMs: completedMs - startedMs, contentMode,
           lockDurationMs: metrics?.locks.filter((lock) => lock.endMs >= startedMs && lock.startMs <= completedMs)
             .reduce((total, lock) => total + Math.min(lock.endMs, completedMs) - Math.max(lock.startMs, startedMs), 0) ?? null,
           ongoingLockMs: metrics?.ongoingLockMs ?? null };
