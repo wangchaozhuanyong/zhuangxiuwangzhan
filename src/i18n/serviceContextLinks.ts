@@ -127,6 +127,65 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "builtin-materials", label: "装修材料", title: "全屋定制柜选择", description: "确认样板前，先浏览已发布的衣柜、厨房柜、电视柜、鞋柜、书桌和收纳柜分类。", href: "/materials/category/whole-house-custom" },
     ],
   },
+
+  ms: {
+    renovation: [
+      { id: "renovation-kl", label: "Kawasan perkhidmatan", title: "pengubahsuaian Kuala Lumpur", description: "Semak jenis hartanah, keperluan pengubahsuaian biasa dan liputan perkhidmatan di Kuala Lumpur.", href: "/locations/kuala-lumpur" },
+      { id: "renovation-mont-kiara", label: "Kawasan perkhidmatan", title: "Pengubahsuaian Mont Kiara", description: "Lihat pertimbangan perancangan tempatan untuk kondo dan harta kediaman terurus.", href: "/locations/mont-kiara" },
+      { id: "renovation-project", label: "Rujukan projek", title: "Rujukan pengubahsuaian kondo Mont Kiara", description: "Buka halaman projek untuk menyemak skop, klasifikasi dan butiran sokongan yang diterbitkan.", href: "/projects/mont-kiara-luxury-condo-renovation" },
+      { id: "renovation-budget", label: "Panduan perancangan", title: "Panduan bajet pengubahsuaian Malaysia", description: "Fahami skop dan faktor tapak yang boleh mengubah sebut harga pengubahsuaian.", href: "/blog/malaysia-renovation-budget-guide" },
+      { id: "renovation-approval", label: "Panduan perancangan", title: "Kelulusan pengurusan pengubahsuaian kondo", description: "Sediakan borang bangunan, deposit, perlindungan, waktu kerja dan keperluan kontraktor.", href: "/blog/condo-renovation-management-approval-malaysia" },
+      { id: "renovation-materials", label: "Bahan", title: "Perpustakaan bahan pengubahsuaian", description: "Bandingkan pilihan bahan lantai, kabinet, dinding, kaunter, pintu dan bilik mandi yang diterbitkan.", href: "/materials" },
+    ],
+    kitchen: [
+      { id: "kitchen-bangsar", label: "Kawasan perkhidmatan", title: "pengubahsuaian Bangsar", description: "Tinjau harta tempatan dan pertimbangan perancangan dapur untuk rumah Bangsar.", href: "/locations/bangsar" },
+      { id: "kitchen-subang", label: "Kawasan perkhidmatan", title: "Subang Jaya renovation", description: "Terokai liputan perkhidmatan untuk kondo, rumah bertanah dan kerja naik taraf dapur.", href: "/locations/subang-jaya" },
+      { id: "kitchen-project", label: "Rujukan projek", title: "Rujukan dapur adat Bangsar", description: "Buka halaman projek yang diterbitkan untuk menyemak skop dan klasifikasi kandungannya.", href: "/projects/custom-kitchen-bangsar" },
+      { id: "kitchen-quote-guide", label: "Panduan perancangan", title: "Senarai semak sebut harga ubahsuai dapur", description: "Semak kabinet, countertop, kerja basah, titik perkhidmatan dan pengecualian sebelum membandingkan sebut harga.", href: "/blog/kitchen-renovation-quotation-checklist-malaysia" },
+      { id: "kitchen-layout-guide", label: "Panduan perancangan", title: "Perancangan dapur kering dan basah", description: "Bandingkan aliran memasak, penyimpanan, kedudukan perkakas dan pengezonan dapur kering atau basah.", href: "/blog/dry-wet-kitchen-renovation-malaysia" },
+      { id: "kitchen-materials", label: "Bahan", title: "Bahan kabinet dapur", description: "Semak imbas sistem kabinet yang diterbitkan dan pilihan kemasan sebelum mengesahkan sampel dan skop.", href: "/materials/category/kitchen-cabinets" },
+    ],
+    bathroom: [
+      { id: "bathroom-kl", label: "Kawasan perkhidmatan", title: "pengubahsuaian Kuala Lumpur", description: "Semak jenis hartanah tempatan, pertimbangan pengurusan dan liputan perkhidmatan pengubahsuaian.", href: "/locations/kuala-lumpur" },
+      { id: "bathroom-pj", label: "Kawasan perkhidmatan", title: "Petaling Jaya renovation", description: "Lihat pertimbangan perkhidmatan untuk kondo, rumah bertanah dan hartanah lama di Petaling Jaya.", href: "/locations/petaling-jaya" },
+      { id: "bathroom-projects", label: "Rujukan projek", title: "Semak imbas rujukan projek pengubahsuaian", description: "Semak halaman projek yang diterbitkan dan semak sama ada setiap item adalah projek yang telah siap atau konsep berlabel.", href: "/projects" },
+      { id: "bathroom-leakage", label: "Panduan perancangan", title: "Kebocoran dan pengubahsuaian bilik mandi", description: "Fahami sebab punca kebocoran dan keadaan tapak perlu diperiksa sebelum memilih skop pembaikan.", href: "/blog/bathroom-leakage-renovation-malaysia" },
+      { id: "bathroom-waterproofing", label: "Panduan perancangan", title: "Perancangan kalis air dan saliran", description: "Semak kejatuhan lantai, perangkap, zon basah, penembusan paip dan koordinasi kerja jubin.", href: "/blog/bathroom-waterproofing-drainage-planning-malaysia" },
+      { id: "bathroom-materials", label: "Bahan", title: "Bahan dan kelengkapan bilik mandi", description: "Semak imbas pilihan jubin, besen, tandas, pancuran mandian, kabinet dan bilik mandi yang berkaitan yang diterbitkan.", href: "/materials/category/bathroom" },
+    ],
+    "office-renovation": [
+      { id: "office-pj", label: "Kawasan perkhidmatan", title: "pengubahsuaian pejabat Petaling Jaya", description: "Semak pertimbangan perancangan tempatan untuk pejabat, unit komersial, akses dan keperluan bangunan.", href: "/locations/petaling-jaya" },
+      { id: "office-cyberjaya", label: "Kawasan perkhidmatan", title: "Ubahsuai pejabat Cyberjaya", description: "Terokai perancangan ruang kerja pejabat dan teknologi sekitar operasi, M&E, data, akses dan skop fit-out.", href: "/locations/cyberjaya" },
+      { id: "office-projects", label: "Rujukan projek", title: "Semak imbas rujukan pejabat dan komersial", description: "Semak halaman projek yang diterbitkan dan sahkan sama ada setiap item telah siap kerja atau konsep perancangan berlabel.", href: "/projects" },
+      { id: "office-checklist", label: "Panduan perancangan", title: "Senarai semak pengubahsuaian pejabat", description: "Sediakan headcount, susun atur, peraturan bangunan, perkhidmatan, skop sebut harga, penyelarasan dan keperluan penyerahan.", href: "/blog/office-renovation-checklist-malaysia" },
+      { id: "office-reinstatement", label: "Panduan perancangan", title: "Pengembalian semula atau pengubahsuaian pejabat", description: "Jelaskan perbezaan antara memasang ruang kerja dan mengembalikan penyewaan kepada keadaan penyerahan yang diperlukan.", href: "/blog/office-reinstatement-vs-renovation" },
+      { id: "office-materials", label: "Bahan", title: "Pilihan lantai pejabat", description: "Bandingkan jenis lantai yang diterbitkan dengan keadaan subfloor, trafik, penyelenggaraan, keperluan akustik dan peraturan bangunan.", href: "/materials/category/flooring" },
+    ],
+    "shop-renovation": [
+      { id: "shop-cheras", label: "Kawasan perkhidmatan", title: "ubah suai kedai Cheras", description: "Semak pertimbangan perancangan untuk lot kedai, unit runcit, akses, perkhidmatan sedia ada dan keutamaan pembukaan.", href: "/locations/cheras" },
+      { id: "shop-subang", label: "Kawasan perkhidmatan", title: "Ubahsuai kedai Subang Jaya", description: "Terokai pertimbangan kesesuaian runcit dan F&B untuk lot kedai, unit komersial, peraturan tuan tanah dan perkhidmatan tapak.", href: "/locations/subang-jaya" },
+      { id: "shop-projects", label: "Rujukan projek", title: "Semak imbas rujukan runcit dan komersial", description: "Semak halaman projek yang diterbitkan dan sahkan sama ada setiap item telah siap kerja atau konsep perancangan berlabel.", href: "/projects" },
+      { id: "shop-opening", label: "Panduan perancangan", title: "Ubahsuai kedai sebelum dibuka", description: "Sediakan ringkasan perniagaan, syarat penyewaan, aliran pelanggan, keperluan belakang rumah, perkhidmatan dan urutan pembukaan.", href: "/blog/shop-renovation-before-opening" },
+      { id: "shop-permit", label: "Panduan perancangan", title: "Permit kedai dan perancangan pengurusan", description: "Semak tuan tanah, pengurusan, papan tanda, waktu kerja, perlindungan atau keperluan pihak berkuasa yang mungkin dikenakan pada tapak.", href: "/blog/shoplot-renovation-permit-malaysia" },
+      { id: "shop-materials", label: "Bahan", title: "Paparan runcit dan kabinet penyimpanan", description: "Semak pilihan storan paparan yang diterbitkan untuk kaunter, barangan, storan belakang dan penyelenggaraan praktikal.", href: "/materials/display-storage-cabinet" },
+    ],
+    "old-house": [
+      { id: "old-house-cheras", label: "Kawasan perkhidmatan", title: "Ubahsuai rumah lama Cheras", description: "Semak pertimbangan perancangan untuk rumah bertanah lama, pendawaian dan paip sedia ada, kelembapan, akses dan kerja berperingkat.", href: "/locations/cheras" },
+      { id: "old-house-pj", label: "Kawasan perkhidmatan", title: "ubah suai rumah Petaling Jaya", description: "Terokai perancangan pengubahsuaian untuk rumah bertanah yang mantap, hartanah strata, akses, item tertahan dan keadaan tapak.", href: "/locations/petaling-jaya" },
+      { id: "old-house-projects", label: "Rujukan projek", title: "Semak imbas rujukan pengubahsuaian rumah bertanah", description: "Semak halaman projek yang diterbitkan dan sahkan sama ada setiap item telah siap kerja atau konsep perancangan berlabel.", href: "/projects" },
+      { id: "old-house-checklist", label: "Panduan perancangan", title: "Senarai semak pengubahsuaian rumah lama", description: "Semak keadaan tapak, keutamaan keselamatan, pendawaian, paip, kelembapan, bumbung, susun atur, kelulusan dan skop sebut harga.", href: "/blog/old-house-renovation-checklist" },
+      { id: "old-house-costs", label: "Panduan perancangan", title: "Kos pengubahsuaian rumah lama yang tersembunyi", description: "Fahami cara penyiasatan, pembaikan, akses, kerja yang dikekalkan, skop sementara dan penemuan boleh menjejaskan sebut harga.", href: "/blog/old-house-renovation-hidden-costs-malaysia" },
+      { id: "old-house-materials", label: "Bahan", title: "Perpustakaan bahan pengubahsuaian", description: "Bandingkan pilihan lantai, pintu, kabinet, kemasan dinding dan bilik mandi yang diterbitkan selepas skop pembaikan jelas.", href: "/materials" },
+    ],
+    builtin: [
+      { id: "builtin-puchong", label: "Kawasan perkhidmatan", title: "Terbina dalam tersuai Puchong", description: "Semak pertimbangan perancangan tempatan untuk rumah bertanah, kondominium, storan komersial, pengukuran dan akses pemasangan.", href: "/locations/puchong" },
+      { id: "builtin-bangsar", label: "Kawasan perkhidmatan", title: "Kabinet adat Bangsar", description: "Terokai perancangan kabinet dan storan untuk rumah bertanah, hartanah strata, unit runcit dan keadaan tapak sedia ada.", href: "/locations/bangsar" },
+      { id: "builtin-projects", label: "Rujukan projek", title: "Semak imbas rujukan kabinet dan storan", description: "Semak halaman projek yang diterbitkan dan sahkan sama ada setiap item telah siap kerja atau konsep perancangan berlabel.", href: "/projects" },
+      { id: "builtin-cost", label: "Panduan perancangan", title: "Faktor kos kabinet terbina dalam", description: "Bandingkan cara dimensi, bahan papan, kemasan, perkakasan, aksesori, akses dan pemasangan mempengaruhi skop.", href: "/blog/built-in-cabinet-cost-malaysia" },
+      { id: "builtin-storage", label: "Panduan perancangan", title: "Storan terbina dalam untuk kondo kecil", description: "Rancang storan ketinggian penuh, almari pakaian, dinding TV, kabinet kasut, ruang belajar dan akses setiap hari di rumah kompak.", href: "/blog/built-in-furniture-small-condo-storage" },
+      { id: "builtin-materials", label: "Bahan", title: "Pilihan kabinet tersuai seluruh rumah", description: "Semak imbas kategori almari pakaian, dapur, TV, kasut, ruang belajar dan kabinet storan yang diterbitkan sebelum meluluskan sampel.", href: "/materials/category/whole-house-custom" },
+    ],
+  },
 };
 
 export const getServiceContextLinks = (slug: string, language: Language): readonly ServiceContextLink[] =>

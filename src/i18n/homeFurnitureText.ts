@@ -19,4 +19,15 @@ export const homeFurnitureText = {
     loadFailed: "Furniture could not be loaded. Please try again.",
     empty: "Our furniture selection is being updated. Continue browsing the furniture showcase or shop.",
   },
+
+  ms: {
+    title: "Cari kepingan yang menjadikannya milik anda.",
+    description: "Daripada kerusi rehat kepada set makan, terokai perabot yang membawa ruang anda ke dalam kehidupan seharian.",
+    sceneCaption: "Penyampaian reka bentuk",
+    allFurniture: "Terokai semua perabot",
+    shop: "Kunjungi kedai perabot",
+    loading: "Memuatkan perabot…",
+    loadFailed: "Perabot tidak dapat dimuatkan. Sila cuba lagi.",
+    empty: "Pemilihan perabot kami sedang dikemas kini. Teruskan menyemak imbas pameran atau kedai perabot.",
+  },
 } as const;

@@ -1,4 +1,4 @@
-import type { Language } from "@/i18n/routes";
+import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 import { translateProjectType } from "@/i18n/displayLabels";
 import { isStoredLeadTest } from "@/lib/leadTest";
 

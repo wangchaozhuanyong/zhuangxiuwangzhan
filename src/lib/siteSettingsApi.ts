@@ -49,6 +49,7 @@ const DEFAULT_LOGO_WEBP_PATH = "/logo-flashcast.webp";
 const DEFAULT_LOGO_VERSIONED_WEBP_PATH = "/logo-flashcast-20260605.webp";
 const STATIC_SITE_HOSTS = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
 const DEFAULT_WHATSAPP_MESSAGES = {
+  ms: "Hai FLASH CAST, saya ingin bertanya tentang perkhidmatan pengubahsuaian anda.",
   en: "Hi FLASH CAST, I'd like to ask about renovation services. My project is in Malaysia. Could you advise on the suitable scope, estimated budget, and next steps?",
   zh: "你好 FLASH CAST，我想咨询装修/翻新服务。我的项目在马来西亚，想先了解施工范围、预算估算和下一步安排。",
 };
@@ -172,7 +173,7 @@ export type ResolvedSiteSettings = SiteSettings & {
 
 export const resolveSiteSettings = (
   settings: Partial<SiteSettings> | null | undefined,
-  language: "en" | "zh" = "en",
+  language: "en" | "zh" | "ms" = "en",
 ): ResolvedSiteSettings => {
   const merged = { ...fallbackSiteSettings, ...(settings || {}) };
   const phoneE164 = merged.phone_e164 || normalizePhoneHref(merged.phone_display);

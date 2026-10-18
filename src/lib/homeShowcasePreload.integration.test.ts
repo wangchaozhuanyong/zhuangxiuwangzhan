@@ -217,7 +217,7 @@ describe("compact homepage showcase preload", () => {
 
   it.each(["en", "zh"] as const)("preserves successful empty lists and an entirely hidden furniture catalog on /%s", async (language) => {
     const { payload } = await renderHome(language, { empty: true });
-    expect(payload.homeFurniture).toEqual({ en: [], zh: [] });
+    expect(payload.homeFurniture).toEqual({ en: [], zh: [], ms: [] });
     expect(payload.homeJournalPosts).toEqual([]);
     expect(payload.homeServiceAreas).toEqual([]);
     for (const key of ["furnitureCatalog", "blogPosts", "serviceAreas"]) expect(payload).not.toHaveProperty(key);

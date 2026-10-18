@@ -80,7 +80,7 @@ for (const [table, slug, kind] of [["services", "builtin", "services"], ["blog_p
     if (kind === "blog") {
       const metaReads = requests.filter(u => u.pathname.endsWith("/blog_posts") && u.searchParams.get("slug") === `eq.${slug}`);
       expect(metaReads.length).toBe(2); // One existing meta read per request; no extra fallback query.
-      expect(metaReads[0].searchParams.get("select")).toContain("content_en,content_zh,status");
+      expect(metaReads[0].searchParams.get("select")).toContain("content_en,content_ms,content_zh,status");
     }
     if (process.env.FLASHCAST_GEO_EVIDENCE_DIR) writeFileSync(`${process.env.FLASHCAST_GEO_EVIDENCE_DIR}/${lang}-${kind}-${slug}.html`, html);
     original.window.close(); noJs.window.close(); js.window.close();

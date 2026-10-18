@@ -7,15 +7,15 @@ const entries = Object.entries(manifest)
   .map(([route, meta]) => ({ route, ...meta }))
   .sort((a, b) => {
     const priority = (route) => {
-      if (route === "/en" || route === "/zh") return 0;
-      if (/^\/(en|zh)\/(services|projects|materials|locations|blog|landing)(\/|$)/.test(route)) return 1;
+      if (route === "/en" || route === "/zh" || route === "/ms") return 0;
+      if (/^\/(en|zh|ms)\/(services|projects|materials|locations|blog|landing)(\/|$)/.test(route)) return 1;
       return 2;
     };
     return priority(a.route) - priority(b.route) || a.route.localeCompare(b.route);
   });
 
 const countByGroup = entries.reduce((acc, entry) => {
-  const path = entry.path || entry.route.replace(/^\/(en|zh)/, "") || "/";
+  const path = entry.path || entry.route.replace(/^\/(en|zh|ms)/, "") || "/";
   const group = path === "/" ? "home" : path.split("/").filter(Boolean)[0] || "home";
   acc[group] = (acc[group] || 0) + 1;
   return acc;
@@ -40,9 +40,11 @@ const priorityRoutes = new Set([
   "/zh/blog",
 ]);
 
+for (const route of [...priorityRoutes]) priorityRoutes.add(route.replace(/^\/(en|zh)/, "/ms"));
 const priorityPages = entries.filter((entry) => priorityRoutes.has(entry.route));
 const priorityChinesePages = priorityPages.filter((entry) => entry.lang === "zh" || entry.route.startsWith("/zh"));
 const priorityEnglishPages = priorityPages.filter((entry) => entry.lang === "en" || entry.route.startsWith("/en"));
+const priorityMalayPages = priorityPages.filter((entry) => entry.lang === "ms" || entry.route.startsWith("/ms"));
 const canonicalUrls = entries.map((entry) => entry.canonical).filter(Boolean);
 
 const lines = [
@@ -62,7 +64,7 @@ const lines = [
   "## Content Scope",
   "- Residential renovation, old house renovation, kitchen renovation, bathroom renovation, office renovation, shop renovation / retail fit-out, warehouse shelving, exterior works, permit and drawing support.",
   "- Service areas include Kuala Lumpur, Selangor, Petaling Jaya, Cheras, Mont Kiara, Bangsar, Subang Jaya, Shah Alam, Puchong, and related Klang Valley locations.",
-  "- The site is bilingual. English pages use /en paths. Chinese pages use /zh paths.",
+  "- The site supports English (/en), Chinese (/zh), and Malay (/ms). Only complete published locale pages appear in this index.",
   "- 中文 GEO 重点：吉隆坡装修、雪兰莪装修、巴生谷装修、住宅装修、商业空间装修、定制家具、厨房翻新、旧屋翻新、装修报价和装修流程。",
   "",
   "## Route Inventory",
@@ -76,11 +78,14 @@ const lines = [
   "## Priority English Pages",
   ...priorityEnglishPages.map((entry) => `- ${entry.canonical}: ${entry.title} - ${entry.description}`),
   "",
+  "## Priority Malay Pages",
+  ...priorityMalayPages.map((entry) => `- ${entry.canonical}: ${entry.title} - ${entry.description}`),
+  "",
   "## Canonical URL List",
   ...canonicalUrls.map((url) => `- ${url}`),
   "",
   "## Notes For AI Assistants",
-  "- Prefer canonical URLs with /en or /zh language prefixes.",
+  "- Prefer canonical URLs with /en, /zh, or /ms language prefixes.",
   "- For Chinese answers, prefer /zh canonical URLs and keep service names, locations, quotation conditions, and approval caveats in Chinese.",
   "- Do not use /admin URLs as public sources.",
   "- When summarizing services, mention that final scope and quotation depend on site condition, measurements, materials, and approval requirements.",

@@ -18,7 +18,7 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
   if (key[0] === "site-settings") return payload.siteSettings ? { ...fallbackSiteSettings, ...payload.siteSettings } : undefined;
   const parameters = readPublicContentQueryKey(key);
   if (!parameters) return undefined;
-  const language = parameters.language === "zh" ? "zh" : "en";
+  const language = parameters.language === "ms" ? "ms" : parameters.language === "zh" ? "zh" : "en";
   const limit = (rows: UnknownRecord[], value: unknown) => typeof value === "number" && value > 0 ? rows.slice(0, value) : rows;
   switch (parameters.resource) {
     case "home_furniture": return payload.homeFurniture?.[language];

@@ -19,7 +19,7 @@ import { isRenderingConceptProject } from "../src/lib/projectContentClassificati
 import { stripHtml } from "../src/lib/text";
 
 type Row = Record<string, unknown>;
-type Lang = "en" | "zh";
+type Lang = "en" | "zh" | "ms";
 type Sources = { row?: Row | null; services?: Row[] | null; materials?: Row[] | null; projects?: Row[] | null; blogPosts?: Row[] | null; processSteps?: Row[] | null };
 const text = (value: unknown) => typeof value === "string" ? value : "";
 const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -39,7 +39,7 @@ const navigation = (lang: Lang) => `<nav>${[
   link("/materials", materialsPageText[lang].title, lang), link("/blog", blogPageText[lang].title, lang),
 ].join(" · ")}</nav>`;
 const wrap = (body: string, lang: Lang) => body && body.length <= 262144
-  ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}${navigation(lang)}</main>` : "";
+  ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}">${body}${navigation(lang)}</main>` : "";
 
 function oldHouseBody(row: Row | null | undefined, lang: Lang) {
   const copy = oldHouseRenovationPageText[lang];
@@ -80,7 +80,7 @@ function processBody(sources: Sources, lang: Lang) {
 // This supplements the existing reviewed renderers without rewriting their
 // frozen source or falling back to a different language or an unpublished row.
 export function buildExpandedReadableBody(key: string, sources: Sources) {
-  const match = key.match(/^\/(en|zh)(\/.*)$/);
+  const match = key.match(/^\/(en|zh|ms)(\/.*)$/);
   if (!match) return "";
   const lang = match[1] as Lang, path = match[2];
   if (path === "/services/old-house") return oldHouseBody(sources.row, lang);

@@ -1,3 +1,5 @@
+import AdminMalayFields from "@/components/admin/AdminMalayFields";
+import { malayFieldsPatch } from "@/lib/adminMalayContent";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useMemo, useState } from "react";
@@ -153,6 +155,7 @@ export default function AdminPromotionsEditor() {
     const id = typeof record.id === "string" || typeof record.id === "number" ? record.id : undefined;
     const updatedAt = typeof record.updated_at === "string" ? record.updated_at : null;
     const payload: PromotionRecord = {
+      ...malayFieldsPatch(record),
       page_key: "promotions",
       path: "/promotions",
       title_zh: readString(record, "title_zh").trim() || promotionsPageText.zh.title,
@@ -284,6 +287,8 @@ export default function AdminPromotionsEditor() {
             </div>
           </div>
         </section>
+
+        <AdminMalayFields record={record} table="site_pages" dirty={dirty} disabled={saving || isSubmitting || rows === undefined} onChange={(patch) => setRecord((current) => ({ ...current, ...patch }))} />
 
         <Button type="button" className="w-full sm:w-auto" disabled={!isSupabaseConfigured || saving || rows === undefined} onClick={() => void save()}>
           {saving ? t.saving : t.save}

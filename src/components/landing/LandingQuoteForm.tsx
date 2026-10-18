@@ -1,3 +1,5 @@
+import { landingProjectTypes as projectTypes } from "@/i18n/publicUtilityText";
+import { malayFormat } from "@/i18n/malayText";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -12,12 +14,7 @@ import { submitQuoteRequest } from "@/lib/leadApi";
 import { isValidLeadPhone, localizeLeadFormErrors } from "@/lib/leadValidation";
 import { preloadTurnstile } from "@/lib/turnstile";
 
-const projectTypes = [
-  { value: "Residential Renovation", en: "Residential renovation", zh: "住宅装修" },
-  { value: "Commercial / Office Fit-Out", en: "Commercial or office", zh: "商业或办公室装修" },
-  { value: "Custom Built-In Furniture", en: "Custom furniture", zh: "定制家具" },
-  { value: "Other", en: "Other", zh: "其他" },
-] as const;
+
 
 type LandingQuoteFormProps = {
   landingTitle: string;
@@ -91,7 +88,7 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
         phone: submitted.phone,
         projectType: submitted.projectType,
         location: submitted.location,
-        details: language === "zh" ? `推广页面咨询：${landingTitle}` : `Campaign enquiry: ${landingTitle}`,
+        details: language === "ms" ? malayFormat("Campaign enquiry: __FC0__", [landingTitle]) : (language === "zh" ? `推广页面咨询：${landingTitle}` : `Campaign enquiry: ${landingTitle}`),
         sourcePath: `${window.location.pathname}${window.location.search}`,
         website: honeypot,
         startedAt: formGuard.startedAt,

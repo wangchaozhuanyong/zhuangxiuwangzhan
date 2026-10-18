@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
 import { buildReadablePublicBody } from "../../functions/readablePublicBody";
-import { createFrozenPublisherSourceFixture, restoreFrozenPublisherReadableBody } from "../test/helpers/frozenPublisherSource.mjs";
+import { createFrozenPublisherSourceFixture, restoreFrozenPublisherReadableBody, readFrozenPublisherBaselineSource } from "../test/helpers/frozenPublisherSource.mjs";
 
 type PublicService = Record<string, unknown>;
 
@@ -114,16 +114,18 @@ describe("owned historical publisher readable-body fixture", () => {
   const digest = (bytes: Buffer) => createHash("sha256").update(bytes).digest("hex");
 
   it("restores only the two reviewed service paths and verifies the entire original frozen bytes", () => {
-    const current = readFileSync(currentPath);
+    const liveBefore = readFileSync(currentPath);
+    const current = readFrozenPublisherBaselineSource("functions/readablePublicBody.ts");
     expect(digest(current)).toBe(reviewedCurrentSha);
     const restored = restoreFrozenPublisherReadableBody(current, expectedHistoricalSha);
     expect(digest(restored)).toBe(expectedHistoricalSha);
     expect(restored.toString("utf8")).toBe(current.toString("utf8").replace('"/services/builtin", "/services/kitchen", "/services/renovation",', '"/services/builtin",'));
-    expect(readFileSync(currentPath)).toEqual(current);
+    expect(readFileSync(currentPath)).toEqual(liveBefore);
   });
 
   it("rejects modified content, an extra route, extra file bytes and incorrect or missing historical pins", () => {
-    const current = readFileSync(currentPath);
+    const liveBefore = readFileSync(currentPath);
+    const current = readFrozenPublisherBaselineSource("functions/readablePublicBody.ts");
     const modified = Buffer.from(current.toString("utf8").replace('const allowedTags = new Set(', 'const changedTags = new Set('));
     const extraRoute = Buffer.from(current.toString("utf8").replace('"/services/renovation",', '"/services/renovation", "/services/shop-renovation",'));
     for (const bytes of [modified, extraRoute, Buffer.concat([current, Buffer.from("\n// bytes from an unreviewed extra source file\n")])]) {
@@ -133,6 +135,7 @@ describe("owned historical publisher readable-body fixture", () => {
     expect(() => restoreFrozenPublisherReadableBody(current, undefined)).toThrow(/only admits/);
     const historical = restoreFrozenPublisherReadableBody(current, expectedHistoricalSha);
     expect(() => restoreFrozenPublisherReadableBody(historical, expectedHistoricalSha)).toThrow(/only admits/);
+    expect(readFileSync(currentPath)).toEqual(liveBefore);
   });
 
   it("rejects another source file rather than applying the readable-body adapter outside its exact scope", () => {

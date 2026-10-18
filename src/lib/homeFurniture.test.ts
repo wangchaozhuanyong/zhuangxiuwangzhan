@@ -83,7 +83,7 @@ describe("compact homepage furniture projection", () => {
 
   it("does not refill hidden catalog products and supports published managed summaries", () => {
     const hidden = { items_zh: furnitureCatalog.products.map((product) => override(product.slug, false)) };
-    expect(mapHomeFurnitureSeed([], hidden)).toEqual({ en: [], zh: [] });
+    expect(mapHomeFurnitureSeed([], hidden)).toEqual({ en: [], zh: [], ms: [] });
     const row = {
       id: "managed", slug: "managed-chair", category: "furniture", subcategory: "dining", image_url: "/managed-chair.webp",
       title_en: "Managed chair", title_zh: "后台餐椅", excerpt_en: "", excerpt_zh: "", content_en: "Body", content_zh: "正文",

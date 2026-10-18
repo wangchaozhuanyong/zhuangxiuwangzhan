@@ -71,6 +71,14 @@ function materialFixture(error: { code: string; message: string } | null = null)
 }
 const materialRequest: ContentPublishRequest = { contentType: "material", mode: "publish", nextStatus: "draft", ownerApproved: true, explicitExecution: true, approvalId: "test-only", record: { slug: "test-material", title_en: "Draft material" } };
 describe("material transaction admission", () => {
+  it("passes Malay fields to the same atomic writer without altering English", async () => {
+    const { client, rpc } = materialFixture();
+    const result = await publishContent({ ...materialRequest, record: { ...materialRequest.record, title_ms: "Bahan lantai", content_ms: "<p>Kandungan bahan</p>" } }, client, { role: "content_editor" });
+    expect(result.body.ok).toBe(true);
+    expect(rpc).toHaveBeenCalledWith("publish_material_atomic", expect.objectContaining({
+      p_payload: expect.objectContaining({ title_en: "Draft material", title_ms: "Bahan lantai", content_ms: "<p>Kandungan bahan</p>" }),
+    }));
+  });
   it("routes even legacy field publications through one transaction", async () => {
     const { client, rpc, directWrite } = materialFixture();
     const result = await publishContent(materialRequest, client, { role: "content_editor" });

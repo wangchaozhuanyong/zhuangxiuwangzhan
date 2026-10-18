@@ -2,7 +2,7 @@ import { estimateBlogReadMinutes } from "../src/lib/blogMeta";
 
 export type PublicProjectionRecord = Record<string, unknown>;
 
-const LANGUAGES = ["en", "zh"] as const;
+const LANGUAGES = ["en", "zh", "ms"] as const;
 
 const withLocalizedFields = (fields: readonly string[]) =>
   fields.flatMap((field) => LANGUAGES.map((language) => `${field}_${language}`));

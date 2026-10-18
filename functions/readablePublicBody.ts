@@ -23,9 +23,9 @@ const decode = (s: string) => s.replace(/&#(x[\da-f]+|\d+);?|&(amp|lt|gt|quot|ap
 });
 const text = (v: unknown) => typeof v === "string" ? v : "";
 export function buildReadableHomeFaqBody(key: string, faqs: readonly { question: string; answer: string }[], summary?: { title: string; description: string }) {
-  if (!/^\/(en|zh)$/.test(key) || !faqs.length) return "";
-  const lang = key === "/zh" ? "zh-CN" : "en";
-  const title = lang === "en" ? "Frequently asked questions" : "常见问题";
+  if (!/^\/(en|zh|ms)$/.test(key) || !faqs.length) return "";
+  const lang = key === "/ms" ? "ms-MY" : key === "/zh" ? "zh-CN" : "en";
+  const title = lang === "ms-MY" ? "Soalan lazim" : lang === "en" ? "Frequently asked questions" : "常见问题";
   const overview = summary ? `<h1>${escape(summary.title)}</h1><p>${escape(summary.description)}</p>` : "";
   return `<main lang="${lang}">${overview}<section data-flashcast-readable-home-faq><h2>${title}</h2>${faqs.map(faq => `<h3>${escape(faq.question)}</h3><p>${escape(faq.answer)}</p>`).join("")}</section></main>`;
 }
@@ -33,7 +33,7 @@ const plain = (v: unknown) => decode(text(v).replace(/<[^>]*>/g, "")).trim();
 
 export function buildReadableFurnitureListingBody(key: string, listing: ReturnType<typeof getFurnitureListingPage> | null) {
   if (!listing?.validSelection || !listing.category) return "";
-  const lang = key.startsWith("/zh/") ? "zh" : "en";
+  const lang = key.startsWith("/ms/") ? "ms" : key.startsWith("/zh/") ? "zh" : "en";
   const copy = furnitureText[lang];
   const categoryCopy = furnitureCategoryPageCopy(listing.category.key, lang, listing.subcategory?.key);
   const title = categoryCopy?.h1 || (listing.subcategory
@@ -48,10 +48,10 @@ export function buildReadableFurnitureListingBody(key: string, listing: ReturnTy
   const label = copy.page.replace("{page}", String(listing.page)).replace("{total}", String(listing.totalPages));
   const navigation = listing.totalPages > 1
     ? `<nav aria-label="${escape(label)}"><a href="${escape(pageHref(1))}">${escape(copy.allProducts)}</a>${listing.page > 1 ? `<a href="${escape(pageHref(listing.page - 1))}">${escape(copy.previous)}</a>` : ""}<span>${escape(label)}</span>${listing.page < listing.totalPages ? `<a href="${escape(pageHref(listing.page + 1))}">${escape(copy.next)}</a>` : ""}</nav>` : "";
-  return `<section data-flashcast-readable-furniture-listing lang="${lang === "zh" ? "zh-CN" : "en"}"><h1>${escape(title)}</h1><p>${escape(categoryCopy?.intro || copy.intro)}</p>${cards ? `<ul>${cards}</ul>` : `<p>${escape(copy.noProducts)}</p>`}${navigation}</section>`;
+  return `<section data-flashcast-readable-furniture-listing lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}"><h1>${escape(title)}</h1><p>${escape(categoryCopy?.intro || copy.intro)}</p>${cards ? `<ul>${cards}</ul>` : `<p>${escape(copy.noProducts)}</p>`}${navigation}</section>`;
 }
 
-function publicHref(raw: string, lang: "en" | "zh") {
+function publicHref(raw: string, lang: "en" | "zh" | "ms") {
   const href = decode(raw).trim();
   if (!href || Array.from(href).some(char => char.charCodeAt(0) <= 32 || char === "\\") || href.startsWith("//")) return null;
   try {
@@ -64,16 +64,16 @@ function publicHref(raw: string, lang: "en" | "zh") {
 
 // Renderer-owned copy, shared with the quote page; no CMS or form data.
 export function buildQuotePreparationBody(key: string) {
-  const match = key.match(/^\/(en|zh)\/quote$/);
+  const match = key.match(/^\/(en|zh|ms)\/quote$/);
   if (!match) return "";
-  const lang = match[1] as "en" | "zh";
+  const lang = match[1] as "en" | "zh" | "ms";
   const copy = quotePageText[lang].preparation;
   const href = publicHref(`/${lang}/blog/renovation-quotation-checklist-malaysia`, lang);
   if (!href) return "";
-  return `<section data-flashcast-quote-preparation lang="${lang === "zh" ? "zh-CN" : "en"}" aria-labelledby="quote-preparation-fallback-title"><h3 id="quote-preparation-fallback-title">${escape(copy.heading)}</h3><p>${escape(copy.paragraphOne)}</p><p>${escape(copy.paragraphTwoBeforeLink)}<a href="${escape(href)}">${escape(copy.linkText)}</a>${escape(copy.paragraphTwoAfterLink)}</p></section>`;
+  return `<section data-flashcast-quote-preparation lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}" aria-labelledby="quote-preparation-fallback-title"><h3 id="quote-preparation-fallback-title">${escape(copy.heading)}</h3><p>${escape(copy.paragraphOne)}</p><p>${escape(copy.paragraphTwoBeforeLink)}<a href="${escape(href)}">${escape(copy.linkText)}</a>${escape(copy.paragraphTwoAfterLink)}</p></section>`;
 }
 
-export function sanitizeReadableContent(value: string, lang: "en" | "zh") {
+export function sanitizeReadableContent(value: string, lang: "en" | "zh" | "ms") {
   const source = value.replace(/<!--[\s\S]*?(?:-->|$)/g, "")
     .replace(/<(script|style|iframe|object|svg|math|form)\b[^>]*>[\s\S]*?(?:<\/\1\s*>|$)/gi, "");
   if (!/<[a-z][^>]*>/i.test(source)) {
@@ -100,7 +100,7 @@ const headings = {
 type ReadableContactIdentity = { phone_e164?: unknown; email?: unknown };
 
 // Only the four reviewed routes receive a structural CTA. CMS sanitization stays unchanged.
-function buildReviewedCta(path: string, lang: "en" | "zh", identity?: ReadableContactIdentity | null) {
+function buildReviewedCta(path: string, lang: "en" | "zh" | "ms", identity?: ReadableContactIdentity | null) {
   if (path !== "/blog/renovation-materials-malaysia" && path !== "/projects/bangsar-walk-in-wardrobe-system") return "";
   const heading = lang === "zh"
     ? (path.startsWith("/blog/") ? "咨询装修材料需求" : "咨询类似衣帽间需求")
@@ -114,11 +114,11 @@ function buildReviewedCta(path: string, lang: "en" | "zh", identity?: ReadableCo
 }
 
 export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined, identity?: ReadableContactIdentity | null) {
-  const match = key.match(/^\/(en|zh)(\/.*)$/);
+  const match = key.match(/^\/(en|zh|ms)(\/.*)$/);
   const reviewedOffice = key === "/en/services/office-renovation";
   const reviewedSelangor = match?.[2] === "/locations/selangor";
   if (!match || (!reviewedOffice && !reviewedSelangor && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
-  const lang = match[1] as "en" | "zh";
+  const lang = match[1] as "en" | "zh" | "ms";
   const path = match[2];
   if (row.slug !== path.split("/").pop()) return "";
   const field = (base: string) => row[`${base}_${lang}`];
@@ -135,7 +135,7 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
         ? `${escape(link.before)}<a href="/${lang}${link.to}">${escape(link.anchor)}</a>${escape(link.after)}`
         : escape(paragraph)}</p>`
     ).join("")}`;
-    return body.length <= 262144 ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}</main>` : "";
+    return body.length <= 262144 ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}">${body}</main>` : "";
   }
   const content = text(field("content"));
   // A missing language/body is an input gap; do not claim a complete fallback from a summary.
@@ -161,7 +161,7 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   }
   body += buildReviewedCta(path, lang, identity);
   if (body.length > 262144) return "";
-  return `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}</main>`;
+  return `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}">${body}</main>`;
 }
 
 type PublicRow = Record<string, unknown>;
@@ -169,7 +169,7 @@ type ReadableCollectionSources = { services?: PublicRow[] | null; materials?: Pu
 
 // Four reviewed material URLs, not a global SSR or static fallback expansion.
 export const isReviewedMaterialBodyPath = (key: string) =>
-  /^\/(en|zh)\/materials\/category\/whole-house-custom(?:\/solid-wood-finish)?$/.test(key);
+  /^\/(en|zh|ms)\/materials\/category\/whole-house-custom(?:\/solid-wood-finish)?$/.test(key);
 
 const slug = (value: unknown) => {
   const result = plain(value);
@@ -177,12 +177,12 @@ const slug = (value: unknown) => {
 };
 const taxonomySlug = (value: unknown) => plain(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const paragraph = (value: string) => value ? `<p>${escape(value)}</p>` : "";
-const localizedPlain = (row: PublicRow, field: string, lang: "en" | "zh") => plain(row[`${field}_${lang}`]);
-const localizedParagraph = (row: PublicRow, field: string, lang: "en" | "zh") => paragraph(translateDisplayText(localizedPlain(row, field, lang), lang));
-const wrapBody = (body: string, lang: "en" | "zh") => body.length <= 262144
-  ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}</main>` : "";
+const localizedPlain = (row: PublicRow, field: string, lang: "en" | "zh" | "ms") => plain(row[`${field}_${lang}`]);
+const localizedParagraph = (row: PublicRow, field: string, lang: "en" | "zh" | "ms") => paragraph(translateDisplayText(localizedPlain(row, field, lang), lang));
+const wrapBody = (body: string, lang: "en" | "zh" | "ms") => body.length <= 262144
+  ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}">${body}</main>` : "";
 
-function buildContextLinks(links: readonly { href: string; title: string; description: string }[], lang: "en" | "zh") {
+function buildContextLinks(links: readonly { href: string; title: string; description: string }[], lang: "en" | "zh" | "ms") {
   return `<section>${links.map(link => {
     const href = publicHref(`/${lang}${link.href}`, lang);
     return href ? `<h3><a href="${escape(href)}">${escape(link.title)}</a></h3>${paragraph(link.description)}` : "";
@@ -201,9 +201,9 @@ export function buildReadableCollectionBody(key: string, sources: ReadableCollec
       `<h2><a href="/en/services/${slug(row.slug)}">${escape(localizedPlain(row, "title", "en"))}</a></h2>${localizedParagraph(row, "excerpt", "en")}`
     ).join("")}</section>`, "en");
   }
-  const match = key.match(/^\/(en|zh)\/materials\/category\/whole-house-custom(\/solid-wood-finish)?$/);
+  const match = key.match(/^\/(en|zh|ms)\/materials\/category\/whole-house-custom(\/solid-wood-finish)?$/);
   if (!match) return "";
-  const lang = match[1] as "en" | "zh";
+  const lang = match[1] as "en" | "zh" | "ms";
   const rows = sources.materials?.filter(row => row.status === "published" && taxonomySlug(row.category) === "whole-house-custom" && slug(row.slug)) || [];
   if (!rows.length) return "";
   const categoryName = translateMaterialCategory(plain(rows[0].category), lang);

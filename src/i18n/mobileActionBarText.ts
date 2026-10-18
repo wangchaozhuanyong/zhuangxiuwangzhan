@@ -25,4 +25,18 @@ export const mobileActionBarText = {
     contactSource: "联系页面",
     whatsappMessage: "你好 FLASH CAST，我正在查看{source}。\n项目地区：\n房屋类型：\n装修范围：\n我可以发送现场照片。",
   },
+
+  ms: {
+    aria: "Kenalan pantas",
+    whatsapp: "WhatsApp",
+    call: "Panggil",
+    quote: "Sebut Harga Percuma",
+    fillQuote: "Isi Borang",
+    fillContact: "Mesej",
+    websiteSource: "laman web anda",
+    renovationSource: "halaman perkhidmatan pengubahsuaian anda",
+    quoteSource: "halaman sebut harga pengubahsuaian anda",
+    contactSource: "halaman kenalan anda",
+    whatsappMessage: "Hai FLASH CAST, saya dapati {source}. Lokasi projek saya ialah: \nJenis hartanah: \nSkop pengubahsuaian: \nSaya boleh berkongsi foto tapak.",
+  },
 } as const;

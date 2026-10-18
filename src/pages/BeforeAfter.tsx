@@ -21,7 +21,7 @@ function BeforeAfterComparison({
 }: {
   item: PublishedBeforeAfterItem;
   index: number;
-  language: "en" | "zh";
+  language: "en" | "zh" | "ms";
 }) {
   const t = beforeAfterPageText[language];
   const reviewedRoom = reviewedComparisonRoom(item.before_image_url, item.after_image_url);

@@ -1,3 +1,5 @@
+import { cmsDynamicPageText as copy } from "@/i18n/publicUtilityText";
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useParams } from "react-router-dom";
 
@@ -16,28 +18,7 @@ import { isSafeContentUrl, sanitizeHtml } from "@/lib/sanitizeHtml";
 import NotFound from "@/pages/NotFound";
 import { pageHeroImages } from "@/lib/pageHeroImages";
 
-const copy = {
-  en: {
-    loading: "Loading page...",
-    loadingTitle: "Loading content",
-    loadingDescription: "Please wait while the page content is loaded.",
-    errorTitle: "Page content failed to load",
-    errorDescription: "The content service did not respond correctly. You can retry or return to the main site.",
-    retry: "Retry",
-    quote: "Get a Free Quote",
-    fallbackDescription: "Company information and service details.",
-  },
-  zh: {
-    loading: "页面加载中...",
-    loadingTitle: "正在加载页面内容",
-    loadingDescription: "请稍等，系统正在读取这页的内容。",
-    errorTitle: "页面内容加载失败",
-    errorDescription: "内容服务暂时没有正确返回结果，可以重试一次，或先返回其它页面。",
-    retry: "重新加载",
-    quote: "获取免费报价",
-    fallbackDescription: "公司介绍和服务内容。",
-  },
-};
+
 
 const cmsPathFromSplat = (splat = "") => `/${splat.replace(/^\/+/, "").replace(/\/+$/, "")}`;
 
@@ -221,7 +202,7 @@ export default function CmsDynamicPage() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta
+      <PageMeta malayReady={isMalayContentReady(page)}
         title={page.seo_title || page.title}
         description={page.seo_description || page.description || t.fallbackDescription}
         keywords={page.seo_keywords}

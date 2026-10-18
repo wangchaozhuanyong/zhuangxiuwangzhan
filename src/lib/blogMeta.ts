@@ -1,4 +1,5 @@
-type Language = "en" | "zh";
+import { malayFormat } from "@/i18n/malayText";
+type Language = "en" | "zh" | "ms";
 
 const defaultReadMinutes = 5;
 const englishWordsPerMinute = 220;
@@ -30,7 +31,7 @@ export const formatBlogDate = (value: string | null | undefined, language: Langu
     }).format(date);
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(language === "ms" ? "ms-MY" : "en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -56,7 +57,7 @@ export const formatBlogReadTime = (value: string | number | null | undefined, la
   const minutes = typeof value === "number" ? value : Number(String(value || "").match(/\d+/)?.[0] || defaultReadMinutes);
   const safeMinutes = Number.isFinite(minutes) && minutes > 0 ? minutes : defaultReadMinutes;
 
-  return language === "zh" ? `${safeMinutes} \u5206\u949f\u9605\u8bfb` : `${safeMinutes} min read`;
+  return language === "ms" ? malayFormat("__FC0__ min read", [safeMinutes]) : (language === "zh" ? `${safeMinutes} \u5206\u949f\u9605\u8bfb` : `${safeMinutes} min read`);
 };
 
 export const estimateBlogReadMinutes = (value: string | null | undefined, language: Language) => {

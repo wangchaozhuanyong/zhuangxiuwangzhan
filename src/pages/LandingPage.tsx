@@ -20,6 +20,8 @@ import { translateDisplayText } from "@/i18n/displayLabels";
 import { trackCtaClick } from "@/lib/analytics";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
 import { landingPageText } from "@/i18n/landingPageText";
+import { localizeMalayContent } from "@/i18n/malayContent";
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import {
   anonymizeLandingProjectCards,
   isPrivacyProtectedLanding,
@@ -30,7 +32,7 @@ const LandingPage = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = landingPageText[language];
-  const fallbackPage = slug ? landingPages[slug] : undefined;
+  const fallbackPage = slug ? language === "ms" ? localizeMalayContent(landingPages[slug]) : landingPages[slug] : undefined;
   const { data: cmsPage, isPending: pagePending, isInitialError, refetch } = usePublishedLandingPageBySlug(slug, language);
   const confirmedPage = useRef<{ slug: string | undefined; page: NonNullable<typeof cmsPage> } | null>(null);
   if (confirmedPage.current?.slug !== slug) confirmedPage.current = null;
@@ -85,7 +87,7 @@ const LandingPage = () => {
 
   return (
     <main className="fc-c-page">
-      <PageMeta title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`} description={landingPage.seoDescription || stripHtml(landingPage.description)} canonicalPath={`/landing/${slug || ""}`} />
+      <PageMeta malayReady={isMalayContentReady(page)} title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`} description={landingPage.seoDescription || stripHtml(landingPage.description)} canonicalPath={`/landing/${slug || ""}`} />
 
       <ImmersiveHero className="fc-c-hero" id="campaign-hero">
         <div className="fc-c-hero__media" data-cinematic-media><SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={86} revealOnLoad critical /></div>

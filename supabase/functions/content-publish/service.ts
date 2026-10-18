@@ -294,6 +294,30 @@ const stableValue = (value: unknown): unknown => {
   if (!value || typeof value !== "object") return value ?? null;
   return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stableValue((value as Record<string, unknown>)[key])]));
 };
+
+// Extend the general publisher only after the existing QA baseline projections
+// have been captured. Managed-record scopes and their approved digests stay fixed.
+for (const fields of [SERVICE_FIELDS, SERVICE_AREA_FIELDS, BLOG_FIELDS, PROJECT_FIELDS, MATERIAL_FIELDS, SITE_PAGE_FIELDS, CTA_BLOCK_FIELDS, HOME_SECTION_FIELDS]) {
+  for (const field of [...fields]) {
+    if (field.endsWith("_en") && fields.has(field.replace(/_en$/, "_zh"))) fields.add(field.replace(/_en$/, "_ms"));
+  }
+}
+
+function cleanMalayFields(payload: Record<string, unknown>) {
+  for (const key of Object.keys(payload).filter((field) => field.endsWith("_ms"))) {
+    const value = payload[key];
+    if (value === null) continue;
+    if (key === "faqs_ms") payload[key] = cleanFaqs(value);
+    else if (key === "process_steps_ms") payload[key] = cleanProcessSteps(value);
+    else if (Array.isArray(value)) {
+      payload[key] = key === "items_ms" ? value : cleanLines(value);
+    } else if (typeof value === "string") {
+      const limit = key.startsWith("seo_title") ? 180 : key.startsWith("seo_description") ? 320
+        : key.startsWith("content") ? 120000 : /excerpt|description|note/.test(key) ? 2000 : 500;
+      payload[key] = cleanText(value, limit);
+    } else throw new Error(`Invalid Malay content field: ${key}`);
+  }
+}
 const sha256 = async (value: unknown) => {
   const data = new TextEncoder().encode(JSON.stringify(stableValue(value)));
   const digest = await crypto.subtle.digest("SHA-256", data);
@@ -568,6 +592,7 @@ function cleanServicePayload(record: Record<string, unknown>, nextStatus?: Conte
     }
   }
 
+  cleanMalayFields(payload);
   return { payload, slug, warnings };
 }
 
@@ -663,6 +688,7 @@ function cleanServiceAreaPayload(record: Record<string, unknown>, nextStatus?: C
     }
   }
 
+  cleanMalayFields(payload);
   return { payload, key: slug, warnings: [] as string[] };
 }
 
@@ -738,6 +764,7 @@ function cleanBlogPayload(record: Record<string, unknown>, nextStatus?: ContentS
     }
   }
 
+  cleanMalayFields(payload);
   return { payload, slug, warnings: [] as string[] };
 }
 
@@ -769,6 +796,7 @@ function cleanMaterialGallery(value: unknown, published: boolean) {
       image_type: imageType,
       alt_zh: altZh,
       alt_en: altEn,
+      ...(row.alt_ms !== undefined ? { alt_ms: cleanText(row.alt_ms, 240) } : {}),
       source_url: sourceUrl,
       rights_status: rightsStatus,
       sort_order: cleanSortOrder(row.sort_order) ?? index * 10,
@@ -881,6 +909,7 @@ function cleanMaterialPayload(record: Record<string, unknown>, nextStatus?: Cont
     }
   }
 
+  cleanMalayFields(payload);
   return { payload, slug, gallery, warnings, requiresMaterialSchema };
 }
 
@@ -931,6 +960,7 @@ function cleanProjectPayload(record: Record<string, unknown>, nextStatus?: Conte
     if (missing.length) throw new Error(`Published project requires bilingual content, SEO, and a cover image: ${missing.join(", ")}.`);
   }
 
+  cleanMalayFields(payload);
   return { payload, key: slug, warnings };
 }
 
@@ -982,6 +1012,7 @@ function cleanStandaloneSitePagePayload(record: Record<string, unknown>, nextSta
     if (missing.length) throw new Error(`Published site_page requires bilingual title, SEO, and image alt fields when applicable: ${missing.join(", ")}.`);
   }
 
+  cleanMalayFields(payload);
   return { payload, key: pageKey, warnings: [] as string[] };
 }
 
@@ -1027,6 +1058,7 @@ function cleanAllowedFields(
     }
     payload[key] = value;
   }
+  cleanMalayFields(payload);
   return payload;
 }
 

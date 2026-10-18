@@ -7,7 +7,7 @@ export function buildQualifiedSitemap(manifest) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${rows.map(([,meta])=>`  <url>
     <loc>${escapeXml(meta.canonical)}</loc>
-${Object.entries(meta.hreflang||{}).map(([lang,url])=>`    <xhtml:link rel="alternate" hreflang="${lang==="zh"?"zh-CN":lang==="xDefault"?"x-default":lang}" href="${escapeXml(url)}" />`).join("\n")}
+${Object.entries(meta.hreflang||{}).map(([lang,url])=>`    <xhtml:link rel="alternate" hreflang="${lang==="zh"?"zh-CN":lang==="ms"?"ms-MY":lang==="xDefault"?"x-default":lang}" href="${escapeXml(url)}" />`).join("\n")}
   </url>`).join("\n")}
 </urlset>
 `;

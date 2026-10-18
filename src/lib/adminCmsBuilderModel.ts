@@ -6,12 +6,16 @@ export type CmsPage = {
   path: string;
   title_zh?: string | null;
   title_en?: string | null;
+  title_ms?: string | null;
   seo_title_zh?: string | null;
   seo_title_en?: string | null;
+  seo_title_ms?: string | null;
   seo_description_zh?: string | null;
   seo_description_en?: string | null;
+  seo_description_ms?: string | null;
   seo_keywords_zh?: string | null;
   seo_keywords_en?: string | null;
+  seo_keywords_ms?: string | null;
   status: "draft" | "published" | "archived";
   sort_order: number;
   updated_at?: string | null;
@@ -24,8 +28,10 @@ export type CmsSection = {
   section_type: string;
   title_zh?: string | null;
   title_en?: string | null;
+  title_ms?: string | null;
   content_zh: Record<string, unknown>;
   content_en: Record<string, unknown>;
+  content_ms?: Record<string, unknown>;
   settings: Record<string, unknown>;
   status: "draft" | "published" | "archived";
   sort_order: number;
@@ -95,7 +101,7 @@ export const normalizeCmsPagePath = (value: string) => {
   return withLeadingSlash.replace(/\/+$/, "") || "/";
 };
 
-export const cmsPathHasLanguagePrefix = (value: string) => /^\/(zh|en)(\/|$)/.test(normalizeCmsPagePath(value));
+export const cmsPathHasLanguagePrefix = (value: string) => /^\/(zh|en|ms)(\/|$)/.test(normalizeCmsPagePath(value));
 
 export const buildCmsLocalizedPath = (path: string, language: "zh" | "en") => {
   const normalizedPath = normalizeCmsPagePath(path);

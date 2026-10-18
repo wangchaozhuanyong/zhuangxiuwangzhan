@@ -45,4 +45,28 @@ export const termsPageText = {
       { title: "11. 联系", body: "如对本服务条款有疑问，请联系：" },
     ],
   },
+
+  ms: {
+    metaTitle: "Terma & Syarat | FLASH CAST SDN. BHD.",
+    metaDescription: "Terma dan syarat untuk FLASH CAST SDN. BHD. perkhidmatan pengubahsuaian di Kuala Lumpur, Malaysia.",
+    metaKeywords: "terma dan syarat, FLASH CAST, terma pengubahsuaian Malaysia",
+    breadcrumbHome: "Rumah",
+    breadcrumbCurrent: "Terma & Syarat",
+    title: "Terma & Syarat",
+    imageAlt: "Lukisan pengubahsuaian, dokumen sebut harga, kalkulator, dan sampel bahan",
+    updated: "Kemas kini terakhir: Mac 2026",
+    sections: [
+      { title: "1. Umum", body: "Terma & Syarat ini mengawal penggunaan laman web ini dan perkhidmatan pengubahsuaian yang disediakan oleh FLASH CAST SDN. BHD. Dengan menggunakan tapak web kami atau menggunakan perkhidmatan kami, anda bersetuju menerima syarat ini." },
+      { title: "2. Sebutharga & Harga", items: ["Semua sebut harga adalah sah selama 30 hari dari tarikh dikeluarkan melainkan dinyatakan sebaliknya.", "Harga adalah berdasarkan skop kerja yang dipersetujui. Kerja tambahan yang diminta selepas pengesahan mungkin dikenakan bayaran tambahan.", "Sebut harga adalah anggaran; harga akhir mungkin berbeza-beza berdasarkan keadaan tapak dan ketersediaan bahan."] },
+      { title: "3. Syarat Pembayaran", items: ["Deposit diperlukan selepas pengesahan projek untuk menjamin penjadualan.", "Bayaran kemajuan perlu dibayar pada pencapaian yang dipersetujui semasa projek.", "Bayaran akhir perlu dibayar selepas projek siap dan serah terima.", "Kaedah pembayaran yang diterima termasuk pindahan wang melalui bank, perbankan dalam talian dan cek."] },
+      { title: "4. Garis Masa Projek", body: "Garis masa projek dianggarkan dan mungkin dipengaruhi oleh penghantaran bahan, akses tapak, cuaca, kelulusan pihak berkuasa atau perubahan yang diminta oleh pelanggan. Kami akan memaklumkan kelewatan yang dijangkakan dengan segera." },
+      { title: "5. Waranti", body: "Terma selepas jualan atau jaminan mesti dinyatakan dalam perjanjian projek. Liputan mungkin berbeza mengikut jenis projek, skop dan syarat pembekal bahan." },
+      { title: "6. Tanggungjawab Pelanggan", items: ["Menyediakan maklumat harta dan projek yang tepat.", "Memastikan akses tapak semasa waktu kerja yang dipersetujui.", "Dapatkan atau sokong kelulusan yang diperlukan daripada pengurusan bangunan atau pihak berkuasa jika diperlukan.", "Buat keputusan tepat pada masanya tentang bahan, reka bentuk dan perubahan skop."] },
+      { title: "7. Pembatalan & Bayaran Balik", body: "Jika anda ingin membatalkan projek yang disahkan, sila maklumkan kami secara bertulis. Bayaran pembatalan mungkin dikenakan bergantung pada peringkat projek. Bahan yang telah ditempah atau direka khas tidak boleh dikembalikan." },
+      { title: "8. Harta Intelek", body: "Semua konsep reka bentuk, lukisan dan kandungan di laman web ini adalah harta intelek FLASH CAST SDN. BHD. dan tidak boleh diterbitkan semula tanpa kebenaran bertulis." },
+      { title: "9. Had Liabiliti", body: "FLASH CAST SDN. BHD. tidak akan bertanggungjawab untuk kerosakan tidak langsung, sampingan atau berbangkit yang timbul daripada penggunaan perkhidmatan atau tapak web kami. Jumlah liabiliti kami terhad kepada nilai kontrak projek tertentu." },
+      { title: "10. Undang-undang yang Mentadbir", body: "Terma-terma ini dikawal oleh undang-undang Malaysia. Sebarang pertikaian hendaklah tertakluk kepada bidang kuasa mahkamah Malaysia." },
+      { title: "11. Hubungi", body: "Untuk soalan mengenai Terma & Syarat ini:" },
+    ],
+  },
 } as const;

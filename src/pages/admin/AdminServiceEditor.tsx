@@ -1,3 +1,4 @@
+import AdminMalayFields from "@/components/admin/AdminMalayFields";
 import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
 import { navigateAfterSave } from "@/lib/navigationProtection";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
@@ -701,6 +702,7 @@ export default function AdminServiceEditor() {
         </div>
 
         <div className="pb-10" />
+      <AdminMalayFields record={record} table="services" dirty={dirty} disabled={saveBusy || isSubmitting} onChange={(patch) => setRecord((current) => ({ ...current, ...patch }))} />
       </form>
     </>
   );

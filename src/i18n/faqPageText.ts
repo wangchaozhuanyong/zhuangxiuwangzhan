@@ -115,4 +115,63 @@ export const faqPageText = {
       },
     ],
   },
+
+  ms: {
+    metaTitle: "Soalan Lazim | Soalan Pengubahsuaian Kuala Lumpur | FLASH CAST",
+    metaDescription: "Soalan lazim tentang perkhidmatan pengubahsuaian, harga, bahan, perabot terbina dalam tersuai dan permit di Kuala Lumpur dan Selangor oleh FLASH CAST SDN. BHD.",
+    metaKeywords: "FAQ pengubahsuaian Malaysia, soalan pengubahsuaian KL, FAQ perabot terbina dalam, permit pengubahsuaian KL",
+    breadcrumbHome: "Rumah",
+    breadcrumbFaq: "FAQ",
+    heroAlt: "Soalan Lazim FLASH CAST",
+    eyebrow: "Pusat Bantuan",
+    title: "Soalan Lazim",
+    intro: "Soalan lazim tentang perkhidmatan pengubahsuaian, proses, harga dan bahan kami.",
+    ctaTitle: "Masih Ada Soalan?",
+    ctaText: "Hubungi kami secara terus. Kami sedia membantu.",
+    contact: "Hubungi Kami",
+    whatsapp: "WhatsApp Kami",
+    categories: [
+      {
+        category: "Umum",
+        items: [
+          { q: "Apakah perkhidmatan pengubahsuaian yang disediakan oleh FLASH CAST?", a: "Kami merancang perabot tersuai seluruh rumah, terbina dalam dan almari pakaian, bersama kediaman, dapur, bilik mandi, pejabat, kedai dan pengubahsuaian rumah lama. Kemasan dinding, bahan dan sebarang penyelarasan kelulusan bergantung pada tapak dan skop bertulis." },
+          { q: "Kawasan mana yang anda berkhidmat?", a: "Kami terutamanya berkhidmat di Kuala Lumpur, Selangor dan Lembah Klang. Kongsi lokasi dan taip projek anda yang tepat supaya ketersediaan, akses dan pengaturan semakan tapak boleh disahkan." },
+          { q: "Bolehkah butiran syarikat disahkan sebelum pelantikan?", a: "ya. Tanya pasukan untuk syarikat semasa dan butiran janji temu yang anda perlukan sebelum melawat atau meneruskan dengan sebut harga." },
+        ],
+      },
+      {
+        category: "Proses & Harga",
+        items: [
+          { q: "Bagaimana saya boleh mendapatkan sebut harga?", a: "Hubungi kami melalui WhatsApp, telefon atau borang sebut harga dalam talian. Kami akan menyemak jenis projek, lokasi, foto dan skop anda sebelum mengesahkan langkah seterusnya dan butiran petikan." },
+          { q: "Bolehkah ukuran tapak diatur?", a: "Pengukuran tapak adalah percuma dalam jarak 30 km dari syarikat atau pusat perkhidmatan. Perjalanan melebihi 30 km dikenakan bayaran; sahkan jumlah dan janji temu sebelum lawatan. Ketersediaan bergantung pada projek, akses tapak dan jadual." },
+          { q: "Berapa lama pengubahsuaian biasa diambil?", a: "Jadual bergantung pada keadaan tapak, kerja yang disahkan, bahan dan penghantaran, akses, dan kelulusan yang diperlukan. Setuju urutan dan peristiwa penting selepas skop disemak; tiada tempoh tetap bagi setiap projek." },
+          { q: "Adakah anda memberikan jaminan atau sokongan selepas jualan?", a: "FLASH CAST menyediakan waranti satu tahun. Sahkan kerja yang dilindungi, tarikh mula, pengecualian dan proses tuntutan dalam sebut harga bertulis atau dokumen projek." },
+        ],
+      },
+      {
+        category: "Dapur & Bilik Air",
+        items: [
+          { q: "Berapa lama pengubahsuaian dapur mengambil masa?", a: "Ukuran kabinet, bahan, bahagian atas kerja, perubahan paip dan elektrik, akses dan penghantaran menjejaskan jadual. Sahkan skop dan urutan sebelum bersetuju tarikh siap." },
+          { q: "Adakah kalis air termasuk dalam pengubahsuaian bilik mandi?", a: "Kalis air boleh dibincangkan selepas kawasan basah, substrat, kebocoran dan paip diperiksa. Nyatakan sistem, penyediaan, ujian dan pengecualian yang dipilih dalam skop bertulis; mereka tidak disertakan secara automatik dalam setiap sebut harga bilik mandi." },
+          { q: "Bolehkah anda memasang peralatan dapur?", a: "ya. Kami menyepadukan ketuhar, tudung, dapur memasak, mesin basuh pinggan mangkuk dan peralatan lain ke dalam reka bentuk kabinet." },
+        ],
+      },
+      {
+        category: "Tersuai Terbina Dalam & Bahan",
+        items: [
+          { q: "Bolehkah anda membina perabot tersuai mengikut dimensi saya yang tepat?", a: "Ya, semua perabot terbina dalam kami dibuat untuk mengukur, termasuk almari pakaian, kabinet dapur, konsol TV, kabinet kasut, meja solek dan banyak lagi." },
+          { q: "Apakah bahan yang anda gunakan untuk kabinet?", a: "Arah bahan boleh termasuk melamin, akrilik dan kayu padu. Sahkan papan, kemasan, perkakasan dan aksesori terhadap sampel dan petikan bertulis; perkakasan soft-close tidak disertakan secara automatik dalam setiap sistem." },
+          { q: "Bolehkah saya melihat sampel bahan sebelum melakukan?", a: "ya. Kami menggalakkan pelanggan melihat sampel bahan seperti jubin, papan, countertop dan kemasan kabinet sebelum membuat keputusan." },
+        ],
+      },
+      {
+        category: "Komersil & Permit",
+        items: [
+          { q: "Adakah anda mengendalikan permit dan kelulusan pengubahsuaian?", a: "Jika termasuk dalam skop yang disahkan, kami boleh membantu mengatur keperluan pengurusan atau pihak berkuasa dan penyelarasan lukisan. Penyerahan, tandatangan profesional, yuran dan kelulusan akhir mesti disemak untuk hartanah dan kerja tertentu." },
+          { q: "Bolehkah anda mengubahsuai kedai atau pejabat saya?", a: "Kita boleh berbincang tentang kelengkapan pejabat dan kedai, runcit, premis F&B, kawasan hadapan klinik, salun dan bilik pameran. Peralatan pakar, lesen industri dan tanda keluar profesional memerlukan pemeriksaan berasingan terhadap skop yang dipersetujui." },
+          { q: "Bolehkah anda bekerja selepas waktu perniagaan untuk pengubahsuaian pejabat?", a: "Bincangkan fasa dan waktu kerja yang dibenarkan dengan tuan tanah atau pengurusan bangunan. Kerja malam atau hujung minggu bergantung pada peraturan bangunan, kebenaran yang diperlukan, akses dan jadual yang dipersetujui." },
+        ],
+      },
+    ],
+  },
 } as const;

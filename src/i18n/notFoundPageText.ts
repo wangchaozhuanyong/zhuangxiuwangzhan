@@ -18,4 +18,15 @@ export const notFoundPageText = {
     contact: "联系我们",
     metaDescription: "您访问的页面暂时不存在，请返回 FLASH CAST 首页或查看装修服务。",
   },
+
+  ms: {
+    eyebrow: "Halaman tidak ditemui",
+    title: "Halaman ini tidak tersedia",
+    description:
+      "Pautan mungkin sudah lapuk, atau halaman mungkin telah dialihkan. Anda boleh pulang ke rumah, menyemak imbas perkhidmatan kami atau menghubungi kami untuk mendapatkan bantuan projek.",
+    home: "Balik Rumah",
+    services: "Lihat Perkhidmatan",
+    contact: "Hubungi Kami",
+    metaDescription: "Halaman yang anda minta tidak tersedia. Kembali ke FLASH CAST atau semak imbas perkhidmatan pengubahsuaian kami.",
+  },
 } as const;

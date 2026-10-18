@@ -10,7 +10,7 @@ import {
   type PersistAdminRecordRemovalOptions,
 } from "@/backend/modules/system";
 import { adminMutationText } from "@/i18n/adminMutationText";
-import type { Language } from "@/i18n/routes";
+import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { getPublicSyncIssues, registerPublicSyncIssue, resolvePublicSyncIssue, type PublicSyncIssue } from "@/lib/publicSyncRecovery";
 import { formatUserFacingError } from "@/lib/userFacingText";

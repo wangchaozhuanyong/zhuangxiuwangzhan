@@ -8,6 +8,11 @@ export const homeSectionText = {
       serviceHighlights: "服务特点",
       currentOffers: "当前服务优惠",
     },
+
+    ms: {
+      serviceHighlights: "Sorotan perkhidmatan",
+      currentOffers: "Tawaran perkhidmatan semasa",
+    },
   },
   hero: {
     en: {
@@ -28,6 +33,17 @@ export const homeSectionText = {
       fallbackDescription: "FLASH CAST 为 Kuala Lumpur、Selangor 与 Klang Valley 的住宅和商业空间提供装修规划、现场测量、材料建议、项目协调、施工管理与交付支持。",
       scrollAria: "继续向下浏览",
       scrollLabel: "继续探索",
+    },
+
+    ms: {
+      quote: "Dapatkan Sebut Harga Percuma",
+      whatsapp: "WhatsApp Kami",
+      videoAlt: "FLASH CAST video perancangan pengubahsuaian yang menunjukkan ruang dalaman, arah bahan, penyelarasan tapak dan penyerahan",
+      fallbackTitle: "Syarikat Pengubahsuaian di Kuala Lumpur untuk Rumah dan Ruang Komersial",
+      fallbackDescription:
+        "FLASH CAST menyokong perancangan pengubahsuaian, pengukuran tapak, nasihat bahan, penyelarasan projek, pengurusan pembinaan dan susulan penyerahan untuk ruang kediaman dan komersial di Kuala Lumpur, Selangor dan Lembah Klang.",
+      scrollAria: "Tatal ke bahagian seterusnya",
+      scrollLabel: "Teroka",
     },
   },
   beforeAfter: {
@@ -83,6 +99,33 @@ export const homeSectionText = {
         },
       ],
     },
+
+    ms: {
+      title: "Lihat Transformasi",
+      subtitle: "Seret peluncur untuk membandingkan rujukan sebelum dan selepas pengubahsuaian oleh FLASH CAST.",
+      viewAll: "Lihat Semua Projek",
+      before: "Sebelum ini",
+      after: "Selepas",
+      beforeAlt: "Sebelum: {alt}",
+      afterAlt: "Selepas: {alt}",
+      comparisons: [
+        {
+          title: "Pengubahsuaian Dapur",
+          location: "Mont Kiara, KL",
+          desc: "Daripada kabinet bertarikh kepada dapur moden yang anggun dengan kaunter atas marmar dan peralatan bersepadu.",
+        },
+        {
+          title: "Transformasi Ruang Tamu",
+          location: "Damansara Heights, KL",
+          desc: "Baik pulih lengkap dengan lantai baharu, dinding TV terbina dalam, pencahayaan ambien dan kemasan premium.",
+        },
+        {
+          title: "Naik Taraf Bilik Mandi",
+          location: "Bangsar, KL",
+          desc: "Daripada lekapan lama ke bilik mandi marmar mewah dengan pancuran mandian hujan dan meja solek terapung.",
+        },
+      ],
+    },
   },
   projects: {
     en: {
@@ -117,6 +160,24 @@ export const homeSectionText = {
         kitchen: "厨房",
         retail: "零售",
         renovation: "装修",
+      },
+    },
+
+    ms: {
+      eyebrow: "Kerja Terpilih",
+      title: "Projek Pengubahsuaian Terkini",
+      subtitle: "Terokai kediaman, komersial, dapur, perabot terbina dalam dan rujukan projek yang sesuai di seluruh Kuala Lumpur dan Selangor.",
+      empty: "Sorotan projek sedang dikemas kini. Hubungi kami untuk rujukan tapak terkini.",
+      typeLabels: {
+        residential: "Kediaman",
+        commercial: "Komersil",
+        "built-in": "Terbina Dalam",
+        warehouse: "Gudang",
+        exterior: "Luaran",
+        office: "Pejabat",
+        kitchen: "Dapur",
+        retail: "Runcit",
+        renovation: "Pengubahsuaian",
       },
     },
   },
@@ -173,6 +234,33 @@ export const homeSectionText = {
         desc: "网站清楚展示公司注册、地址和联系方式，方便客户核对。",
       },
     ],
+
+    ms: [
+      {
+        icon: "star",
+        value: "Skop",
+        label: "Perancangan Projek yang Jelas",
+        desc: "Keadaan tapak, keperluan penggunaan, bahan, belanjawan dan garis masa disemak sebelum sebut harga.",
+      },
+      {
+        icon: "clock",
+        value: "KL & Selangor",
+        label: "Kawasan Perkhidmatan Tempatan",
+        desc: "Pertanyaan pengubahsuaian dikendalikan untuk kawasan Kuala Lumpur, Selangor dan Lembah Klang yang berdekatan.",
+      },
+      {
+        icon: "users",
+        value: "Rumah & Perniagaan",
+        label: "Kediaman dan Komersial",
+        desc: "Sokongan untuk pengubahsuaian rumah, pemasangan pejabat, pengubahsuaian kedai, perabot terbina dalam dan ruang industri terpilih.",
+      },
+      {
+        icon: "shieldcheck",
+        value: "SSM",
+        label: "Syarikat Berdaftar",
+        desc: "Pendaftaran syarikat dan butiran hubungan ditunjukkan dengan jelas untuk pengesahan pelanggan.",
+      },
+    ],
   },
   brandLogos: {
     en: {
@@ -207,6 +295,23 @@ export const homeSectionText = {
         tools: "工具系统",
       },
     },
+
+    ms: {
+      eyebrow: "Jenama Biasa",
+      title: "Rakan Kongsi Bahan & Perkakasan Terancang",
+      subtitle: "Kami memilih bahan, kelengkapan dan perkakasan yang sesuai untuk kediaman, komersil, perabot terbina dalam dan projek kemasan dinding.",
+      fallbackCategory: "Pilihan bahan",
+      categories: {
+        blum: "Perkakasan kabinet",
+        hafele: "Sistem perkakasan",
+        hettich: "Kelengkapan perabot",
+        remmers: "Perlindungan kayu",
+        paint: "Salutan dinding",
+        grohe: "Kelengkapan mandi",
+        bathroom: "Lekapan bilik mandi",
+        tools: "Sistem alat",
+      },
+    },
   },
   cta: {
     en: {
@@ -218,6 +323,12 @@ export const homeSectionText = {
       eyebrow: "项目咨询",
       title: "计划装修您的住宅或办公室？",
       description: "提交地点、空间类型、现场照片、预计装修范围和主要问题，我们会先评估资料，再建议下一步咨询或现场测量安排。",
+    },
+
+    ms: {
+      eyebrow: "Perundingan Projek",
+      title: "Bercadang untuk Mengubahsuai Rumah atau Pejabat Anda?",
+      description: "Kongsi lokasi, harta atau jenis perniagaan anda, foto tapak, skop yang dimaksudkan dan isu utama. Kami akan menyemak butiran dan mencadangkan langkah seterusnya semasa waktu perniagaan.",
     },
   },
 } as const;

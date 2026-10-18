@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState, type RefObject } from "react";
-import { QUOTE_FORM_ID } from "@/lib/quoteContext";
+import { QUOTE_FORM_ID } from "@/lib/quoteFormTarget";
 
 const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][aria-modal="true"],dialog[open]';
 const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';

@@ -1,4 +1,7 @@
+import { malayText, malayFormat } from "@/i18n/malayText";
 import type { Language } from "@/i18n/routes";
+import { QUOTE_FORM_ID } from "@/lib/quoteFormTarget";
+export { QUOTE_FORM_ID, QUOTE_FORM_PATH } from "@/lib/quoteFormTarget";
 
 const knownProjectTypes = new Set([
   "Residential Renovation",
@@ -78,9 +81,6 @@ export interface ParsedQuoteContext {
   details: string;
 }
 
-export const QUOTE_FORM_ID = "quote-form";
-export const QUOTE_FORM_PATH = `/quote#${QUOTE_FORM_ID}`;
-
 const clean = (value?: string | null) => String(value || "").trim();
 
 const validProjectType = (value?: string | null) => {
@@ -127,35 +127,55 @@ export const withQuoteFormHash = (path = "/quote") => {
 
 const sourceLabel = (source: string, language: Language) => {
   const labels: Record<string, Record<Language, string>> = {
-    service: { en: "service", zh: "服务" },
-    project: { en: "project reference", zh: "案例" },
-    material: { en: "material", zh: "材料" },
-    product: { en: "product", zh: "商品" },
-    services: { en: "service page", zh: "服务页" },
-    projects: { en: "project page", zh: "案例页" },
-    materials: { en: "material library", zh: "材料库" },
-    products: { en: "product directory", zh: "商品目录" },
-    location: { en: "location page", zh: "地区页" },
-    locations: { en: "locations directory", zh: "服务地区" },
+    service: { en: "service", zh: "服务" ,
+               ms: "perkhidmatan",
+             },
+    project: { en: "project reference", zh: "案例" ,
+               ms: "rujukan projek",
+             },
+    material: { en: "material", zh: "材料" ,
+                ms: "bahan",
+              },
+    product: { en: "product", zh: "商品" ,
+               ms: "produk",
+             },
+    services: { en: "service page", zh: "服务页" ,
+                ms: "halaman perkhidmatan",
+              },
+    projects: { en: "project page", zh: "案例页" ,
+                ms: "halaman projek",
+              },
+    materials: { en: "material library", zh: "材料库" ,
+                 ms: "perpustakaan bahan",
+               },
+    products: { en: "product directory", zh: "商品目录" ,
+                ms: "direktori produk",
+              },
+    location: { en: "location page", zh: "地区页" ,
+                ms: "halaman lokasi",
+              },
+    locations: { en: "locations directory", zh: "服务地区" ,
+                 ms: "direktori lokasi",
+               },
   };
-  return labels[source]?.[language] || (language === "zh" ? "官网页面" : "website page");
+  return labels[source]?.[language] || (language === "ms" ? malayText("website page") : (language === "zh" ? "官网页面" : "website page"));
 };
 
 const defaultDetails = (source: string, title: string, language: Language) => {
   if (!title) return "";
   if (source === "project") {
-    return language === "zh" ? `我想做类似案例：${title}。` : `I am interested in a similar project: ${title}.`;
+    return language === "ms" ? malayFormat("I am interested in a similar project: __FC0__.", [title]) : (language === "zh" ? `我想做类似案例：${title}。` : `I am interested in a similar project: ${title}.`);
   }
   if (source === "location") {
-    return language === "zh" ? `我想咨询 ${title} 地区的装修服务。` : `I would like to inquire about renovation services in ${title}.`;
+    return language === "ms" ? malayFormat("I would like to inquire about renovation services in __FC0__.", [title]) : (language === "zh" ? `我想咨询 ${title} 地区的装修服务。` : `I would like to inquire about renovation services in ${title}.`);
   }
   if (source === "material") {
-    return language === "zh" ? `我想咨询这种材料：${title}。` : `I would like to ask about this material: ${title}.`;
+    return language === "ms" ? malayFormat("I would like to ask about this material: __FC0__.", [title]) : (language === "zh" ? `我想咨询这种材料：${title}。` : `I would like to ask about this material: ${title}.`);
   }
   if (source === "product") {
-    return language === "zh" ? `我想咨询这个商品：${title}。` : `I would like to ask about this product: ${title}.`;
+    return language === "ms" ? malayFormat("I would like to ask about this product: __FC0__.", [title]) : (language === "zh" ? `我想咨询这个商品：${title}。` : `I would like to ask about this product: ${title}.`);
   }
-  return language === "zh" ? `我想咨询：${title}。` : `I would like to ask about: ${title}.`;
+  return language === "ms" ? malayFormat("I would like to ask about: __FC0__.", [title]) : (language === "zh" ? `我想咨询：${title}。` : `I would like to ask about: ${title}.`);
 };
 
 export const parseQuoteContext = (params: URLSearchParams, language: Language): ParsedQuoteContext => {
@@ -177,6 +197,6 @@ export const parseQuoteContext = (params: URLSearchParams, language: Language): 
 export const formatQuoteContextLabel = (context: ParsedQuoteContext, language: Language) => {
   if (!context.source && !context.title) return "";
   const from = sourceLabel(context.source, language);
-  if (!context.title) return language === "zh" ? `已带入来源：${from}` : `Source captured: ${from}`;
-  return language === "zh" ? `已带入${from}：${context.title}` : `Prepared from ${from}: ${context.title}`;
+  if (!context.title) return language === "ms" ? malayFormat("Source captured: __FC0__", [from]) : (language === "zh" ? `已带入来源：${from}` : `Source captured: ${from}`);
+  return language === "ms" ? malayFormat("Prepared from __FC0__: __FC1__", [from, context.title]) : (language === "zh" ? `已带入${from}：${context.title}` : `Prepared from ${from}: ${context.title}`);
 };

@@ -58,7 +58,7 @@ export default function AdminEnglishCenter() {
   const jobsQuery = useAdminTranslationJobs(100);
   const { isFetching, refetch } = healthQuery;
   const items = useMemo(() => healthQuery.data ?? [], [healthQuery.data]);
-  const jobs = jobsQuery.data ?? [];
+  const jobs = (jobsQuery.data ?? []).filter((job) => job.target_language !== "ms");
   const readText = interactionText[getAdminLang()];
   const hasUnreadSources = items.some((item) => item.status === "error");
   const healthConfirmed = healthQuery.data !== undefined && !hasUnreadSources;

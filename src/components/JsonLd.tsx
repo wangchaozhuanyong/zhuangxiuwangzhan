@@ -219,7 +219,7 @@ export const JsonLdBlogPosting = ({
     } : undefined,
     datePublished,
     dateModified,
-    inLanguage: language === "zh" ? "zh-CN" : "en",
+    inLanguage: language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en",
     keywords,
     author: {
       "@type": "Organization",

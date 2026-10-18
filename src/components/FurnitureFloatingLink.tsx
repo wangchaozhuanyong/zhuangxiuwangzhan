@@ -3,13 +3,13 @@ import { Armchair, ArrowUpRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
-import { furnitureText } from "@/i18n/furnitureText";
+import { furnitureShopText } from "@/i18n/furnitureShopText";
 import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
 
 export default function FurnitureFloatingLink() {
   const { language } = useLanguage();
   const { pathname, search } = useLocation();
-  const copy = furnitureText[language];
+  const copy = furnitureShopText[language];
   const [pressed, setPressed] = useState(false);
   const entryRef = useRef<HTMLAnchorElement>(null);
   const obstructed = useFloatingOcclusion(entryRef, `${pathname}${search}`);

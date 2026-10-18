@@ -581,4 +581,296 @@ export const surfaceRepairPageText = {
     "keepLabel": "Keep my text",
     "replaceLabel": "Regenerate from latest details"
   }
+,
+  "ms": {
+    "serviceName": "Pembaikan Permukaan Rumah",
+    "metaTitle": "Pembaikan Permukaan Rumah di Kuala Lumpur | Perabot, Jubin & Permukaan Kerja | FLASH CAST",
+    "metaDescription": "Hantar foto pintu tercalar, perabot tercalar, kabinet rosak, jubin atau atas kerja. Bincangkan pembaikan permukaan tempatan di Kuala Lumpur, Selangor dan Lembah Klang, tertakluk kepada penilaian bahan dan tapak.",
+    "primaryAction": "Tanya tentang pembaikan",
+    "regions": "Kuala Lumpur · Selangor · Lembah Klang",
+    "materialLabel": "Penyampaian reka bentuk",
+    "scopeTitle": "Skop pembaikan",
+    "scopeDescription": "Cari kecacatan yang sama dan teroka pendekatannya. Kesesuaian pembaikan bergantung kepada bahan dan keadaan sebenar.",
+    "detailLabels": [
+      "Isu biasa",
+      "Pendekatan pembaikan",
+      "Apa yang perlu diperiksa dahulu"
+    ],
+    "categoryAction": "Tanya tentang pembaikan ini",
+    "services": [
+      {
+        "id": "wood-door",
+        "title": "Pintu & bingkai kayu",
+        "summary": "Cat cip, bucu rosak, calar dan penyok kecil",
+        "problems": "Sudut pintu diketuk, bingkai sumbing, calar haiwan peliharaan atau lubang kecil dalam kemasan biasa.",
+        "direction": "Bincangkan pengisian, pemadanan warna tempatan dan kerja bijian berdasarkan bahan dan kedalaman kerosakan.",
+        "boundary": "Ledingan, pereputan dan kerosakan perkakasan memerlukan perhatian yang berasingan. Periksa fungsi pintu bomba dan keselamatan terlebih dahulu."
+      },
+      {
+        "id": "wood-furniture",
+        "title": "Perabot kayu",
+        "summary": "Bahagian atas tercalar, tepi sumbing dan kemasan lusuh",
+        "problems": "Calar, serpihan, kesan air atau kesan haba pada meja makan, meja kopi dan perabot sisi katil.",
+        "direction": "Menilai rawatan calar, tampalan, padanan warna dan kerja kemasan tempatan.",
+        "boundary": "Periksa sama ada tanda air atau haba mencapai kayu. Sendi longgar, perosak dan belahan berulang memerlukan puncanya dinilai."
+      },
+      {
+        "id": "cabinet",
+        "title": "Kabinet & terbina dalam",
+        "summary": "Pintu tercalar, bahagian tepi rosak dan pembaikan venir",
+        "problems": "Cat sumbing, panel rosak, tepi angkat, pemisah venir tempatan atau lubang penetapan yang tidak diingini.",
+        "direction": "Bincangkan sentuhan cat, kerja pembaikan atau penggantian tepi dan venir; pertimbangkan penggantian panel jika perlu.",
+        "boundary": "Panel yang bengkak, runtuh atau terdelamina secara meluas tidak boleh diselesaikan dengan cat sahaja."
+      },
+      {
+        "id": "tile",
+        "title": "jubin",
+        "summary": "Sudut sumbing, lubang kecil dan lubang penetapan lama",
+        "problems": "Lubang hentaman, sudut luar yang terkelupas, lubang selepas menanggalkan kelengkapan atau retakan halus yang perlu diperiksa.",
+        "direction": "Nilai padanan isian dan warna setempat, atau bincangkan penggantian jubin individu jika pembaikan tidak sesuai.",
+        "boundary": "Periksa jubin berongga atau longgar, retak dan kebocoran berulang dahulu. Pengisian permukaan tidak membaiki sistem kalis air."
+      },
+      {
+        "id": "stone",
+        "title": "Batu & meja kerja",
+        "summary": "Tepi sumbing, ambang rosak dan kemasan sendi",
+        "problems": "Kerepek tempatan dan isu bersama pada bahagian atas kerja dapur, bahagian atas meja solek, ambang tingkap dan ambang.",
+        "direction": "Bincangkan pengisian, padanan warna dan kemasan sendi. Pengisaran atau penggilap bergantung pada bahan.",
+        "boundary": "Batu asli, kuarza, batu tersinter dan permukaan pepejal memerlukan kaedah yang berbeza. Isu melalui retak, pergerakan dan sokongan memerlukan penilaian berasingan."
+      },
+      {
+        "id": "floor",
+        "title": "Kemasan lantai & kayu",
+        "summary": "Permukaan calar, skirting dan pegangan tangan yang dicat",
+        "problems": "Calar seret perabot, tepi lantai terkelupas dan kemasan haus pada tangga kayu atau pegangan tangan.",
+        "direction": "Nilai kerja warna tempatan, tampalan, sentuhan cat atau penggantian kepingan individu.",
+        "boundary": "Kayu pepejal, kayu kejuruteraan, lamina dan SPC/PVC tidak semuanya boleh diampelas. Langkah atau pagar longgar memerlukan penilaian keselamatan terlebih dahulu."
+      },
+      {
+        "id": "metal",
+        "title": "Bingkai logam & tingkap",
+        "summary": "Calar dan serpihan cat pada permukaan bersalut yang sesuai",
+        "problems": "Bingkai tercalar atau trim hiasan, kesan kerosakan pada lapisan dan kaki perabot logam yang haus.",
+        "direction": "Sahkan kemasan sebelum membincangkan padanan warna tempatan, sentuhan atau salutan semula.",
+        "boundary": "Kemasan berus, bersalut dan cermin memerlukan penilaian individu. Isu hakisan, struktur dan pengedap yang teruk memerlukan kerja berasingan."
+      },
+      {
+        "id": "sanitary",
+        "title": "Lekapan bilik mandi",
+        "summary": "Serpihan kecil dan calar pada permukaan seramik atau akrilik yang sesuai",
+        "problems": "Serpihan tepi besen kecil, calar mandian atau pemakaian permukaan setempat pada dulang pancuran mandian.",
+        "direction": "Periksa bahan asas, salutan dan lokasi sebelum menilai kerja pengisian, warna dan kemasan tempatan.",
+        "boundary": "Retak melalui, kebocoran berterusan, keretakan berkaitan beban dan isu sokongan adalah di luar pembaikan permukaan biasa."
+      }
+    ],
+    "assessmentTitle": "Kesesuaian pembaikan",
+    "assessmentDescription": "Kecacatan permukaan dan isu asas memerlukan pendekatan yang berbeza.",
+    "assessment": [
+      {
+        "title": "Kerosakan permukaan kecil",
+        "description": "Calar, kemasan lusuh dan serpihan kecil.",
+        "label": "Mulakan dengan foto",
+        "details": "Bahan, kedalaman, butiran dan kilauan membantu menentukan kemungkinan peningkatan."
+      },
+      {
+        "title": "Isu lain hadir",
+        "description": "Bengkak, pergerakan, kebocoran atau retakan berulang.",
+        "label": "Semak dulu puncanya",
+        "details": "Sahkan dan atasi punca sebelum membincangkan kemasan permukaan."
+      },
+      {
+        "title": "Keselamatan atau sokongan",
+        "description": "Fungsi menanggung beban, kebakaran, keselamatan atau sokongan.",
+        "label": "Penilaian pakar",
+        "details": "Penampilan sahaja tidak dapat mewujudkan keselamatan berfungsi; penilaian pakar yang sesuai diperlukan."
+      }
+    ],
+    "processTitle": "Proses pembaikan",
+    "process": [
+      {
+        "title": "Hantar foto",
+        "description": "Gambaran keseluruhan, jarak dekat, dimensi dan kawasan anda."
+      },
+      {
+        "title": "Skop kajian semula",
+        "description": "Semak bahan dan kerosakan; melawat jika perlu."
+      },
+      {
+        "title": "Petikan & susun",
+        "description": "Setuju skop, hasil yang dijangkakan dan masa."
+      },
+      {
+        "title": "Semak & jaga",
+        "description": "Semak kerja dan masa sedia untuk digunakan."
+      }
+    ],
+    "situations": "Penyelenggaraan rumah · Kerosakan pemindahan · Penyelenggaraan sewa · Sentuh penyerahan kedai atau pengubahsuaian",
+    "priceTitle": "Faktor harga",
+    "priceFactors": [
+      {
+        "title": "Bahan & kerosakan",
+        "description": "Jenis kemasan, kedalaman kerosakan dan kawasan pembaikan."
+      },
+      {
+        "title": "Warna & kuantiti",
+        "description": "Padanan warna dan butiran, bilangan dan penyebaran kecacatan."
+      },
+      {
+        "title": "Tapak & akses",
+        "description": "Lokasi, keadaan akses dan perlindungan diperlukan."
+      }
+    ],
+    "faqTitle": "Soalan biasa",
+    "faqs": [
+      {
+        "question": "Adakah pembaikan tidak dapat dilihat sepenuhnya?",
+        "answer": "Itu tidak boleh dijamin. Warna, bijirin, kilauan dan kedalaman kerosakan menjejaskan hasilnya. Kami menyemak foto dan bahan sebelum membincangkan perkara yang boleh dicapai."
+      },
+      {
+        "question": "Bolehkah saya bertanya tentang hanya satu sudut yang rosak?",
+        "answer": "ya. Hantar foto, anggaran dimensi dan kawasan anda. Kesesuaian dan kos bergantung pada bahan, kuantiti dan pengaturan akses."
+      },
+      {
+        "question": "Bagaimana jika saya tidak tahu bahannya?",
+        "answer": "Mulakan dengan gambaran keseluruhan, pandangan dekat dan sisi. Nama produk, maklumat pembelian atau sampel ganti juga boleh membantu."
+      },
+      {
+        "question": "Adakah mengisi celah cukup?",
+        "answer": "Punca dan kestabilan perlu diperiksa terlebih dahulu. Pergerakan, keretakan berulang, kebocoran atau isu sokongan tidak dapat diselesaikan dengan mengisi permukaan sahaja."
+      },
+      {
+        "question": "Bolehkah setiap permukaan diampelas?",
+        "answer": "Tidak. Kayu pepejal, venir, lamina, batu tersinter, salutan dan penyaduran mempunyai had yang berbeza. Bahan dan ketebalan permukaan mesti diperiksa."
+      },
+      {
+        "question": "Adakah ini termasuk upholsteri, paip, kerja elektrik, perkakas atau kunci?",
+        "answer": "Halaman ini merangkumi pembaikan tempatan pada perabot dan kemasan dalaman. Perkhidmatan tersebut berada di luar skop halaman ini."
+      }
+    ],
+    "consultTitle": "Pertanyaan foto",
+    "consultDescription": "Kongsi gambaran keseluruhan, jarak dekat dan dimensi, bersama-sama dengan kawasan anda. Jauhkan wajah, dokumen dan maklumat peribadi yang tidak berkaitan daripada foto.",
+    "photoGuide": [
+      {
+        "title": "Gambaran keseluruhan",
+        "description": "Tunjukkan item dan lokasi kerosakan."
+      },
+      {
+        "title": "Satu jarak dekat",
+        "description": "Fokus pada kecacatan dalam warna semula jadi."
+      },
+      {
+        "title": "Sisi & saiz",
+        "description": "Tunjukkan kedalaman dan anggaran dimensi."
+      }
+    ],
+    "toolTitle": "Bantu saya menyediakan pertanyaan",
+    "toolNote": "Pilihan. Tambahkan foto anda dalam WhatsApp dan sahkan menghantar sendiri.",
+    "categoryLabel": "Kategori pembaikan",
+    "unknownCategory": "Tidak pasti — saya boleh menghantar foto",
+    "regionLabel": "Kawasan anda (diperlukan)",
+    "regionPlaceholder": "Contohnya: Cheras",
+    "descriptionLabel": "Bilangan kecacatan & butiran (pilihan)",
+    "descriptionPlaceholder": "Contohnya: satu pintu kabinet dengan dua cip kecil",
+    "riskLabel": "Terdapat juga kebocoran, pergerakan atau retakan yang semakin meluas",
+    "riskNotice": "Sila sertakan foto isu tersebut. Skop memerlukan penilaian lanjut.",
+    "generateLabel": "Sediakan teks pertanyaan",
+    "generatedLabel": "Teks disediakan. Tiada apa-apa yang dihantar.",
+    "outputLabel": "Teks pertanyaan (boleh diedit)",
+    "copyLabel": "Salin teks",
+    "copiedLabel": "disalin. Tambahkan foto dalam WhatsApp dan sahkan penghantaran.",
+    "copyError": "Tidak dapat menyalin secara automatik. Pilih teks di atas dan salin secara manual.",
+    "regionError": "Sila masukkan kawasan anda, contohnya Cheras.",
+    "openWhatsAppLabel": "Buka WhatsApp",
+    "messageGreeting": "Helo FLASH CAST, saya ingin bertanya tentang pembaikan permukaan rumah.",
+    "messageLabels": [
+      "Kategori pembaikan",
+      "Kawasan",
+      "Butiran kerosakan",
+      "Isu berkaitan"
+    ],
+    "messageRisk": "Terdapat kebocoran, pergerakan atau retakan yang semakin meluas yang memerlukan penilaian lanjut.",
+    "messageClosing": "Saya akan melampirkan gambaran keseluruhan, jarak dekat dan dimensi anggaran. Tolong bantu saya menyemak skop dahulu.",
+    "genericMessage": "Helo FLASH CAST, saya ingin bertanya tentang pembaikan permukaan rumah. Saya akan menghantar gambar item dan kerosakan, dan berkongsi kawasan saya. Tolong bantu saya menyemak skop dahulu.",
+    "relatedTitle": "Perkhidmatan berkaitan",
+    "related": [
+      {
+        "title": "terbina dalam tersuai",
+        "path": "/services/builtin"
+      },
+      {
+        "title": "Perkhidmatan lantai",
+        "path": "/services/flooring"
+      },
+      {
+        "title": "Ubahsuai rumah lama",
+        "path": "/services/old-house"
+      }
+    ],
+    "exampleDetails": "Semak kesesuaian",
+    "exampleAction": "Tanya tentang kerosakan ini",
+    "allScopeTitle": "Kesemua 8 kategori pembaikan",
+    "allScopeHint": "Pintu · Perabot · Kabinet · Jubin · Batu · Lantai · Logam · Barangan kebersihan",
+    "damageExamples": [
+      {
+        "id": "cabinet",
+        "category": "kabinet",
+        "title": "Tepi kabinet sumbing",
+        "condition": "Kerosakan venir tempatan atau jalur tepi",
+        "approach": "Nilai isian, warna dan padanan bijian.",
+        "boundary": "Periksa jenis kemasan dan substrat terlebih dahulu. Bengkak atau delaminasi yang meluas memerlukan semakan berasingan.",
+        "alt": "Cip kecil di tepi pintu kabinet walnut dengan substrat pucat terdedah; rendering reka bentuk"
+      },
+      {
+        "id": "wood",
+        "category": "wood-furniture",
+        "title": "Meja kayu tercalar",
+        "condition": "Calar ringan dan kehausan kemasan tempatan",
+        "approach": "Nilai padanan warna dan kilauan tempatan.",
+        "boundary": "Periksa kedalaman calar dan salutan sedia ada. Keretakan dan ubah bentuk dalam tidak dianggap sebagai haus permukaan yang ringan.",
+        "alt": "Calar pucat halus pada permukaan meja makan kayu oak bertekstur; rendering reka bentuk"
+      },
+      {
+        "id": "tile",
+        "category": "jubin",
+        "title": "Cip permukaan jubin kecil",
+        "condition": "Sayu sumbing tempatan atau pinggir yang hilang",
+        "approach": "Menilai isian, warna dan kemasan permukaan.",
+        "boundary": "Semak bahawa jubin stabil, tanpa pergerakan atau retakan berulang. Pembaikan permukaan tidak menggantikan kerja kalis air atau substrat.",
+        "alt": "Cip kecil dalam sayu jubin lantai kelabu di sebelah sambungan grout; rendering reka bentuk"
+      },
+      {
+        "id": "stone",
+        "category": "batu",
+        "title": "Tepi atas meja sumbing",
+        "condition": "Serpihan kecil dalam batu atau batu kejuruteraan",
+        "approach": "Menilai isian, warna dan kemasan tepi.",
+        "boundary": "Periksa bahan, retak dan sokongan. Retakan melalui atau papak yang longgar memerlukan punca dan struktur asas dinilai terlebih dahulu.",
+        "alt": "Cip setempat kecil di tepi hadapan kaunter batu krim; rendering reka bentuk"
+      }
+    ],
+    "siteHero": {
+      "titleLines": [
+        "Perabot & dalaman",
+        "pembaikan permukaan"
+      ],
+      "description": "Daripada perabot kayu kepada jubin dan kaunter. Nilai bahan dan kerosakan, kemudian terokai pembaikan setempat.",
+      "secondaryAction": "Terokai contoh kerosakan",
+      "imageAlt": "Seorang tukang menyentuh tepi kabinet walnut di rumah; rendering reka bentuk",
+      "sectionNavLabel": "Membaiki bahagian halaman",
+      "navLabels": [
+        "Skop pembaikan",
+        "Kesesuaian",
+        "Proses pembaikan",
+        "Pertanyaan foto"
+      ]
+    },
+    "processDescription": "Semak foto dan keadaan tapak, kemudian bersetuju dengan skop dan langkah seterusnya.",
+    "relatedDescription": "Untuk skop kerja yang lebih luas, terokai perkhidmatan di bawah.",
+    "staleLabel": "Butiran berubah. Teks semasa anda tidak berubah; jana semula atau edit sendiri.",
+    "editedLabel": "Teks disunting. Tiada apa-apa yang dihantar.",
+    "keptLabel": "Teks anda yang diedit telah disimpan. Butiran baharu belum digabungkan.",
+    "replaceNotice": "Anda mengedit teks pertanyaan. Penjanaan semula akan menggantikan pengeditan tersebut. Simpan teks anda atau gantikannya dengan butiran terkini.",
+    "keepLabel": "Simpan teks saya",
+    "replaceLabel": "Menjana semula daripada butiran terkini"
+  }
 } as const;

@@ -1,16 +1,21 @@
-export type Language = "en" | "zh";
+export type Language = "en" | "zh" | "ms";
+export type BilingualLanguage = Exclude<Language, "ms">;
+
+export const languageTag = (language: Language) => language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en";
 
 const DEFAULT_LANGUAGE: Language = "en";
 export const PUBLIC_LANGUAGE_COOKIE = "flashcast_lang";
 
 export const isSupportedLanguage = (value?: string | null): value is Language =>
-  value === "en" || value === "zh";
+  value === "en" || value === "zh" || value === "ms";
 
 const normalizeLanguageTag = (value: string) => value.trim().toLowerCase().replace(/_/g, "-");
 
 export const detectLanguageFromTags = (languageTags: readonly string[]): Language => {
   const primaryLanguage = normalizeLanguageTag(languageTags[0] ?? "");
-  return primaryLanguage === "zh" || primaryLanguage.startsWith("zh-") ? "zh" : DEFAULT_LANGUAGE;
+  if (primaryLanguage === "zh" || primaryLanguage.startsWith("zh-")) return "zh";
+  if (primaryLanguage === "ms" || primaryLanguage.startsWith("ms-")) return "ms";
+  return DEFAULT_LANGUAGE;
 };
 
 export const parseAcceptLanguage = (header?: string | null): string[] => {

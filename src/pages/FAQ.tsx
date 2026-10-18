@@ -1,3 +1,5 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
+import { malayText } from "@/i18n/malayText";
 import { useMemo } from "react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -20,7 +22,7 @@ const FAQ = () => {
   const categories = useMemo(() => {
     const publishedFaqs = [...(generalFaqs || []), ...(homeFaqs || [])].filter((item, index, list) => list.findIndex((faq) => faq.question === item.question) === index);
     if (!publishedFaqs.length) return t.categories;
-    return [{ category: language === "zh" ? "常见问题" : "General", items: publishedFaqs.map((item) => ({ q: item.question, a: item.answer })) }];
+    return [{ category: language === "ms" ? malayText("General") : (language === "zh" ? "常见问题" : "General"), items: publishedFaqs.map((item) => ({ q: item.question, a: item.answer })) }];
   }, [generalFaqs, homeFaqs, t.categories, language]);
   const allFaqs = categories.flatMap((category) => category.items.map((item) => ({ question: item.q, answer: item.a })));
   const showCategoryHeadings = categories.length > 1;
@@ -28,7 +30,7 @@ const FAQ = () => {
 
   return (
     <main className="fc-route-page" data-route-pending={pageLoading || isLoading || homeLoading || undefined}>
-      <PageMeta ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
+      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
       <JsonLdFAQ faqs={allFaqs} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.eyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.title} description={pageContent?.description || t.intro} />

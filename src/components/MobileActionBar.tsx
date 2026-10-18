@@ -9,8 +9,8 @@ import { stripLanguagePrefix } from "@/i18n/routes";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
-import { furnitureText } from "@/i18n/furnitureText";
-import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
+import { furnitureShopText } from "@/i18n/furnitureShopText";
+import { QUOTE_FORM_PATH } from "@/lib/quoteFormTarget";
 
 const formatMessage = (template: string, source: string) => template.replace("{source}", source);
 
@@ -42,7 +42,7 @@ const MobileActionBar = () => {
         : t.websiteSource;
   const isFurniture = publicPath === "/furniture" || publicPath.startsWith("/furniture/");
   const whatsappMessage = isFurniture
-    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    ? pageWhatsAppMessage || furnitureShopText[language].generalEnquiryMessage
     : formatMessage(t.whatsappMessage, source);
   const whatsappHref = settings.whatsapp_url(whatsappMessage);
   const formAction = isQuotePage

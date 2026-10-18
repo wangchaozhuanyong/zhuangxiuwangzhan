@@ -1,3 +1,4 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useMemo } from "react";
 import { usePublicListingState } from "@/hooks/usePublicListingState";
@@ -54,7 +55,7 @@ export default function Blog() {
 
   return (
     <main className="fc-route-page fc-blog-page" data-route-pending={pageLoading || isLoading || undefined}>
-      <PageMeta ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/blog" />
+      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/blog" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbBlog, url: "/blog" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.heroAlt} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
       <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText} className="fc-blog-articles">

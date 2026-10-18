@@ -6,10 +6,13 @@ export type QuoteStatus = "pending" | "contacted" | "site_visit_scheduled" | "qu
 export type TranslationStatus = "queued" | "processing" | "completed" | "failed";
 export type AdminRole = "super_admin" | "content_editor" | "lead_manager" | "viewer";
 
+type MalayColumns<Row> = {
+  [Key in keyof Row as Key extends `${infer Field}_en` ? `${Field}_zh` extends keyof Row ? `${Field}_ms` : never : never]?: Row[Key];
+};
 type Table<Row> = {
-  Row: Row;
-  Insert: Partial<Row> & Record<string, unknown>;
-  Update: Partial<Row> & Record<string, unknown>;
+  Row: Row & MalayColumns<Row>;
+  Insert: Partial<Row & MalayColumns<Row>> & Record<string, unknown>;
+  Update: Partial<Row & MalayColumns<Row>> & Record<string, unknown>;
   Relationships: [];
 };
 
@@ -691,6 +694,7 @@ export type Database = {
       }>;
       translation_jobs: Table<{
         id: string;
+        target_language?: "en" | "ms";
         table_name: string;
         record_id: string;
         status: TranslationStatus | null;

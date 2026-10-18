@@ -29,4 +29,20 @@ export const publicContentStatusText = {
     fallbackDescription: "当前没有读取到后台发布内容，页面先显示本地备用内容。",
     fallbackAction: "重新加载",
   },
+
+  ms: {
+    loaderBrand: "DALAMAN & UBAHSUAI",
+    loaderPending: "Membawa ruang menjadi fokus",
+    loaderRoutePending: "Memuatkan halaman…",
+    loaderTimeout: "Halaman ini mengambil masa lebih lama daripada biasa",
+    loaderRetry: "Cuba semula",
+    loaderContinue: "teruskan",
+    loaderCancel: "Batal",
+    remoteErrorTitle: "Menunjukkan kandungan sandaran tempatan",
+    remoteErrorDescription: "Perkhidmatan kandungan awam tidak bertindak balas sekarang. Halaman menggunakan kandungan sandaran tempatan.",
+    remoteErrorAction: "Cuba semula",
+    fallbackTitle: "Menunjukkan kandungan sandaran",
+    fallbackDescription: "Tiada kandungan bahagian belakang yang diterbitkan tersedia, jadi halaman itu menggunakan kandungan sandaran tempatan.",
+    fallbackAction: "Muat semula",
+  },
 } as const;

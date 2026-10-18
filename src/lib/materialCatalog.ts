@@ -3,6 +3,7 @@ import { materialsData } from "@/data/materials";
 import type { MaterialCategory, MaterialItem, MaterialSubcategory } from "@/data/types";
 
 export type MaterialCatalogItem = MaterialItem & {
+  translationComplete?: boolean;
   alt?: string | null;
   excerpt?: string;
   pros?: string[];

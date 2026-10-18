@@ -42,6 +42,7 @@ export type AdminProjectImageDraft = {
   image_type?: ProjectImageType | string | null;
   alt_zh?: string | null;
   alt_en?: string | null;
+  alt_ms?: string | null;
   sort_order?: string | number | null;
 };
 

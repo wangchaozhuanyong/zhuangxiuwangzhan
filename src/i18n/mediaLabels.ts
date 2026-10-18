@@ -11,4 +11,10 @@ export const mediaLabels: Record<Language, { renderingConcept: string; aiConcept
     aiConceptDisclosure: "设计效果图",
     materialPalette: "材质搭配示意",
   },
+
+  ms: {
+    renderingConcept: "Penyampaian reka bentuk",
+    aiConceptDisclosure: "Penyampaian reka bentuk",
+    materialPalette: "Kajian palet bahan",
+  },
 };

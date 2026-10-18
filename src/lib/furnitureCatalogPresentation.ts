@@ -1,3 +1,4 @@
+import { localizeMalayContent } from "@/i18n/malayContent";
 import catalogJson from "../data/furnitureCatalog.json";
 import catalogZhJson from "../data/furnitureCatalogZh.json";
 import catalogEnJson from "../data/furnitureCatalogEn.json";
@@ -59,6 +60,7 @@ const localizedEnglishProducts = catalogEnJson as Record<string, Pick<FurnitureP
 export { furnitureShopUrl } from "./furnitureCatalogConfig";
 
 export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct =>
+  language === "ms" && !product.localized ? localizeMalayContent(resolveFurnitureDisplay({ ...product, ...localizedEnglishProducts[product.slug] }, "en")) :
   product.localized ? product : resolveFurnitureDisplay(language === "zh"
     ? { ...product, ...localizedProducts[product.slug] }
     : { ...product, ...localizedEnglishProducts[product.slug] }, language);
@@ -90,7 +92,7 @@ export const mapManagedFurnitureProduct = (row: FurnitureMaterialRow, language: 
   const gallery = [...(row.material_images || [])].sort((a, b) => a.sort_order - b.sort_order);
   const images = Array.from(new Set([row.image_url, ...gallery.map((image) => image.image_url)].filter((url): url is string => Boolean(url))));
   const localized = (field: "title" | "excerpt" | "content") =>
-    row[`${field}_${language}`] || row[`${field}_${language === "zh" ? "en" : "zh"}`] || "";
+    row[`${field}_${language}`] || row[`${field}_${language === "ms" ? "en" : language === "zh" ? "en" : "zh"}`] || "";
 
   return {
     slug: row.slug,
@@ -150,7 +152,7 @@ export const furnitureListingPagePath = (path: string, page: number) =>
   `${path}${page > 1 ? `?page=${page}` : ""}`;
 
 export const getFurnitureListingRoute = (pathname: string) => {
-  const match = pathname.replace(/\/+$/, "").match(/^\/(en|zh)\/furniture(?:\/([^/]+)(?:\/([^/]+))?)?$/);
+  const match = pathname.replace(/\/+$/, "").match(/^\/(en|zh|ms)\/furniture(?:\/([^/]+)(?:\/([^/]+))?)?$/);
   if (!match || match[2] === "product") return null;
   const categoryKey = match[2] || "new";
   const category = getFurnitureCategory(categoryKey);

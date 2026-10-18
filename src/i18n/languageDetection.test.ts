@@ -13,7 +13,7 @@ describe("language detection", () => {
     }
   });
 
-  it.each(["en-US", "ms-MY", "ja-JP", "fr-FR", "ar-SA"])(
+  it.each(["en-US", "ja-JP", "fr-FR", "ar-SA"])(
     "uses English when the first browser language is %s even if Chinese is second",
     (tag) => {
       expect(detectLanguageFromTags([tag, "zh-CN", "en-US"])).toBe("en");
@@ -24,6 +24,12 @@ describe("language detection", () => {
     expect(detectLanguageFromTags(["zh-TW", "ja-JP", "en-US"])).toBe("zh");
     expect(detectLanguageFromTags([])).toBe("en");
     expect(detectLanguageFromTags([""])).toBe("en");
+  });
+
+  it("recognizes Malay tags without promoting a lower-priority language", () => {
+    for (const tag of ["ms", "ms-MY", "ms_MY"]) expect(detectLanguageFromTags([tag, "zh-CN"])).toBe("ms");
+    expect(detectLanguageFromTags(["en-MY", "ms-MY"])).toBe("en");
+    expect(resolvePreferredLanguage({ savedLanguage: "ms", acceptLanguage: "zh-CN" })).toBe("ms");
   });
 
   it("orders Accept-Language tags by quality and ignores disabled or wildcard values", () => {
@@ -40,7 +46,7 @@ describe("language detection", () => {
 
   it("falls back to weighted Accept-Language and then English", () => {
     expect(resolvePreferredLanguage({ acceptLanguage: "en-US;q=0.8,zh-CN;q=0.9" })).toBe("zh");
-    expect(resolvePreferredLanguage({ acceptLanguage: "ms-MY,ja-JP;q=0.8" })).toBe("en");
+    expect(resolvePreferredLanguage({ acceptLanguage: "ms-MY,ja-JP;q=0.8" })).toBe("ms");
     expect(resolvePreferredLanguage({})).toBe("en");
   });
 

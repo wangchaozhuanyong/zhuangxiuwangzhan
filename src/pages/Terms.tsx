@@ -1,4 +1,5 @@
-﻿import PageMeta from "@/components/PageMeta";
+import { malayText } from "@/i18n/malayText";
+import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -13,9 +14,9 @@ const Terms = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = termsPageText[language];
-  const contactLabel = language === "zh" ? "联系信息" : "Contact";
-  const emailLabel = language === "zh" ? "邮箱：" : "Email:";
-  const phoneLabel = language === "zh" ? "电话：" : "Phone:";
+  const contactLabel = language === "ms" ? malayText("Contact") : (language === "zh" ? "联系信息" : "Contact");
+  const emailLabel = language === "ms" ? malayText("Email:") : (language === "zh" ? "邮箱：" : "Email:");
+  const phoneLabel = language === "ms" ? malayText("Phone:") : (language === "zh" ? "电话：" : "Phone:");
 
   return (
     <main className="fc-route-page">

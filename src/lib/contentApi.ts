@@ -1,3 +1,4 @@
+import { localizeMalayContent } from "@/i18n/malayContent";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, wardrobeCover } from "@/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "@/lib/projectPublicMetadata.mjs";
 import {
@@ -30,7 +31,8 @@ import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 import { HOME_JOURNAL_LIMIT, HOME_SERVICE_AREAS_LIMIT, projectHomeJournalPosts, projectHomeServiceAreas } from "@/lib/homeDiscoveryData";
 
-type Language = "en" | "zh";
+import type { Language } from "@/i18n/routes";
+import { localizedContentValue, hasMalayContent } from "@/i18n/localizedContent";
 type ProjectImageRecord = UnknownRecord & {
   image_url?: string;
   image_type?: string;
@@ -50,6 +52,7 @@ export type PublishedProjectSummary = {
 };
 
 export type PublishedServiceSummary = {
+  translationComplete?: boolean;
   id: string;
   status?: string;
   slug: string;
@@ -111,6 +114,7 @@ export const getFallbackProjects = async (language: Language = "en") => {
     thumbnailAlt: project.title,
   });
 
+  if (language === "ms") return localizeMalayContent(projectsData.map(addImageAltFields));
   if (language !== "zh") return projectsData.map(addImageAltFields);
 
   return projectsData.map((project) => ({
@@ -125,8 +129,10 @@ export const getFallbackProjects = async (language: Language = "en") => {
     testimonial: translateDisplayText(project.testimonial || "", language),
   }));
 };
-const getFallbackMaterials = async (): Promise<MaterialCatalogCategory[]> =>
-  (await import("@/data/materials")).materialsData as MaterialCatalogCategory[];
+const getFallbackMaterials = async (language: Language = "en"): Promise<MaterialCatalogCategory[]> => {
+  const materials = (await import("@/data/materials")).materialsData as MaterialCatalogCategory[];
+  return language === "ms" ? localizeMalayContent(materials) : materials;
+};
 
 export const translateBlogContent = (value: string, language: Language) => {
   if (language !== "zh" || !value) return value;
@@ -139,6 +145,7 @@ export const translateBlogContent = (value: string, language: Language) => {
 
 const getFallbackBlogPosts = async (language: Language = "en") => {
   const { blogPosts } = await import("@/data/blog");
+  if (language === "ms") return localizeMalayContent(blogPosts);
   if (language !== "zh") return blogPosts;
 
   const localize = (value: string) => translateDisplayText(value, language);
@@ -154,6 +161,7 @@ const getFallbackBlogPosts = async (language: Language = "en") => {
 };
 const getFallbackLocations = async (language: Language = "en") => {
   const { locationsData } = await import("@/data/locations");
+  if (language === "ms") return localizeMalayContent(locationsData);
   if (language !== "zh") return locationsData;
 
   const localize = (value: string) => translateDisplayText(value, language);
@@ -178,6 +186,7 @@ const getFallbackLocations = async (language: Language = "en") => {
 };
 export const getFallbackServices = async (language: Language = "en") => {
   const { servicesData } = await import("@/data/services");
+  if (language === "ms") return localizeMalayContent(servicesData);
   if (language !== "zh") return servicesData;
 
   const localize = (value: string) => translateDisplayText(value, language);
@@ -202,16 +211,14 @@ export const getFallbackServices = async (language: Language = "en") => {
 };
 
 const pickLocalizedValue = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: Language, fallback: T): T => {
-  const value = item?.[`${field}_${language}`];
-  return value === null || value === undefined || value === "" ? fallback : (value as T);
+  return localizedContentValue(item, field, language, fallback);
 };
 
 const pickLocalizedText = (item: UnknownRecord | null | undefined, field: string, language: Language, fallback = ""): string =>
   toText(pickLocalizedValue(item, field, language, fallback));
 
 const pickLocalizedList = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: Language): T[] => {
-  const value = item?.[`${field}_${language}`];
-  return toArray<T>(value);
+  return toArray<T>(localizedContentValue(item, field, language, []));
 };
 
 const getOrderedProjectImages = (item: UnknownRecord): ProjectImageRecord[] => {
@@ -249,10 +256,10 @@ export const mapPublishedProjectSummary = (item: UnknownRecord, language: Langua
   };
 };
 
-export const needsProjectSummaryContentFallback = (item: UnknownRecord, language: "en" | "zh") =>
+export const needsProjectSummaryContentFallback = (item: UnknownRecord, language: Language) =>
   !pickLocalizedText(item, "excerpt", language);
 
-export const getPublishedProjectSummaries = async (language: "en" | "zh", limit?: number, signal?: AbortSignal) => {
+export const getPublishedProjectSummaries = async (language: Language, limit?: number, signal?: AbortSignal) => {
   const fallbackProjects = async () => {
     const projects = await getFallbackProjects(language);
     return limit && limit > 0 ? projects.slice(0, limit) : projects;
@@ -269,7 +276,7 @@ export const getPublishedProjectSummaries = async (language: "en" | "zh", limit?
   return summaryRows.map((item) => mapPublishedProjectSummary(item, language));
 };
 
-export const getPublishedServiceSummaries = async (language: "en" | "zh" = "en", limit?: number, signal?: AbortSignal) => {
+export const getPublishedServiceSummaries = async (language: Language = "en", limit?: number, signal?: AbortSignal) => {
   const fallbackServices = async () => {
     const services = await getFallbackServices(language);
     return limit && limit > 0 ? services.slice(0, limit) : services;
@@ -282,7 +289,7 @@ export const getPublishedServiceSummaries = async (language: "en" | "zh" = "en",
   return (data as unknown as UnknownRecord[]).map((item) => mapPublishedService(item, language));
 };
 
-export const getPublishedHeroSlides = async (language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedHeroSlides = async (language: Language = "en", signal?: AbortSignal) => {
   if (!hasPublicContentDatabaseClient()) return [];
 
   const data = await fetchPublishedHeroSlideRows(signal);
@@ -300,7 +307,7 @@ export const mapPublishedHeroSlide = (item: UnknownRecord, language: Language = 
     alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
 });
 
-export const getPublishedTestimonials = async (language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedTestimonials = async (language: Language = "en", signal?: AbortSignal) => {
   if (!hasPublicContentDatabaseClient()) return [];
 
   const data = await fetchPublishedTestimonialRows(signal);
@@ -317,7 +324,7 @@ export const mapPublishedTestimonial = (item: UnknownRecord, language: Language 
     rating: Number(item.rating || 5),
 });
 
-export const getPublishedServices = async (language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedServices = async (language: Language = "en", signal?: AbortSignal) => {
 
   if (!hasPublicContentDatabaseClient()) return getFallbackServices(language);
 
@@ -328,6 +335,7 @@ export const getPublishedServices = async (language: "en" | "zh" = "en", signal?
 };
 
 export const mapPublishedService = (item: UnknownRecord, language: Language): PublishedServiceSummary & UnknownRecord => ({
+    translationComplete: hasMalayContent(item),
     id: readText(item, "id"),
     status: readText(item, "status"),
     title: pickLocalizedText(item, "title", language),
@@ -345,7 +353,7 @@ export const mapPublishedService = (item: UnknownRecord, language: Language): Pu
     seoDescription: pickLocalizedText(item, "seo_description", language),
 });
 
-export const getPublishedServiceBySlug = async (slug: string, language: "en" | "zh", signal?: AbortSignal) => {
+export const getPublishedServiceBySlug = async (slug: string, language: Language, signal?: AbortSignal) => {
   const fallbackServices = async () => (await getFallbackServices(language)).find((service) => service.slug === slug) || null;
   if (!hasPublicContentDatabaseClient()) return fallbackServices();
 
@@ -354,7 +362,7 @@ export const getPublishedServiceBySlug = async (slug: string, language: "en" | "
   return mapPublishedService(data, language);
 };
 
-export const getPublishedProjectBySlug = async (slug: string, language: "en" | "zh", signal?: AbortSignal) => {
+export const getPublishedProjectBySlug = async (slug: string, language: Language, signal?: AbortSignal) => {
   const fallbackProjects = async () => (await getFallbackProjects(language)).find((project) => project.slug === slug) || null;
 
   if (!hasPublicContentDatabaseClient()) return fallbackProjects();
@@ -383,6 +391,7 @@ export function mapPublishedProjectDetail(data: UnknownRecord, language: Languag
     .filter(Boolean);
 
   return {
+    translationComplete: hasMalayContent(data),
     publicMetadata: projectPublicMetadata(data, language),
     id: readText(data, "id"),
     slug: readText(data, "slug"),
@@ -409,7 +418,7 @@ export function mapPublishedProjectDetail(data: UnknownRecord, language: Languag
   };
 }
 
-export const getPublishedMaterials = async (language: "en" | "zh" = "en", signal?: AbortSignal): Promise<MaterialCatalogCategory[]> => {
+export const getPublishedMaterials = async (language: Language = "en", signal?: AbortSignal): Promise<MaterialCatalogCategory[]> => {
 
   if (!hasPublicContentDatabaseClient()) return getFallbackMaterials();
   const data = await fetchPublishedMaterialRows(undefined, FURNITURE_MATERIAL_CATEGORY, signal);
@@ -487,6 +496,7 @@ export const mapPublishedMaterialRows = (rows: UnknownRecord[], language: Langua
       referencePrice,
       priceScope: pickLocalizedText(item, "price_scope", language),
       priceNote: pickLocalizedText(item, "price_note", language),
+      translationComplete: hasMalayContent(item),
       seoTitle: pickLocalizedText(item, "seo_title", language),
       seoDescription: pickLocalizedText(item, "seo_description", language),
       image: readText(item, "image_url"),
@@ -498,7 +508,7 @@ export const mapPublishedMaterialRows = (rows: UnknownRecord[], language: Langua
   }, []);
 
 export const getPublishedProductHighlights = async (
-  language: "en" | "zh" = "en",
+  language: Language = "en",
   limit = 4,
  signal?: AbortSignal): Promise<MaterialCatalogCategory["items"]> => {
   const mapRows = (rows: UnknownRecord[]) => mapPublishedMaterialRows(
@@ -511,7 +521,7 @@ export const getPublishedProductHighlights = async (
     if (data?.length) return mapRows(data as unknown as UnknownRecord[]);
   }
 
-  const fallbackCategories = await getFallbackMaterials();
+  const fallbackCategories = await getFallbackMaterials(language);
   const unique = new Map<string, MaterialCatalogCategory["items"][number]>();
   for (const category of fallbackCategories) {
     for (const product of category.items) {
@@ -521,7 +531,7 @@ export const getPublishedProductHighlights = async (
   return Array.from(unique.values()).slice(0, limit);
 };
 
-export const getPublishedMaterialBySlug = async (slug: string, language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedMaterialBySlug = async (slug: string, language: Language = "en", signal?: AbortSignal) => {
   const categories = await getPublishedMaterials(language, signal);
   for (const category of categories) {
     const material = category.items.find((item) => item.slug === slug);
@@ -535,7 +545,7 @@ export const getPublishedMaterialBySlug = async (slug: string, language: "en" | 
   return { material: null, category: null };
 };
 
-export const getPublishedBlogPosts = async (language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedBlogPosts = async (language: Language = "en", signal?: AbortSignal) => {
 
   if (!hasPublicContentDatabaseClient()) return getFallbackBlogPosts(language);
   const data = await fetchPublishedBlogPostRows(signal);
@@ -558,6 +568,7 @@ export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "
     : estimateBlogReadMinutes(content, language);
 
   return {
+    translationComplete: hasMalayContent(item),
     id: readText(item, "id"),
     slug: readText(item, "slug"),
     title,
@@ -585,7 +596,7 @@ export const getPublishedHomeJournal = async (language: Language = "en", signal?
   return mapPublishedBlogPostRows(projectHomeJournalPosts(data as unknown as UnknownRecord[]), language);
 };
 
-export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedBlogPostBySlug = async (slug: string, language: Language = "en", signal?: AbortSignal) => {
   const fallbackPost = async () => (await getFallbackBlogPosts(language)).find((post) => post.slug === slug) || null;
   if (!hasPublicContentDatabaseClient()) return fallbackPost();
 
@@ -595,7 +606,7 @@ export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | 
   return mapPublishedBlogPost(data as unknown as UnknownRecord, language);
 };
 
-export const getPublishedServiceAreaBySlug = async (slug: string, language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedServiceAreaBySlug = async (slug: string, language: Language = "en", signal?: AbortSignal) => {
   const fallback = async () => {
     const locationsData = await getFallbackLocations(language);
     return locationsData[slug] || null;
@@ -611,6 +622,7 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
   const areaName = data.area_name || localizedTitle || "";
 
   return {
+    translationComplete: hasMalayContent(data as UnknownRecord),
     name: localize(areaName),
     slug: readText(data, "slug"),
     metaTitle: localize(pickLocalizedText(data, "seo_title", language) || readText(data, "area_name")),
@@ -653,7 +665,7 @@ export const mapPublishedServiceAreaSummary = (data: UnknownRecord, language: La
   };
 };
 
-export const getPublishedServiceAreas = async (language: "en" | "zh" = "en", signal?: AbortSignal): Promise<PublishedServiceAreaSummary[]> => {
+export const getPublishedServiceAreas = async (language: Language = "en", signal?: AbortSignal): Promise<PublishedServiceAreaSummary[]> => {
   const fallback = async () => {
     const locations = await getFallbackLocations(language);
     return Object.values(locations).map((location) => ({
@@ -685,28 +697,28 @@ export const getPublishedHomeServiceAreas = async (language: Language = "en", si
   return projectHomeServiceAreas(data as unknown as UnknownRecord[]).map((item) => mapPublishedServiceAreaSummary(item, language));
 };
 
-export const getPublishedLandingPageBySlug = async (slug: string, language: "en" | "zh" = "en", signal?: AbortSignal) => {
+export const getPublishedLandingPageBySlug = async (slug: string, language: Language = "en", signal?: AbortSignal) => {
   const fallback = async () => {
     const { landingPages } = await import("@/data/landings");
     const page = landingPages[slug] || null;
     if (!page) return null;
 
-    if (language !== "zh") return page;
-    const chineseCopy = landingContent[slug]?.zh;
-    if (chineseCopy) {
+    if (language === "en") return page;
+    const localizedCopy = landingContent[slug]?.[language];
+    if (localizedCopy) {
       return {
         ...page,
-        ...chineseCopy,
+        ...localizedCopy,
         heroImage: page.heroImage,
-        heroAlt: chineseCopy.heroAlt || chineseCopy.title,
-        relatedProjects: chineseCopy.relatedProjects.map((project, index) => ({
+        heroAlt: localizedCopy.heroAlt || localizedCopy.title,
+        relatedProjects: localizedCopy.relatedProjects.map((project, index) => ({
           ...project,
           image: page.relatedProjects[index]?.image || page.heroImage,
         })),
       };
     }
 
-    const localize = (value: string) => translateDisplayText(value, language);
+    const localize = (value: string) => language === "ms" ? localizeMalayContent(value) : translateDisplayText(value, language);
 
     return {
       ...page,
@@ -734,6 +746,7 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
   return {
+    translationComplete: hasMalayContent(data),
     title: localize(pickLocalizedText(data, "title", language)),
     subtitle: localize(pickLocalizedText(data, "excerpt", language)),
     heroImage: readText(data, "hero_image_url"),

@@ -1,3 +1,5 @@
+import { projectCategoryLabels as categoryLabels } from "@/i18n/publicUtilityText";
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useMemo } from "react";
 import { usePublicListingState } from "@/hooks/usePublicListingState";
@@ -23,10 +25,7 @@ import { isRenderingConceptProject } from "@/lib/projectContentClassification";
 const categories = ["All", "Residential", "Commercial", "Built-In", "Warehouse", "Exterior", "Office"] as const;
 const PAGE_SIZE = 10;
 
-const categoryLabels = {
-  en: { All: "All", Residential: "Residential", Commercial: "Commercial", "Built-In": "Built-In", Warehouse: "Warehouse", Exterior: "Exterior", Office: "Office" },
-  zh: { All: "全部", Residential: "住宅装修", Commercial: "商业装修", "Built-In": "定制家具", Warehouse: "仓储工程", Exterior: "外墙工程", Office: "办公室" },
-} as const;
+
 
 const fallbackImages: Record<string, string> = {
   Residential: "/images/projects/residential-renovation.webp",
@@ -67,7 +66,7 @@ export default function Projects() {
 
   return (
     <main className="fc-route-page fc-route-projects-page" data-route-pending={pageLoading || isLoading || undefined}>
-      <PageMeta ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
+      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }]} />
       <SchemeARouteHero
         kind="listing"

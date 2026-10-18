@@ -9,4 +9,10 @@ export const indexPageText = {
     description: "FLASH CAST 为吉隆坡、雪兰莪与巴生谷提供住宅装修、旧屋翻新、厨房与浴室、办公室与店铺装修、定制柜体、材料建议和施工协调。提交空间照片、地点与计划范围，获取免费报价。",
     keywords: "吉隆坡装修公司, 吉隆坡装修服务项目, 住宅装修 吉隆坡, 厨房装修 吉隆坡, 浴室装修 防水, 办公室装修 马来西亚, 店铺装修 马来西亚, 定制家具 吉隆坡",
   },
+
+  ms: {
+    title: "Syarikat Ubahsuai Kuala Lumpur | Pengubahsuaian Rumah & Komersial | FLASH CAST",
+    description: "FLASH CAST merancang dan menyelaras pengubahsuaian rumah dan komersial di seluruh Kuala Lumpur, Selangor dan Lembah Klang, termasuk dapur, bilik mandi, pejabat, kedai, terbina dalam tersuai, nasihat material dan kerja tapak.",
+    keywords: "syarikat pengubahsuaian Kuala Lumpur, perkhidmatan pengubahsuaian Kuala Lumpur, pengubahsuaian rumah Malaysia, pengubahsuaian dapur Malaysia, pengubahsuaian bilik mandi, pengubahsuaian pejabat, pengubahsuaian kedai, perabot terbina dalam khas",
+  },
 } as const;
