@@ -86,6 +86,21 @@ function deferred() {
 }
 
 describe("quotation initial, contextual and submitted draft baselines", () => {
+  it.each(["en", "zh"] as const)("counts only a valid %s phone and explains invalid input on blur without submitting", async (language) => {
+    state.language = language;
+    await render(`/${language}/quote`);
+    await input("phone", "abc");
+    expect(container.textContent).toContain("0/4");
+    await act(async () => { field("phone").focus(); field("phone").blur(); });
+    expect(container.querySelector("#quote-phone-error")?.textContent).toBe(quotePageText[language].invalidPhone);
+    expect(field("phone").getAttribute("aria-invalid")).toBe("true");
+    await input("phone", "+60 11-2885 3888");
+    expect(container.textContent).toContain("1/4");
+    await act(async () => { field("phone").focus(); field("phone").blur(); });
+    expect(container.querySelector("#quote-phone-error")).toBeNull();
+    expect(field("phone").getAttribute("aria-invalid")).toBe("false");
+    expect(state.submit).not.toHaveBeenCalled();
+  });
   it.each(["en", "zh"] as const)("focuses the form from the %s hero without discarding a draft", async (language) => {
     state.language = language;
     await render(`/${language}/quote`);

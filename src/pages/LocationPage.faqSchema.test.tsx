@@ -64,9 +64,15 @@ describe("regional FAQ schema ownership", () => {
     state.empty = true; await render("kepong", "en"); expect(faqNodes()).toHaveLength(0);
     expect(container.querySelector(".fc-route-faq")).toBeNull(); expect(fetch).not.toHaveBeenCalled();
   });
-  it("leaves the existing edge FAQ as the sole production declaration", async () => {
+  it("updates the sole production graph from the visible FAQ through the shared owner", async () => {
     vi.resetModules(); vi.stubEnv("DEV", false);
     const { default: ProductionLocationPage } = await import("./LocationPage");
+    const { StructuredDataProvider, useStructuredDataNode } = await import("@/contexts/StructuredDataContext");
+    function RegisteredPage() {
+      useStructuredDataNode({ "@type": "WebPage", url: "https://fixture.invalid/en/locations/kepong" });
+      return <ProductionLocationPage />;
+    }
+    function OwnedPage() { return <StructuredDataProvider><RegisteredPage /></StructuredDataProvider>; }
     const edge = document.createElement("script");
     edge.type = "application/ld+json"; edge.dataset.flashcastEdgeSchema = "";
     edge.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": [
@@ -74,11 +80,12 @@ describe("regional FAQ schema ownership", () => {
     ] });
     document.head.append(edge);
     try {
-      await render("kepong", "en", ProductionLocationPage);
+      await render("kepong", "en", OwnedPage);
       expect(faqNodes()).toHaveLength(0);
       expect(document.querySelectorAll("script[data-flashcast-edge-schema]")).toHaveLength(1);
-      const graph = JSON.parse(edge.textContent || "{}")["@graph"] as Array<{ "@type": string }>;
+      const graph = JSON.parse(edge.textContent || "{}")["@graph"] as Array<{ "@type": string; mainEntity?: unknown[] }>;
       expect(graph.filter((node) => node["@type"] === "FAQPage")).toHaveLength(1);
+      expect(graph.find(node => node["@type"] === "FAQPage")?.mainEntity).toHaveLength(3);
       expect(fetch).not.toHaveBeenCalled();
     } finally { edge.remove(); }
   });

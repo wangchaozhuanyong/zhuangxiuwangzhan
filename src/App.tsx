@@ -28,6 +28,7 @@ import NavigationProtectionProvider from "@/components/NavigationProtectionProvi
 import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 import QueryInvalidationBridge from "@/components/QueryInvalidationBridge";
 import RouteReadFeedback from "@/components/RouteReadFeedback";
+import { StructuredDataProvider } from "@/contexts/StructuredDataContext";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
@@ -259,7 +260,7 @@ const AppShell = () => {
           </div>
         </PublicPageFrame>
       ) : (
-        <PublicSiteShell surface={publicSurface} productDetail={isProductDetailRoute}>
+        <StructuredDataProvider><PublicSiteShell surface={publicSurface} productDetail={isProductDetailRoute}>
           <SchemeANavbar />
           <PublicRoutePrefetch />
           <PublicCinematicMotionGate />
@@ -279,7 +280,7 @@ const AppShell = () => {
             <AppErrorBoundary isAdminRoute={false}><Suspense fallback={null}><PublicUpdateNotice /></Suspense></AppErrorBoundary>
             <MobileBottomDock />
           </PublicPageFrame>
-        </PublicSiteShell>
+        </PublicSiteShell></StructuredDataProvider>
       )}
     </PublicChromeProvider>
   );

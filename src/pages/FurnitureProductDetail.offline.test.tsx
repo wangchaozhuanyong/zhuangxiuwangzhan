@@ -101,6 +101,7 @@ it.each(localizedCases.flatMap((value) => (["decoded", "encoded"] as const).map(
     vi.stubGlobal("fetch", fetch);
     await render(slug);
     expect(node.querySelector("h1")).toHaveTextContent(expected.name);
+    expect(node.querySelector("a.is-shop")?.getAttribute("href")).toBe(`https://shop.flashcast.com.my/${language}/`);
     expect(node.textContent).not.toContain(furnitureText[language].notFound);
     expect(node.querySelector('[data-route-pending="true"]')).toBeNull();
     expect(client.getQueryState(publicContentQueries.furnitureProduct(encodeURIComponent(slug), language).queryKey)?.status).toBe("success");

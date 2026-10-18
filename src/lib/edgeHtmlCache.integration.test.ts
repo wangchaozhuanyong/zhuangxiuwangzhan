@@ -357,7 +357,7 @@ describe("public Edge HTML cache", () => {
     expect(html).toContain("测试餐椅的商品详情");
   });
 
-  it("reads only blog metadata at the Edge and never uses the article body as the description fallback", async () => {
+  it("reads the published blog body once for raw HTML without using it as the metadata description", async () => {
     const requestedSelects: string[] = [];
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       const url = new URL(String(input));
@@ -370,6 +370,7 @@ describe("public Edge HTML cache", () => {
         requestedSelects.push(url.searchParams.get("select") || "");
         return new Response(JSON.stringify([{
           id: "blog-dbkl",
+          status: "published",
           slug: "renovation-permit-dbkl-guide",
           title_en: "DBKL permit guide",
           title_zh: "DBKL 装修准证指南",
@@ -390,9 +391,10 @@ describe("public Edge HTML cache", () => {
     expect(response.status).toBe(200);
     expect(requestedSelects).toHaveLength(1);
     expect(requestedSelects[0]).not.toBe("*");
-    expect(requestedSelects[0]).not.toContain("content_en");
-    expect(requestedSelects[0]).not.toContain("content_zh");
-    expect(html).not.toContain("BODY_TEXT_MUST_NOT_BECOME_EDGE_DESCRIPTION");
+    expect(requestedSelects[0]).toContain("content_en");
+    expect(requestedSelects[0]).toContain("content_zh");
+    expect(html).toContain("BODY_TEXT_MUST_NOT_BECOME_EDGE_DESCRIPTION");
+    expect(html.match(/<meta[^>]*name="description"[^>]*>/)?.[0]).not.toContain("BODY_TEXT_MUST_NOT_BECOME_EDGE_DESCRIPTION");
     expect(html).toContain('rel="canonical" href="https://flashcast.com.my/en/blog/renovation-permit-dbkl-guide"');
     expect(html).toContain('hreflang="zh-CN"');
     expect(html).toContain('hreflang="en"');
