@@ -7,7 +7,7 @@ import PageMeta from "./PageMeta";
 const state = vi.hoisted(() => {
   vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my");
   return {
-    language: "zh" as "en" | "zh",
+    language: "zh" as "en" | "zh" | "ms",
     settings: { brand_name: "FLASH CAST", company_name: "FLASH CAST SDN. BHD.", og_image_url: "https://example.com/default.webp", updated_at: "current" },
   };
 });
@@ -48,6 +48,13 @@ describe("public page metadata", () => {
       expect(document.querySelector('link[rel="alternate"]')).toBeNull();
       expect(document.querySelector('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
     });
+  });
+
+  it("keeps incomplete Malay pages noindex without inserting a visible fallback banner", async () => {
+    state.language = "ms";
+    act(() => root.render(<HelmetProvider><PageMeta title="Perkhidmatan" description="Penerangan perkhidmatan." canonicalPath="/services" malayReady={false} /></HelmetProvider>));
+    await vi.waitFor(() => expect(document.querySelector('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow"));
+    expect(container.querySelector(".language-content-notice")).toBeNull();
   });
 
   it.each([

@@ -7,7 +7,6 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { withChineseBrandMetadata } from "@/i18n/brandIdentity";
 import { useStructuredDataNode } from "@/contexts/StructuredDataContext";
 import { languageTag } from "@/i18n/languageDetection";
-import { languageSelectorText } from "@/i18n/languageSelectorText";
 
 interface PageMetaProps {
   title: string;
@@ -44,7 +43,6 @@ const PageMeta = ({
   malayReady = true,
 }: PageMetaProps) => {
   const { language } = useLanguage();
-  const showMalayFallback = language === "ms" && !malayReady && !noIndex;
   noIndex = noIndex || language === "ms" && !malayReady;
   const settings = useSiteSettings();
   const brandName = settings.brand_name || "FLASH CAST";
@@ -65,7 +63,7 @@ const PageMeta = ({
   });
 
   return (
-    <><Helmet>
+    <Helmet>
       <title>{metadata.title}</title>
       <meta name="description" content={metadata.description} />
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
@@ -89,8 +87,6 @@ const PageMeta = ({
       <meta name="twitter:description" content={metadata.description} />
       <meta name="twitter:image" content={image} />
     </Helmet>
-    {showMalayFallback && <div className="language-content-notice" lang="ms-MY">{languageSelectorText.ms.fallback}</div>}
-    </>
   );
 };
 
