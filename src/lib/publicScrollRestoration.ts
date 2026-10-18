@@ -22,7 +22,7 @@ export const getFurnitureListingOrigin = (state: unknown): FurnitureListingOrigi
   const value = state.furnitureOrigin;
   if (!value || typeof value !== "object" || !("pathname" in value) || !("search" in value) || !("top" in value)) return null;
   const { pathname, search, top } = value;
-  if (typeof pathname !== "string" || !/^\/(?:zh|en)\/furniture(?:\/[a-z0-9-]+){0,2}\/?$/.test(pathname) || !isFurnitureListingPath(pathname)) return null;
+  if (typeof pathname !== "string" || !/^\/(?:zh|en|ms)\/furniture(?:\/[a-z0-9-]+){0,2}\/?$/.test(pathname) || !isFurnitureListingPath(pathname)) return null;
   if (typeof search !== "string" || (search !== "" && !search.startsWith("?")) || search.includes("#")) return null;
   if (typeof top !== "number" || !Number.isFinite(top) || top < 0) return null;
   return { pathname, search, top };

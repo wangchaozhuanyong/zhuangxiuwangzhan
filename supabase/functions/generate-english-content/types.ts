@@ -10,6 +10,7 @@ export type GenerateEnglishRequest = {
   table: string;
   id: string;
   force?: boolean;
+  targetLanguage?: "en" | "ms";
 };
 
 export type GenerateEnglishResult = {
@@ -18,6 +19,7 @@ export type GenerateEnglishResult = {
     ok?: true;
     translated?: Record<string, unknown>;
     skipped_existing_english?: true;
+    skipped_existing_translation?: true;
     cache_invalidation?: { ok: boolean; revision: string | null; [key: string]: unknown };
     warnings?: string[];
     error?: string | null;

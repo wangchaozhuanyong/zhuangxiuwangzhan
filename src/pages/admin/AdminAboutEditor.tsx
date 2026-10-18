@@ -1,3 +1,5 @@
+import AdminMalayFields from "@/components/admin/AdminMalayFields";
+import { malayFieldsPatch } from "@/lib/adminMalayContent";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useEffect, useMemo, useState } from "react";
@@ -158,6 +160,7 @@ export default function AdminAboutEditor() {
 
     try {
       const payload: Record<string, unknown> = {
+        ...malayFieldsPatch(row),
         section_key: key,
         title_zh: row.title_zh || null,
         title_en: row.title_en || null,
@@ -213,6 +216,7 @@ export default function AdminAboutEditor() {
   const saveCta = protectSubmission("saveCta", async () => {
     if (!supabase) return;
     const payload: Record<string, unknown> = {
+      ...malayFieldsPatch(ctaDraft),
       block_key: "about_final",
       title_zh: ctaDraft.title_zh || null,
       title_en: ctaDraft.title_en || null,
@@ -390,6 +394,7 @@ export default function AdminAboutEditor() {
                         />
                       </div>
                     </div>
+                    <AdminMalayFields record={row} table="about_sections" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => updateSection(key, patch)} />
                     <div data-admin-card-actions className="mt-4 flex gap-2">
                       <Button onClick={() => void saveSection(key)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
                     </div>
@@ -471,6 +476,7 @@ export default function AdminAboutEditor() {
                 />
               </div>
             </div>
+            <AdminMalayFields record={ctaDraft} table="cta_blocks" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => touchEditingCta((current) => ({ ...(current || ctaDraft), ...patch }))} />
             <div data-admin-card-actions className="mt-4 flex gap-2">
               <Button onClick={() => void saveCta()} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>

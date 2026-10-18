@@ -1,3 +1,4 @@
+import { googleMapText as copy } from "@/i18n/publicUtilityText";
 import { useEffect, useRef, useState } from "react";
 import { ExternalLink, Loader2, MapPin } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -13,18 +14,7 @@ type GoogleMapEmbedProps = {
   className?: string;
 };
 
-const copy = {
-  en: {
-    loading: "Loading map...",
-    openMaps: "Open in Google Maps",
-    preview: "Office location",
-  },
-  zh: {
-    loading: "地图加载中...",
-    openMaps: "在 Google 地图中打开",
-    preview: "办公室地址",
-  },
-};
+
 
 const canUseIntersectionObserver = () =>
   typeof window !== "undefined" && typeof window.IntersectionObserver === "function";

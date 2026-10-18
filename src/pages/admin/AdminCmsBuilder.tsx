@@ -1,3 +1,4 @@
+import AdminMalayFields from "@/components/admin/AdminMalayFields";
 import { confirmProtectedNavigation } from "@/lib/navigationProtection";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
@@ -647,6 +648,7 @@ export default function AdminCmsBuilder() {
               <Textarea id="cms-page-seo_keywords_en" rows={2} value={pageDraft.seo_keywords_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_keywords_en: event.target.value })); }} />
             </div>
           </div>
+          <AdminMalayFields record={pageDraft} table="cms_pages" dirty={pageForm.dirty} disabled={saving} onChange={(patch) => setPageDraft((current) => ({ ...current, ...patch }))} />
           <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
             <AdminActionButton action="content.write" type="button" disabled={saving || Boolean(selectedPageId && !selectedPage)} onClick={() => void savePage()}>{saving ? A("saving") : A("savePageButton")}</AdminActionButton>
             {pageDraft.path && (
@@ -850,6 +852,7 @@ export default function AdminCmsBuilder() {
                   <AdminFieldLabel htmlFor="cms-section-settings" label={A("settingsLabel")} help={A("settingsHelp")} />
                   <Textarea id="cms-section-settings" rows={5} value={settingsText} onChange={(event) => {  setSettingsText(event.target.value); }} />
                 </div>
+                <AdminMalayFields record={sectionDraft} table="cms_sections" dirty={sectionForm.dirty} disabled={saving} onChange={(patch) => setSectionDraft((current) => current ? { ...current, ...patch } : current)} />
                 <div data-admin-card-actions className="flex flex-wrap gap-2">
                   <AdminActionButton action="content.write" type="button" disabled={saving} onClick={() => void saveSection()}>{saving ? A("saving") : A("saveSectionButton")}</AdminActionButton>
                   {sectionDraft.id && (

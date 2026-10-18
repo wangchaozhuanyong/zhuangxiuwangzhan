@@ -116,6 +116,54 @@ const categoryPlanningContext: Record<Language, Record<string, CategoryPlanningC
       guide: { title: "艺术墙面涂装指南", description: "施工前了解样板确认、基层处理、纹理方向和日常维护。", href: "/blog/artistic-wall-coating-guide-remmers" },
     },
   },
+
+  ms: {
+    "kitchen-cabinets": {
+      focus: "teras kabinet dan kemasan pintu, rawatan tepi, perkakasan, zon sink dan dapur, kelegaan perkakas, dan susun atur dapur kering atau basah",
+      service: { title: "Pengubahsuaian dapur dan perancangan kabinet", description: "Semak susun atur dapur, kabinet, kaunter, mata perkakas, paip dan skop sebut harga bersama-sama.", href: "/services/kitchen" },
+      guide: { title: "Senarai semak sebut harga dapur", description: "Bandingkan butiran kabinet, kaunter, kerja basah, titik servis dan pengecualian sebelum menerima sebut harga.", href: "/blog/kitchen-renovation-quotation-checklist-malaysia" },
+    },
+    "whole-house-custom": {
+      focus: "tujuan penyimpanan, susun atur dalaman, sampel papan dan kemasan, perkakasan, bukaan kabel atau perkakas, akses harian dan kelegaan pemasangan",
+      service: { title: "Perancangan perabot terbina dalam tersuai", description: "Rancang almari pakaian, kabinet TV, penyimpanan kasut, ruang belajar dan unit lain yang dipasang di sekeliling ruang yang diukur.", href: "/services/builtin" },
+      guide: { title: "Faktor kos kabinet terbina dalam", description: "Fahami cara dimensi, bahan papan, kemasan, perkakasan, aksesori dan akses membentuk skop bertulis.", href: "/blog/built-in-cabinet-cost-malaysia" },
+    },
+    furniture: {
+      focus: "dimensi bilik, peredaran, akses penghantaran, ketinggian tempat duduk atau meja, sampel kemasan, penggunaan harian dan penyelenggaraan masa hadapan",
+      service: { title: "Reka bentuk dalaman dan perancangan ruang", description: "Selaraskan skala perabot, peredaran, penyimpanan dan susun atur bilik yang lebih luas sebelum membuat pemilihan.", href: "/services/design" },
+      guide: { title: "Perancangan penyimpanan untuk kondo kecil", description: "Lihat bagaimana perabot, terbina dalam dan peredaran boleh berfungsi bersama dalam rumah yang padat.", href: "/blog/built-in-furniture-small-condo-storage" },
+    },
+    bathroom: {
+      focus: "paip dan saliran sedia ada, susun atur zon basah, antara muka kalis air, titik penetapan, pelepasan, akses pembersihan dan pertimbangan slip",
+      service: { title: "Pengubahsuaian bilik mandi dan kalis air", description: "Semak kebocoran, kalis air, saliran, jubin, kelengkapan kebersihan, skrin pancuran mandian dan storan solek sebagai satu skop.", href: "/services/bathroom" },
+      guide: { title: "Perancangan kalis air dan saliran bilik mandi", description: "Periksa jatuh, perangkap lantai, zon basah, penembusan paip dan urutan antara kalis air dan kemasan.", href: "/blog/bathroom-waterproofing-drainage-planning-malaysia" },
+    },
+    "countertops-stone-surfaces": {
+      focus: "sokongan kabinet, dimensi siap, potongan sinki dan dapur memasak, lokasi sambungan, profil tepi, percikan balik, titik servis dan akses pemasangan",
+      service: { title: "Pengubahsuaian dapur dan perancangan countertop", description: "Selaraskan bahagian atas kaunter dengan kabinet, peralatan, paip, kemasan dinding dan skop sebut harga.", href: "/services/kitchen" },
+      guide: { title: "Senarai semak sebut harga dapur", description: "Sahkan bahan atas meja, dimensi, potongan, butiran tepi, pemasangan dan pengecualian secara bertulis.", href: "/blog/kitchen-renovation-quotation-checklist-malaysia" },
+    },
+    flooring: {
+      focus: "keadaan bawah lantai, pemeriksaan kelembapan dan kerataan, ketinggian siap, peralihan, skirting, lalu lintas, pembersihan dan urutan pemasangan",
+      service: { title: "Perkhidmatan lantai dan perancangan tapak", description: "Semak lantai sedia ada, penyediaan, kemasan yang dipilih, butiran peralihan dan skop pemasangan.", href: "/services/flooring" },
+      guide: { title: "Perbandingan SPC, vinil dan lantai lamina", description: "Bandingkan keadaan penggunaan, keperluan pemasangan dan penyelenggaraan sebelum memilih arah lantai.", href: "/blog/spc-vinyl-vs-laminate-flooring" },
+    },
+    "doors-windows": {
+      focus: "saiz bukaan, kelegaan ayunan atau gelongsor, keadaan bingkai dan dinding, perkakasan, pilihan kaca atau panel, ambang, saliran dan akses pemasangan",
+      service: { title: "Skop pengubahsuaian dan penyelarasan pembukaan", description: "Selaraskan pintu dan tingkap dengan dinding tertahan, aras lantai, perkhidmatan, kemasan dan urutan pengubahsuaian yang lebih luas.", href: "/services/renovation" },
+      guide: { title: "Senarai semak pengubahsuaian rumah lama", description: "Periksa bukaan sedia ada, kelembapan, pendawaian, paip, kerja tertahan dan keadaan tapak sebelum kerja penggantian dimulakan.", href: "/blog/old-house-renovation-checklist" },
+    },
+    "wall-panels": {
+      focus: "keadaan dinding, lembapan, soket dan suis, arah panel, irama sendi, butiran sudut dan tepi, keperluan pembersihan dan akses masa hadapan",
+      service: { title: "Reka bentuk dalaman dan perancangan dinding ciri", description: "Selaraskan dinding ciri dengan perkadaran bilik, pencahayaan, perkhidmatan, perabot dan kemasan bersebelahan.", href: "/services/design" },
+      guide: { title: "Idea perancangan dinding ciri", description: "Bandingkan fokus visual, peralihan bahan, pencahayaan dan penyelenggaraan sebelum memilih rawatan dinding ciri.", href: "/blog/feature-wall-ideas-2025" },
+    },
+    "art-paint": {
+      focus: "keadaan dinding, kelembapan, penyediaan asas, sampel warna dan tekstur, pencahayaan, butiran tepi, urutan aplikasi dan sentuhan masa hadapan",
+      service: { title: "Perkhidmatan salutan dinding artistik", description: "Semak penyediaan permukaan, kelulusan sampel, kawasan permohonan dan skop salutan yang disahkan.", href: "/services/artistic-coating" },
+      guide: { title: "Panduan salutan dinding artistik", description: "Fahami semakan sampel, penyediaan permukaan, arah tekstur dan penyelenggaraan praktikal sebelum meneruskan.", href: "/blog/artistic-wall-coating-guide-remmers" },
+    },
+  },
 };
 
 const fallbackContext = (language: Language): CategoryPlanningContext => language === "zh"

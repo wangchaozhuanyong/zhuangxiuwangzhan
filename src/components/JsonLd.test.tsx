@@ -55,16 +55,14 @@ describe("public header brand", () => {
   });
 
   it.each([
-    ["zh", ["中文", "英文"], "zh-CN"],
-    ["en", ["CN", "EN"], "en"],
-  ] as const)("uses the current %s interface language for both language options", (language, labels, lang) => {
+    ["zh", "中文"], ["en", "EN"],
+  ] as const)("opens a language drawer from one compact %s trigger", (language, label) => {
     const header = renderHeader(language).closest("header")!;
-    const options = [...header.querySelectorAll(".scheme-a-language-option")];
-    expect(options.map((option) => option.textContent)).toEqual(labels);
-    expect(options.map((option) => option.getAttribute("lang"))).toEqual([lang, lang]);
-    expect(options.map((option) => option.getAttribute("hreflang"))).toEqual(["zh-CN", "en"]);
-    expect(options.map((option) => option.getAttribute("href"))).toEqual(["/zh", "/en"]);
-    expect(options[language === "zh" ? 0 : 1].getAttribute("aria-current")).toBe("true");
+    const trigger = header.querySelector(".language-selector")!;
+    expect(trigger.textContent).toBe(label);
+    expect(trigger.getAttribute("aria-haspopup")).toBe("dialog");
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(trigger.getAttribute("aria-label")).toContain(language === "zh" ? "切换语言" : "Change language");
   });
 });
 

@@ -1,3 +1,5 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
+import { malayFormat } from "@/i18n/malayText";
 import { interactionText } from "@/i18n/interactionText";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -150,9 +152,9 @@ const Contact = () => {
   ];
 
   const mapDescription = mapAddress
-    ? language === "zh"
+    ? language === "ms" ? malayFormat("Office address: __FC0__", [mapAddress]) : (language === "zh"
       ? `办公室地址：${mapAddress}`
-      : `Office address: ${mapAddress}`
+      : `Office address: ${mapAddress}`)
     : t.mapDescription;
 
   const FieldError = ({ id, msg }: { id: string; msg?: string }) =>
@@ -165,7 +167,7 @@ const Contact = () => {
 
   return (
     <main className="fc-route-page fc-route-form-page fc-route-contact-page" data-route-pending={pageLoading || undefined}>
-      <PageMeta ogImage={pageContent?.seoImage || undefined}
+      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined}
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
         keywords={pageContent?.seo_keywords || t.metaKeywords}

@@ -19,6 +19,17 @@ export const footerLocationLinks = {
     { name: "梳邦再也", slug: "subang-jaya" },
     { name: "蒲种", slug: "puchong" },
   ],
+
+  ms: [
+    { name: "Kuala Lumpur", slug: "kuala-lumpur" },
+    { name: "Petaling Jaya", slug: "petaling-jaya" },
+    { name: "Selangor", slug: "selangor" },
+    { name: "Mont Kiara", slug: "mont-kiara" },
+    { name: "Cheras", slug: "cheras" },
+    { name: "Bangsar", slug: "bangsar" },
+    { name: "Subang Jaya", slug: "subang-jaya" },
+    { name: "Puchong", slug: "puchong" },
+  ],
 } as const;
 
 export const footerCopy = {
@@ -106,16 +117,63 @@ export const footerCopy = {
       { name: "联系我们", path: "/contact" },
     ],
   },
+
+  ms: {
+    ctaTitle: "Bercadang untuk Mengubahsuai Rumah atau Pejabat Anda?",
+    ctaText: "Dapatkan konsultasi dan sebutharga percuma. Kami melayani kawasan Kuala Lumpur, Selangor, dan sekitarnya.",
+    ctaButton: "Dapatkan Sebut Harga Percuma",
+    brandText:
+      "FLASH CAST SDN. BHD. menyediakan pengubahsuaian kediaman, pemasangan komersial, perabot terbina dalam tersuai, dan perkhidmatan kemasan dinding premium di Kuala Lumpur dan Selangor.",
+    trustLine: "Perancangan / Reka Bentuk, Bina & Penyelarasan Projek Pengubahsuaian",
+    hours: "Waktu perniagaan: Setiap hari, 10:00 AM–7:00 PM (waktu Malaysia). Lawatan dan perundingan dengan pengaturan awal",
+    openMap: "Buka peta",
+    callAction: "Hubungi sekarang",
+    emailAction: "Hantar e-mel",
+    spaceServicesTitle: "Ruang & Perkhidmatan",
+    brandContactTitle: "Studio & Kenalan",
+    areasSummary: "Berkhidmat di Kuala Lumpur, Selangor dan Lembah Klang.",
+    servicesTitle: "Perkhidmatan",
+    companyTitle: "Syarikat",
+    areasTitle: "Kawasan Perkhidmatan",
+    rights: "Semua hak terpelihara.",
+    privacy: "Privasi",
+    terms: "Syarat",
+    serviceLinks: [
+      { name: "Pengubahsuaian Dalaman", slug: "renovation" },
+      { name: "Perabot Terbina Dalam Tersuai", slug: "builtin" },
+      { name: "Pengubahsuaian Komersil", slug: "commercial" },
+      { name: "Salutan Dinding Artistik", slug: "artistic-coating" },
+      { name: "Perkhidmatan Reka Bentuk", slug: "design" },
+      { name: "Kerja Luar", slug: "exterior" },
+      { name: "Gudang & Rak", slug: "warehouse" },
+    ],
+    companyLinks: [
+      { name: "Tentang Kami", path: "/about" },
+      { name: "Projek", path: "/projects" },
+      { name: "Perpustakaan Bahan", path: "/materials" },
+      { name: "Promosi", path: "/promotions" },
+      { name: "Kawasan Perkhidmatan", path: "/locations" },
+      { name: "Proses Kami", path: "/process" },
+      { name: "Blog & Panduan", path: "/blog" },
+      { name: "FAQ", path: "/faq" },
+      { name: "Dapatkan Sebut Harga", path: "/quote" },
+      { name: "Hubungi Kami", path: "/contact" },
+    ],
+  },
 } as const;
 
 export const footerServiceOverrides = {
   commercial: {
     en: { name: "Office Renovation", slug: "office-renovation" },
     zh: { name: "办公室装修", slug: "office-renovation" },
+
+    ms: { name: "Ubahsuai Pejabat", slug: "office-renovation" },
   },
   exterior: {
     en: { name: "Shop Renovation", slug: "shop-renovation" },
     zh: { name: "店铺装修", slug: "shop-renovation" },
+
+    ms: { name: "Pengubahsuaian Kedai", slug: "shop-renovation" },
   },
 } as const;
 
@@ -141,5 +199,17 @@ export const footerUiText = {
     directoryTitle: "网站目录",
     backToTop: "返回顶部",
     languageLabel: "语言",
+  },
+
+  ms: {
+    socialAria: "media sosial",
+    navigationAria: "Navigasi pengaki",
+    preludeEyebrow: "Perundingan projek",
+    whatsappLabel: "WhatsApp",
+    panoramaAlt: "FLASH CAST rujukan perancangan dalaman",
+    finalStatement: "Ruang yang dirancang dengan niat.",
+    directoryTitle: "Teroka",
+    backToTop: "Kembali ke atas",
+    languageLabel: "Bahasa",
   },
 } as const;

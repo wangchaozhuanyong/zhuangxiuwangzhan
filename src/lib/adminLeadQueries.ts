@@ -19,7 +19,7 @@ import {
   normalizeAdminSearch,
   type AdminListQuery,
 } from "@/lib/adminQueryCore";
-import type { Language } from "@/i18n/routes";
+import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 
 export type AdminLeadListRow = {
   id: string;

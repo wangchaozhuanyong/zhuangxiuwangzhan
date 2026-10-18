@@ -15,4 +15,13 @@ export const interactionText = {
     update: "Update page", later: "Later", savedSyncPending: "Content saved; website update is pending", retrySync: "Retry website update",
     syncDone: "Website update completed", syncFailed: "Website update is still pending. Please try again later.", refreshFailed: "Update failed. Previously loaded content has been kept.",
   },
+
+  ms: {
+    savedWhileEditing: "Penyerahan anda sebelum ini berjaya. Suntingan baharu anda belum diserahkan.", loading: "Memuatkan kandungan", loadingFailed: "Kandungan tidak dapat dimuatkan. Sila cuba semula.", refreshing: "Mengemas kini", slow: "Memuatkan mengambil masa lebih lama daripada yang dijangkakan. Anda boleh mencuba semula.",
+    offline: "Anda berada di luar talian. Kandungan yang dimuatkan sebelum ini masih tersedia.", retry: "Cuba semula", refresh: "Muat semula data",
+    leaveTitle: "Anda mempunyai perubahan yang belum disimpan", leaveBody: "Meninggalkan akan membuang perubahan yang tidak disimpan. Tunggu sebarang penyerahan selesai.",
+    stay: "Teruskan mengedit", leave: "Buang perubahan dan tinggalkan", updateTitle: "Versi tapak baharu tersedia", updateBody: "Kemas kini halaman selepas menyelesaikan kerja semasa anda.",
+    update: "Kemas kini halaman", later: "Nanti", savedSyncPending: "Kandungan disimpan; kemas kini tapak web belum selesai", retrySync: "Cuba semula kemas kini tapak web",
+    syncDone: "Kemas kini laman web selesai", syncFailed: "Kemas kini tapak web masih belum selesai. Sila cuba lagi kemudian.", refreshFailed: "Kemas kini gagal. Kandungan yang dimuatkan sebelum ini telah disimpan.",
+  },
 } as const;

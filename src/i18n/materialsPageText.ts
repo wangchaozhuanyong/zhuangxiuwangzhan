@@ -35,4 +35,23 @@ export const materialsPageText = {
     quote: "索取报价",
     whatsapp: "WhatsApp 联系",
   },
+
+  ms: {
+    metaTitle: "Perpustakaan Bahan Pengubahsuaian | Lantai, Kabinet, Bilik Mandi | Kuala Lumpur",
+    metaDescription: "Semak imbas perpustakaan bahan pilihan FLASH CAST untuk kabinet tersuai, perabot, kelengkapan bilik mandi, lantai, pintu, tingkap dan panel dinding untuk projek pengubahsuaian di Kuala Lumpur.",
+    metaKeywords: "bahan pengubahsuaian KL, kabinet dapur Malaysia, kelengkapan bilik mandi KL, lantai Kuala Lumpur, almari pakaian khas Selangor",
+    breadcrumbHome: "Rumah",
+    breadcrumbMaterials: "Bahan",
+    heroAlt: "Perpustakaan bahan FLASH CAST",
+    eyebrow: "Semak imbas & Pilih",
+    title: "Perpustakaan Bahan",
+    intro: "Semak imbas pilihan susun atur kami untuk projek pengubahsuaian anda, daripada kabinet tersuai kepada perabot, kelengkapan bilik mandi, lantai dan banyak lagi.",
+    choose: "Pilih mengikut Kategori",
+    chooseText: "Pilih kategori untuk meneroka pilihan untuk projek anda",
+    view: "Lihat",
+    ctaTitle: "Berminat dengan Bahan?",
+    ctaText: "Hubungi kami untuk meminta sampel, menyemak ketersediaan, atau mendapatkan sebut harga untuk projek anda.",
+    quote: "Minta Sebut Harga",
+    whatsapp: "WhatsApp Kami",
+  },
 } as const;

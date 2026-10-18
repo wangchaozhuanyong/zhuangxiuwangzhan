@@ -34,6 +34,7 @@ export type NotificationSettings = {
 
 export type TranslationJob = {
   id: string;
+  target_language?: "en" | "ms";
   table_name: string | null;
   record_id: string | null;
   record_label?: string | null;

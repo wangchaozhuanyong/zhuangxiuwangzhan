@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
@@ -237,7 +236,9 @@ const importTsExport = async (relativeFilePath, exportName) => {
     sourcemap: false,
   });
 
-  const tempDir = mkdtempSync(path.join(tmpdir(), "flashcast-i18n-"));
+  const tempRoot = fromRoot("tmp/i18n-check");
+  mkdirSync(tempRoot, { recursive: true });
+  const tempDir = mkdtempSync(path.join(tempRoot, "resource-"));
   const tempFile = path.join(tempDir, "resource.mjs");
   writeFileSync(tempFile, transformed.code, "utf8");
 
@@ -299,14 +300,15 @@ const checkTranslationKeys = async () => {
     const resourceSource = readFileSync(absolutePath, "utf8");
     const sourceFile = parseSourceFile(relativeFilePath, resourceSource);
 
+    const resourceLocales = relativeFilePath.startsWith("src/i18n/admin") ? localeProperties.filter((locale) => locale !== "ms") : localeProperties;
     const visit = (node) => {
       if (ts.isObjectLiteralExpression(node)) {
-        const presentLocaleProperties = localeProperties
+        const presentLocaleProperties = resourceLocales
           .map((propertyName) => [propertyName, findObjectProperty(node, propertyName)])
           .filter(([, property]) => Boolean(property));
 
         if (presentLocaleProperties.length > 0) {
-          for (const propertyName of localeProperties) {
+          for (const propertyName of resourceLocales) {
             if (!findObjectProperty(node, propertyName)) {
               issues.push({
                 type: "Translation key parity",
@@ -322,7 +324,7 @@ const checkTranslationKeys = async () => {
             }
           }
 
-          if (presentLocaleProperties.length === localeProperties.length) {
+          if (presentLocaleProperties.length === resourceLocales.length) {
             const pathSets = Object.fromEntries(
               presentLocaleProperties.map(([propertyName, property]) => [
                 propertyName,
@@ -331,7 +333,7 @@ const checkTranslationKeys = async () => {
             );
             const allPaths = new Set(Object.values(pathSets).flatMap((pathSet) => [...pathSet]));
 
-            for (const propertyName of localeProperties) {
+            for (const propertyName of resourceLocales) {
               for (const leafPath of allPaths) {
                 if (!pathSets[propertyName].has(leafPath)) {
                   issues.push({
@@ -365,7 +367,7 @@ const scanLocaleResourceValue = ({ issues, locale, file, line, text }) => {
   const normalized = normalizeText(text);
   if (!normalized || isFullyAllowlisted(normalized, locale)) return;
 
-  if (locale === "en-US") {
+  if (locale === "en-US" || locale === "ms-MY") {
     const leak = findChineseLeak(normalized, locale);
     if (leak) {
       issues.push({
@@ -376,7 +378,7 @@ const scanLocaleResourceValue = ({ issues, locale, file, line, text }) => {
         url: "N/A",
         selector: "N/A",
         text: normalized,
-        reason: "en-US translation resource contains Chinese characters.",
+        reason: `${locale} translation resource contains Chinese characters.`,
         suggestedFix: "Move the Chinese text to zh-CN or add a narrowly scoped allowlist entry only if this is an approved proper noun.",
       });
     }
@@ -935,11 +937,11 @@ const scanRenderedText = (text, locale) => {
   const normalized = normalizeText(text);
   if (!normalized || isFullyAllowlisted(normalized, locale)) return null;
 
-  if (locale === "en-US") {
+  if (locale === "en-US" || locale === "ms-MY") {
     const leak = findChineseLeak(normalized, locale);
     if (!leak) return null;
     return {
-      reason: "en-US rendered DOM contains Chinese characters.",
+      reason: `${locale} rendered DOM contains Chinese characters.`,
       suggestedFix: "Move this text to the zh-CN resource or ensure the en-US page reads the English translation field.",
     };
   }

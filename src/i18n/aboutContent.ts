@@ -65,6 +65,40 @@ export const aboutCopy = {
     quoteLabel: "获取报价",
     whatsappLabel: "WhatsApp 联系",
   },
+
+  ms: {
+    metaTitle: "Mengenai FLASH CAST | Perancangan Pengubahsuaian di Kuala Lumpur",
+    metaDescription: "Ketahui cara FLASH CAST mendekati perancangan pengubahsuaian, keputusan material, penyelarasan tapak dan penyediaan sebut harga di Kuala Lumpur dan Selangor.",
+    metaKeywords: "tentang FLASH CAST, perancangan pengubahsuaian KL, syarikat pengubahsuaian Malaysia",
+    breadcrumbHome: "Rumah",
+    breadcrumbAbout: "Tentang",
+    imageAlt: "Meja perancangan pengubahsuaian dengan lukisan dan sampel bahan",
+    label: "Tentang Kami",
+    title: "Perancangan Lebih Jelas untuk Ruang Lebih Baik",
+    description: "FLASH CAST membantu pemilik hartanah mengatur skop pengubahsuaian, perancangan ruang, arah bahan, penyelarasan tapak dan penyediaan sebut harga untuk rumah dan ruang komersial di Kuala Lumpur dan Selangor.",
+    introTitle: "Bagaimana Kami Membantu",
+    intro: [
+      "Pengubahsuaian menjadi lebih mudah untuk diuruskan apabila keadaan tapak sebenar, kegunaan harian, keutamaan dan hala tuju belanjawan dibincangkan sebelum harga item individu.",
+      "FLASH CAST membantu menyusun ringkasan, menyemak ruang, membandingkan arah bahan dan menyelaraskan skop kerja yang disahkan.",
+      "Harga akhir, program, bahan dan keperluan kelulusan bergantung pada tapak sebenar dan sebut harga bertulis.",
+    ],
+    tags: ["Perancangan Skop", "Kajian Tapak", "Arah Bahan", "Penyelarasan Projek"],
+    valuesTitle: "Prinsip Kerja Kami",
+    valuesDescription: "Prinsip ini membimbing cara kita membincangkan skop dan menyelaraskan pengubahsuaian.",
+    teamTitle: "Bagaimana Kerja Diselaraskan",
+    teamDescription: "Setiap aliran kerja dibincangkan mengikut skop projek yang disahkan; peranan yang dinamakan tidak membayangkan kelayakan yang tidak disokong atau tuntutan kakitangan.",
+    journeyTitle: "Bagaimana Projek Bergerak Ke Hadapan",
+    journeyDescription: "Urutan praktikal daripada ringkas pertama kepada perancangan penghantaran berasaskan tapak.",
+    officeTitle: "Hubungi dan Lawati",
+    officeDescription: "Gunakan butiran hubungan yang diterbitkan untuk mengesahkan ketersediaan perundingan sebelum melawat.",
+    officeAddress: "Alamat yang diterbitkan: {address}",
+    visitNote: "Sila hubungi kami terlebih dahulu untuk mengesahkan ketersediaan janji temu.",
+    mapTitle: "FLASH CAST menerbitkan lokasi pejabat di Kuala Lumpur",
+    ctaTitle: "Rancang Projek Anda",
+    ctaDescription: "Kongsi jenis ruang, keadaan semasa dan skop yang dimaksudkan supaya perbincangan seterusnya dapat memberi tumpuan kepada projek sebenar.",
+    quoteLabel: "Minta Sebut Harga",
+    whatsappLabel: "WhatsApp Kami",
+  },
 } as const;
 
 export const aboutValueCopy = {
@@ -102,6 +136,25 @@ export const aboutValueCopy = {
     {
       title: "先看使用",
       desc: "先确认空间怎样使用，再选择视觉和材料方向。",
+    },
+  ],
+
+  ms: [
+    {
+      title: "Skop Praktikal",
+      desc: "Asingkan kerja penting, naik taraf yang sesuai dan item pilihan mengikut tapak sebenar dan keutamaan.",
+    },
+    {
+      title: "Komunikasi yang Jelas",
+      desc: "Bincangkan item sebut harga, tanggungjawab dan perubahan terhadap skop yang disahkan.",
+    },
+    {
+      title: "Perancangan Kemajuan",
+      desc: "Susun keputusan dan peringkat kerja supaya kemajuan boleh disemak berdasarkan pencapaian yang dipersetujui.",
+    },
+    {
+      title: "Penggunaan Diutamakan",
+      desc: "Mulakan dengan cara ruang perlu berfungsi sebelum memilih arah visual atau bahan.",
     },
   ],
 } as const;
@@ -143,6 +196,25 @@ export const aboutTeamCopy = {
       desc: "在项目阶段结束前，按约定范围检查完成项和待处理事项。",
     },
   ],
+
+  ms: [
+    {
+      title: "Ruang dan Skop",
+      desc: "Semak edaran, penyimpanan, keperluan fungsian dan item kerja yang sepatutnya dimasukkan ke dalam sebut harga.",
+    },
+    {
+      title: "Arah Bahan",
+      desc: "Bandingkan penampilan, penyelenggaraan, penggunaan dan arah belanjawan sebelum pemilihan akhir.",
+    },
+    {
+      title: "Penyelarasan Tapak",
+      desc: "Menyelaraskan perdagangan dan keputusan yang disahkan mengikut akses, peraturan bangunan dan keadaan tapak.",
+    },
+    {
+      title: "Semakan Penyerahan",
+      desc: "Semak skop yang dipersetujui dan item tertunggak sebelum menutup peringkat projek.",
+    },
+  ],
 } as const;
 
 export const aboutMilestoneCopy = {
@@ -158,6 +230,13 @@ export const aboutMilestoneCopy = {
     { year: "03", title: "范围规划", desc: "整理必要工程、适合升级项目、材料方向与报价项目。" },
     { year: "04", title: "执行规划", desc: "协调已确认范围、工作顺序和项目沟通。" },
   ],
+
+  ms: [
+    { year: "01", title: "Ringkas Permulaan", desc: "Jelaskan jenis ruang, keadaan semasa, kegunaan yang dimaksudkan dan masalah keutamaan." },
+    { year: "02", title: "Kajian Tapak", desc: "Sahkan dimensi, akses, perkhidmatan sedia ada dan sekatan bangunan yang berkaitan." },
+    { year: "03", title: "Perancangan Skop", desc: "Susun kerja penting, naik taraf yang sesuai, arah bahan dan item sebut harga." },
+    { year: "04", title: "Perancangan Penghantaran", desc: "Menyelaraskan skop yang disahkan, urutan kerja dan komunikasi projek." },
+  ],
 } as const;
 
 export const aboutStatCopy = {
@@ -172,5 +251,12 @@ export const aboutStatCopy = {
     { value: "吉隆坡与雪兰莪", label: "网站公布服务区域" },
     { value: "住宅", label: "住宅空间规划" },
     { value: "商业", label: "商业空间规划" },
+  ],
+
+  ms: [
+    { value: "Skop", label: "Perancangan Projek yang Jelas" },
+    { value: "KL & Selangor", label: "Kawasan Perkhidmatan Terbitan" },
+    { value: "rumah", label: "Perancangan Kediaman" },
+    { value: "Perniagaan", label: "Perancangan Komersial" },
   ],
 } as const;

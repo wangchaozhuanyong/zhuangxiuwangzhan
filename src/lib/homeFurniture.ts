@@ -14,7 +14,7 @@ export type HomeFurnitureCard = {
   categoryKey: string;
 };
 
-export type HomeFurnitureSeed = Record<Language, HomeFurnitureCard[]>;
+export type HomeFurnitureSeed = Record<"en" | "zh", HomeFurnitureCard[]> & { ms?: HomeFurnitureCard[] };
 
 const preferredProductSlugs = [
   "lc-40108-1-seater-pu-lounge-chair-cream",
@@ -56,5 +56,6 @@ export function mapHomeFurnitureSeed(
   return {
     en: selectHomeFurniture(mapFurnitureCatalogSeed(materials, setting, "en"), "en"),
     zh: selectHomeFurniture(mapFurnitureCatalogSeed(materials, setting, "zh"), "zh"),
+    ms: selectHomeFurniture(mapFurnitureCatalogSeed(materials, setting, "ms"), "ms"),
   };
 }

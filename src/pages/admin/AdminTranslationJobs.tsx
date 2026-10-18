@@ -1,3 +1,4 @@
+import { languageSelectorText } from "@/i18n/languageSelectorText";
 import { interactionText } from "@/i18n/interactionText";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
@@ -117,7 +118,7 @@ const AdminTranslationJobs = () => {
     }
     setRetryingId(job.id);
     try {
-      const translation = await generateAdminEnglishContent({ table: job.table_name, id: job.record_id, force: true });
+      const translation = await generateAdminEnglishContent({ table: job.table_name, id: job.record_id, force: job.target_language !== "ms", targetLanguage: job.target_language === "ms" ? "ms" : "en" });
       setRetryingId(null);
       toast({ title: t.retryOk, description: translation?.publicSyncPending ? interactionText[lang].savedSyncPending : undefined });
       await refreshJobs();
@@ -149,7 +150,7 @@ const AdminTranslationJobs = () => {
     let publicSyncPending = false;
     for (const job of targets) {
       try {
-        const translation = await generateAdminEnglishContent({ table: job.table_name!, id: job.record_id!, force: true });
+        const translation = await generateAdminEnglishContent({ table: job.table_name!, id: job.record_id!, force: job.target_language !== "ms", targetLanguage: job.target_language === "ms" ? "ms" : "en" });
         publicSyncPending ||= Boolean(translation?.publicSyncPending);
       } catch {
         failed += 1;
@@ -253,7 +254,7 @@ const AdminTranslationJobs = () => {
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold">{getTableLabel(job.table_name, lang)}</p>
+                    <p className="font-semibold">{getTableLabel(job.table_name, lang)} · {languageSelectorText[lang].names[job.target_language === "ms" ? "ms" : "en"]}</p>
                     {job.status === "failed" && <span className="rounded-full border px-2.5 py-1 text-xs admin-tone-warning">{failureGroup}</span>}
                   </div>
                   <p className="mt-1 text-sm text-foreground">

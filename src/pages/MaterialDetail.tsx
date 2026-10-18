@@ -1,3 +1,4 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import PublicReadError from "@/components/PublicReadError";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { isReviewedMaterialConceptImage } from "@/lib/reviewedContentMedia.mjs";
@@ -52,7 +53,7 @@ export default function MaterialDetail() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={material.seoTitle || format(copy.metaTitle, { name })} description={material.seoDescription || format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} ogImage={material.image || undefined} />
+      <PageMeta malayReady={isMalayContentReady(material)} title={material.seoTitle || format(copy.metaTitle, { name })} description={material.seoDescription || format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} ogImage={material.image || undefined} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name: categoryName, url: `/materials/category/${category.slug}` }, { name, url: `/materials/${material.slug}` }]} />
       <SchemeARouteHero kind="detail" image={material.image} mediaDisclosure={isReviewedMaterialConceptImage(material.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={material.alt || name} label={categoryName} title={name} description={description} />
       {!material.image ? <SchemeAContentState action={<Link to="/contact">{copy.enquire}</Link>}>{copy.sampleImagePending}</SchemeAContentState> : null}

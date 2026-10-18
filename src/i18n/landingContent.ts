@@ -13,6 +13,7 @@ type LandingCopy = {
 type LocalizedLandingCopy = {
   en: LandingCopy;
   zh: LandingCopy;
+  ms: LandingCopy;
 };
 
 export const landingContent: Record<string, LocalizedLandingCopy> = {
@@ -88,6 +89,43 @@ export const landingContent: Record<string, LocalizedLandingCopy> = {
       seoTitle: "吉隆坡办公室装修与空间规划 | FLASH CAST",
       seoDescription:
         "FLASH CAST 提供吉隆坡、雪兰莪与巴生谷办公室装修规划，涵盖前台、会议室、工作区、隔间、照明、电源、网络点位和施工协调。",
+    },
+
+    ms: {
+      title: "Ubahsuai Pejabat di Kuala Lumpur",
+      subtitle: "Perancangan ruang kerja, penyelarasan fit-out dan penghantaran pengubahsuaian",
+      heroAlt: "Pengubahsuaian pejabat dan perancangan ruang kerja di Kuala Lumpur",
+      description:
+        "Pengubahsuaian pejabat harus bermula dengan saiz pasukan, corak kerja, aliran pelawat, memenuhi keperluan dan pertumbuhan masa hadapan. FLASH CAST merancang susun atur, sekatan, pencahayaan, kuasa, titik data, storan dan urutan pembinaan untuk pejabat di seluruh Kuala Lumpur, Selangor dan Lembah Klang.",
+      benefits: [
+        "Kapasiti pasukan dan perancangan aliran kerja",
+        "Penyambut tetamu, bilik mesyuarat dan susun atur kawasan kerja",
+        "Penyelarasan partition, siling, pencahayaan dan lantai",
+        "Perancangan titik kuasa, data dan peralatan",
+        "Penyelarasan keperluan pengurusan bangunan",
+        "Pemeriksaan pembinaan dan penyerahan berperingkat",
+      ],
+      relatedProjects: [
+        { title: "Rujukan Perancangan Ruang Pejabat", location: "Kuala Lumpur" },
+        { title: "Rujukan Pembaikan Pejabat", location: "Selangor" },
+      ],
+      faqs: [
+        {
+          q: "Bolehkah pengubahsuaian diteruskan semasa pasukan bekerja?",
+          a: "Kerja-kerja mengikut zon mungkin boleh dilakukan secara berperingkat atau menjadualkan tugas yang lebih bising di luar waktu kerja, tertakluk kepada skop dan peraturan bangunan yang disahkan.",
+        },
+        {
+          q: "Apakah yang perlu kita sediakan sebelum merancang pengubahsuaian pejabat?",
+          a: "Sediakan pelan lantai atau anggaran kawasan, saiz pasukan, keperluan mesyuarat dan penerimaan tetamu, foto tapak semasa, tarikh perpindahan sasaran dan sebarang keperluan tuan tanah atau pengurusan bangunan.",
+        },
+        {
+          q: "Bolehkah anda membantu menyelaraskan keperluan pengurusan bangunan?",
+          a: "Jika termasuk dalam skop yang disahkan, kami boleh membantu mengatur lukisan yang diperlukan, jadual kerja, maklumat kontraktor dan dokumen penyerahan. Kelulusan akhir kekal dengan pengurusan atau pihak berkuasa yang berkaitan.",
+        },
+      ],
+      seoTitle: "Ubahsuai Pejabat Kuala Lumpur | Perancangan Ruang Kerja | FLASH CAST",
+      seoDescription:
+        "Rancang pengubahsuaian pejabat di Kuala Lumpur, Selangor dan Lembah Klang, termasuk susun atur, penerimaan tetamu, bilik mesyuarat, sekatan, pencahayaan, kuasa, titik data dan penyelarasan pembinaan.",
     },
   },
 };

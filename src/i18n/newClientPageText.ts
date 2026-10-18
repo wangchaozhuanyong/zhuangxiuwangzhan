@@ -41,6 +41,28 @@ export const promotionsPageText = {
     nextStep: "下一步",
     actionTitle: "确认哪些优惠适合你的项目",
   },
+
+  ms: {
+    eyebrow: "Tawaran semasa",
+    title: "Promosi dengan syarat yang jelas",
+    intro: "Setiap tawaran disahkan terhadap tapak, skop dan sebut harga sebenar anda. Kami tidak mengemukakan diskaun yang tidak disahkan atau menyembunyikan syarat yang berkenaan.",
+    metaTitle: "Promosi Pengubahsuaian Kuala Lumpur | FLASH CAST",
+    metaDescription: "Semak pertanyaan promosi pengubahsuaian FLASH CAST semasa dan syarat yang dikenakan sebelum pengesahan sebut harga.",
+    available: "Tersedia untuk pertanyaan",
+    listEyebrow: "Pilihan pertanyaan",
+    listTitle: "Sahkan skop sebelum manfaat",
+    offerCount: (count: number) => `Pilihan pertanyaan ${count}`,
+    defaultOffers: [
+      { title: "Perundingan skop pengubahsuaian", description: "Semak jenis hartanah anda, keadaan tapak, kerja yang dimaksudkan dan keperluan penyediaan sebut harga.", terms: "Pelantikan, kawasan liputan dan skop adalah tertakluk kepada ketersediaan pasukan dan pengesahan bertulis." },
+      { title: "Penyelarasan produk dan kemasan", description: "Bandingkan bahan dan kemasan yang sesuai bersama skop pengubahsuaian dan bukannya memilih produk secara berasingan.", terms: "Ketersediaan produk, sampel, harga, penghantaran dan pemasangan disahkan dalam sebut harga akhir." },
+      { title: "Siasatan projek kediaman dan komersial", description: "Satu laluan pertanyaan untuk rumah, pejabat, kedai dan keperluan terbina dalam tersuai.", terms: "Sebarang faedah pakej hanya terpakai apabila dinyatakan dalam sebut harga yang dikeluarkan. Tiada diskaun automatik tersirat." },
+    ],
+    enquire: "Tanya pada WhatsApp",
+    quote: "Minta sebut harga",
+    conditions: "syarat",
+    nextStep: "Langkah seterusnya",
+    actionTitle: "Semak perkara yang berkaitan dengan projek anda",
+  },
 } as const;
 
 export const locationsPageText = {
@@ -69,5 +91,19 @@ export const locationsPageText = {
     empty: "目前没有已发布的服务地区。",
     commonProperty: "常见房产类型",
     view: "查看地区指南",
+  },
+
+  ms: {
+    eyebrow: "Liputan perkhidmatan",
+    title: "Kawasan perkhidmatan pengubahsuaian",
+    intro: "Semak jenis hartanah, pertimbangan kelulusan dan keperluan pengubahsuaian yang biasa dikendalikan di seluruh Kuala Lumpur, Selangor dan Lembah Klang.",
+    metaTitle: "Kawasan Perkhidmatan Ubahsuai KL & Selangor | FLASH CAST",
+    metaDescription: "Terokai kawasan perkhidmatan pengubahsuaian FLASH CAST di seluruh Kuala Lumpur, Selangor dan Lembah Klang.",
+    loading: "Memuatkan kawasan perkhidmatan...",
+    error: "Kawasan perkhidmatan tidak dapat dimuatkan.",
+    retry: "Cuba lagi",
+    empty: "Tiada kawasan perkhidmatan yang diterbitkan tersedia.",
+    commonProperty: "Jenis harta biasa",
+    view: "Lihat panduan kawasan",
   },
 } as const;

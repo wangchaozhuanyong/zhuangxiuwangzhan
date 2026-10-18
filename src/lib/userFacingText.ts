@@ -3,45 +3,79 @@ import type { Language } from "@/i18n/routes";
 const fallbackErrorText: Record<Language, string> = {
   en: "The operation failed. Please try again later.",
   zh: "操作失败，请稍后再试。",
+
+  ms: "Operasi gagal. Sila cuba lagi kemudian.",
 };
 
 const permissionErrorText: Record<Language, string> = {
   en: "You do not have permission to perform this action.",
   zh: "当前账号没有这个操作权限。",
+
+  ms: "Anda tidak mempunyai kebenaran untuk melakukan tindakan ini.",
 };
 
 const duplicateErrorText: Record<Language, string> = {
   en: "A record with the same unique value already exists.",
   zh: "保存失败：唯一字段已经存在，请换一个。",
+
+  ms: "Rekod dengan nilai unik yang sama sudah wujud.",
 };
 
 const invalidStatusErrorText: Record<Language, string> = {
   en: "The selected status is invalid. Please choose one of the available options.",
   zh: "保存失败：状态值不合法，请选择后台提供的状态。",
+
+  ms: "Status yang dipilih adalah tidak sah. Sila pilih salah satu pilihan yang tersedia.",
 };
 
 const unavailableErrorText: Record<Language, string> = {
   en: "The service is temporarily unavailable. Please try again later.",
   zh: "服务暂时不可用，请稍后再试。",
+
+  ms: "Perkhidmatan ini tidak tersedia buat sementara waktu. Sila cuba lagi kemudian.",
 };
 
 const unknownSourceText: Record<Language, string> = {
   en: "Unknown source",
   zh: "未知来源",
+
+  ms: "Sumber tidak diketahui",
 };
 
 const sourceLabels: Record<string, Record<Language, string>> = {
-  contact: { en: "Contact page", zh: "联系页" },
-  quote: { en: "Quote page", zh: "报价页" },
-  services: { en: "Services page", zh: "服务页" },
-  service: { en: "Service page", zh: "服务详情页" },
-  projects: { en: "Projects page", zh: "案例页" },
-  project: { en: "Project page", zh: "案例详情页" },
-  materials: { en: "Materials page", zh: "材料页" },
-  material: { en: "Material page", zh: "材料详情页" },
-  blog: { en: "Blog page", zh: "博客页" },
-  home: { en: "Home page", zh: "首页" },
-  old_house_renovation: { en: "Old house renovation page", zh: "老房翻新页" },
+  contact: { en: "Contact page", zh: "联系页" ,
+             ms: "Halaman kenalan",
+           },
+  quote: { en: "Quote page", zh: "报价页" ,
+           ms: "Halaman petikan",
+         },
+  services: { en: "Services page", zh: "服务页" ,
+              ms: "Halaman perkhidmatan",
+            },
+  service: { en: "Service page", zh: "服务详情页" ,
+             ms: "Halaman perkhidmatan",
+           },
+  projects: { en: "Projects page", zh: "案例页" ,
+              ms: "Halaman projek",
+            },
+  project: { en: "Project page", zh: "案例详情页" ,
+             ms: "Halaman projek",
+           },
+  materials: { en: "Materials page", zh: "材料页" ,
+               ms: "Halaman bahan",
+             },
+  material: { en: "Material page", zh: "材料详情页" ,
+              ms: "Halaman bahan",
+            },
+  blog: { en: "Blog page", zh: "博客页" ,
+          ms: "Laman blog",
+        },
+  home: { en: "Home page", zh: "首页" ,
+          ms: "Laman utama",
+        },
+  old_house_renovation: { en: "Old house renovation page", zh: "老房翻新页" ,
+                          ms: "Laman ubah suai rumah lama",
+                        },
   unknown: unknownSourceText,
 };
 const fallbackSourceLabel = sourceLabels.unknown ?? unknownSourceText;

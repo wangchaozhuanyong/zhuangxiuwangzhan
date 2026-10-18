@@ -24,6 +24,40 @@ const collectTranslateTasks = (value: unknown, path: TranslatePath = []): Transl
   return [];
 };
 
+const stableMalayPath = /^(?:id|slug|path|href|url|src|icon|image|image_url|button_url|type|step|sku)$/;
+
+const translateMalayText = async (text: string): Promise<string> => {
+  const tokens: string[] = [];
+  const protectedText = text.replace(/\{[^{}]+\}|<[^>]+>|https?:\/\/[^\s<>]+|\bFLASH CAST(?: SDN\. BHD\.)?\b|\bWhatsApp\b/g, (token) => {
+    tokens.push(token); return `ZXQ${tokens.length - 1}QXZ`;
+  });
+  const parts: string[] = [];
+  let remaining = protectedText;
+  while (remaining.length > 1800) {
+    const space = remaining.lastIndexOf(" ", 1800);
+    const boundary = space > 900 ? space + 1 : 1800;
+    parts.push(remaining.slice(0, boundary)); remaining = remaining.slice(boundary);
+  }
+  if (remaining) parts.push(remaining);
+  const translated: string[] = [];
+  for (const part of parts) {
+    const params = new URLSearchParams({ client: "dict-chrome-ex", sl: "auto", tl: "ms", q: part });
+    const response = await fetch(`https://clients5.google.com/translate_a/t?${params}`);
+    if (!response.ok) throw new Error("Malay translation service is unavailable. Please try again later.");
+    const result = await response.json();
+    const value = Array.isArray(result) ? typeof result[0] === "string" ? result[0] : Array.isArray(result[0]) ? result[0][0] : null : null;
+    if (typeof value !== "string" || !value.trim()) throw new Error("Malay translation returned an empty response.");
+    translated.push(value + (/\s$/.test(part) ? " " : ""));
+  }
+  let result = translated.join("");
+  for (let index = 0; index < tokens.length; index++) {
+    const token = `ZXQ${index}QXZ`;
+    if (result.split(token).length !== 2) throw new Error("Malay translation changed a protected placeholder. No content was saved.");
+    result = result.replaceAll(token, tokens[index]);
+  }
+  return result;
+};
+
 const cloneValue = (value: unknown): unknown => {
   if (Array.isArray(value)) return value.map((item) => cloneValue(item));
   if (value && typeof value === "object") {
@@ -62,7 +96,10 @@ const chunk = <T,>(items: T[], size: number) => {
   return result;
 };
 
-const translateSingle = async (text: string) => {
+const translateSingle = async (text: string, targetLanguage: "en" | "ms" = "en") => {
+  if (targetLanguage === "ms") {
+    return translateMalayText(text);
+  }
   const params = new URLSearchParams({
     client: "gtx",
     sl: "zh-CN",
@@ -94,9 +131,14 @@ const translateSingle = async (text: string) => {
   return translatedParts.map((part: unknown) => (Array.isArray(part) ? part[0] || "" : "")).join("") || text;
 };
 
-const translateBatch = async (tasks: TranslateTask[]): Promise<string[]> => {
+const translateBatch = async (tasks: TranslateTask[], targetLanguage: "en" | "ms" = "en"): Promise<string[]> => {
   if (tasks.length === 0) return [];
-  return Promise.all(tasks.map((task) => translateSingle(task.value)));
+  if (targetLanguage === "ms") {
+    const result: string[] = [];
+    for (const group of chunk(tasks, 3)) result.push(...await Promise.all(group.map((task) => translateSingle(task.value, targetLanguage))));
+    return result;
+  }
+  return Promise.all(tasks.map((task) => translateSingle(task.value, targetLanguage)));
 };
 
 export const isBlankValue = (value: unknown) => {
@@ -107,20 +149,20 @@ export const isBlankValue = (value: unknown) => {
   return false;
 };
 
-export const translateValue = async (value: unknown) => {
+export const translateValue = async (value: unknown, targetLanguage: "en" | "ms" = "en") => {
   if (typeof value === "string") {
-    const [translated] = await translateBatch([{ path: [], value, format: isHtmlText(value) ? "html" : "text" }]);
+    const [translated] = await translateBatch([{ path: [], value, format: isHtmlText(value) ? "html" : "text" }], targetLanguage);
     return translated || value;
   }
 
-  const tasks = collectTranslateTasks(value);
+  const tasks = collectTranslateTasks(value).filter((task) => targetLanguage !== "ms" || !stableMalayPath.test(String(task.path[task.path.length - 1] || "")));
   if (tasks.length === 0) return value;
 
   const translatedByPath = new Map<string, string>();
   for (const format of ["text", "html"] as const) {
     const formattedTasks = tasks.filter((task) => task.format === format);
     for (const batch of chunk(formattedTasks, 20)) {
-      const translated = await translateBatch(batch);
+      const translated = await translateBatch(batch, targetLanguage);
       batch.forEach((task, index) => translatedByPath.set(JSON.stringify(task.path), translated[index] || task.value));
     }
   }

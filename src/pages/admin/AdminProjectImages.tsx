@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import AdminImageUpload from "./AdminImageUpload";
 import SmartImage from "@/components/SmartImage";
-import type { Language } from "@/i18n/routes";
+import type { BilingualLanguage } from "@/i18n/languageDetection";
+import { adminMalayText } from "@/i18n/adminMalayText";
 import { adminProjectImagesText, adminProjectImageTypeLabels } from "@/i18n/adminProjectImagesText";
 import { getAdminLang } from "@/lib/adminLocale";
 import { formatAdminMutationError } from "@/lib/adminMutation";
@@ -32,17 +33,19 @@ const emptyImage = {
   image_type: "gallery",
   alt_zh: "",
   alt_en: "",
+  alt_ms: "",
   sort_order: 0 as string | number,
 };
 
 type AdminProjectImageDraft = typeof emptyImage;
-type AdminProjectImageRow = AdminProjectImageDraft & {
+type AdminProjectImageRow = Omit<AdminProjectImageDraft, "alt_ms"> & {
+  alt_ms?: string | null;
   id: string;
 };
 
 const copy = adminProjectImagesText;
 
-const formatImageType = (value: string, language: Language) =>
+const formatImageType = (value: string, language: BilingualLanguage) =>
   adminProjectImageTypeLabels[value as keyof typeof adminProjectImageTypeLabels]?.[language] || value;
 
 const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
@@ -166,6 +169,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
           </Select>
           <Input placeholder={t.altZh} value={draft.alt_zh} onChange={(event) => setDraft({ ...draft, alt_zh: event.target.value })} />
           <Input placeholder={t.altEn} value={draft.alt_en} onChange={(event) => setDraft({ ...draft, alt_en: event.target.value })} />
+          <Input lang="ms-MY" aria-label={adminMalayText[lang].imageAlt} placeholder={adminMalayText[lang].imageAlt} value={draft.alt_ms} onChange={(event) => setDraft({ ...draft, alt_ms: event.target.value })} />
           <Input type="number" placeholder={t.sortOrder} value={draft.sort_order} onChange={(event) => setDraft({ ...draft, sort_order: event.target.value })} />
           <Button type="button" className="w-full sm:w-auto" onClick={addImage} disabled={adding} aria-busy={adding}>
             {adding ? t.addBusy : t.addImage}
@@ -180,7 +184,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
             <div className="flex min-w-0 gap-3">
               <SmartImage src={image.image_url} alt={image.alt_en || image.alt_zh || t.defaultAlt} width={144} height={96} className="h-20 w-28 shrink-0 rounded object-cover" />
               <div className="min-w-0 flex-1 text-sm">
-                <p className="font-medium">{formatImageType(image.image_type, lang as Language)}</p>
+                <p className="font-medium">{formatImageType(image.image_type, lang)}</p>
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{image.alt_zh || image.alt_en || "-"}</p>
                 <div className="mt-3 flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">{t.sort}</span>
@@ -188,6 +192,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
                 </div>
               </div>
             </div>
+            <ProjectImageMalayEditor image={image} onSave={updateImage} />
             <div className="mt-3 grid grid-cols-2 gap-2">
               <Button
                 type="button"
@@ -235,8 +240,8 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
             ) : images.map((image) => (
               <TableRow key={image.id}>
                 <TableCell><SmartImage src={image.image_url} alt={image.alt_en || image.alt_zh || t.defaultAlt} width={96} height={64} className="h-16 w-24 rounded object-cover" /></TableCell>
-                <TableCell>{formatImageType(image.image_type, lang as Language)}</TableCell>
-                <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}</TableCell>
+                <TableCell>{formatImageType(image.image_type, lang)}</TableCell>
+                <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}<ProjectImageMalayEditor image={image} onSave={updateImage} /></TableCell>
                 <TableCell>
                   <Input className="w-20" type="number" value={image.sort_order || 0} onChange={(event) => void updateImage(image, { sort_order: Number(event.target.value || 0) })} />
                 </TableCell>
@@ -276,3 +281,18 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
 };
 
 export default AdminProjectImages;
+
+function ProjectImageMalayEditor({ image, onSave }: { image: AdminProjectImageRow; onSave: (image: AdminProjectImageRow, patch: Record<string, unknown>) => Promise<boolean | undefined> }) {
+  const text = adminMalayText[getAdminLang()];
+  const { state, setForm, dirty, applyRemote } = useAdminFormState(image, { initial: image, resetKey: image.id });
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
+  useUnsavedChangesWarning(dirty || isSubmitting);
+  const save = protectSubmission("image-malay", async () => {
+    const submitted = state;
+    if (await onSave(image, { alt_ms: state.alt_ms || "" })) applyRemote(submitted, submitted);
+  });
+  return <div className="mt-3 space-y-2">
+    <Input lang="ms-MY" aria-label={text.imageAlt} placeholder={text.imageAlt} value={state.alt_ms || ""} onChange={(event) => setForm((current) => ({ ...current, alt_ms: event.target.value }))} />
+    <Button size="sm" type="button" variant="outline" disabled={!dirty || isSubmitting} aria-busy={isSubmitting} onClick={() => void save()}>{text.save}</Button>
+  </div>;
+}

@@ -71,7 +71,7 @@ const LandingPageRoute = () => {
   const { lang, slug } = useParams<{ lang: string; slug: string }>();
   const location = useLocation();
   const serviceSlug = slug ? landingToServiceSlugs[slug] : null;
-  if (serviceSlug && (lang === "en" || lang === "zh")) {
+  if (serviceSlug && (lang === "en" || lang === "zh" || lang === "ms")) {
     return <Navigate to={{ pathname: `/${lang}/services/${serviceSlug}`, search: location.search, hash: location.hash }} replace />;
   }
   return withLanguageSync(<LandingPage />);

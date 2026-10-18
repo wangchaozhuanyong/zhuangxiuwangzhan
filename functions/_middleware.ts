@@ -1,3 +1,4 @@
+import { hasMalayContent } from "../src/i18n/localizedContent";
 import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
 import { getFurnitureListingPage, getFurnitureListingRoute, furnitureListingPagePath, mapFurnitureCatalogSeed, normalizeFurnitureListingPage, type FurnitureMaterialRow } from "../src/lib/furnitureCatalogPresentation";
 import {
@@ -48,7 +49,8 @@ type SeoEntry = {
   keywords?: string;
   faqs?: { question: string; answer: string }[];
   canonical: string;
-  hreflang: { en: string; zh: string; xDefault: string };
+  hreflang: { en: string; zh: string; ms?: string; xDefault: string };
+  noIndex?: boolean;
   ogImage: string;
   schemaType?: "BlogPosting" | "Service";
   entityName?: string;
@@ -216,29 +218,36 @@ const PROJECT_SUMMARY_SELECT = [
   "status",
   "slug",
   "title_en",
+  "title_ms",
   "title_zh",
   "project_type",
   "location",
   "excerpt_en",
+  "excerpt_ms",
   "excerpt_zh",
   "image_url",
   "sort_order",
-  "project_images(id,image_url,image_type,sort_order,alt_en,alt_zh)",
+  "project_images(id,image_url,image_type,sort_order,alt_en,alt_ms,alt_zh)",
 ].join(",");
 
 const BLOG_EDGE_META_SELECT = [
   "id",
   "slug",
   "title_en",
+  "title_ms",
   "title_zh",
   "excerpt_en",
+  "excerpt_ms",
   "excerpt_zh",
   "seo_title_en",
+  "seo_title_ms",
   "seo_title_zh",
   "seo_description_en",
+  "seo_description_ms",
   "seo_description_zh",
   "cover_image_url",
   "alt_en",
+  "alt_ms",
   "alt_zh",
   "tags",
   "category",
@@ -605,7 +614,7 @@ const formatBreadcrumbName = (segment: string, lang: string) => {
 const buildBreadcrumb = (meta: SeoEntry, origin: string) => {
   const canonical = new URL(meta.canonical);
   const segments = canonical.pathname.split("/").filter(Boolean);
-  const lang = segments[0] === "zh" ? "zh" : "en";
+  const lang = segments[0] === "ms" ? "ms" : segments[0] === "zh" ? "zh" : "en";
   const pathSegments = segments.slice(1);
   const items = [
     {
@@ -646,7 +655,7 @@ const buildBreadcrumb = (meta: SeoEntry, origin: string) => {
 };
 
 // Owner-confirmed on 2026-09-29; the approved candidate covers only these 26 EN/ZH URLs.
-const OWNER_CONFIRMED_AREA_SERVED_PATH = /^\/(?:en|zh)\/(?:locations\/(?:balakong|desa-parkcity|kajang|klang|putrajaya|rawang|semenyih|seri-kembangan|sungai-buloh|taman-tun-dr-ismail|wangsa-maju)|services\/(?:renovation|kitchen))$/;
+const OWNER_CONFIRMED_AREA_SERVED_PATH = /^\/(?:en|zh|ms)\/(?:locations\/(?:balakong|desa-parkcity|kajang|klang|putrajaya|rawang|semenyih|seri-kembangan|sungai-buloh|taman-tun-dr-ismail|wangsa-maju)|services\/(?:renovation|kitchen))$/;
 
 const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
   const canonical = new URL(meta.canonical);
@@ -658,7 +667,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
   const image = meta.ogImage === DEFAULT_OG_IMAGE
     ? siteSettings?.og_image_url || meta.ogImage || DEFAULT_OG_IMAGE
     : meta.ogImage;
-  const lang = meta.lang === "zh" ? "zh-CN" : "en";
+  const lang = meta.lang === "zh" ? "zh-CN" : meta.lang === "ms" ? "ms-MY" : "en";
   const businessId = `${origin}/#localbusiness`;
   const websiteId = `${origin}/#website`;
   const pageId = `${meta.canonical}#webpage`;
@@ -698,7 +707,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         areaServed: ["Kuala Lumpur", "Selangor", "Klang Valley"],
         availableChannel: {
           "@type": "ServiceChannel",
-          serviceUrl: `${origin}/${meta.lang === "zh" ? "zh" : "en"}/quote`,
+          serviceUrl: `${origin}/${meta.lang === "ms" ? "ms" : meta.lang === "zh" ? "zh" : "en"}/quote`,
           servicePhone: {
             "@type": "ContactPoint",
             telephone: siteSettings?.phone_e164 || DEFAULT_PHONE,
@@ -847,15 +856,15 @@ const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "", brand
 
   const publicKey = new URL(meta.canonical).pathname;
   const categoryCopy = publicKey === `/${meta.lang}/furniture/bedroom`
-    ? furnitureLabels.categoryPages.bedroom[meta.lang === "zh" ? "zh" : "en"] : undefined;
-  const kitchenRow = /^\/(en|zh)\/services\/kitchen$/.test(publicKey)
+    ? furnitureLabels.categoryPages.bedroom[meta.lang === "ms" ? "ms" : meta.lang === "zh" ? "zh" : "en"] : undefined;
+  const kitchenRow = /^\/(en|zh|ms)\/services\/kitchen$/.test(publicKey)
     && dynamicRouteState?.kind === "service"
     && dynamicRouteState.row.slug === "kitchen" && dynamicRouteState.row.status === "published"
     ? dynamicRouteState.row : null;
   const title = escapeHtml(categoryCopy?.h1 || (kitchenRow && readString(kitchenRow, `title_${meta.lang}`).trim()) || meta.title);
   const description = escapeHtml(categoryCopy?.intro || (kitchenRow && readString(kitchenRow, `excerpt_${meta.lang}`).trim()) || meta.description);
   const canonical = escapeHtml(meta.canonical);
-  const lang = meta.lang === "zh" ? "zh-CN" : "en";
+  const lang = meta.lang === "zh" ? "zh-CN" : meta.lang === "ms" ? "ms-MY" : "en";
   const preparation = buildQuotePreparationBody(publicKey);
   const brand = brandLine ? `<p>${escapeHtml(brandLine)}</p>` : "";
   const summary = readableBody ? `<noscript data-flashcast-geo-summary>${readableBody}${brand}${preparation}</noscript>` : `<noscript data-flashcast-geo-summary><section lang="${lang}" aria-label="Page summary"><h1>${title}</h1><p>${description}</p>${brand}<p><a href="${canonical}">${canonical}</a></p></section>${preparation}</noscript>`;
@@ -1100,17 +1109,17 @@ const buildReadableRenovationBodyMarkup = (
   key: string,
   state: Pick<DynamicRouteState, "kind" | "row"> | null | undefined,
 ) => {
-  const match = key.match(/^\/(en|zh)\/services\/renovation$/);
+  const match = key.match(/^\/(en|zh|ms)\/services\/renovation$/);
   if (!match || state?.kind !== "service") return "";
 
-  const lang = match[1] as "en" | "zh";
+  const lang = match[1] as "en" | "zh" | "ms";
   if (readString(state.row, "slug") !== "renovation" || readString(state.row, "status") !== "published") return "";
 
   const content = readString(state.row, `content_${lang}`).slice(0, 4_096);
   const sanitizedContent = sanitizeReadableContent(content, lang);
   if (!sanitizedContent.trim()) return "";
 
-  return `<div data-flashcast-readable-service-body lang="${lang === "zh" ? "zh-CN" : "en"}">${sanitizedContent}</div>`;
+  return `<div data-flashcast-readable-service-body lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}">${sanitizedContent}</div>`;
 };
 
 const validDateString = (value: string | undefined) =>
@@ -1139,10 +1148,10 @@ const hashContentVersion = (values: unknown[]) => {
   return (hash >>> 0).toString(36);
 };
 
-const localizedField = (row: PublicDataRow, base: string, lang: "en" | "zh") => {
+const localizedField = (row: PublicDataRow, base: string, lang: "en" | "zh" | "ms") => {
   const preferred = readString(row, `${base}_${lang}`);
   if (preferred) return preferred;
-  return readString(row, `${base}_${lang === "zh" ? "en" : "zh"}`);
+  return readString(row, `${base}_${lang === "ms" ? "en" : lang === "zh" ? "en" : "zh"}`);
 };
 
 const absolutePublicUrl = (value: string) => {
@@ -1162,9 +1171,9 @@ const buildDynamicSeoEntry = (
   kind: DynamicRouteKind,
   fallback?: SeoEntry,
 ): SeoEntry => {
-  const lang: "en" | "zh" = key.startsWith("/zh") ? "zh" : "en";
+  const lang: "en" | "zh" | "ms" = key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en";
   const alternateLang = lang === "zh" ? "en" : "zh";
-  const selectedField = (base: string) => readString(row, `${base}_${lang}`);
+  const selectedField = (base: string) => lang === "ms" ? localizedField(row, base, lang) : readString(row, `${base}_${lang}`);
   const sourceTitle =
     selectedField("seo_title") ||
     selectedField("title") ||
@@ -1187,7 +1196,7 @@ const buildDynamicSeoEntry = (
   const boundProjectMetadata = kind === "project" ? projectPublicMetadata(row, lang) : undefined;
   const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST SDN. BHD.`;
   const canonicalPath = key === "/" ? "/en" : key;
-  const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh)/, "") || "/";
+  const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh|ms)/, "") || "/";
   const enPath = pathWithoutLanguage === "/" ? "/en" : `/en${pathWithoutLanguage}`;
   const zhPath = pathWithoutLanguage === "/" ? "/zh" : `/zh${pathWithoutLanguage}`;
   const keywordValue = selectedField("seo_keywords") || readString(row, "category");
@@ -1216,6 +1225,7 @@ const buildDynamicSeoEntry = (
 
   return {
     lang,
+    noIndex: lang === "ms" && !hasMalayContent(row),
     path: pathWithoutLanguage,
     title: boundProjectMetadata?.title || sanitizePublicDraftMarkers(stripMarkup(title)).slice(0, 180),
     description: boundProjectMetadata?.description || sanitizePublicDraftMarkers(stripMarkup(rawDescription)).slice(0, 300),
@@ -1225,6 +1235,7 @@ const buildDynamicSeoEntry = (
     hreflang: {
       en: `${PUBLIC_SITE_URL}${enPath}`,
       zh: `${PUBLIC_SITE_URL}${zhPath}`,
+      ...(hasMalayContent(row) ? { ms: `${PUBLIC_SITE_URL}/ms${pathWithoutLanguage === "/" ? "" : pathWithoutLanguage}` } : {}),
       xDefault: `${PUBLIC_SITE_URL}${enPath}`,
     },
     ogImage: absolutePublicUrl(resolvedImage),
@@ -1255,7 +1266,7 @@ const fetchDynamicRouteState = async (
   fallback?: SeoEntry,
   onUnpublishedBlog?: () => void,
 ): Promise<DynamicRouteState | null> => {
-  const match = key.match(/^\/(en|zh)(\/.*)?$/);
+  const match = key.match(/^\/(en|zh|ms)(\/.*)?$/);
   if (!match) return null;
   const path = match[2] || "/";
   if (/^\/furniture\/product\/[^/]+$/.test(path)) {
@@ -1264,8 +1275,8 @@ const fetchDynamicRouteState = async (
     if (!slug) return null;
     const saved = readFurnitureCatalogOverrides(setting?.items_zh).reverse().find((item) => normalizeFurnitureSlug(item.slug) === slug);
     if (saved) {
-    const row = { slug, title_zh: saved.name_zh, title_en: saved.name_en, excerpt_zh: saved.shortDescription_zh,
-      excerpt_en: saved.shortDescription_en, content_zh: saved.description_zh, content_en: saved.description_en,
+    const row = { slug, title_zh: saved.name_zh, title_en: saved.name_en, title_ms: saved.name_ms || null, excerpt_zh: saved.shortDescription_zh,
+      excerpt_en: saved.shortDescription_en, content_zh: saved.description_zh, content_en: saved.description_en, content_ms: saved.description_ms || null,
       image_url: saved.images[0], updated_at: setting?.updated_at };
     return { kind: "material", row, hidden: !saved.enabled, meta: buildDynamicSeoEntry(key, row, "material", fallback), contentVersion: hashContentVersion([setting?.updated_at, saved]) };
     }
@@ -1286,7 +1297,7 @@ const fetchDynamicRouteState = async (
     if (!routeMatch?.[1]) continue;
     const slug = decodeURIComponent(routeMatch[1]);
     const readResult = await fetchFreshPublicRowsResult(env, route.table, (url) => {
-      url.searchParams.set("select", route.kind === "blog" ? `${BLOG_EDGE_META_SELECT},content_en,content_zh,status` : route.select || "*");
+      url.searchParams.set("select", route.kind === "blog" ? `${BLOG_EDGE_META_SELECT},content_en,content_ms,content_zh,status` : route.select || "*");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("slug", `eq.${slug}`);
       if (route.category) url.searchParams.set("category", `eq.${route.category}`);
@@ -1516,7 +1527,7 @@ const fetchProjectDetailBySlug = async (env: Record<string, string | undefined>,
 const normalizePath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
   if (cleaned === "/") return "/en";
-  const furnitureDetail = cleaned.match(/^(\/(?:en|zh)\/furniture\/product\/)([^/]+)$/);
+  const furnitureDetail = cleaned.match(/^(\/(?:en|zh|ms)\/furniture\/product\/)([^/]+)$/);
   if (furnitureDetail) {
     const slug = normalizeFurnitureSlug(furnitureDetail[2]);
     if (slug !== undefined) return `${furnitureDetail[1]}${encodeURIComponent(slug)}`;
@@ -1557,7 +1568,7 @@ const shouldPreloadFooterCtaBlock = (key: string) => {
 };
 
 const getProjectDetailSlugFromKey = (key: string) => {
-  const match = key.match(/^\/(?:en|zh)\/projects\/([^/]+)$/);
+  const match = key.match(/^\/(?:en|zh|ms)\/projects\/([^/]+)$/);
   if (!match?.[1]) return null;
   try {
     return decodeURIComponent(match[1]);
@@ -1567,7 +1578,7 @@ const getProjectDetailSlugFromKey = (key: string) => {
 };
 
 const getProductDetailSlugFromKey = (key: string) => {
-  const match = key.match(/^\/(?:en|zh)\/(?:materials|products)\/([^/]+)$/);
+  const match = key.match(/^\/(?:en|zh|ms)\/(?:materials|products)\/([^/]+)$/);
   if (!match?.[1]) return null;
   try {
     return decodeURIComponent(match[1]);
@@ -1634,7 +1645,7 @@ const languageRedirect = (to: URL) =>
     },
   });
 
-const isLanguagePrefixedPath = (pathname: string) => /^\/(en|zh)(?:\/|$)/.test(pathname);
+const isLanguagePrefixedPath = (pathname: string) => /^\/(en|zh|ms)(?:\/|$)/.test(pathname);
 
 const getUnprefixedPublicPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
@@ -1663,7 +1674,7 @@ const getExactLegacyRedirectPath = (pathname: string) => {
 
 const getProductsToMaterialsRedirectPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
-  const match = cleaned.match(/^\/(en|zh)\/products(?:\/([^/]+))?$/);
+  const match = cleaned.match(/^\/(en|zh|ms)\/products(?:\/([^/]+))?$/);
   if (!match) return null;
   return `/${match[1]}/materials${match[2] ? `/${match[2]}` : ""}`;
 };
@@ -1681,7 +1692,7 @@ const LANDING_TO_SERVICE_SLUGS: Record<string, string> = {
 
 const getLandingToServiceRedirectPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
-  const match = cleaned.match(/^\/(en|zh)\/landing\/([^/]+)$/);
+  const match = cleaned.match(/^\/(en|zh|ms)\/landing\/([^/]+)$/);
   const serviceSlug = match?.[2] ? LANDING_TO_SERVICE_SLUGS[match[2]] : null;
   return match && serviceSlug ? `/${match[1]}/services/${serviceSlug}` : null;
 };
@@ -1711,7 +1722,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
     meta.ogImage === DEFAULT_OG_IMAGE
       ? escapeHtml(addCacheBuster(defaultOgImage, version))
       : escapeHtml(meta.ogImage);
-  const lang = meta.lang === "zh" ? "zh-CN" : "en";
+  const lang = meta.lang === "zh" ? "zh-CN" : meta.lang === "ms" ? "ms-MY" : "en";
 
   let out = html.replace(/<html\s+lang="[^"]*"/i, `<html lang="${lang}"`);
   out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title data-rh="true">${title}</title>`);
@@ -1724,6 +1735,8 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<link\b[^>]*rel="canonical"[^>]*>/i, `<link data-rh="true" rel="canonical" href="${canonical}" />`);
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="zh-CN"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="zh-CN" href="${escapeHtml(meta.hreflang.zh)}" />`);
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="en"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="en" href="${escapeHtml(meta.hreflang.en)}" />`);
+  if (meta.hreflang.ms && !meta.noIndex) out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="ms-MY"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="ms-MY" href="${escapeHtml(meta.hreflang.ms)}" />`);
+  if (meta.noIndex) out = replaceOrInsertTag(out, /<meta\b[^>]*name="robots"[^>]*>/i, '<meta data-rh="true" name="robots" content="noindex, follow" />');
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="x-default"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="x-default" href="${escapeHtml(meta.hreflang.xDefault)}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta data-rh="true" property="og:site_name" content="${siteName}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:title"[^>]*>/i, `<meta data-rh="true" property="og:title" content="${title}" />`);
@@ -1742,11 +1755,11 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
 
 const injectNoIndexNotFound = (html: string, siteSettings?: SiteSettingsHead | null, key = "/en") => {
   const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
-  const language = key.startsWith("/zh") ? "zh" : "en";
+  const language = key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en";
   const copy = notFoundPageText[language];
   const title = escapeHtml(`404 | ${copy.title}`) + ` | ${siteName}`;
   const description = escapeHtml(copy.metaDescription);
-  let out = html.replace(/<html\s+lang="[^"]*"/i, `<html lang="${language === "zh" ? "zh-CN" : "en"}"`);
+  let out = html.replace(/<html\s+lang="[^"]*"/i, `<html lang="${language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en"}"`);
   out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title data-rh="true">${title}</title>`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="description"[^>]*>/i, `<meta data-rh="true" name="description" content="${description}" />`);
   out = out.replace(/<link\b[^>]*rel="(?:canonical|alternate)"[^>]*>/gi, "");
@@ -1821,9 +1834,9 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
   for (const [path, { row, kind }] of current) {
     if (isRedirectOnlySitemapPath(`/en${path === "/" ? "" : path}`)) continue;
     const url = (language: string) => `${PUBLIC_SITE_URL}/${language}${path === "/" ? "" : path}`;
-    const locales = (["en", "zh"] as const).filter((language) => qualifiesLocale(row, kind, language)
+    const locales = (["en", "zh", "ms"] as const).filter((language) => (qualifiesLocale(row, kind, language) && (language !== "ms" || hasMalayContent(row)))
       || Boolean((manifest as Record<string, SeoEntry>)[new URL(url(language)).pathname]?.owned_static));
-    const alternates = locales.map((language) => `<xhtml:link rel="alternate" hreflang="${language === "zh" ? "zh-CN" : "en"}" href="${escapeHtml(url(language))}" />`).join("");
+    const alternates = locales.map((language) => `<xhtml:link rel="alternate" hreflang="${language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en"}" href="${escapeHtml(url(language))}" />`).join("");
     for (const language of locales) blocks.push(`<url><loc>${escapeHtml(url(language))}</loc>${alternates}<xhtml:link rel="alternate" hreflang="x-default" href="${escapeHtml(url(locales.includes("en") ? "en" : language))}" /></url>`);
   }
   return `<!-- flashcast-sitemap-snapshot:v1 complete=true generated-at="${new Date().toISOString()}" -->\n<urlset>${blocks.join("\n")}</urlset>`;
@@ -1846,7 +1859,7 @@ const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefin
   try {
   const [materials, setting] = await Promise.all([
     fetchPublicRows(env, `furniture-catalog-${detailSlug || "list"}`, "materials", (url) => {
-      url.searchParams.set("select", detailSlug ? "*,material_images(image_url,sort_order)" : "id,slug,title_zh,title_en,excerpt_zh,excerpt_en,content_zh,content_en,image_url,subcategory,material_type,reference_price,price_mode,price_min,price_max,price_currency,price_unit,seo_title_zh,seo_title_en,seo_description_zh,seo_description_en");
+      url.searchParams.set("select", detailSlug ? "*,material_images(image_url,sort_order)" : "id,slug,title_zh,title_en,title_ms,excerpt_zh,excerpt_en,excerpt_ms,content_zh,content_en,content_ms,image_url,subcategory,material_type,reference_price,price_mode,price_min,price_max,price_currency,price_unit,seo_title_zh,seo_title_en,seo_title_ms,seo_description_zh,seo_description_en,seo_description_ms");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("category", "eq.furniture");
       if (detailSlug) { url.searchParams.set("slug", `eq.${decodedDetailSlug}`); url.searchParams.set("material_images.is_active", "eq.true"); }
@@ -1894,7 +1907,7 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
       const pathname = parsedLocation.pathname;
       if (isRedirectOnlySitemapPath(pathname)) continue;
       if (liveSitemapAvailable && !(manifest as Record<string, SeoEntry>)[pathname]?.owned_static && !dynamicLocations.has(location)) continue;
-      const furnitureSlug = pathname.match(/^\/(?:en|zh)\/furniture\/product\/([^/]+)$/)?.[1];
+      const furnitureSlug = pathname.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
       if (furnitureSlug) {
         const normalized = normalizeFurnitureSlug(furnitureSlug);
         if (normalized === undefined || hiddenSlugSet.has(normalized)) continue;
@@ -1927,12 +1940,12 @@ const replaceLlmsCanonicalUrls = (source: string, urls: string[]) => {
   };
   const counts = new Map<string, number>();
   for (const url of urls) {
-    const path = new URL(url).pathname.replace(/^\/(en|zh)(?=\/|$)/, "");
+    const path = new URL(url).pathname.replace(/^\/(en|zh|ms)(?=\/|$)/, "");
     const group = path.split("/").filter(Boolean)[0] || "home";
     counts.set(group, (counts.get(group) || 0) + 1);
   }
   const priorityPaths = new Set(["/", "/services", "/projects", "/materials", "/locations/kuala-lumpur", "/contact", "/quote", "/blog"]);
-  const priorityUrls = urls.filter((url) => priorityPaths.has(new URL(url).pathname.replace(/^\/(en|zh)(?=\/|$)/, "") || "/"));
+  const priorityUrls = urls.filter((url) => priorityPaths.has(new URL(url).pathname.replace(/^\/(en|zh|ms)(?=\/|$)/, "") || "/"));
   let out = replaceSection(source, "Route Inventory", [...counts].sort(([a], [b]) => a.localeCompare(b)).map(([group, count]) => `- ${group}: ${count} localized URLs`));
   out = replaceSection(out, "Priority Chinese Pages", priorityUrls.filter((url) => new URL(url).pathname.startsWith("/zh")).map((url) => `- ${url}`));
   out = replaceSection(out, "Priority English Pages", priorityUrls.filter((url) => new URL(url).pathname.startsWith("/en")).map((url) => `- ${url}`));
@@ -2076,8 +2089,9 @@ export const onRequest: PagesFunction = async (context) => {
   }
 
   const key = normalizePath(url.pathname);
-  const staticMeta = (manifest as Record<string, SeoEntry>)[key];
-  const isPublicLanguagePath = /^\/(?:en|zh)(?:\/|$)/.test(key);
+  const englishMeta = key.startsWith("/ms") ? (manifest as Record<string, SeoEntry>)[key.replace(/^\/ms(?=\/|$)/, "/en")] : undefined;
+  const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...englishMeta, lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
+  const isPublicLanguagePath = /^\/(?:en|zh|ms)(?:\/|$)/.test(key);
   const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;
   // Look up the last known revision while settings are revalidated. This is
   // speculative only: a changed revision must select a different cache entry.
@@ -2153,10 +2167,10 @@ export const onRequest: PagesFunction = async (context) => {
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
   const reviewedMaterialBody = isReviewedMaterialBodyPath(key);
-  const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug) || reviewedMaterialBody || /^\/(en|zh)\/materials\/category\//.test(key);
+  const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug) || reviewedMaterialBody || /^\/(en|zh|ms)\/materials\/category\//.test(key);
   const shouldInjectServiceAreas = topLevelPublicPageKey === "locations";
   const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
-  const furniturePath = key.replace(/^\/(?:en|zh)/, "");
+  const furniturePath = key.replace(/^\/(?:en|zh|ms)/, "");
   const shouldInjectFurniture = /^\/furniture(?:\/|$)/.test(furniturePath);
   const furnitureDetailSlug = furniturePath.match(/^\/furniture\/product\/([^/]+)$/)?.[1];
   const shouldInjectGlobalCtaBlock = Boolean(meta && shouldPreloadFooterCtaBlock(key));
@@ -2207,8 +2221,8 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectHomeBundle ? earlyHomeFurniture || fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeJournal || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeAreas || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),
-    /^\/(en|zh)\/process$/.test(key) ? fetchPublicRows(env as Record<string, string | undefined>, "process_steps", "process_steps", (url) => {
-      url.searchParams.set("select", "step_number,title_en,title_zh,description_en,description_zh,status");
+    /^\/(en|zh|ms)\/process$/.test(key) ? fetchPublicRows(env as Record<string, string | undefined>, "process_steps", "process_steps", (url) => {
+      url.searchParams.set("select", "step_number,title_en,title_ms,title_zh,description_en,description_ms,description_zh,status");
       url.searchParams.set("status", "eq.published"); url.searchParams.set("order", "step_number.asc");
     }) : Promise.resolve(null),
   ]);
@@ -2222,7 +2236,7 @@ export const onRequest: PagesFunction = async (context) => {
   if (meta && furnitureListingRoute) {
     // Only the listing page parameter belongs to its identity; tracking queries do not.
     const listingPath = furnitureListing?.canonicalPath || furnitureListingPagePath(
-      new URL(meta.canonical).pathname.replace(/^\/(?:en|zh)/, ""),
+      new URL(meta.canonical).pathname.replace(/^\/(?:en|zh|ms)/, ""),
       normalizeFurnitureListingPage(url.searchParams.get("page")),
     );
     meta = { ...meta, canonical: `${PUBLIC_SITE_URL}/${furnitureListingRoute.language}${listingPath}`, hreflang: {

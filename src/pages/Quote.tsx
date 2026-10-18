@@ -1,3 +1,5 @@
+import { projectTypes, budgetRanges } from "@/i18n/quoteOptions";
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import { interactionText } from "@/i18n/interactionText";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -27,34 +29,14 @@ import { preloadTurnstile } from "@/lib/turnstile";
 import { quotePageText } from "@/i18n/quotePageText";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 
-const projectTypes = [
-  { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
-  { value: "Commercial / Office Fit-Out", en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装修" },
-  { value: "Office Renovation", en: "Office Renovation", zh: "办公室装修" },
-  { value: "Custom Built-In Furniture", en: "Custom Built-In Furniture", zh: "定制内嵌家具" },
-  { value: "Kitchen Cabinet", en: "Kitchen Cabinet", zh: "厨房橱柜" },
-  { value: "Bathroom Renovation", en: "Bathroom Renovation", zh: "浴室装修" },
-  { value: "Shop Renovation", en: "Shop Renovation", zh: "店铺装修" },
-  { value: "Old House Renovation", en: "Old House Renovation", zh: "老房翻新" },
-  { value: "Artistic Wall / Coating", en: "Artistic Wall / Coating", zh: "艺术墙面涂装" },
-  { value: "Exterior Works", en: "Exterior / Shopfront Works", zh: "外墙 / 门面工程" },
-  { value: "Warehouse & Shelving", en: "Warehouse & Shelving", zh: "仓库与货架工程" },
-  { value: "Other", en: "Other", zh: "其他" },
-];
 
-const budgetRanges = [
-  { value: "Below RM 30,000", en: "Below RM 30,000", zh: "RM 30,000 以下" },
-  { value: "RM 30,000 - RM 60,000", en: "RM 30,000 - RM 60,000", zh: "RM 30,000 - RM 60,000" },
-  { value: "RM 60,000 - RM 100,000", en: "RM 60,000 - RM 100,000", zh: "RM 60,000 - RM 100,000" },
-  { value: "RM 100,000 - RM 200,000", en: "RM 100,000 - RM 200,000", zh: "RM 100,000 - RM 200,000" },
-  { value: "Above RM 200,000", en: "Above RM 200,000", zh: "RM 200,000 以上" },
-  { value: "Not sure yet", en: "Not sure yet", zh: "暂时不确定" },
-];
 
-const getLocalizedOptionLabel = (options: { value: string; en: string; zh: string }[], value: string, language: "en" | "zh") => {
+
+
+const getLocalizedOptionLabel = (options: { value: string; en: string; zh: string; ms: string }[], value: string, language: "en" | "zh" | "ms") => {
   const option = options.find((item) => item.value === value);
   if (!option) return value;
-  return language === "zh" ? option.zh : option.en;
+  return option[language];
 };
 
 const formatQuoteText = (template: string, values: Record<string, string>) =>
@@ -240,7 +222,7 @@ const Quote = () => {
   if (status === "success") {
     return (
       <main className="fc-route-page fc-route-form-page fc-route-quote-page" data-route-pending={pageLoading || undefined}>
-        <PageMeta ogImage={pageContent?.seoImage || undefined} title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
+        <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
         <section className="fc-route-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
             <div id="quote-success-status" role="status" aria-live="polite" tabIndex={-1} className="subpage-form-panel p-6 md:p-8 focus:outline-none">
@@ -302,7 +284,7 @@ const Quote = () => {
 
   return (
     <main className="fc-route-page fc-route-form-page fc-route-quote-page" data-route-pending={pageLoading || undefined}>
-      <PageMeta ogImage={pageContent?.seoImage || undefined}
+      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined}
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
         keywords={pageContent?.seo_keywords || t.metaKeywords}
@@ -415,7 +397,7 @@ const Quote = () => {
                       <option value="">{t.selectProjectType}</option>
                       {projectTypes.map((item) => (
                         <option key={item.value} value={item.value}>
-                          {language === "zh" ? item.zh : item.en}
+                          {item[language]}
                         </option>
                       ))}
                     </select>
@@ -441,7 +423,7 @@ const Quote = () => {
                     <option value="">{t.selectBudgetRange}</option>
                     {budgetRanges.map((item) => (
                       <option key={item.value} value={item.value}>
-                        {language === "zh" ? item.zh : item.en}
+                        {item[language]}
                       </option>
                     ))}
                   </select>

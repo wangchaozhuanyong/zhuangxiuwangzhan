@@ -43,4 +43,27 @@ export const forestUiText = {
       contact: "联系",
     },
   },
+
+  ms: {
+    loadingLabel: "FLASH CAST",
+    loadingTitle: "Menyediakan halaman ini",
+    loadingDescription: "Kandungan terkini yang diterbitkan sedang dimuatkan.",
+    errorLabel: "Kandungan tidak tersedia",
+    errorTitle: "Kami tidak dapat memuatkan halaman ini",
+    errorDescription: "Semak sambungan anda dan cuba lagi. Halaman semasa dan penapis anda akan disimpan.",
+    retry: "Cuba lagi",
+    emptyLabel: "Tiada kandungan yang diterbitkan",
+    emptyTitle: "Tiada yang sepadan dengan pandangan ini",
+    emptyDescription: "Pilih kategori lain atau kembali kemudian untuk kandungan yang baru diterbitkan.",
+    resultCount: (count: number) => `${count} ${count === 1 ? "result" : "results"}`,
+    back: "belakang",
+    mobileNavLabel: "Navigasi utama mudah alih",
+    bottomNav: {
+      home: "Rumah",
+      projects: "Projek",
+      products: "Produk",
+      promotions: "Tawaran",
+      contact: "Kenalan",
+    },
+  },
 } as const;

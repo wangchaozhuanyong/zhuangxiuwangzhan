@@ -42,7 +42,7 @@ export const isPublicContentDegraded = (result: PublicContentResult<unknown> | n
 
 export const getPublicContentStatusLabel = (
   result: PublicContentResult<unknown> | null | undefined,
-  language: "en" | "zh",
+  language: "en" | "zh" | "ms",
 ) => {
   if (!result || result.source === "remote") return null;
   const text = publicContentStatusText[language];

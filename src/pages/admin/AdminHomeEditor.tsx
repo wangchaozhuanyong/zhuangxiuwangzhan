@@ -1,3 +1,5 @@
+import AdminMalayFields from "@/components/admin/AdminMalayFields";
+import { malayFieldsPatch } from "@/lib/adminMalayContent";
 import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { adminContentSyncText } from "@/i18n/adminContentSyncText";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
@@ -93,8 +95,8 @@ export default function AdminHomeEditor() {
     if (bundle !== undefined) setEditorInitialized(true);
   }, [bundle]);
   const editorReady = editorInitialized && bundle !== undefined;
-  const [statsSection] = field("statsSection");
-  const [whySection] = field("whySection");
+  const [statsSection, setStatsSection] = field("statsSection");
+  const [whySection, setWhySection] = field("whySection");
   const [processSteps] = field("processSteps");
   const [faqRows] = field("faqRows");
   const [ctaBlock] = field("ctaBlock");
@@ -125,7 +127,7 @@ export default function AdminHomeEditor() {
     try {
       const saved = await saveAdminRecord<HomeSectionRow>({
         table: "home_sections",
-        payload: { items_zh: cleaned, items_en: cleaned },
+        payload: { ...malayFieldsPatch(row), items_zh: cleaned, items_en: cleaned },
         id: row.id,
         expectedUpdatedAt: row.updated_at || null,
         queryClient,
@@ -143,6 +145,7 @@ export default function AdminHomeEditor() {
   const upsertProcessStep = protectSubmission("upsertProcessStep", async (draft: ProcessStepRow) => {
     if (!supabase) return;
     const payload = toRecordPayload({
+      ...malayFieldsPatch(draft),
       step_number: Number(draft.step_number || 0),
       title_zh: draft.title_zh || null,
       title_en: draft.title_en || null,
@@ -189,6 +192,7 @@ export default function AdminHomeEditor() {
   const upsertFaq = protectSubmission("upsertFaq", async (draft: FaqRow) => {
     if (!supabase) return;
     const payload = toRecordPayload({
+      ...malayFieldsPatch(draft),
       page_key: "home",
       question_zh: draft.question_zh || null,
       answer_zh: draft.answer_zh || null,
@@ -232,6 +236,7 @@ export default function AdminHomeEditor() {
   const upsertCta = protectSubmission("upsertCta", async (draft: CtaRow) => {
     if (!supabase) return;
     const payload = toRecordPayload({
+      ...malayFieldsPatch(draft),
       block_key: "home_final",
       title_zh: draft.title_zh || null,
       title_en: draft.title_en || null,
@@ -363,6 +368,7 @@ export default function AdminHomeEditor() {
               }}
             />
 
+            {statsSection && <AdminMalayFields record={statsSection} table="home_sections" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setStatsSection((current) => current ? { ...current, ...patch } : current)} />}
             <div data-admin-card-actions className="mt-4 flex gap-2">
               <Button onClick={() => void saveHomeSectionItems(statsSection, statsItems)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
@@ -386,6 +392,7 @@ export default function AdminHomeEditor() {
               }}
             />
 
+            {whySection && <AdminMalayFields record={whySection} table="home_sections" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setWhySection((current) => current ? { ...current, ...patch } : current)} />}
             <div data-admin-card-actions className="mt-4 flex gap-2">
               <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
@@ -511,6 +518,7 @@ export default function AdminHomeEditor() {
                   </select>
                 </div>
               </div>
+              <AdminMalayFields record={editingStep} table="process_steps" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setEditingStep((current) => current ? { ...current, ...patch } : current)} />
               <div data-admin-card-actions className="mt-4 flex gap-2">
                 <Button onClick={() => void upsertProcessStep(editingStep)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveItem}</Button>
                 <Button variant="outline" onClick={() => setEditingStep(null)}>
@@ -628,6 +636,7 @@ export default function AdminHomeEditor() {
                   <Textarea rows={4} value={editingFaq.answer_en || ""} onChange={(e) => setEditingFaq((v) => (v ? { ...v, answer_en: e.target.value } : v))} />
                 </div>
               </div>
+              <AdminMalayFields record={editingFaq} table="faqs" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setEditingFaq((current) => current ? { ...current, ...patch } : current)} />
               <div data-admin-card-actions className="mt-4 flex gap-2">
                 <Button onClick={() => void upsertFaq(editingFaq)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveItem}</Button>
                 <Button variant="outline" onClick={() => setEditingFaq(null)}>
@@ -709,6 +718,7 @@ export default function AdminHomeEditor() {
               </div>
             </div>
 
+            <AdminMalayFields record={editingCta || ctaDraft} table="cta_blocks" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setEditingCta((current) => ({ ...(current || ctaDraft), ...patch }))} />
             <div data-admin-card-actions className="mt-4 flex gap-2">
               <Button onClick={() => void upsertCta(editingCta || ctaDraft)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveItem}</Button>
             </div>

@@ -6,6 +6,8 @@ import { addCacheBuster } from "@/lib/siteSettingsApi";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { withChineseBrandMetadata } from "@/i18n/brandIdentity";
 import { useStructuredDataNode } from "@/contexts/StructuredDataContext";
+import { languageTag } from "@/i18n/languageDetection";
+import { languageSelectorText } from "@/i18n/languageSelectorText";
 
 interface PageMetaProps {
   title: string;
@@ -15,6 +17,7 @@ interface PageMetaProps {
   ogType?: string;
   canonicalPath?: string;
   noIndex?: boolean;
+  malayReady?: boolean;
 }
 
 const absoluteMetaImage = (...sources: string[]): string => {
@@ -38,8 +41,11 @@ const PageMeta = ({
   ogType = "website",
   canonicalPath,
   noIndex = false,
+  malayReady = true,
 }: PageMetaProps) => {
   const { language } = useLanguage();
+  const showMalayFallback = language === "ms" && !malayReady && !noIndex;
+  noIndex = noIndex || language === "ms" && !malayReady;
   const settings = useSiteSettings();
   const brandName = settings.brand_name || "FLASH CAST";
   const companyName = settings.company_name || siteConfig.name;
@@ -54,12 +60,12 @@ const PageMeta = ({
   const enUrl = `${siteConfig.url}${withLanguagePrefix(path, "en")}`;
   useStructuredDataNode(noIndex ? null : {
     "@type": "WebPage", url: canonicalUrl, name: metadata.title, description: metadata.description,
-    inLanguage: language === "zh" ? "zh-CN" : "en",
+    inLanguage: languageTag(language),
     primaryImageOfPage: { "@type": "ImageObject", url: image },
   });
 
   return (
-    <Helmet>
+    <><Helmet>
       <title>{metadata.title}</title>
       <meta name="description" content={metadata.description} />
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
@@ -67,6 +73,7 @@ const PageMeta = ({
       {!noIndex && <link rel="canonical" href={canonicalUrl} />}
       {!noIndex && <link rel="alternate" hrefLang="zh-CN" href={zhUrl} />}
       {!noIndex && <link rel="alternate" hrefLang="en" href={enUrl} />}
+      {!noIndex && malayReady && <link rel="alternate" hrefLang="ms-MY" href={`${siteConfig.url}${withLanguagePrefix(path, "ms")}`} />}
       {!noIndex && <link rel="alternate" hrefLang="x-default" href={enUrl} />}
 
       {/* Open Graph */}
@@ -82,6 +89,8 @@ const PageMeta = ({
       <meta name="twitter:description" content={metadata.description} />
       <meta name="twitter:image" content={image} />
     </Helmet>
+    {showMalayFallback && <div className="language-content-notice" lang="ms-MY">{languageSelectorText.ms.fallback}</div>}
+    </>
   );
 };
 

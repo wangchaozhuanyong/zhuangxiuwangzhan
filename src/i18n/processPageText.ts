@@ -71,4 +71,26 @@ export const processPageText = {
       },
     ],
   },
+
+  ms: {
+    metaTitle: "Proses Kami | Bagaimana Kami Bekerja | FLASH CAST",
+    metaDescription: "Ketahui cara FLASH CAST mengendalikan projek pengubahsuaian anda daripada perundingan dan reka bentuk kepada pembinaan dan penyerahan. Proses langkah demi langkah yang telus.",
+    metaKeywords: "proses pengubahsuaian, bagaimana pengubahsuaian berfungsi, pengubahsuaian langkah demi langkah, proses pengubahsuaian KL",
+    breadcrumbHome: "Rumah",
+    breadcrumbProcess: "Proses Kami",
+    imageAlt: "FLASH CAST proses pengubahsuaian dan pengurusan projek",
+    label: "Bagaimana Kami Bekerja",
+    title: "Proses Pengubahsuaian Kami",
+    description: "Mulakan dengan maklumat tapak anda dan keutamaan, kemudian sahkan skop kerja, tanggungjawab, sebut harga dan pengaturan penyelarasan untuk projek.",
+    sectionTitle: "6 Langkah ke Ruang Idaman Anda",
+    sectionDescription: "Langkah-langkah ini menggariskan topik untuk dibincangkan. Urutan, penghantaran, yuran dan masa bergantung pada projek sebenar dan skop yang dipersetujui.",
+    steps: [
+      { num: "01", title: "Perundingan", desc: "Kami memahami matlamat, ruang, gaya dan belanjawan anda.", details: ["Hantar pertanyaan melalui tapak web, WhatsApp, atau telefon", "Bincangkan keperluan, garis masa dan belanjawan", "Terima nasihat dan cadangan awal"] },
+      { num: "02", title: "Pengukuran Tapak", desc: "Kami memeriksa tapak dan mengambil ukuran yang tepat. Percuma untuk pertanyaan di KL dan Selangor.", details: ["Pengukuran di tapak", "Menilai keadaan dan kekangan sedia ada", "Ambil gambar dan nota untuk rujukan reka bentuk"] },
+      { num: "03", title: "Cadangan Reka Bentuk", desc: "Kami menyediakan idea reka letak dan arah visual, termasuk pemaparan 3D apabila diperlukan.", details: ["Perancangan ruang dan reka bentuk susun atur", "Sahkan sama ada kajian visual atau paparan 3D disertakan dalam skop reka bentuk yang dipersetujui", "Sampel bahan dan pemilihan"] },
+      { num: "04", title: "Sebutharga & Pemilihan Bahan", desc: "Kami menyediakan pecahan yang jelas dan membincangkan bahan berdasarkan skop yang disahkan.", details: ["Sebut harga terperinci dengan harga yang jelas", "Perbandingan bahan dan cadangan", "Perbincangan jadual pembayaran"] },
+      { num: "05", title: "Pembinaan", desc: "Sahkan pihak yang bertanggungjawab dan pengaturan penyelarasan untuk kerja yang dipersetujui.", details: ["Selaraskan tugas dokumen yang berkenaan hanya jika disertakan dalam skop yang disahkan", "Menyelaraskan perdagangan yang bertanggungjawab dalam skop yang dipersetujui", "Bersetuju bagaimana rekod kemajuan dan projek akan dikongsi"] },
+      { num: "06", title: "Penyerahan", desc: "Semakan kualiti akhir, perbincangan kecacatan, pembersihan dan nota penyerahan berdasarkan skop yang disahkan.", details: ["Panduan terakhir dan pemeriksaan", "Senarai kecacatan dan pembetulan", "Sahkan tugas pembersihan dan pelupusan yang disertakan", "Syarat selepas jualan disahkan dalam dokumen projek"] },
+    ],
+  },
 } as const;

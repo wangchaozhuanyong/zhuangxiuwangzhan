@@ -6,10 +6,10 @@ export const HOME_JOURNAL_ORDER = { column: "published_at", ascending: false } a
 export const HOME_SERVICE_AREAS_ORDER = { column: "sort_order", ascending: true } as const;
 
 const HOME_JOURNAL_FIELDS = [
-  "id", "slug", "title_en", "title_zh", "excerpt_en", "excerpt_zh",
-  "alt_en", "alt_zh", "cover_image_url", "category",
+  "id", "slug", "title_en", "title_ms", "title_zh", "excerpt_en", "excerpt_ms", "excerpt_zh",
+  "alt_en", "alt_ms", "alt_zh", "cover_image_url", "category",
 ] as const;
-const HOME_SERVICE_AREAS_FIELDS = ["slug", "area_name", "title_en", "title_zh"] as const;
+const HOME_SERVICE_AREAS_FIELDS = ["slug", "area_name", "title_en", "title_ms", "title_zh"] as const;
 
 export const HOME_JOURNAL_SELECT = HOME_JOURNAL_FIELDS.join(",");
 export const HOME_SERVICE_AREAS_SELECT = HOME_SERVICE_AREAS_FIELDS.join(",");

@@ -1,7 +1,8 @@
 {
   "locales": {
     "en-US": "en",
-    "zh-CN": "zh"
+    "zh-CN": "zh",
+    "ms-MY": "ms"
   },
   "translationKeyResource": {
     "path": "src/i18n/translations.ts",
@@ -78,7 +79,16 @@
     "src/i18n/quotePageText.ts",
     "src/i18n/serviceDetailPageText.ts",
     "src/i18n/servicesPageText.ts",
-    "src/i18n/termsPageText.ts"
+    "src/i18n/termsPageText.ts",
+    "src/i18n/homeDiscoveryText.ts",
+    "src/i18n/homeEditorialText.ts",
+    "src/i18n/homeRenovationText.ts",
+    "src/i18n/homeFurnitureText.ts",
+    "src/i18n/furnitureText.ts",
+    "src/i18n/furnitureShopText.ts",
+    "src/i18n/schemeAText.ts",
+    "src/i18n/quoteOptions.ts",
+    "src/i18n/publicUtilityText.ts"
   ],
   "localeScopedResourceFiles": {
     "en-US": [
@@ -302,24 +312,94 @@
     "startupTimeoutMs": 45000,
     "navigationTimeoutMs": 30000,
     "routes": [
-      { "locale": "zh-CN", "url": "/zh" },
-      { "locale": "zh-CN", "url": "/zh/about" },
-      { "locale": "zh-CN", "url": "/zh/services" },
-      { "locale": "zh-CN", "url": "/zh/materials" },
-      { "locale": "zh-CN", "url": "/zh/projects" },
-      { "locale": "zh-CN", "url": "/zh/process" },
-      { "locale": "zh-CN", "url": "/zh/faq" },
-      { "locale": "zh-CN", "url": "/zh/quote" },
-      { "locale": "zh-CN", "url": "/zh/contact" },
-      { "locale": "en-US", "url": "/en" },
-      { "locale": "en-US", "url": "/en/about" },
-      { "locale": "en-US", "url": "/en/services" },
-      { "locale": "en-US", "url": "/en/materials" },
-      { "locale": "en-US", "url": "/en/projects" },
-      { "locale": "en-US", "url": "/en/process" },
-      { "locale": "en-US", "url": "/en/faq" },
-      { "locale": "en-US", "url": "/en/quote" },
-      { "locale": "en-US", "url": "/en/contact" }
+      {
+        "locale": "zh-CN",
+        "url": "/zh"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/about"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/services"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/materials"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/projects"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/process"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/faq"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/quote"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/contact"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/about"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/services"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/materials"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/projects"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/process"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/faq"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/quote"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/contact"
+      },
+      {
+        "url": "/ms",
+        "locale": "ms-MY"
+      },
+      {
+        "url": "/ms/services",
+        "locale": "ms-MY"
+      },
+      {
+        "url": "/ms/contact",
+        "locale": "ms-MY"
+      },
+      {
+        "url": "/ms/quote",
+        "locale": "ms-MY"
+      }
     ],
     "scanAttributes": [
       "placeholder",

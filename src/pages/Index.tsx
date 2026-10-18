@@ -1,3 +1,4 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import { useEffect, useMemo } from "react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdLocalBusiness, JsonLdOrganization } from "@/components/JsonLd";
@@ -59,7 +60,7 @@ const Index = () => {
 
   return (
     <main className="scheme-a-home-page" data-route-pending={isLoading || undefined}>
-      <PageMeta ogImage={pageContent?.seoImage || undefined}
+      <PageMeta malayReady={isMalayContentReady(homeContent?.pageContent)} ogImage={pageContent?.seoImage || undefined}
         title={metaTitle}
         description={metaDescription}
         keywords={metaKeywords}

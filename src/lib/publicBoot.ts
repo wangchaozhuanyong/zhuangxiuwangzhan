@@ -58,7 +58,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
   }
   template?.remove();
   const language = getLanguageFromPath() || getDefaultLanguage();
-  document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+  document.documentElement.lang = language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en";
   const copy = publicContentStatusText[language];
   let state: PublicBootState = isAdmin ? "ready" : "waiting";
   let deadline = performance.now() + PUBLIC_MOTION.timeout;

@@ -88,8 +88,8 @@ export function installPublicInteractionMetrics() {
 
 export async function exercisePublicLanguageSwitch(page, fromPath) {
   const receipts = [];
-  for (const language of ["en", "zh"]) {
-    const targetPath = fromPath.replace(/^\/(?:zh|en)(?=\/|$)/, `/${language}`);
+  for (const language of ["en", "ms", "zh"]) {
+    const targetPath = fromPath.replace(/^\/(?:zh|en|ms)(?=\/|$)/, `/${language}`);
     const before = await page.locator("#main-content h1").first().innerText();
     await page.evaluate(({ targetPath, language, before }) => {
       const probe = { startedMs: null, completedMs: null, stop: null };
@@ -98,15 +98,15 @@ export async function exercisePublicLanguageSwitch(page, fromPath) {
         const content = document.querySelector("[data-route-visual-state]");
         const heading = document.querySelector("#main-content h1");
         if (content && ["ready", "handoff", "degraded"].includes(content.getAttribute("data-route-visual-state")) &&
-          location.pathname === targetPath && document.documentElement.lang === (language === "zh" ? "zh-CN" : "en") &&
+          location.pathname === targetPath && document.documentElement.lang === (language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en") &&
           Boolean(heading?.textContent?.trim()) && heading.textContent.trim() !== before.trim() &&
           !content.querySelector('[data-route-pending="true"]') && !content.hasAttribute("inert") &&
           !content.querySelector('[data-public-results][inert]') &&
           !document.getElementById("root")?.hasAttribute("inert")) probe.completedMs = performance.now();
       };
       const captureClick = (event) => {
-        const option = event.target instanceof Element ? event.target.closest(".scheme-a-language-option") : null;
-        if (option?.getAttribute("hreflang") === (language === "zh" ? "zh-CN" : "en")) {
+        const option = event.target instanceof Element ? event.target.closest(".language-drawer__option, .scheme-a-language-option") : null;
+        if (option?.getAttribute("hreflang") === (language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en")) {
           const now = performance.now();
           probe.startedMs = event.timeStamp > 0 && event.timeStamp <= now ? event.timeStamp : now;
           queueMicrotask(sample);
@@ -120,7 +120,9 @@ export async function exercisePublicLanguageSwitch(page, fromPath) {
       window.__flashcastLanguageProbe = probe;
     }, { targetPath, language, before });
     try {
-      await page.locator(`.scheme-a-language-option[hreflang="${language === "zh" ? "zh-CN" : "en"}"]:visible`).first().click();
+      const drawerTrigger = page.locator(".language-selector--header");
+      if (await drawerTrigger.count()) await drawerTrigger.click();
+      await page.locator(`.language-drawer__option[hreflang="${language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en"}"]:visible, .scheme-a-language-option[hreflang="${language === "zh" ? "zh-CN" : "en"}"]:visible`).first().click();
       await page.waitForFunction(() => window.__flashcastLanguageProbe?.completedMs !== null, undefined, { timeout: 15_000 });
       const receipt = await page.evaluate(() => {
         const { startedMs, completedMs } = window.__flashcastLanguageProbe;

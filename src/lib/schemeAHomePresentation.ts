@@ -2,7 +2,7 @@ import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { withQuoteFormHash } from "@/lib/quoteContext";
 import { toRecord } from "@/lib/recordUtils";
 
-type Language = "en" | "zh";
+type Language = "en" | "zh" | "ms";
 
 type HomeFallbackCopy = {
   heroStats: readonly { value: string; label: string }[];

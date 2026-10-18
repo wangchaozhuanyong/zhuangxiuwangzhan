@@ -57,6 +57,7 @@ export type AdminMaterialImageDraft = {
   image_type?: MaterialImageType | string | null;
   alt_zh?: string | null;
   alt_en?: string | null;
+  alt_ms?: string | null;
   source_url?: string | null;
   rights_status?: MaterialImageRights | string | null;
   sort_order?: string | number | null;

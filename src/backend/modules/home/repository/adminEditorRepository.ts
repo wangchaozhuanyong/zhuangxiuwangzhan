@@ -7,13 +7,17 @@ export type HomeSectionRow = {
   section_key: string;
   title_zh?: string | null;
   title_en?: string | null;
+  title_ms?: string | null;
   subtitle_zh?: string | null;
   subtitle_en?: string | null;
+  subtitle_ms?: string | null;
   content_zh?: string | null;
   content_en?: string | null;
+  content_ms?: string | null;
   image_url?: string | null;
   items_zh?: unknown;
   items_en?: unknown;
+  items_ms?: unknown;
   status?: "draft" | "published" | "archived";
   sort_order?: number;
 };

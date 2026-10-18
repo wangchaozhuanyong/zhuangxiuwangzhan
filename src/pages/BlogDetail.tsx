@@ -1,3 +1,4 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
@@ -244,7 +245,7 @@ const BlogDetail = () => {
 
   return (
     <main className="fc-route-page fc-route-article-page">
-      <PageMeta
+      <PageMeta malayReady={isMalayContentReady(post)}
         title={displayText(post.seoTitle || `${post.title} | ${t.metaSuffix}`)}
         description={articleDescription}
         keywords={post.tags.join(", ")}

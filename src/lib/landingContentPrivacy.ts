@@ -1,3 +1,4 @@
+import { malayText } from "@/i18n/malayText";
 import type { LandingProject } from "@/data/landings";
 import type { Language } from "@/i18n/languageDetection";
 
@@ -34,6 +35,8 @@ const titleCopy: Record<string, Record<Language, string[]>> = {
   "office-renovation": {
     en: ["Office Space Planning Reference", "Office Refurbishment Reference"],
     zh: ["办公空间布局规划参考", "办公空间改造与协作区参考"],
+
+    ms: ["Rujukan Perancangan Ruang Pejabat", "Rujukan Pembaikan Pejabat"],
   },
 };
 
@@ -45,9 +48,9 @@ const kualaLumpurHints =
 const normalize = (value: string) => value.trim().replace(/\s+/g, " ").toLowerCase();
 
 const broadLocation = (value: string, language: Language) => {
-  if (selangorHints.test(value)) return language === "zh" ? "雪兰莪" : "Selangor";
-  if (kualaLumpurHints.test(value)) return language === "zh" ? "吉隆坡" : "Kuala Lumpur";
-  return language === "zh" ? "巴生谷" : "Klang Valley";
+  if (selangorHints.test(value)) return language === "ms" ? malayText("Selangor") : (language === "zh" ? "雪兰莪" : "Selangor");
+  if (kualaLumpurHints.test(value)) return language === "ms" ? malayText("Kuala Lumpur") : (language === "zh" ? "吉隆坡" : "Kuala Lumpur");
+  return language === "ms" ? malayText("Klang Valley") : (language === "zh" ? "巴生谷" : "Klang Valley");
 };
 
 export const isPrivacyProtectedLanding = (slug?: string) => Boolean(slug && protectedLandingSlugs.has(slug));

@@ -95,4 +95,55 @@ export const beforeAfterPageText = {
       },
     ],
   },
+
+  ms: {
+    metaTitle: "Perbandingan Perancangan Pengubahsuaian Kuala Lumpur | FLASH CAST",
+    metaDescription:
+      "Terokai perbandingan perancangan pengubahsuaian yang dilabel dengan jelas untuk dapur, ruang tamu dan bilik mandi. Visual tidak dibentangkan sebagai projek pelanggan yang telah siap.",
+    metaKeywords:
+      "perbandingan perancangan ubah suai Kuala Lumpur, konsep ubah suai rumah Malaysia, perancangan dalaman Lembah Klang",
+    breadcrumbHome: "Rumah",
+    breadcrumbPage: "Perbandingan Perancangan",
+    heroLabel: "Visual Perancangan",
+    heroTitle: "Perbandingan Perancangan Ruang",
+    heroAlt: "Konsep perancangan pengubahsuaian ruang tamu kontemporari",
+    heroDescription:
+      "Bandingkan rujukan ruang sedia ada dengan arah perancangan yang mungkin sebelum mengesahkan skop projek sebenar.",
+    sectionTitle: "Bandingkan arah perancangan",
+    sectionDescription:
+      "Penyampaian reka bentuk membandingkan susun atur, bahan dan pencahayaan. Seret setiap pembahagi untuk meneroka arah perancangan.",
+    before: "Rujukan sedia ada",
+    after: "Arah perancangan",
+    itemDescription:
+      "Perbandingan perancangan sahaja. Susun atur akhir, bahan dan skop pembinaan bergantung pada tapak sebenar dan sebut harga yang disahkan.",
+    compareAria: (title: string) => `Seret untuk membandingkan rujukan sedia ada dan arah perancangan untuk ${title}`,
+    loading: "Memuatkan perbandingan perancangan...",
+    error: "Perbandingan perancangan tidak dapat dimuatkan. Sila cuba sebentar lagi.",
+    empty: "Perbandingan perancangan yang diterbitkan sedang dikemas kini. Sila semak semula segera.",
+    ctaTitle: "Merancang transformasi ruang?",
+    ctaDescription:
+      "Beritahu kami perkara yang tidak berfungsi dalam ruang semasa anda. Pasukan kami akan membantu menentukan skop sebelum reka bentuk bermula.",
+    ctaPrimary: "Dapatkan Sebut Harga Percuma",
+    ctaSecondary: "WhatsApp Kami",
+    fallbackItems: [
+      {
+        title: "Arah Perancangan Dapur",
+        location: "",
+        description: "Perbandingan perancangan dapur dengan kabinet, meja kerja dan idea peredaran.",
+        alt: "Perbandingan perancangan pengubahsuaian dapur",
+      },
+      {
+        title: "Arah Perancangan Ruang Tamu",
+        location: "",
+        description: "Perbandingan perancangan ruang tamu dengan ciri-ciri dinding, lantai dan idea pencahayaan.",
+        alt: "Perbandingan perancangan pengubahsuaian ruang tamu",
+      },
+      {
+        title: "Arah Perancangan Bilik Mandi",
+        location: "",
+        description: "Perbandingan perancangan bilik mandi meliputi kalis air, jubin, kelengkapan dan arah penyimpanan.",
+        alt: "Perbandingan perancangan pengubahsuaian bilik mandi",
+      },
+    ],
+  },
 } as const;

@@ -1,7 +1,7 @@
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { resolveFurnitureDisplay } from "../src/lib/furnitureDisplaySafety.mjs";
-import { pickPublicSourceOwners } from "../src/lib/publicContentQualification.mjs";
+import { pickPublicSourceOwners, hasCompleteMalayContent } from "../src/lib/publicContentQualification.mjs";
 import { readFileSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
 import { loadMaterialSeoCategories, qualifiesLocale, currentSourcePath, serializeSourcePath, snapshotProvenance, isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
@@ -82,7 +82,7 @@ const redirectOnlyLandingSlugs = new Set([
   "flooring",
 ]);
 const isRedirectSource = localized => {
-  const path = localized.replace(/^\/(en|zh)(?=\/|$)/, "") || "/";
+  const path = localized.replace(/^\/(en|zh|ms)(?=\/|$)/, "") || "/";
   return legacyRedirectPaths.has(localized) || redirectOnlyPaths.has(path)
     || (path.startsWith("/landing/") && redirectOnlyLandingSlugs.has(path.slice("/landing/".length)));
 };
@@ -365,12 +365,32 @@ for (const lang of ["en", "zh"]) {
   }
 }
 
+// Malay routes are emitted only from complete published translations. Missing
+// translations remain readable through the runtime fallback, outside discovery.
+for (const [path, { row, kind }] of sourceOwners) {
+  if (!hasCompleteMalayContent(row) || !qualifiesLocale(row, kind, "ms")) continue;
+  const localized = `/ms${path === "/" ? "" : path}`;
+  if (isRedirectSource(localized)) continue;
+  const source = manifest[`/en${path === "/" ? "" : path}`] || manifest[`/zh${path === "/" ? "" : path}`];
+  if (!source) continue;
+  const rawTitle = row.seo_title_ms || row.title_ms;
+  const title = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
+  manifest[localized] = {
+    ...source, ...snapshotProvenance(snapshot, kind, row.id || path, "ms"),
+    lang: "ms", title, description: sanitizeSeoText(row.seo_description_ms).slice(0, 300),
+    entityName: kind === "service" ? row.title_ms : source.entityName,
+    headline: kind === "blog" ? row.title_ms : source.headline,
+    faqs: (Array.isArray(row.faqs_ms) ? row.faqs_ms : []).map(item => ({ question: item.q || item.question, answer: item.a || item.answer })).filter(item=>item.question&&item.answer),
+    canonical: `${SITE_URL}${localized}`,
+  };
+}
+
 // Alternates attest only routes actually emitted by this complete snapshot.
 for (const route of Object.keys(manifest)) if (isRedirectSource(route)) delete manifest[route];
 for(const meta of Object.values(manifest)) {
- const en=`/en${meta.path === "/" ? "" : meta.path}`;const zh=`/zh${meta.path === "/" ? "" : meta.path}`;
- meta.available_locales=["en","zh"].filter(lang=>Boolean(manifest[lang==="en"?en:zh]));
- meta.hreflang={...(manifest[en]?{en:manifest[en].canonical}:{}),...(manifest[zh]?{zh:manifest[zh].canonical}:{}),xDefault:(manifest[en]||manifest[zh]).canonical};
+ const en=`/en${meta.path === "/" ? "" : meta.path}`;const zh=`/zh${meta.path === "/" ? "" : meta.path}`;const ms=`/ms${meta.path === "/" ? "" : meta.path}`;
+ meta.available_locales=["en","zh","ms"].filter(lang=>Boolean(manifest[lang==="en"?en:lang==="zh"?zh:ms]));
+ meta.hreflang={...(manifest[en]?{en:manifest[en].canonical}:{}),...(manifest[zh]?{zh:manifest[zh].canonical}:{}),...(manifest[ms]?{ms:manifest[ms].canonical}:{}),xDefault:(manifest[en]||manifest[zh]||manifest[ms]).canonical};
 }
 return manifest;
 }

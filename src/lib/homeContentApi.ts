@@ -33,7 +33,8 @@ import { mapPublicHomeFaqs } from "@/lib/publicHomeFaqs";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 import { stripHtml } from "@/lib/text";
 
-type Language = "en" | "zh";
+import type { Language } from "@/i18n/routes";
+import { localizedContentValue, hasMalayContent } from "@/i18n/localizedContent";
 
 const readText = (record: UnknownRecord | null | undefined, field: string, fallback = "") => toText(record?.[field], fallback);
 const readRecordArray = (value: unknown): UnknownRecord[] => toArray<UnknownRecord>(value).map(toRecord);
@@ -104,6 +105,7 @@ export type PublishedAboutSection = {
 };
 
 export type PublishedSitePage = {
+  translationComplete?: boolean;
   id: string;
   page_key: string;
   path: string;
@@ -158,22 +160,19 @@ export type PublishedHomeContentBundle = {
   ctaBlock: PublishedCtaBlock | null;
 };
 
-const pickLocalizedValue = <T = unknown>(row: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback: T): T => {
-  const value = row?.[`${field}_${language}`];
-  return value === null || value === undefined || value === "" ? fallback : (value as T);
+const pickLocalizedValue = <T = unknown>(row: UnknownRecord | null | undefined, field: string, language: Language, fallback: T): T => {
+  return localizedContentValue(row, field, language, fallback);
 };
 
-const pickLocalizedText = (row: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback = ""): string =>
+const pickLocalizedText = (row: UnknownRecord | null | undefined, field: string, language: Language, fallback = ""): string =>
   toText(pickLocalizedValue(row, field, language, fallback));
 
 const pickLocalizedList = <T = unknown>(row: UnknownRecord | null | undefined, field: string, language: Language): T[] => {
-  const value = row?.[`${field}_${language}`];
-  return toArray<T>(value);
+  return toArray<T>(localizedContentValue(row, field, language, []));
 };
 
-const pickLocalizedObject = (row: UnknownRecord | null | undefined, field: string, language: "en" | "zh"): UnknownRecord => {
-  const value = row?.[`${field}_${language}`];
-  return toRecord(value);
+const pickLocalizedObject = (row: UnknownRecord | null | undefined, field: string, language: Language): UnknownRecord => {
+  return toRecord(localizedContentValue(row, field, language, {}));
 };
 
 const normalizeCmsSectionType = (value: string) => value.trim().toLowerCase().replace(/-/g, "_");
@@ -228,6 +227,7 @@ const mapPublishedCmsPage = (
   }));
 
   return {
+    translationComplete: hasMalayContent(cmsRow),
     id: readText(cmsRow, "id"),
     page_key: readText(cmsRow, "page_key"),
     path: readText(cmsRow, "path", legacy?.path || ""),
@@ -249,6 +249,7 @@ const mapPublishedCmsPage = (
 };
 
 const mapLegacySitePage = (row: UnknownRecord, language: Language): PublishedSitePage => ({
+  translationComplete: hasMalayContent(row),
   id: readText(row, "id"),
   page_key: readText(row, "page_key"),
   path: readText(row, "path"),
@@ -267,7 +268,7 @@ const mapLegacySitePage = (row: UnknownRecord, language: Language): PublishedSit
   items: pickLocalizedList(row, "items", language),
 });
 
-export const mapSitePageRows = (payload: UnknownRecord, language: "en" | "zh") => {
+export const mapSitePageRows = (payload: UnknownRecord, language: Language) => {
   const legacyRow = readRecordArray(payload.site_pages)[0];
   const legacy = legacyRow ? mapLegacySitePage(legacyRow, language) : null;
   const cmsRow = readRecordArray(payload.cms_pages)[0];
@@ -336,7 +337,7 @@ const emptyHomeContentBundle = (): PublishedHomeContentBundle => ({
   ctaBlock: null,
 });
 
-const getLocalHomeContentBundle = async (language: "en" | "zh"): Promise<PublishedHomeContentBundle> => {
+const getLocalHomeContentBundle = async (language: Language): Promise<PublishedHomeContentBundle> => {
   const [{ testimonials, homeFAQs }, projects, services] = await Promise.all([
     import("@/data/siteContent"),
     getFallbackProjects(language),
@@ -371,7 +372,7 @@ export const isPublishedHomeSectionEnabled = (sectionKey: string, value: unknown
 
 export const mapRemoteHomeContentBundle = (
   payload: UnknownRecord,
-  language: "en" | "zh",
+  language: Language,
   brandPartnersVisibility: unknown = null,
   testimonialsVisibility: unknown = null,
 ): PublishedHomeContentBundle => {
@@ -407,7 +408,7 @@ export const mapRemoteHomeContentBundle = (
 };
 
 export const getPublishedHomeContentBundle = async (
-  language: "en" | "zh",
+  language: Language,
  signal?: AbortSignal): Promise<PublicContentResult<PublishedHomeContentBundle>> => {
   const fallback = async (reason: "supabase-not-configured" | "remote-empty" | "remote-error", error?: unknown) =>
     createLocalFallbackContent(await getLocalHomeContentBundle(language), reason, error);
@@ -444,7 +445,7 @@ export const getPublishedBrandPartners = async (signal?: AbortSignal): Promise<P
   return data || [];
 };
 
-export const getPublishedBeforeAfterItems = async (language: "en" | "zh", signal?: AbortSignal): Promise<PublishedBeforeAfterItem[]> => {
+export const getPublishedBeforeAfterItems = async (language: Language, signal?: AbortSignal): Promise<PublishedBeforeAfterItem[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
 
   const data = await fetchPublishedBeforeAfterRows(signal);
@@ -464,7 +465,7 @@ export const getPublishedBeforeAfterItems = async (language: "en" | "zh", signal
     }));
 };
 
-export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general", signal?: AbortSignal): Promise<PublishedFaq[]> => {
+export const getPublishedFaqs = async (language: Language, pageKey = "general", signal?: AbortSignal): Promise<PublishedFaq[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
 
   const data = await fetchPublishedFaqRows(pageKey, signal);
@@ -477,7 +478,7 @@ export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general
 };
 
 export const getPublishedHomeSection = async (
-  language: "en" | "zh",
+  language: Language,
   sectionKey: string,
  signal?: AbortSignal): Promise<PublishedHomeSection | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
@@ -487,13 +488,13 @@ export const getPublishedHomeSection = async (
   return mapPublishedHomeSectionRow(row, language);
 };
 
-export const getPublishedProcessSteps = async (language: "en" | "zh", signal?: AbortSignal): Promise<PublishedProcessStep[]> => {
+export const getPublishedProcessSteps = async (language: Language, signal?: AbortSignal): Promise<PublishedProcessStep[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
   const data = await fetchPublishedProcessStepRows(signal);
   return ((data || []) as unknown as UnknownRecord[]).map((row) => mapPublishedProcessStep(row, language));
 };
 
-export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: string, signal?: AbortSignal): Promise<PublishedCtaBlock | null> => {
+export const getPublishedCtaBlock = async (language: Language, blockKey: string, signal?: AbortSignal): Promise<PublishedCtaBlock | null> => {
 
   if (!hasPublicContentDatabaseClient()) return null;
   const row = toRecord(await fetchPublishedCtaBlockRow(blockKey, signal));
@@ -502,7 +503,7 @@ export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: stri
 };
 
 export const getPublishedAboutSection = async (
-  language: "en" | "zh",
+  language: Language,
   sectionKey: string,
  signal?: AbortSignal): Promise<PublishedAboutSection | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
@@ -520,7 +521,7 @@ export const getPublishedAboutSection = async (
 };
 
 export const getPublishedSitePage = async (
-  language: "en" | "zh",
+  language: Language,
   pageKey: string,
  signal?: AbortSignal): Promise<PublishedSitePage | null> => {
 
@@ -535,7 +536,7 @@ export const getPublishedSitePage = async (
 };
 
 export const getPublishedCmsPageByPath = async (
-  language: "en" | "zh",
+  language: Language,
   path: string,
  signal?: AbortSignal): Promise<PublishedSitePage | null> => {
   if (!hasPublicContentDatabaseClient()) return null;

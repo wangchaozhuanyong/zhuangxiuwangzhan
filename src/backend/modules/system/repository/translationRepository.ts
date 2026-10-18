@@ -4,6 +4,7 @@ export type GenerateEnglishContentRequest = {
   table: string;
   id: string;
   force: boolean;
+  targetLanguage?: "en" | "ms";
 };
 
 export type GenerateEnglishContentResponse = {

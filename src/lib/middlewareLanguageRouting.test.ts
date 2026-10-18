@@ -4,7 +4,8 @@ import { onRequest } from "../../functions/_middleware";
 describe("edge language routing", () => {
   it.each([
     ["/", "ja-JP,zh-CN;q=0.9,en;q=0.8", "", "/en"],
-    ["/services", "ms-MY,zh-CN;q=0.9", "", "/en/services"],
+    ["/services", "ms-MY,zh-CN;q=0.9", "", "/ms/services"],
+    ["/", "zh-CN", "flashcast_lang=ms", "/ms"],
     ["/", "zh-CN;q=0.8,ja-JP;q=1", "", "/en"],
     ["/", "en-US;q=0.8,zh-TW;q=0.9", "", "/zh"],
     ["/", "ja-JP,zh-CN;q=0.9", "flashcast_lang=zh", "/zh"],

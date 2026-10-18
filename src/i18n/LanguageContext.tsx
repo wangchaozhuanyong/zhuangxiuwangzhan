@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useLayoutEffect, ReactNode } from "react";
 import { getDefaultLanguage, getLanguageFromPath, Language, rememberLanguage } from "@/i18n/routes";
+import { languageTag } from "@/i18n/languageDetection";
 
 interface LanguageContextType {
   language: Language;
@@ -20,7 +21,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   useLayoutEffect(() => {
     rememberLanguage(language);
-    document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+    document.documentElement.lang = languageTag(language);
   }, [language]);
 
   return (

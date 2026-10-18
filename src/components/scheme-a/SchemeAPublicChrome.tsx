@@ -23,7 +23,7 @@ import {
 import LocalizedLink from "@/components/LocalizedLink";
 import PublicContactRow from "@/components/PublicContactRow";
 import { Button } from "@/components/ui/button";
-import LanguageRouteLink from "@/components/LanguageRouteLink";
+import LanguageSelector from "@/components/LanguageSelector";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import TikTokIcon from "@/components/TikTokIcon";
@@ -34,7 +34,7 @@ import {
   type PublicNavGroupKey,
   type PublicNavItem,
 } from "@/config/publicNavigation";
-import { furnitureText } from "@/i18n/furnitureText";
+import { furnitureShopText } from "@/i18n/furnitureShopText";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -42,11 +42,12 @@ import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
 import { schemeAChromeText } from "@/i18n/schemeAText";
 import { CHINESE_BRAND_NAMES, getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } from "@/i18n/brandIdentity";
-import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
+import { stripLanguagePrefix, type Language } from "@/i18n/routes";
+import { languageTag } from "@/i18n/languageDetection";
 import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
-import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
+import { QUOTE_FORM_PATH } from "@/lib/quoteFormTarget";
 import { addCacheBuster, type SiteSettings } from "@/lib/siteSettingsApi";
 import { safeSocialProfileUrl } from "@/config/site";
 import logoFallback from "@/assets/logo-flashcast.webp";
@@ -84,7 +85,7 @@ const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
   publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(pathname, item.path)))?.key
   ?? "services";
 
-const BrandMark = ({ logo, name, displayName, language }: { logo: string; name: string; displayName: string | null; language: "zh" | "en" }) => {
+const BrandMark = ({ logo, name, displayName, language }: { logo: string; name: string; displayName: string | null; language: Language }) => {
   const [failedLogo, setFailedLogo] = useState<string | null>(null);
   const displayedLogo = failedLogo === logo ? logoFallback : logo;
   const builtInLogo = displayedLogo === logoFallback
@@ -103,66 +104,19 @@ const BrandMark = ({ logo, name, displayName, language }: { logo: string; name: 
             onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
           />
         </span>
-        {showLocalizedName && <span className="scheme-a-chrome__wordmark-name" lang={language === "zh" ? "zh-CN" : "en"}>{displayName}</span>}
+        {showLocalizedName && <span className="scheme-a-chrome__wordmark-name" lang={languageTag(language)}>{displayName}</span>}
       </span>
       {!showLocalizedName && <span className="sr-only">{name}</span>}
     </LocalizedLink>
   );
 };
 
-const getGroupLabel = (key: PublicNavGroupKey, navText: typeof navbarText.zh | typeof navbarText.en) => ({
+const getGroupLabel = (key: PublicNavGroupKey, navText: (typeof navbarText)[Language]) => ({
   spaces: navText.spacesGroup,
   services: navText.servicesGroup,
   studio: navText.studioGroup,
   contact: navText.contactGroup,
 })[key];
-
-const LanguageSwitch = ({
-  language,
-  paths,
-  labels,
-}: {
-  language: "zh" | "en";
-  paths: Record<"zh" | "en", string>;
-  labels: {
-    group: string;
-    zh: string;
-    en: string;
-    zhShort: string;
-    enShort: string;
-  };
-}) => {
-  const options = [
-    { code: "zh" as const, label: labels.zh, shortLabel: labels.zhShort },
-    { code: "en" as const, label: labels.en, shortLabel: labels.enShort },
-  ];
-
-  return (
-    <div className="scheme-a-language-switch" role="group" aria-label={labels.group}>
-      {options.map((option) => {
-        const active = option.code === language;
-        return (
-          <LanguageRouteLink
-            key={option.code}
-            className={`scheme-a-language-option ${active ? "is-active" : ""}`}
-            to={paths[option.code]}
-            targetLanguage={option.code}
-            prefetchOnReady={!active}
-            aria-current={active ? "true" : undefined}
-            aria-label={option.label}
-            lang={language === "zh" ? "zh-CN" : "en"}
-            hrefLang={option.code === "zh" ? "zh-CN" : "en"}
-            onClick={(event) => {
-              if (active) event.preventDefault();
-            }}
-          >
-            {option.shortLabel}
-          </LanguageRouteLink>
-        );
-      })}
-    </div>
-  );
-};
 
 const SchemeASocialLinks = ({ settings, placement }: {
   settings: Pick<SiteSettings, "facebook_url" | "instagram_url" | "tiktok_url" | "xiaohongshu_url">;
@@ -228,20 +182,9 @@ export const SchemeANavbar = () => {
   const headerBrandName = getHeaderChineseBrandName(settings)
     ? language === "zh" ? CHINESE_BRAND_NAMES[0] : getPublicSiteName(settings)
     : null;
-  const languagePaths = {
-    zh: switchLanguagePath(location.pathname, "zh", location.search, location.hash),
-    en: switchLanguagePath(location.pathname, "en", location.search, location.hash),
-  };
-  const languageLabels = {
-    group: navText.switchLanguage,
-    zh: navText.switchToChinese,
-    en: navText.switchToEnglish,
-    zhShort: navText.chineseShort,
-    enShort: navText.englishShort,
-  };
   const publicPath = stripLanguagePrefix(location.pathname);
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
-    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    ? pageWhatsAppMessage || furnitureShopText[language].generalEnquiryMessage
     : undefined;
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
 
@@ -525,7 +468,7 @@ export const SchemeANavbar = () => {
             <LocalizedLink className="scheme-a-chrome__quote" to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_header", { destination: QUOTE_FORM_PATH })}>
               {t.quote}<ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
-            <LanguageSwitch language={language} paths={languagePaths} labels={languageLabels} />
+            <LanguageSelector />
             <button ref={compactTriggerRef} className="scheme-a-chrome__menu-trigger scheme-a-chrome__menu-trigger--compact" type="button" aria-label={t.openMenu} aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
               <span className="scheme-a-chrome__menu-label">{navText.more}</span>
               <Menu aria-hidden="true" />
@@ -628,7 +571,7 @@ export const SchemeAFooterPrelude = () => {
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHome = publicPath === "/";
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
-    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    ? pageWhatsAppMessage || furnitureShopText[language].generalEnquiryMessage
     : undefined;
 
   if (hasPageConsultation) return null;
@@ -657,15 +600,12 @@ export const SchemeAFooterPrelude = () => {
 
 export const SchemeAFooter = () => {
   const { language } = useLanguage();
-  const location = useLocation();
   const translate = (key: string) => getNavigationLabel(key, language);
   const settings = useSiteSettings();
   const t = schemeAChromeText[language];
   const footer = footerCopy[language];
   const navText = navbarText[language];
   const areas = footerLocationLinks[language];
-  const nextLanguage = language === "zh" ? "en" : "zh";
-  const languagePath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
   const chineseBrandLine = getChineseBrandLine(settings, language);
 
   return (
@@ -724,7 +664,7 @@ export const SchemeAFooter = () => {
         </div>
         <div className="scheme-a-footer__legal scheme-a-frame">
           <span>{t.copyright} {footer.rights}</span>
-          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageRouteLink to={languagePath} targetLanguage={nextLanguage} lang={language === "zh" ? "zh-CN" : "en"} hrefLang={nextLanguage === "zh" ? "zh-CN" : "en"}>{t.language}: {nextLanguage === "zh" ? navText.chineseShort : navText.englishShort}</LanguageRouteLink><button type="button" onClick={() => scrollWindowToSmoothly(0)}>{t.backToTop}<ArrowUp /></button></nav>
+          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageSelector placement="footer" /><button type="button" onClick={() => scrollWindowToSmoothly(0)}>{t.backToTop}<ArrowUp /></button></nav>
         </div>
       </div>
     </footer>

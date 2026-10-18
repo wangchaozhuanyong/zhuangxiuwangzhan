@@ -41,4 +41,26 @@ export const homeDiscoveryText = {
       empty: "Service area information is being updated. Visit the area directory for details.",
     },
   },
+
+  ms: {
+    journal: {
+      label: "Jurnal",
+      title: "Idea untuk ruang seterusnya anda.",
+      description: "Bacaan praktikal tentang perancangan ruang, bahan dan keputusan yang membentuk pengubahsuaian anda.",
+      read: "Baca artikel",
+      viewAll: "Terokai jurnal",
+      loading: "Memuatkan artikel pengubahsuaian…",
+      error: "Artikel pengubahsuaian tidak dapat dimuatkan. Sila cuba lagi.",
+      empty: "Pilihan jurnal sedang dikemas kini. Lawati jurnal untuk menyemak imbas lebih lanjut.",
+    },
+    areas: {
+      label: "Kawasan perkhidmatan",
+      title: "Terokai perkhidmatan pengubahsuaian berhampiran anda.",
+      description: "Semak imbas panduan perkhidmatan tempatan dan pertimbangkan perkara yang mungkin diperlukan oleh harta tanah dan tapak anda.",
+      viewAll: "Lihat semua kawasan perkhidmatan",
+      loading: "Memuatkan kawasan perkhidmatan…",
+      error: "Kawasan perkhidmatan tidak dapat dimuatkan. Sila cuba lagi.",
+      empty: "Maklumat kawasan perkhidmatan sedang dikemas kini. Lawati direktori kawasan untuk mendapatkan butiran.",
+    },
+  },
 } as const;

@@ -1,3 +1,4 @@
+import AdminMalayFields from "@/components/admin/AdminMalayFields";
 import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
@@ -327,6 +328,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
           {recordDirty && <p className="mb-4 rounded-lg p-3 text-sm admin-tone-warning">{t.unsavedWarning}</p>}
           <div className="grid gap-4 md:grid-cols-2">
             {config.fields.map(renderField)}
+            <div className="md:col-span-2"><AdminMalayFields record={Object.fromEntries([...config.fields.filter((field) => field.key.endsWith("_en")).map((field) => [field.key, record[field.key] ?? ""]), ...Object.entries(record)])} table={config.table} dirty={recordDirty} disabled={saving || isSubmitting} onChange={(patch) => setRecord((current) => ({ ...current, ...patch }))} /></div>
             <div>
               <AdminFieldLabel label={t.status} help={getAdminFieldHelp("status")} />
               <select

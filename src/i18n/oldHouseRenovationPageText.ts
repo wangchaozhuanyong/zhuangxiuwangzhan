@@ -318,4 +318,166 @@ export const oldHouseRenovationPageText = {
       { label: "获取旧屋翻新报价建议", to: "/quote" },
     ],
   },
+
+  ms: {
+    metaTitle: "Ubahsuai Rumah Lama Kuala Lumpur | FLASH CAST",
+    metaDescription:
+      "FLASH CAST menyediakan perancangan pengubahsuaian rumah lama di Kuala Lumpur, Selangor dan Lembah Klang, meliputi penilaian tapak, pendawaian, paip, kalis air, susun atur, dapur, bilik mandi dan arah bahan.",
+    metaKeywords:
+      "ubah suai rumah lama Malaysia, ubah suai rumah lama Kuala Lumpur, ubah suai rumah bertanah Selangor, ubah suai rumah teres, ubah suai hartanah lama",
+    breadcrumbHome: "Rumah",
+    breadcrumbServices: "Perkhidmatan",
+    breadcrumbCurrent: "Ubahsuai Rumah Lama",
+    label: "Ubahsuai Rumah Lama",
+    title: "Ubahsuai Rumah Lama di Kuala Lumpur dan Selangor",
+    description:
+      "Pengubahsuaian rumah lama bukan sahaja menggantikan jubin atau mengecat semula dinding. FLASH CAST membantu pemilik menyemak keretakan, kebocoran, pendawaian, paip, kalis air, risiko anai-anai, bumbung, susun atur, pengudaraan, penyimpanan dan keperluan penyelenggaraan sebelum mengesahkan skop pengubahsuaian.",
+    heroAlt: "Konsep perancangan ubah suai rumah lama di Kuala Lumpur dan Selangor",
+    beforeAfterAlt: "Konsep perancangan ubah suai ruang tamu rumah lama",
+    serviceAlt: "Contoh penilaian tapak rumah lama dan perancangan ubah suai",
+    assessment: "Minta Nasihat Ubahsuai Rumah Lama",
+    whatsapp: "Siasatan WhatsApp",
+    whatsappMessage:
+      "Hai FLASH CAST, saya ingin nasihat tentang pengubahsuaian rumah lama. Lokasi projek: __. Jenis hartanah dan umur: __. Isu utama: __. Anggaran keluasan lantai: __. Saya boleh berkongsi foto tapak atau pelan lantai.",
+    introTitle: "Perkara yang Perlu Diperiksa Sebelum Mengubahsuai Rumah Lama",
+    intro: [
+      "Banyak rumah teres, rumah berkembar, banglo, harta pusaka dan rumah bertanah lama memerlukan semakan teliti sebelum naik taraf kosmetik bermula.",
+      "FLASH CAST menyediakan perancangan pengubahsuaian rumah lama, pengukuran tapak, nasihat bahan, semakan skop sebut harga dan penyelarasan pengubahsuaian di seluruh Kuala Lumpur, Selangor dan Lembah Klang.",
+    ],
+    tags: ["Penilaian Tapak", "Perancangan Skop", "Kajian Kalis Air", "Arah Bahan"],
+    comparisonsTitle: "Konsep Perancangan Rumah Lama: Sedia Ada dan Cadangan",
+    comparisonsDescription:
+      "Seret pembahagi untuk membandingkan keadaan sedia ada ilustrasi dengan konsep pengubahsuaian yang dicadangkan dari sudut pandangan yang sama. Ini adalah visual perancangan yang dijana AI. Ilustrasi pengubahsuaian konsep, bukan bukti projek pelanggan yang telah siap.",
+    before: "Konsep sedia ada",
+    after: "Konsep yang dicadangkan",
+    compareAria: (title: string) => `Bandingkan konsep ilustrasi sedia ada dan yang dicadangkan untuk ${title}`,
+    comparisons: [
+      {
+        id: "terrace-living",
+        meta: "Teres dua tingkat ilustrasi · Tempat tinggal dan makan",
+        title: "Ruang Tamu Sempit–Tetap Semula Bilik Makan",
+        description:
+          "Baiki kemasan lama dan rancang semula pendawaian, pencahayaan, penyimpanan, skala perabot dan laluan dari pintu masuk. Reka bentuk mengekalkan lebar rumah teres asal dan bukaan struktur sambil menjadikan peredaran harian lebih cerah dan jelas.",
+        afterAlt: "Konsep selepas pengubahsuaian untuk sudut pandangan ruang tamu dan ruang makan rumah teres lama yang sama",
+      },
+      {
+        id: "terrace-kitchen",
+        meta: "Rumah teres ilustrasi · Dapur dapur",
+        title: "Pembaharuan Infrastruktur Dapur dan Aliran Kerja",
+        description:
+          "Gantikan paip lama, pendawaian, kabinet, atas kerja dan kemasan yang sukar dibersihkan sambil mengekalkan jejak dapur yang sempit. Pencahayaan tugas, ekzos, akses perkhidmatan dan ketahanan kawasan basah dirancang sebelum penamat visual.",
+        afterAlt: "Konsep selepas pengubahsuaian untuk sudut pandangan dapur dapur teres-rumah yang lebih tua yang sama",
+      },
+      {
+        id: "terrace-bathroom",
+        meta: "Rumah kongsi ilustrasi · Bilik mandi",
+        title: "Naik taraf Bilik Mandi Selamat Warga Tua",
+        description:
+          "Perbaharui kalis air dan paip, kemudian perkenalkan lantai tidak licin, kawasan pancuran mandian yang rata, kelengkapan boleh dicapai, sandaran palang pegangan, tempat duduk pancuran mandian dan pengudaraan yang lebih cerah tanpa membesarkan bilik mandi asal.",
+        afterAlt: "Konsep selepas pengubahsuaian untuk sudut pandangan bilik mandi mesra warga tua yang lebih tua-rumah teres",
+      },
+    ],
+    challengesTitle: "Isu Biasa Rumah Lama",
+    challengesDescription: "Ini adalah kawasan biasa untuk disemak sebelum mengesahkan skop pengubahsuaian rumah lama.",
+    challenges: [
+      {
+        icon: "alert",
+        title: "Dinding Retak dan Keadaan Substrat",
+        desc: "Retak, plaster lemah dan isu substrat lantai atau dinding harus disemak sebelum kemasan baharu dipilih.",
+      },
+      {
+        icon: "wrench",
+        title: "Keadaan Pendawaian dan Paip",
+        desc: "Rumah lama harus diperiksa untuk beban elektrik, keadaan paip, saliran, dan keperluan naik taraf berkaitan keselamatan.",
+      },
+      {
+        icon: "droplets",
+        title: "Risiko Kebocoran dan Kalis Air",
+        desc: "Kebocoran bumbung, rembesan dinding luar, kalis air bilik mandi dan dinding lembap boleh menjejaskan kedua-dua skop pembaikan dan pilihan kemasan.",
+      },
+      {
+        icon: "home",
+        title: "Susun atur, Pengudaraan dan Storan",
+        desc: "Reka letak yang lebih lama mungkin memerlukan cahaya siang, pengudaraan, aliran dapur, perancangan bilik mandi dan storan praktikal yang lebih baik.",
+      },
+    ],
+    scopeTitle: "Skop Ubahsuai Rumah Lama",
+    scopeDescription: "Skop hendaklah disahkan selepas semakan tapak, keutamaan pemilik, hala tuju bahan dan faktor belanjawan difahami.",
+    scope: [
+      "Semakan tapak rumah lama dan perancangan skop pengubahsuaian",
+      "Susun atur, peredaran, siang hari, pengudaraan, dan perancangan penyimpanan",
+      "Dapur, bilik mandi, ruang tamu, bilik tidur, tangga dan arah naik taraf dinding luaran",
+      "Penyelarasan untuk kerja-kerja pendawaian, paip, kalis air, saliran dan pembaikan asas",
+      "Perancangan bahan untuk lantai, dinding, siling, pintu, tingkap, pencahayaan, kabinet dan kemasan",
+      "Perancangan pengubahsuaian berperingkat apabila pemilik perlu mengawal skop dan mengelakkan pengembangan yang berlebihan",
+    ],
+    processTitle: "Proses Pengubahsuaian dan Keutamaan Skop",
+    processDescription: "Proses praktikal untuk hartanah lama di mana keperluan pembaikan dan matlamat reka bentuk mesti seimbang.",
+    process: [
+      { num: "01", title: "Perundingan Awal", desc: "Semak keadaan hartanah, matlamat, foto, lokasi dan skop yang dimaksudkan." },
+      { num: "02", title: "Pengukuran Tapak", desc: "Dimensi dokumen, isu rumah lama, had akses dan keperluan tapak." },
+      { num: "03", title: "Keutamaan Skop", desc: "Asingkan item berkaitan keselamatan, pembaikan yang diperlukan, peningkatan fungsi dan peningkatan visual." },
+      { num: "04", title: "Arah Reka Bentuk", desc: "Sediakan idea susun atur, nasihat material, konsep rendering atau contoh perancangan jika berguna." },
+      { num: "05", title: "Skop Sebutharga", desc: "Susun skop, bahan, keadaan tapak dan perintah pelaksanaan yang disahkan." },
+    ],
+    priceTitle: "Faktor Belanjawan",
+    priceDescription:
+      "Kos pengubahsuaian rumah lama bergantung pada saiz hartanah, keadaan tapak, perobohan, pendawaian, paip, kalis air, skop dapur dan bilik mandi, kabinet, bahan dan kerumitan kerja.",
+    prices: [
+      { type: "Essential Repairs", range: "Berasaskan skop", desc: "Pembaikan berkaitan keselamatan, semakan kebocoran, pendawaian, paip dan skop kalis air." },
+      { type: "Function Upgrades", range: "Berasaskan tapak", desc: "Dapur, bilik mandi, penyimpanan, pencahayaan, pengudaraan dan peningkatan aliran harian." },
+      { type: "Full Planning", range: "Penilaian diperlukan", desc: "Perancangan keseluruhan rumah di mana keutamaan pembaikan, susun atur, bahan dan fasa disemak bersama." },
+    ],
+    resourceTitle: "Rancang pertanyaan pengubahsuaian rumah lama anda",
+    resourceDescription:
+      "Teruskan dengan bidang perkhidmatan yang berkaitan, rujukan projek, panduan praktikal dan pilihan bahan. Halaman projek mengekalkan penyiapan yang diterbitkan atau klasifikasi konsep.",
+    resourceAction: "Sumber terbuka",
+    planningAnswers: [
+      {
+        title: "Apakah yang perlu direkodkan jika rumah lama kekal diduduki semasa pengubahsuaian?",
+        paragraph:
+          "Buat senarai bilik demi bilik item untuk disimpan, dibaiki atau diganti dan tandai keadaan yang masih memerlukan penilaian tapak. Sebelum bersetuju dengan fasa, bincangkan akses ke bilik yang diduduki, bilik mandi dan dapur yang boleh digunakan, penghantaran bahan, perlindungan perabot dan kemasan yang disimpan, dan apabila kerja yang disahkan boleh menjejaskan air atau elektrik. Minta pasukan projek yang bertanggungjawab merekodkan kebergantungan antara penyiasatan, pembaikan dan kemasan baharu. Semak semula susunan apabila keadaan tersembunyi mengubah skop; tinggal di rumah adalah tertakluk kepada tapak sebenar dan kerja yang dipersetujui, bukan pilihan yang dijamin.",
+      },
+      {
+        title: "Bagaimanakah kawasan yang diperbaharui dan dikekalkan direkodkan semasa penyerahan rumah lama?",
+        paragraph:
+          "Bandingkan setiap bilik dengan senarai simpan/baiki/ganti, lukisan dan semakan sebut harga yang dipersetujui. Catatkan keadaan yang boleh dilihat bagi barang-barang yang disimpan bersama kemasan yang diperbaharui, kelengkapan yang dipersetujui dan kawasan yang boleh diakses; membezakan isu sedia ada daripada kerja baharu atau item yang menunggu penilaian. Untuk setiap item tertunggak, rekod lokasinya, foto bertarikh, susulan yang dipersetujui, hubungan yang bertanggungjawab dan semak semula keputusan. Sahkan maklumat penjagaan dan syarat selepas jualan yang digunakan pada bahan dan kerja sebenar. Rekod ini membantu mengatur tindakan susulan; ia tidak menggantikan ujian pakar, memperakui kerja tersembunyi atau melanjutkan waranti yang dipersetujui.",
+      },
+    ],
+    faqTitle: "Soalan Lazim Pengubahsuaian Rumah Lama",
+    faqDescription: "Soalan lazim tentang perancangan ubah suai rumah lama, faktor bajet dan skop kerja di Malaysia.",
+    faqs: [
+      {
+        q: "Adakah pengubahsuaian rumah lama perlu dilakukan sekaligus?",
+        a: "Bukan selalu. Skop boleh diutamakan kepada item berkaitan keselamatan, pembaikan yang diperlukan, peningkatan fungsi dan penambahbaikan visual sebelum memutuskan sama ada kerja berperingkat sesuai.",
+      },
+      {
+        q: "Apakah yang mempengaruhi kos pengubahsuaian rumah lama?",
+        a: "Kos bergantung pada saiz hartanah, keadaan tapak, perobohan, pendawaian, paip, kalis air, skop dapur dan bilik mandi, kabinet, bahan dan kerumitan kerja. Harga numerik khusus hanya perlu diberikan selepas penilaian tapak dan skop yang disahkan.",
+      },
+      {
+        q: "Adakah rumah lama sentiasa memerlukan pendawaian semula atau penggantian paip?",
+        a: "Tidak secara automatik. Rumah lama harus terlebih dahulu diperiksa untuk beban elektrik, keadaan paip, risiko kebocoran dan keperluan keselamatan sebelum memutuskan perkara yang perlu diganti.",
+      },
+      {
+        q: "Bolehkah saya menyemak konsep reka bentuk atau rendering dahulu?",
+        a: "ya. Konsep reka bentuk, konsep rendering, dan arah bahan boleh disediakan sebagai rujukan perancangan. Melainkan gambar projek sebenar yang diluluskan disediakan, ia tidak boleh dikemukakan sebagai bukti projek yang telah siap.",
+      },
+      {
+        q: "Adakah halaman ini mengesahkan perkhidmatan pembaikan bumbung sendiri, kebocoran atau elektrik?",
+        a: "Halaman ini merangkumi semakan tapak, perancangan skop dan penyelarasan untuk pengubahsuaian rumah lama. Rujukan kepada keadaan bumbung, kebocoran, pendawaian dan paip mengenal pasti perkara yang perlu dinilai sebelum mengesahkan skop pengubahsuaian; mereka tidak mengesahkan tempahan pembaikan sendiri atau kehadiran 24 jam. Kongsi lokasi hartanah, foto dan sama ada anda memerlukan pembaikan tunggal atau pengubahsuaian yang lebih luas, kemudian tanya kerja mana yang boleh diterima dan siapa yang akan bertanggungjawab. Sahkan keperluan penilaian, skop kerja dan pengaturan sebelum membuat tempahan; kerja pakar mesti disahkan secara berasingan.",
+      },
+    ],
+    ctaTitle: "Bercadang untuk Mengubahsuai Rumah Lama?",
+    ctaDescription:
+      "Kongsi foto hartanah, lokasi, keluasan lantai, isu utama dan skop yang dimaksudkan supaya FLASH CAST boleh membantu menyemak keutamaan penilaian, hala tuju bahan dan langkah petikan seterusnya.",
+    internalLinks: [
+      { label: "Perkhidmatan ubah suai kediaman", to: "/services/renovation" },
+      { label: "Pengubahsuaian dapur dan perancangan kabinet", to: "/services/kitchen" },
+      { label: "Pengubahsuaian bilik mandi dan kalis air", to: "/services/bathroom" },
+      { label: "Permit dan sokongan lukisan", to: "/services/approval" },
+      { label: "Rujukan ubah suai rumah landed kajang", to: "/projects/kajang-landed-house-modern-renovation" },
+      { label: "Minta nasihat ubah suai rumah lama", to: "/quote" },
+    ],
+  },
 } as const;

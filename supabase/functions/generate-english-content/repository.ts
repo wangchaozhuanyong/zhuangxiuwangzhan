@@ -9,13 +9,13 @@ const projectImageSnapshotFields = [
   "project_id", "image_url", "image_type", "alt_zh", "alt_en", "sort_order", "created_at",
 ] as const;
 
-export function createTranslationRecordGuard(table: string, record: Record<string, unknown>): TranslationRecordGuard | null {
+export function createTranslationRecordGuard(table: string, record: Record<string, unknown>, targetLanguage: "en" | "ms" = "en"): TranslationRecordGuard | null {
   if (table !== "project_images") {
     return typeof record.updated_at === "string" && record.updated_at
       ? { kind: "updated_at", updatedAt: record.updated_at } : null;
   }
   const snapshot: Record<string, string | number | null> = {};
-  for (const field of projectImageSnapshotFields) {
+  for (const field of [...projectImageSnapshotFields, ...(targetLanguage === "ms" ? ["alt_ms"] : [])]) {
     const value = record[field];
     if (value === null) snapshot[field] = null;
     else if (typeof value === "string" || typeof value === "number") snapshot[field] = value;
@@ -30,12 +30,14 @@ export async function createTranslationJob(
   id: string,
   status: TranslationJobStatus,
   errorMessage?: string,
+  targetLanguage: "en" | "ms" = "en",
 ) {
   return client.from("translation_jobs").insert({
     table_name: table,
     record_id: id,
     status,
     error_message: errorMessage ?? null,
+    ...(targetLanguage === "ms" ? { target_language: targetLanguage } : {}),
     regenerated_at: status === "completed" ? new Date().toISOString() : null,
   });
 }

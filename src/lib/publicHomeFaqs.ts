@@ -3,7 +3,7 @@ const text = (value: unknown) => typeof value === "string" ? value : "";
 
 // Published home RPC/preload is the authority in both browser and edge.
 // Missing locale answers are omitted, not replaced with static/other-language claims.
-export function mapPublicHomeFaqs(value: unknown, language: "en" | "zh"): PublicHomeFaq[] {
+export function mapPublicHomeFaqs(value: unknown, language: "en" | "zh" | "ms"): PublicHomeFaq[] {
   if (!Array.isArray(value)) return [];
   return value.flatMap((value: unknown) => {
     if (!value || typeof value !== "object" || Array.isArray(value)) return [];

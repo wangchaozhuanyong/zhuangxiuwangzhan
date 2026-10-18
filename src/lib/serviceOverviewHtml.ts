@@ -11,7 +11,7 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => (
   "'": "&#39;",
 })[character] || character);
 
-const sameLanguageHref = (value: string, language: "en" | "zh") => {
+const sameLanguageHref = (value: string, language: "en" | "zh" | "ms") => {
   if (!value.startsWith(`/${language}/`) || value.includes("\\")) return null;
   try {
     const url = new URL(value, "https://flashcast.com.my");
@@ -22,7 +22,7 @@ const sameLanguageHref = (value: string, language: "en" | "zh") => {
   }
 };
 
-export const sanitizeServiceOverviewHtml = (raw: string, language: "en" | "zh", options: { preserveLists?: boolean } = {}) => {
+export const sanitizeServiceOverviewHtml = (raw: string, language: "en" | "zh" | "ms", options: { preserveLists?: boolean } = {}) => {
   if (!raw.trim()) return "";
   if (typeof document === "undefined") return escapeHtml(stripHtml(raw));
 

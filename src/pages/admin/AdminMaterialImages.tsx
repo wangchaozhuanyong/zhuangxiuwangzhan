@@ -10,6 +10,7 @@ import SmartImage from "@/components/SmartImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminMaterialEditorText } from "@/i18n/adminMaterialEditorText";
+import { adminMalayText } from "@/i18n/adminMalayText";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { useAdminMaterialImages } from "@/lib/adminBusinessContentQueries";
 import { getAdminLang } from "@/lib/adminLocale";
@@ -37,6 +38,7 @@ const emptyImage: AdminMaterialImageDraft = {
   image_type: "scene",
   alt_zh: "",
   alt_en: "",
+  alt_ms: "",
   source_url: "",
   rights_status: "owned",
   sort_order: 0,
@@ -140,6 +142,7 @@ const AdminMaterialImages = ({ materialId }: AdminMaterialImagesProps) => {
               </div>
               <Input placeholder={t("galleryAltZh")} value={draft.alt_zh || ""} onChange={(event) => setDraft((current) => ({ ...current, alt_zh: event.target.value }))} />
               <Input placeholder={t("galleryAltEn")} value={draft.alt_en || ""} onChange={(event) => setDraft((current) => ({ ...current, alt_en: event.target.value }))} />
+              <Input lang="ms-MY" aria-label={adminMalayText[lang].imageAlt} placeholder={adminMalayText[lang].imageAlt} value={draft.alt_ms || ""} onChange={(event) => setDraft((current) => ({ ...current, alt_ms: event.target.value }))} />
               <Input placeholder={t("gallerySourceUrl")} value={draft.source_url || ""} onChange={(event) => setDraft((current) => ({ ...current, source_url: event.target.value }))} />
               <Input type="number" placeholder={t("gallerySortOrder")} value={draft.sort_order ?? 0} onChange={(event) => setDraft((current) => ({ ...current, sort_order: event.target.value }))} />
               <Button type="button" onClick={() => void addImage()} disabled={busy || !draft.image_url} aria-busy={busy}>{t("galleryAdd")}</Button>
@@ -173,6 +176,7 @@ type MaterialImageEditorProps = {
 };
 
 const MaterialImageEditor = ({ image, busy, t, onSave, onArchive }: MaterialImageEditorProps) => {
+  const malay = adminMalayText[getAdminLang()];
   const { state: draft, setForm: setDraft, applyRemote, dirty } = useAdminFormState(image, { initial: image, resetKey: image.id });
   useUnsavedChangesWarning(dirty || busy && dirty);
 
@@ -188,6 +192,7 @@ const MaterialImageEditor = ({ image, busy, t, onSave, onArchive }: MaterialImag
         </select>
         <Input placeholder={t("galleryAltZh")} value={draft.alt_zh || ""} onChange={(event) => setDraft((current) => ({ ...current, alt_zh: event.target.value }))} />
         <Input placeholder={t("galleryAltEn")} value={draft.alt_en || ""} onChange={(event) => setDraft((current) => ({ ...current, alt_en: event.target.value }))} />
+        <Input lang="ms-MY" aria-label={malay.imageAlt} placeholder={malay.imageAlt} value={draft.alt_ms || ""} onChange={(event) => setDraft((current) => ({ ...current, alt_ms: event.target.value }))} />
         <Input className="sm:col-span-2" placeholder={t("gallerySourceUrl")} value={draft.source_url || ""} onChange={(event) => setDraft((current) => ({ ...current, source_url: event.target.value }))} />
         <Input type="number" placeholder={t("gallerySortOrder")} value={draft.sort_order ?? 0} onChange={(event) => setDraft((current) => ({ ...current, sort_order: event.target.value }))} />
       </div>
@@ -197,6 +202,7 @@ const MaterialImageEditor = ({ image, busy, t, onSave, onArchive }: MaterialImag
           image_type: draft.image_type || "scene",
           alt_zh: draft.alt_zh || "",
           alt_en: draft.alt_en || "",
+          alt_ms: draft.alt_ms || "",
           source_url: draft.source_url || null,
           rights_status: draft.rights_status || "owned",
           sort_order: Number(draft.sort_order || 0),

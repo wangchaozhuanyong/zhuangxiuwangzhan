@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from "react";
-import type { Language } from "@/i18n/routes";
+import type { BilingualLanguage } from "@/i18n/languageDetection";
 import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPreference";
 
-export type AdminLang = Language;
+export type AdminLang = BilingualLanguage;
 export type AdminTheme = "light" | "dark";
 
 export const ADMIN_LANG_KEY = "flashcast_admin_lang";

@@ -13,4 +13,12 @@ export const chunkLoadRecoveryText = {
     reactRenderError: "页面渲染错误",
     systemEvent: "系统事件",
   },
+
+  ms: {
+    loadMessage:
+      "Beberapa fail halaman tidak dapat dimuatkan. Sila muat semula halaman dan cuba lagi.",
+    deployCacheMismatch: "Cache penggunaan bahagian hadapan tidak padan",
+    reactRenderError: "Ralat pemaparan halaman",
+    systemEvent: "Acara sistem",
+  },
 } as const;

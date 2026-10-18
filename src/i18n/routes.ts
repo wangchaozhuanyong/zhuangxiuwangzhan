@@ -8,7 +8,7 @@ import {
 
 export type { Language } from "@/i18n/languageDetection";
 
-export const supportedLanguages: Language[] = ["en", "zh"];
+export const supportedLanguages: Language[] = ["en", "zh", "ms"];
 const PUBLIC_LANG_KEY = "fc-lang";
 
 let inMemoryLanguage: Language | null = null;

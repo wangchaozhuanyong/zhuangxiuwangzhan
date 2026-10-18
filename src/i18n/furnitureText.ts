@@ -1,8 +1,9 @@
+import { furnitureShopText } from "@/i18n/furnitureShopText";
 import type { Language } from "@/i18n/routes";
 import furnitureTaxonomyLabels from "@/i18n/furnitureTaxonomyLabels.json";
 
 const categoryNames = furnitureTaxonomyLabels.categories;
-const subcategoryNames: Record<string, { zh: string; en: string }> = furnitureTaxonomyLabels.subcategories;
+const subcategoryNames: Record<string, { zh: string; en: string; ms: string }> = furnitureTaxonomyLabels.subcategories;
 
 export const furnitureCategoryName = (key: string, language: Language) =>
   categoryNames[key as keyof typeof categoryNames]?.[language] || key;
@@ -16,6 +17,7 @@ export const furnitureSubcategoryName = (key: string, language: Language, fallba
 
 export const furnitureText = {
   zh: {
+    ...furnitureShopText.zh,
     title: furnitureTaxonomyLabels.meta.zh.title,
     heroImageAlt: "米色休闲椅与暖色阅读角设计效果图",
     intro: "马来西亚现货为主；部分商品需预订或定制，请逐件确认库存。",
@@ -25,7 +27,6 @@ export const furnitureText = {
     viewDetails: "查看详情",
     enquire: "WhatsApp 咨询",
     buyNow: "立即购买",
-    openShopHomepage: "打开商城首页",
     priceOnRequest: "价格请咨询",
     description: "商品描述与规格",
     gallery: "商品图片",
@@ -47,13 +48,10 @@ export const furnitureText = {
     note: "价格、规格和供货情况请在购买或咨询前确认。",
     shopLabel: "前往 FLASH CAST 商城",
     detailMeta: "查看 {name} 的图片、描述与规格，可通过 WhatsApp 咨询或前往商城。",
-    floating: "家具商城",
-    floatingMobile: "家具商城",
-    floatingShop: "前往家具商城（新窗口打开）",
-    generalEnquiryMessage: "你好，我想咨询 FLASH CAST 的家具产品。",
     enquiryMessage: "你好，我想咨询家具：{name}",
   },
   en: {
+    ...furnitureShopText.en,
     title: furnitureTaxonomyLabels.meta.en.title,
     heroImageAlt: "Design rendering of a cream lounge chair in a warm reading corner",
     intro: "Mostly stocked in Malaysia; some items require pre-order or customization. Confirm availability per item.",
@@ -63,7 +61,6 @@ export const furnitureText = {
     viewDetails: "View details",
     enquire: "Ask on WhatsApp",
     buyNow: "Buy now",
-    openShopHomepage: "Open shop homepage",
     priceOnRequest: "Ask for price",
     description: "Description & specifications",
     gallery: "Product images",
@@ -85,11 +82,42 @@ export const furnitureText = {
     note: "Please confirm price, specifications and availability before buying or enquiring.",
     shopLabel: "Visit FLASH CAST Shop",
     detailMeta: "View images, description and specifications for {name}. Ask on WhatsApp or visit our shop.",
-    floating: "Furniture",
-    floatingMobile: "Furniture Shop",
-    floatingShop: "Open furniture shop (new window)",
-    generalEnquiryMessage: "Hi, I would like to enquire about FLASH CAST furniture products.",
     enquiryMessage: "Hi, I would like to ask about this furniture item: {name}",
+  },
+
+  ms: {
+    ...furnitureShopText.ms,
+    title: furnitureTaxonomyLabels.meta.ms.title,
+    heroImageAlt: "Reka bentuk rendering kerusi santai krim di sudut bacaan yang hangat",
+    intro: "Kebanyakannya disimpan di Malaysia; sesetengah item memerlukan prapesanan atau penyesuaian. Sahkan ketersediaan setiap item.",
+    metaDescription: furnitureTaxonomyLabels.meta.ms.description,
+    allProducts: "Semua produk",
+    products: "produk",
+    viewDetails: "Lihat butiran",
+    enquire: "Tanya pada WhatsApp",
+    buyNow: "Beli sekarang",
+    priceOnRequest: "Tanya harga",
+    description: "Penerangan & spesifikasi",
+    gallery: "Imej produk",
+    specifications: "Maklumat produk",
+    sku: "SKU",
+    noSku: "Sila tanya",
+    listingDescriptionUnavailable: "Tiada penerangan tersedia dalam penyenaraian sumber.",
+    descriptionUnavailable: "Penyenaraian sumber tidak termasuk penerangan. Tanya kami di WhatsApp untuk spesifikasi.",
+    home: "Rumah",
+    backToCatalog: "Kembali ke perabot",
+    notFound: "Produk tidak ditemui",
+    noProducts: "Belum ada produk dalam kategori ini.",
+    loadingManagedProducts: "Memuatkan produk perabot yang diterbitkan…",
+    managedLoadFailed: "Produk perabot yang diterbitkan tidak tersedia buat sementara waktu.",
+    retry: "Cuba semula",
+    previous: "Sebelumnya",
+    next: "Seterusnya",
+    page: "Halaman {page} daripada {total}",
+    note: "Sila sahkan harga, spesifikasi dan ketersediaan sebelum membeli atau bertanya.",
+    shopLabel: "Lawati Kedai FLASH CAST",
+    detailMeta: "Lihat imej, penerangan dan spesifikasi untuk {name}. Tanya pada WhatsApp atau lawati kedai kami.",
+    enquiryMessage: "Hai, saya ingin bertanya tentang item perabot ini: {name}",
   },
 } as const;
 

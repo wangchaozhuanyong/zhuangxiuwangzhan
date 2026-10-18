@@ -1,5 +1,5 @@
 import { adminLeadWorkflowBadgeText, adminLeadWorkflowText } from "@/i18n/adminLeadWorkflowText";
-import type { Language } from "@/i18n/routes";
+import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 
 export type AdminLeadListKind = "leads" | "quote_requests";
 export type AdminWorkflowFilter = "all" | "today" | "due_followups" | "stale24" | "to_quote";

@@ -23,19 +23,19 @@ type PublicQueryOptions = {
 const isEnabled = (options?: PublicQueryOptions) => options?.enabled ?? true;
 const isSupabaseQueryEnabled = (options?: PublicQueryOptions) => isEnabled(options) && isSupabaseConfigured;
 
-export function usePublishedHomeFurniture(language: "en" | "zh") {
+export function usePublishedHomeFurniture(language: "en" | "zh" | "ms") {
   return useQuery({ ...publicContentQueries.homeFurniture(language), ...queryDefaults });
 }
 
-export function usePublishedHomeJournal(language: "en" | "zh") {
+export function usePublishedHomeJournal(language: "en" | "zh" | "ms") {
   return useQuery({ ...publicContentQueries.homeJournal(language), ...queryDefaults });
 }
 
-export function usePublishedHomeServiceAreas(language: "en" | "zh") {
+export function usePublishedHomeServiceAreas(language: "en" | "zh" | "ms") {
   return useQuery({ ...publicContentQueries.homeServiceAreas(language), ...queryDefaults });
 }
 
-export function usePublishedHomeContentBundle(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedHomeContentBundle(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.homeBundle(language),
     enabled: isEnabled(options),
@@ -51,7 +51,7 @@ export function usePublishedHomeOptionalSectionVisibility(sectionKey: OptionalHo
   });
 }
 
-export function usePublishedServices(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedServices(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.services(language),
     enabled: isEnabled(options),
@@ -59,7 +59,7 @@ export function usePublishedServices(language: "en" | "zh", options?: PublicQuer
   });
 }
 
-export function usePublishedServiceSummaries(language: "en" | "zh", limit?: number, options?: PublicQueryOptions) {
+export function usePublishedServiceSummaries(language: "en" | "zh" | "ms", limit?: number, options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.serviceSummaries(language, limit),
     enabled: isEnabled(options),
@@ -67,7 +67,7 @@ export function usePublishedServiceSummaries(language: "en" | "zh", limit?: numb
   });
 }
 
-export function usePublishedProjectSummaries(language: "en" | "zh", limit?: number, options?: PublicQueryOptions) {
+export function usePublishedProjectSummaries(language: "en" | "zh" | "ms", limit?: number, options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.projectSummaries(language, limit),
     enabled: isEnabled(options),
@@ -75,7 +75,7 @@ export function usePublishedProjectSummaries(language: "en" | "zh", limit?: numb
   });
 }
 
-export function usePublishedMaterials(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedMaterials(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.materials(language),
     enabled: isEnabled(options),
@@ -83,7 +83,7 @@ export function usePublishedMaterials(language: "en" | "zh", options?: PublicQue
   });
 }
 
-export function usePublishedManagedFurnitureProducts(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedManagedFurnitureProducts(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.managedFurnitureProducts(language),
     enabled: isSupabaseQueryEnabled(options),
@@ -91,15 +91,15 @@ export function usePublishedManagedFurnitureProducts(language: "en" | "zh", opti
   });
 }
 
-export function usePublishedFurnitureCatalog(language: "en" | "zh") {
+export function usePublishedFurnitureCatalog(language: "en" | "zh" | "ms") {
   return useQuery({ ...publicContentQueries.furnitureCatalog(language), ...queryDefaults });
 }
 
-export function usePublishedFurnitureProduct(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedFurnitureProduct(slug: string | undefined, language: "en" | "zh" | "ms") {
   return useQuery({ ...publicContentQueries.furnitureProduct(slug, language), enabled: Boolean(slug), ...queryDefaults });
 }
 
-export function usePublishedManagedFurnitureProductBySlug(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedManagedFurnitureProductBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   return useQuery({
     ...publicContentQueries.managedFurnitureProduct(slug, language),
     enabled: isSupabaseConfigured && Boolean(slug),
@@ -107,7 +107,7 @@ export function usePublishedManagedFurnitureProductBySlug(slug: string | undefin
   });
 }
 
-export function usePublishedProductHighlights(language: "en" | "zh", limit = 4, options?: PublicQueryOptions) {
+export function usePublishedProductHighlights(language: "en" | "zh" | "ms", limit = 4, options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.productHighlights(language, limit),
     enabled: isEnabled(options),
@@ -115,7 +115,7 @@ export function usePublishedProductHighlights(language: "en" | "zh", limit = 4, 
   });
 }
 
-export function usePublishedBlogPosts(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedBlogPosts(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.blogPosts(language),
     enabled: isEnabled(options),
@@ -123,7 +123,7 @@ export function usePublishedBlogPosts(language: "en" | "zh", options?: PublicQue
   });
 }
 
-export function usePublishedFaqs(language: "en" | "zh", pageKey = "general", options?: PublicQueryOptions) {
+export function usePublishedFaqs(language: "en" | "zh" | "ms", pageKey = "general", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.faqs(language, pageKey),
     enabled: isEnabled(options),
@@ -131,7 +131,7 @@ export function usePublishedFaqs(language: "en" | "zh", pageKey = "general", opt
   });
 }
 
-export function usePublishedHeroSlides(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedHeroSlides(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.heroSlides(language),
     enabled: isSupabaseQueryEnabled(options),
@@ -139,7 +139,7 @@ export function usePublishedHeroSlides(language: "en" | "zh", options?: PublicQu
   });
 }
 
-export function usePublishedTestimonials(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedTestimonials(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.testimonials(language),
     enabled: isSupabaseQueryEnabled(options),
@@ -155,7 +155,7 @@ export function usePublishedBrandPartners(options?: PublicQueryOptions) {
   });
 }
 
-export function usePublishedBeforeAfterItems(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedBeforeAfterItems(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.beforeAfterItems(language),
     enabled: isSupabaseQueryEnabled(options),
@@ -163,7 +163,7 @@ export function usePublishedBeforeAfterItems(language: "en" | "zh", options?: Pu
   });
 }
 
-export function usePublishedHomeSection(language: "en" | "zh", sectionKey: string, options?: PublicQueryOptions) {
+export function usePublishedHomeSection(language: "en" | "zh" | "ms", sectionKey: string, options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.homeSection(language, sectionKey),
     enabled: isSupabaseQueryEnabled(options),
@@ -171,7 +171,7 @@ export function usePublishedHomeSection(language: "en" | "zh", sectionKey: strin
   });
 }
 
-export function usePublishedProcessSteps(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedProcessSteps(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.processSteps(language),
     enabled: isSupabaseQueryEnabled(options),
@@ -179,7 +179,7 @@ export function usePublishedProcessSteps(language: "en" | "zh", options?: Public
   });
 }
 
-export function usePublishedCtaBlock(language: "en" | "zh", blockKey: string, options?: PublicQueryOptions) {
+export function usePublishedCtaBlock(language: "en" | "zh" | "ms", blockKey: string, options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.ctaBlock(language, blockKey),
     enabled: isSupabaseQueryEnabled(options),
@@ -188,7 +188,7 @@ export function usePublishedCtaBlock(language: "en" | "zh", blockKey: string, op
   });
 }
 
-export function usePublishedAboutSection(language: "en" | "zh", sectionKey: string, options?: PublicQueryOptions) {
+export function usePublishedAboutSection(language: "en" | "zh" | "ms", sectionKey: string, options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.aboutSection(language, sectionKey),
     enabled: isSupabaseQueryEnabled(options),
@@ -196,7 +196,7 @@ export function usePublishedAboutSection(language: "en" | "zh", sectionKey: stri
   });
 }
 
-export function usePublishedSitePage(language: "en" | "zh", pageKey: string, options?: PublicQueryOptions) {
+export function usePublishedSitePage(language: "en" | "zh" | "ms", pageKey: string, options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.sitePage(language, pageKey),
     enabled: isSupabaseQueryEnabled(options),
@@ -204,7 +204,7 @@ export function usePublishedSitePage(language: "en" | "zh", pageKey: string, opt
   });
 }
 
-export function usePublishedProjectBySlug(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedProjectBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   return useQuery({
     ...publicContentQueries.project(slug, language),
     enabled: Boolean(slug),
@@ -212,7 +212,7 @@ export function usePublishedProjectBySlug(slug: string | undefined, language: "e
   });
 }
 
-export function usePublishedMaterialBySlug(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedMaterialBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   return useQuery({
     ...publicContentQueries.material(slug, language),
     enabled: Boolean(slug),
@@ -220,7 +220,7 @@ export function usePublishedMaterialBySlug(slug: string | undefined, language: "
   });
 }
 
-export function usePublishedBlogPostBySlug(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedBlogPostBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   const queryClient = useQueryClient();
   const listKey = publicContentQueries.blogPosts(language).queryKey;
   return useQuery({
@@ -239,7 +239,7 @@ export function usePublishedBlogPostBySlug(slug: string | undefined, language: "
   });
 }
 
-export function usePublishedServiceAreaBySlug(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedServiceAreaBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   return useQuery({
     ...publicContentQueries.serviceArea(slug, language),
     enabled: Boolean(slug),
@@ -247,7 +247,7 @@ export function usePublishedServiceAreaBySlug(slug: string | undefined, language
   });
 }
 
-export function usePublishedServiceAreas(language: "en" | "zh", options?: PublicQueryOptions) {
+export function usePublishedServiceAreas(language: "en" | "zh" | "ms", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.serviceAreas(language),
     enabled: isEnabled(options),
@@ -255,7 +255,7 @@ export function usePublishedServiceAreas(language: "en" | "zh", options?: Public
   });
 }
 
-export function usePublishedServiceBySlug(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedServiceBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   return useQuery({
     ...publicContentQueries.service(slug, language),
     enabled: Boolean(slug),
@@ -263,7 +263,7 @@ export function usePublishedServiceBySlug(slug: string | undefined, language: "e
   });
 }
 
-export function usePublishedLandingPageBySlug(slug: string | undefined, language: "en" | "zh") {
+export function usePublishedLandingPageBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   return useQuery({
     ...publicContentQueries.landingPage(slug, language),
     enabled: Boolean(slug),

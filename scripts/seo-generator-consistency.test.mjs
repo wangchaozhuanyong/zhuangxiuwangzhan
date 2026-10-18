@@ -15,6 +15,22 @@ if(!evidenceRoot)throw new Error('project-owned FIXTURE_OUTPUT_ROOT required');
 mkdirSync(evidenceRoot,{recursive:true});
 const row=(table,i)=>({id:String(i).padStart(8,'0'),status:'published',slug:`current-${table}-${i}`,path:`/current-${table}-${i}`,title_en:`Current ${i}`,title_zh:`当前${i}`,content_en:'Actual selected language body',content_zh:'当前中文正文',cms_sections:[{status:'published',deleted_at:null,content_en:{rich_text:'Published EN child'},content_zh:{rich_text:'已发布中文子块'}}],category:'flooring',subcategory:'spc-vinyl',excerpt_en:'Selected excerpt',excerpt_zh:'中文摘要'});
 const records=n=>Object.fromEntries(tables.map(table=>[table,Array.from({length:n},(_,i)=>row(table,i+1))]));
+test('Malay discovery requires translated metadata and body and keeps all alternates consistent', async () => {
+ const rows=records(0);
+ const article={...row('blog_posts',1),cms_sections:undefined,title_ms:'Panduan pengubahsuaian',excerpt_ms:'Panduan perancangan rumah',seo_title_ms:'Pengubahsuaian rumah',seo_description_ms:'Panduan pengubahsuaian di Kuala Lumpur.'};
+ rows.blog_posts=[article];
+ let manifest=await buildQualifiedManifest(await snapshot(rows));
+ assert.ok(!manifest['/ms/blog/current-blog_posts-1']);
+ article.content_ms='Kandungan penuh dalam Bahasa Melayu.';
+ manifest=await buildQualifiedManifest(await snapshot(rows));
+ const meta=manifest['/ms/blog/current-blog_posts-1'];
+ assert.equal(meta.lang,'ms');assert.match(meta.title,/Pengubahsuaian rumah/);
+ assert.deepEqual(meta.available_locales,['en','zh','ms']);
+ const {xml,llms}=assertDocuments(manifest);
+ assert.ok(xml.includes('hreflang="ms-MY"'));assert.ok(llms.includes(meta.canonical));
+ rows.blog_posts=[];manifest=await buildQualifiedManifest(await snapshot(rows));
+ assert.ok(!manifest['/ms/blog/current-blog_posts-1']);
+});
 const snapshot=async(rows,cap=500,failure)=>readCompleteSeoSources({url:'http://127.0.0.1',key:'synthetic-public-fixture',readAt:'2026-10-03T06:40:00.000Z',fetchImpl:async url=>{
  const table=url.pathname.split('/').pop();const cursor=url.searchParams.get('id')?.slice(3)||'';
  if(failure?.table===table&&(failure.first||cursor)) {

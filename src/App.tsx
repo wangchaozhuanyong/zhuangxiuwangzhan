@@ -1,3 +1,4 @@
+import { languageSelectorText } from "@/i18n/languageSelectorText";
 import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider, Routes, useLocation, useNavigate } from "react-router-dom";
@@ -244,7 +245,7 @@ const AppShell = () => {
       <ScrollToTop />
       {!isAdminRoute && (
         <a href="#main-content" onClick={handleSkipToMainContent} className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg">
-          {language === "zh" ? "跳到主要内容" : "Skip to main content"}
+          {languageSelectorText[language].skipToContent}
         </a>
       )}
       {isAdminRoute ? (

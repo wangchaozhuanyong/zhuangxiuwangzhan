@@ -31,6 +31,6 @@ export const LegacyLanguageRedirect = () => {
 
 export const ProductsToMaterialsRedirect = () => {
   const location = useLocation();
-  const path = location.pathname.replace(/^\/(en|zh)\/products(?=\/|$)/, "/$1/materials");
+  const path = location.pathname.replace(/^\/(en|zh|ms)\/products(?=\/|$)/, "/$1/materials");
   return <Navigate to={`${path}${location.search}${location.hash}`} replace />;
 };

@@ -16,4 +16,14 @@ export const appErrorBoundaryText = {
     chunkBody: "页面所需文件未能加载。请点击“刷新页面”重试；如果仍然失败，请稍后再试。",
     refresh: "刷新页面",
   },
+
+  ms: {
+    label: "Pemuatan halaman gagal",
+    title: "Halaman mengalami masalah. Sila muat semula dan cuba lagi.",
+    body: "Sistem telah merekodkan ralat ini. Jika anda sedang mengedit kandungan dalam panel pentadbir, muat semula dahulu untuk mengesahkan data terkini supaya anda tidak menimpa simpanan terbaharu orang lain.",
+    chunkTitle: "Fail halaman tidak dapat dimuatkan. Sila muat semula dan cuba lagi.",
+    chunkBody:
+      "Beberapa fail halaman tidak dapat dimuatkan. Pilih Muat semula halaman untuk mencuba lagi. Jika masih gagal, cuba lagi kemudian.",
+    refresh: "Muat semula halaman",
+  },
 } as const;

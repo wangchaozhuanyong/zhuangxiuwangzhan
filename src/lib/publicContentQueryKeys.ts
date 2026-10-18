@@ -13,7 +13,7 @@ function defineKey(resource: string, dimensions: readonly ParameterName[], prefi
       if (prefix.some((value, index) => key[index + 2] !== value)) return undefined;
       const parameters: PublicContentQueryParameters = { resource };
       dimensions.forEach((name, index) => { parameters[name] = key[index + prefix.length + 2]; });
-      if (dimensions.includes("language") && parameters.language !== "en" && parameters.language !== "zh") return undefined;
+      if (dimensions.includes("language") && parameters.language !== "en" && parameters.language !== "zh" && parameters.language !== "ms") return undefined;
       return parameters;
     },
   };

@@ -11,4 +11,11 @@ export const publicUpdateNoticeText = {
     refresh: "立即刷新",
     dismiss: "暂不刷新",
   },
+
+  ms: {
+    title: "Versi yang lebih baharu sudah sedia",
+    description: "Muat semula untuk melihat kandungan dan reka bentuk tapak web terkini.",
+    refresh: "Muat semula sekarang",
+    dismiss: "bukan sekarang",
+  },
 } as const;

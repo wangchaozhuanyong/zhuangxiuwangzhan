@@ -1,3 +1,4 @@
+import AdminMalayFields from "@/components/admin/AdminMalayFields";
 import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
 import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
@@ -312,6 +313,7 @@ const AdminContentEditor = () => {
               );
             })}
           </div>
+          {type !== "leads" && type !== "quote_requests" && <AdminMalayFields record={Object.fromEntries([...visibleFields.filter((field) => field.endsWith("_en")).map((field) => [field, record[field] ?? ""]), ...Object.entries(record)])} table={type} dirty={recordDirty} disabled={isSubmitting || !hasConfirmedRecord} onChange={setRecordField} />}
           {type === "projects" && <AdminProjectImages projectId={String(toRecordId(record.id) || "")} />}
         </fieldset>
       </div>

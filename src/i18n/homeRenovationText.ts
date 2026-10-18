@@ -37,4 +37,24 @@ export const homeRenovationText = {
     quoteLink: "Discuss my home renovation",
     quoteTitle: "Old House Renovation",
   },
+
+  ms: {
+    eyebrow: "Ubahsuai rumah lama",
+    title: "Ruang yang biasa. Permulaan yang baru.",
+    intro: "Bayangkan semula cahaya, peredaran dan penyimpanan di ruang tamu dan ruang makan yang biasa, dengan ruang untuk cara hidup anda hari ini.",
+    before: "Kajian susun atur sedia ada",
+    after: "Cadangan reka bentuk",
+    imageAlt: "Reka bentuk ruang tamu dan ruang makan dengan kedudukan pintu dan tingkap asal, pencahayaan hangat, penyimpanan kayu dan perabot ringkas",
+    compareAria: "Seret untuk membandingkan kajian ruang tamu dan ruang makan sedia ada dengan reka bentuk pengubahsuaian yang dicadangkan",
+    room: "Reka bentuk semula ruang tamu dan ruang makan",
+    hint: "Seret untuk meneroka transformasi",
+    features: [
+      { title: "Cahaya", description: "Kemasan yang lebih ringan dan pencahayaan berlapis" },
+      { title: "Aliran", description: "Laluan yang lebih jelas dari tempat tinggal ke tempat makan" },
+      { title: "Penyimpanan", description: "Kabinet bersepadu dengan ruang untuk bernafas" },
+    ],
+    serviceLink: "Terokai pengubahsuaian rumah lama",
+    quoteLink: "Bincangkan pengubahsuaian rumah saya",
+    quoteTitle: "Ubahsuai Rumah Lama",
+  },
 } as const;

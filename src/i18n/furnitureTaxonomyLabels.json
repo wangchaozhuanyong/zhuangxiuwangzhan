@@ -7,6 +7,10 @@
     "en": {
       "title": "Furniture Showcase",
       "description": "Explore the FLASH CAST furniture showcase by bedroom, dining room, living room, study room, new products and pre-order items."
+    },
+    "ms": {
+      "title": "Pameran Perabot",
+      "description": "Terokai pameran perabot FLASH CAST mengikut bilik tidur, ruang makan, ruang tamu, ruang belajar, produk baharu dan item prapesan."
     }
   },
   "categoryPages": {
@@ -22,40 +26,162 @@
         "h1": "卧室家具",
         "description": "浏览床架、床头柜、抽屉柜、梳妆家具、镜子与床垫；购买前逐件确认规格、当前价格和供货情况。",
         "intro": "浏览本页当前列出的卧室家具，包括床架、床头柜、抽屉柜、梳妆台与梳妆椅、衣帽架、落地镜及床垫。以马来西亚现货为主，部分商品需预订或定制。打开对应商品详情核对型号、尺寸和页面标价，再逐件确认供货与购买条件。"
+      },
+      "ms": {
+        "title": "Perabot Bilik Tidur di Malaysia | FLASH CAST",
+        "h1": "Perabot Bilik Tidur",
+        "description": "Semak imbas bingkai katil, meja sisi katil, peti laci, perabot persalinan, cermin dan tilam. Sahkan spesifikasi, harga dan ketersediaan setiap item sebelum membuat pesanan.",
+        "intro": "Semak imbas perabot bilik tidur yang kini disenaraikan di sini, termasuk bingkai katil, meja sisi katil, peti laci, meja solek dan kerusi, rak pakaian, cermin berdiri dan tilam. Kebanyakannya disimpan di Malaysia; sesetengah item memerlukan prapesanan atau penyesuaian. Buka halaman item untuk menyemak model, dimensi dan harga yang disenaraikan, kemudian sahkan ketersediaan dan syarat pesanan untuk item tersebut."
       }
     }
   },
   "categories": {
-    "new": { "zh": "新品", "en": "New Products" },
-    "bedroom": { "zh": "卧室", "en": "Bedroom" },
-    "dining": { "zh": "饭厅", "en": "Dining Room" },
-    "living": { "zh": "客厅", "en": "Living Room" },
-    "study": { "zh": "书房", "en": "Study Room" },
-    "preorder": { "zh": "预购商品", "en": "Pre-Order Items" }
+    "new": {
+      "zh": "新品",
+      "en": "New Products",
+      "ms": "Produk Baru"
+    },
+    "bedroom": {
+      "zh": "卧室",
+      "en": "Bedroom",
+      "ms": "Bilik tidur"
+    },
+    "dining": {
+      "zh": "饭厅",
+      "en": "Dining Room",
+      "ms": "Ruang Makan"
+    },
+    "living": {
+      "zh": "客厅",
+      "en": "Living Room",
+      "ms": "Ruang Tamu"
+    },
+    "study": {
+      "zh": "书房",
+      "en": "Study Room",
+      "ms": "Bilik Belajar"
+    },
+    "preorder": {
+      "zh": "预购商品",
+      "en": "Pre-Order Items",
+      "ms": "Barangan Pra-Tempahan"
+    }
   },
   "subcategories": {
-    "bed-frame": { "zh": "床架", "en": "Bed Frame" },
-    "bedside-table": { "zh": "床头柜", "en": "Bedside Table" },
-    "chest-drawer": { "zh": "抽屉柜", "en": "Chest Drawer" },
-    "dressing-table": { "zh": "梳妆台", "en": "Dressing Table" },
-    "dressing-chair": { "zh": "梳妆椅", "en": "Dressing Chair" },
-    "garment-rack": { "zh": "衣帽架", "en": "Garment Rack" },
-    "standing-mirror": { "zh": "落地镜", "en": "Standing Mirror" },
-    "mattress": { "zh": "床垫", "en": "Mattress" },
-    "dining-set-malaysia": { "zh": "餐桌椅套装", "en": "Dining Set" },
-    "dining-chair": { "zh": "餐椅", "en": "Dining Chair" },
-    "dining-table": { "zh": "餐桌", "en": "Dining Table" },
-    "sideboard": { "zh": "餐边柜", "en": "Sideboard" },
-    "kitchen-cabinet": { "zh": "厨房柜", "en": "Kitchen Cabinet" },
-    "sofa-bed": { "zh": "沙发床", "en": "Sofa Bed" },
-    "sofa": { "zh": "沙发", "en": "Sofa" },
-    "pouf-stool": { "zh": "矮凳与脚凳", "en": "Pouf & Stool" },
-    "side-table": { "zh": "边桌", "en": "Side Table" },
-    "display-rack": { "zh": "展示架", "en": "Display Rack" },
-    "shoe-cabinet": { "zh": "鞋柜", "en": "Shoe Cabinet" },
-    "bookcase": { "zh": "书柜", "en": "Bookcase" },
-    "study-desk": { "zh": "书桌", "en": "Study Desk" },
-    "kids-ergonomic-study-desk": { "zh": "儿童人体工学书桌", "en": "Kids Ergonomic Study Desk" },
-    "kids-stool": { "zh": "儿童凳", "en": "Kids Stool" }
+    "bed-frame": {
+      "zh": "床架",
+      "en": "Bed Frame",
+      "ms": "Rangka Katil"
+    },
+    "bedside-table": {
+      "zh": "床头柜",
+      "en": "Bedside Table",
+      "ms": "Meja sisi katil"
+    },
+    "chest-drawer": {
+      "zh": "抽屉柜",
+      "en": "Chest Drawer",
+      "ms": "Laci Dada"
+    },
+    "dressing-table": {
+      "zh": "梳妆台",
+      "en": "Dressing Table",
+      "ms": "Meja Solek"
+    },
+    "dressing-chair": {
+      "zh": "梳妆椅",
+      "en": "Dressing Chair",
+      "ms": "Kerusi Solek"
+    },
+    "garment-rack": {
+      "zh": "衣帽架",
+      "en": "Garment Rack",
+      "ms": "Rak Pakaian"
+    },
+    "standing-mirror": {
+      "zh": "落地镜",
+      "en": "Standing Mirror",
+      "ms": "Cermin Berdiri"
+    },
+    "mattress": {
+      "zh": "床垫",
+      "en": "Mattress",
+      "ms": "Tilam"
+    },
+    "dining-set-malaysia": {
+      "zh": "餐桌椅套装",
+      "en": "Dining Set",
+      "ms": "Set Makan"
+    },
+    "dining-chair": {
+      "zh": "餐椅",
+      "en": "Dining Chair",
+      "ms": "Kerusi Makan"
+    },
+    "dining-table": {
+      "zh": "餐桌",
+      "en": "Dining Table",
+      "ms": "Meja Makan"
+    },
+    "sideboard": {
+      "zh": "餐边柜",
+      "en": "Sideboard",
+      "ms": "Sideboard"
+    },
+    "kitchen-cabinet": {
+      "zh": "厨房柜",
+      "en": "Kitchen Cabinet",
+      "ms": "Kabinet Dapur"
+    },
+    "sofa-bed": {
+      "zh": "沙发床",
+      "en": "Sofa Bed",
+      "ms": "Katil Sofa"
+    },
+    "sofa": {
+      "zh": "沙发",
+      "en": "Sofa",
+      "ms": "Sofa"
+    },
+    "pouf-stool": {
+      "zh": "矮凳与脚凳",
+      "en": "Pouf & Stool",
+      "ms": "Pouf & Najis"
+    },
+    "side-table": {
+      "zh": "边桌",
+      "en": "Side Table",
+      "ms": "Meja Sisi"
+    },
+    "display-rack": {
+      "zh": "展示架",
+      "en": "Display Rack",
+      "ms": "Rak Paparan"
+    },
+    "shoe-cabinet": {
+      "zh": "鞋柜",
+      "en": "Shoe Cabinet",
+      "ms": "Kabinet Kasut"
+    },
+    "bookcase": {
+      "zh": "书柜",
+      "en": "Bookcase",
+      "ms": "almari buku"
+    },
+    "study-desk": {
+      "zh": "书桌",
+      "en": "Study Desk",
+      "ms": "Meja Belajar"
+    },
+    "kids-ergonomic-study-desk": {
+      "zh": "儿童人体工学书桌",
+      "en": "Kids Ergonomic Study Desk",
+      "ms": "Meja Belajar Ergonomik Kanak-kanak"
+    },
+    "kids-stool": {
+      "zh": "儿童凳",
+      "en": "Kids Stool",
+      "ms": "Najis Kanak-kanak"
+    }
   }
 }

@@ -83,4 +83,47 @@ export const privacyPageText = {
       },
     ],
   },
+
+  ms: {
+    metaTitle: "Dasar Privasi | FLASH CAST SDN. BHD.",
+    metaDescription: "FLASH CAST SDN. BHD. dasar privasi. Cara kami mengumpul, menggunakan dan melindungi maklumat peribadi anda.",
+    metaKeywords: "dasar privasi, FLASH CAST, perlindungan data Malaysia",
+    breadcrumbHome: "Rumah",
+    breadcrumbCurrent: "Dasar Privasi",
+    title: "Dasar Privasi",
+    imageAlt: "Kawasan perundingan bahan dengan dua kerusi dan dokumen di atas meja",
+    updated: "Kemas kini terakhir: September 2026",
+    sections: [
+      {
+        title: "1. Maklumat yang Kami Kumpul",
+        body: "Apabila anda menghubungi kami melalui tapak web kami, WhatsApp, telefon atau e-mel, kami mungkin mengumpul maklumat berikut:",
+        items: ["Nama dan butiran hubungan, termasuk nombor telefon dan alamat e-mel", "Alamat hartanah dan butiran projek", "Keutamaan belanjawan dan keperluan pengubahsuaian", "Foto atau dokumen yang anda kongsi dengan kami", "Data penggunaan tapak web, termasuk laluan halaman, masa lawatan, kuki, analitis dan alamat IP pelawat yang disimpan dalam talian sehingga 30 hari"],
+      },
+      {
+        title: "2. Bagaimana Kami Menggunakan Maklumat Anda",
+        body: "Kami menggunakan maklumat peribadi anda untuk:",
+        items: ["Jawab pertanyaan anda dan berikan sebut harga", "Jadualkan pengukuran dan perundingan tapak", "Mengurus dan menyampaikan projek pengubahsuaian", "Hantar kemas kini projek dan komunikasi yang berkaitan", "Tingkatkan laman web dan perkhidmatan kami"],
+      },
+      {
+        title: "3. Perlindungan Data",
+        body: "Kami mengambil langkah yang munasabah untuk melindungi data peribadi anda daripada akses, pengubahan atau pendedahan yang tidak dibenarkan. Maklumat anda disimpan dengan selamat dan hanya boleh diakses oleh kakitangan yang diberi kuasa yang terlibat dalam projek anda.",
+      },
+      {
+        title: "4. Perkongsian Pihak Ketiga",
+        body: "Kami tidak menjual atau menyewa maklumat peribadi anda kepada pihak ketiga. Kami mungkin berkongsi maklumat anda dengan rakan kongsi yang dipercayai, seperti pembekal bahan atau subkontraktor, hanya apabila perlu untuk menyampaikan projek pengubahsuaian anda dan dengan persetujuan anda jika perlu.",
+      },
+      {
+        title: "5. Biskut",
+        body: "Laman web kami mungkin menggunakan kuki dan teknologi serupa untuk meningkatkan pengalaman pengguna dan menganalisis trafik tapak web. Anda boleh mengawal tetapan kuki melalui pilihan penyemak imbas anda.",
+      },
+      {
+        title: "6. Hak Anda",
+        body: "Di bawah Akta Perlindungan Data Peribadi Malaysia 2010 (PDPA), anda boleh meminta akses kepada, pembetulan atau pemadaman data peribadi anda. Untuk melaksanakan hak ini, sila hubungi kami.",
+      },
+      {
+        title: "7. Hubungi Kami",
+        body: "Jika anda mempunyai sebarang soalan tentang Dasar Privasi ini, sila hubungi kami:",
+      },
+    ],
+  },
 } as const;

@@ -14,8 +14,11 @@ export const normalizeFurnitureSlug = (slug: string | undefined): string | undef
 export type FurnitureCatalogOverride = {
   slug: string; enabled: boolean;
   name_zh: string; name_en: string;
+  name_ms?: string;
   shortDescription_zh: string; shortDescription_en: string;
+  shortDescription_ms?: string;
   description_zh: string; description_en: string;
+  description_ms?: string;
   price: string; images: string[];
 };
 
@@ -43,8 +46,8 @@ export const applyFurnitureCatalogOverrides = (products: FurnitureProduct[], ove
     // Explicitly changed prices still use the existing shared price field.
     const defaultPrices = (["zh", "en"] as const).map((locale) => resolveFurnitureDisplay(product, locale).price);
     const price = defaultPrices.includes(saved.price) ? reviewed.price : saved.price || null;
-    return [{ ...reviewed, name: saved[`name_${language}`], shortDescription: saved[`shortDescription_${language}`],
-      description: saved[`description_${language}`], price, images: saved.images,
+    return [{ ...reviewed, name: saved[`name_${language}`] || saved.name_en, shortDescription: saved[`shortDescription_${language}`] || saved.shortDescription_en,
+      description: saved[`description_${language}`] || saved.description_en, price, images: saved.images,
       localized: true,
     }];
   });

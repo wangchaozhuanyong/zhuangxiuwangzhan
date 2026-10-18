@@ -1,3 +1,4 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
 import { useMemo } from "react";
 import { MapPin } from "lucide-react";
 import GoogleMapEmbed from "@/components/GoogleMapEmbed";
@@ -13,10 +14,12 @@ import { mediaLabels } from "@/i18n/mediaLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const localizedValues = {
+  ms: coreValues.map((item, index) => ({ ...item, title: aboutValueCopy.ms[index]?.title || item.title, desc: aboutValueCopy.ms[index]?.desc || item.desc })),
   en: coreValues.map((item, index) => ({ ...item, title: aboutValueCopy.en[index]?.title || item.title, desc: aboutValueCopy.en[index]?.desc || item.desc })),
   zh: coreValues.map((item, index) => ({ ...item, title: aboutValueCopy.zh[index]?.title || item.title, desc: aboutValueCopy.zh[index]?.desc || item.desc })),
 };
 const localizedTeam = {
+  ms: teamHighlights.map((item, index) => ({ ...item, title: aboutTeamCopy.ms[index]?.title || item.title, desc: aboutTeamCopy.ms[index]?.desc || item.desc })),
   en: teamHighlights.map((item, index) => ({ ...item, title: aboutTeamCopy.en[index]?.title || item.title, desc: aboutTeamCopy.en[index]?.desc || item.desc })),
   zh: teamHighlights.map((item, index) => ({ ...item, title: aboutTeamCopy.zh[index]?.title || item.title, desc: aboutTeamCopy.zh[index]?.desc || item.desc })),
 };
@@ -60,7 +63,7 @@ const About = () => {
 
   return (
     <main className="fc-route-page" data-route-pending={pageLoading || heroLoading || undefined}>
-      <PageMeta ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/about" />
+      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={heroSection?.subtitle || heroSection?.content || t.description} />
 

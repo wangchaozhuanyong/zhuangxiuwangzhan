@@ -43,4 +43,27 @@ export const homeEditorialText = {
     materialsCta: "Explore materials",
     builtinsCta: "Explore custom built-ins",
   },
+
+  ms: {
+    servicesTitle: "Ruang yang dibentuk di sekeliling hidup anda.",
+    servicesIntro: "Rumah, dalaman komersial dan terbina dalam tersuai. Pelan yang dipertimbangkan menghubungkan penggunaan harian, bahan dan skop kerja yang dipersetujui.",
+    servicesAll: "Terokai semua perkhidmatan",
+    servicesDetails: "Lihat skop perkhidmatan dan butiran",
+    services: [
+      { slug: "renovation", title: "Kediaman", description: "Dari pergerakan harian hingga butiran rumah.", alt: "Rujukan reka bentuk ruang tamu dan ruang makan" },
+      { slug: "office-renovation", title: "Komersil", description: "Bahagian dalaman yang menyokong kerja, perniagaan dan perkhidmatan.", alt: "Penyampaian reka bentuk susun atur pejabat" },
+      { slug: "builtin", title: "terbina dalam tersuai", description: "Kabinet dan penyimpanan menjadi sebahagian daripada ruang.", alt: "Kabinet tersuai dan reka bentuk storan" },
+    ],
+    materialsLabel: "BAHAN & BUTIRAN",
+    materialsTitle: "Butiran mentakrifkan ruang.",
+    materialsIntro: "Kayu, bahagian atas kerja dan kemasan kabinet, dipertimbangkan melalui sampel fizikal, penggunaan harian dan penjagaan jangka panjang.",
+    materialsSpaceAlt: "Reka bentuk reka bentuk kabinet dapur, kayu dan kemasan atas kerja",
+    materialsDetailAlt: "Kajian palet bahan papan kabinet, atas kerja dan perkakasan",
+    materialsPaletteAlt: "Kajian palet bahan sampel kayu, batu dan kemasan",
+    materialsSpaceLabel: "Ruang & kabinet",
+    materialsDetailLabel: "Papan & perkakasan",
+    materialsPaletteLabel: "Warna & tekstur",
+    materialsCta: "Teroka bahan",
+    builtinsCta: "Terokai terbina dalam tersuai",
+  },
 } as const;

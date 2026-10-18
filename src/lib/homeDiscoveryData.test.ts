@@ -37,13 +37,13 @@ const request = {
 };
 
 const blogRows = Array.from({ length: 5 }, (_, index) => ({
-  id: `blog-${index}`, slug: `journal-${index}`, title_en: `Journal ${index}`, title_zh: `文章${index}`,
-  excerpt_en: "Saved summary", excerpt_zh: "保存的摘要", alt_en: "Saved image", alt_zh: "保存的图片",
+  id: `blog-${index}`, slug: `journal-${index}`, title_en: `Journal ${index}`, title_zh: `文章${index}`, title_ms: `Jurnal ${index}`,
+  excerpt_en: "Saved summary", excerpt_zh: "保存的摘要", excerpt_ms: "Ringkasan disimpan", alt_ms: "Imej disimpan", alt_en: "Saved image", alt_zh: "保存的图片",
   cover_image_url: "/saved-image.webp", category: "materials-design", published_at: "2026-10-07",
   content_en: "Article body should stay out of homepage data", seo_title_en: "Detail SEO", created_by: "internal-author",
 }));
 const areaRows = Array.from({ length: 10 }, (_, index) => ({
-  slug: `area-${index}`, area_name: `Area ${index}`, title_en: `English area ${index}`, title_zh: `地区${index}`,
+  slug: `area-${index}`, area_name: `Area ${index}`, title_en: `English area ${index}`, title_zh: `地区${index}`, title_ms: `Kawasan ${index}`,
   excerpt_en: "Directory description", content_en: "Area body", property_types: ["Condo"], sort_order: index,
 }));
 

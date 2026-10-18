@@ -1,3 +1,5 @@
+import { isMalayContentReady } from "@/i18n/localizedContent";
+import { malayText, malayFormat } from "@/i18n/malayText";
 import PublicReadError from "@/components/PublicReadError";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -86,7 +88,7 @@ export default function LocationPage() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={location.metaTitle} description={display(location.description)} keywords={copy.keywords(location.name)} canonicalPath={`/locations/${location.slug}`} />
+      <PageMeta malayReady={isMalayContentReady(location)} title={location.metaTitle} description={display(location.description)} keywords={copy.keywords(location.name)} canonicalPath={`/locations/${location.slug}`} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbLocations, url: "/locations" }, { name: location.name, url: `/locations/${location.slug}` }]} />
       {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "LocalBusiness", name: settings.company_name, description: location.description, address: settings.address, areaServed: location.name, url: `${siteConfig.url}${withLanguagePrefix(`/locations/${location.slug}`, language)}` }) }} />
@@ -99,17 +101,17 @@ export default function LocationPage() {
         mobileImage={pageHeroImages.locations.mobile}
         mobileImageSourceWidth={pageHeroImages.locations.mobileWidth}
         imagePosition={pageHeroImages.locations.imagePosition}
-        imageAlt={language === "zh" ? `${location.name} 装修服务范围规划示意` : `${location.name} renovation service area planning concept`}
+        imageAlt={language === "ms" ? malayFormat("__FC0__ renovation service area planning concept", [location.name]) : (language === "zh" ? `${location.name} 装修服务范围规划示意` : `${location.name} renovation service area planning concept`)}
         label={[copy.breadcrumbLocations, mediaLabels[language].renderingConcept].join(" · ")}
         title={copy.heroTitle(location.name)}
         description={display(location.description)}
         actions={<Link to={quotePath}>{copy.quote}<ArrowUpRight aria-hidden="true" /></Link>}
       />
       <SchemeAFacts items={[
-        { label: language === "zh" ? "地区" : "Area", value: location.name },
+        { label: language === "ms" ? malayText("Area") : (language === "zh" ? "地区" : "Area"), value: location.name },
         { label: location.slug === "bangsar" ? copy.bangsarProjectTypes : usesReviewedLocalityContext ? copy.propertyTypeExamples : copy.propertyTypes, value: location.propertyTypes.slice(0, 2).map(display).join(" / ") },
-        { label: language === "zh" ? "服务" : "Service", value: language === "zh" ? "设计 / 装修" : "Design / Build" },
-        { label: language === "zh" ? "协调" : "Coordination", value: language === "zh" ? "管理处申请" : "Management approval" },
+        { label: language === "ms" ? malayText("Service") : (language === "zh" ? "服务" : "Service"), value: language === "ms" ? malayText("Design / Build") : (language === "zh" ? "设计 / 装修" : "Design / Build") },
+        { label: language === "ms" ? malayText("Coordination") : (language === "zh" ? "协调" : "Coordination"), value: language === "ms" ? malayText("Management approval") : (language === "zh" ? "管理处申请" : "Management approval") },
       ]} />
       <SchemeASection title={copy.trusted(location.name)} description={introContent}>
         <SchemeAFeatureList items={location.commonNeeds.map(display)} />

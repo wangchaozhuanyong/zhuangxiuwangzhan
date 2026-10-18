@@ -11,7 +11,7 @@ const sync = vi.hoisted(() => vi.fn().mockResolvedValue({ cache_invalidation: { 
 vi.mock("../../supabase/functions/_shared/public-content-sync.ts", () => ({ syncPublicContent: sync }));
 
 function fixture(role = "content_editor", active = true, aal = "aal2", row: Record<string, unknown> = {}) {
-  const record = { id: "fixture-id", status: "draft", updated_at: "2026-10-08T00:00:00Z", title_zh: "测试", title_en: "", ...row };
+  const record: Record<string, unknown> = { id: "fixture-id", status: "draft", updated_at: "2026-10-08T00:00:00Z", title_zh: "测试", title_en: "", ...row };
   const insert = vi.fn().mockResolvedValue({ error: null });
   const writeFilters: unknown[][] = [];
   const query = {
@@ -33,6 +33,36 @@ function fixture(role = "content_editor", active = true, aal = "aal2", row: Reco
 afterEach(() => { vi.unstubAllGlobals(); sync.mockClear(); });
 
 describe("translation authorization and protected content", () => {
+  it("writes only missing Malay fields, preserving English and existing Malay content", async () => {
+    const f = fixture("content_editor", true, "aal2", {
+      title_en: "Existing English", title_ms: "Tajuk sedia ada",
+      content_en: "English body", content_ms: null,
+    });
+    const result = await generateEnglishContent(f.req, { table: "services", id: "fixture-id", targetLanguage: "ms" }, f.client);
+    expect(result.body.ok).toBe(true);
+    expect(f.update).toHaveBeenCalledExactlyOnceWith({ content_ms: "Translated fixture" });
+    expect(f.record.title_en).toBe("Existing English");
+    expect(f.record.title_ms).toBe("Tajuk sedia ada");
+    expect(f.insert).toHaveBeenCalledWith(expect.objectContaining({ target_language: "ms" }));
+    expect(f.writeFilters).toContainEqual(["updated_at", "2026-10-08T00:00:00Z"]);
+  });
+  it("refuses Malay generation before its database migration without any writes", async () => {
+    const f = fixture();
+    expect((await generateEnglishContent(f.req, { table: "services", id: "fixture-id", targetLanguage: "ms" }, f.client)).status).toBe(409);
+    expect(f.insert).not.toHaveBeenCalled(); expect(f.update).not.toHaveBeenCalled();
+  });
+  it("does not overwrite a complete existing Malay translation", async () => {
+    const f = fixture("content_editor", true, "aal2", { title_ms: "Tajuk sedia ada" });
+    const result = await generateEnglishContent(f.req, { table: "services", id: "fixture-id", targetLanguage: "ms" }, f.client);
+    expect(result.body).toMatchObject({ ok: true, skipped_existing_translation: true });
+    expect(f.update).not.toHaveBeenCalled();
+  });
+  it("retains protected-record restrictions when Malay is explicitly requested", async () => {
+    const target = MANAGED_TARGETS.find((target) => target.contentType === "service")!;
+    const f = fixture("super_admin", true, "aal2", { id: target.id, title_ms: null });
+    expect((await generateEnglishContent(f.req, { table: "services", id: target.id, targetLanguage: "ms" }, f.client)).status).toBe(403);
+    expect(f.insert).not.toHaveBeenCalled(); expect(f.update).not.toHaveBeenCalled();
+  });
   it.each(["viewer", "lead_manager"])("rejects %s before content/job writes", async (role) => {
     const f = fixture(role);
     expect((await generateEnglishContent(f.req, { table: "services", id: "fixture-id" }, f.client)).status).toBe(403);

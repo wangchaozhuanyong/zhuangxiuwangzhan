@@ -1,3 +1,4 @@
+import { malayFormat } from "@/i18n/malayText";
 export type MaterialPriceMode = "range" | "from" | "specification" | "size" | "scope" | "none";
 export type MaterialPriceUnit = "sqft" | "foot_run" | "unit" | "set" | "panel" | "scope" | "none";
 
@@ -10,7 +11,8 @@ export type MaterialPriceInput = {
   legacyText?: string | null;
 };
 
-const unitLabels: Record<"en" | "zh", Record<MaterialPriceUnit, string>> = {
+const unitLabels: Record<"en" | "zh" | "ms", Record<MaterialPriceUnit, string>> = {
+  ms: { sqft: "kaki persegi", foot_run: "kaki panjang", unit: "unit", set: "set", panel: "panel", scope: "skop", none: "" },
   en: {
     sqft: "sq ft",
     foot_run: "ft run",
@@ -31,7 +33,8 @@ const unitLabels: Record<"en" | "zh", Record<MaterialPriceUnit, string>> = {
   },
 };
 
-const quoteLabels: Record<"en" | "zh", Record<Exclude<MaterialPriceMode, "range" | "from" | "none">, string>> = {
+const quoteLabels: Record<"en" | "zh" | "ms", Record<Exclude<MaterialPriceMode, "range" | "from" | "none">, string>> = {
+  ms: { specification: "Sebut harga mengikut spesifikasi", size: "Sebut harga mengikut saiz", scope: "Sebut harga mengikut skop projek" },
   en: {
     specification: "Quote by specification",
     size: "Quote by size",
@@ -50,19 +53,19 @@ const toAmount = (value: MaterialPriceInput["min"]) => {
   return Number.isFinite(amount) && amount >= 0 ? amount : null;
 };
 
-const formatAmount = (value: number, language: "en" | "zh") =>
-  new Intl.NumberFormat(language === "zh" ? "zh-CN" : "en-MY", {
+const formatAmount = (value: number, language: "en" | "zh" | "ms") =>
+  new Intl.NumberFormat(language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en-MY", {
     minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(value);
 
-const formatUnit = (unit: string | null | undefined, language: "en" | "zh") => {
+const formatUnit = (unit: string | null | undefined, language: "en" | "zh" | "ms") => {
   const normalized = unit && unit in unitLabels[language] ? (unit as MaterialPriceUnit) : "none";
   const label = unitLabels[language][normalized];
   return label ? ` / ${label}` : "";
 };
 
-export const localizeLegacyMaterialPrice = (value: string | null | undefined, language: "en" | "zh") => {
+export const localizeLegacyMaterialPrice = (value: string | null | undefined, language: "en" | "zh" | "ms") => {
   const text = String(value || "").trim();
   if (!text || language === "en") return text;
 
@@ -82,7 +85,7 @@ export const localizeLegacyMaterialPrice = (value: string | null | undefined, la
     .concat(/^From\s+/i.test(text) ? "起" : "");
 };
 
-export const formatMaterialPrice = (input: MaterialPriceInput, language: "en" | "zh") => {
+export const formatMaterialPrice = (input: MaterialPriceInput, language: "en" | "zh" | "ms") => {
   const mode = String(input.mode || "") as MaterialPriceMode;
   if (!mode || mode === "none") return localizeLegacyMaterialPrice(input.legacyText, language);
   if (mode === "specification" || mode === "size" || mode === "scope") return quoteLabels[language][mode];
@@ -97,5 +100,5 @@ export const formatMaterialPrice = (input: MaterialPriceInput, language: "en" | 
   const maxLabel = max !== null && max !== min ? formatAmount(max, language) : "";
 
   if (mode === "range" && maxLabel) return `${currency} ${minLabel}–${maxLabel}${unit}`;
-  return language === "zh" ? `${currency} ${minLabel}${unit}起` : `From ${currency} ${minLabel}${unit}`;
+  return language === "ms" ? malayFormat("From __FC0__ __FC1____FC2__", [currency, minLabel, unit]) : (language === "zh" ? `${currency} ${minLabel}${unit}起` : `From ${currency} ${minLabel}${unit}`);
 };

@@ -19,6 +19,7 @@ vi.mock("@/lib/adminMutation", () => ({ saveAdminRecord: save, archiveOrDeleteAd
 vi.mock("@/hooks/useUnsavedChangesWarning", () => ({ useUnsavedChangesWarning: warn }));
 vi.mock("@/components/admin/AdminPageHeader", () => ({ default: () => null }));
 vi.mock("@/components/admin/AdminHomeSectionVisibility", () => ({ default: () => null }));
+vi.mock("@/components/admin/AdminMalayFields", () => ({ default: () => null }));
 vi.mock("@/components/admin/ImageField", () => ({ default: () => null }));
 vi.mock("@/lib/adminLocale", async (original) => ({ ...await original<typeof import("@/lib/adminLocale")>(), getAdminLang: () => "zh" }));
 

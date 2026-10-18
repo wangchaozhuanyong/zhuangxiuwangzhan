@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { interactionText } from "@/i18n/interactionText";
 
 /** Native modal keeps the guard available before any optional UI chunk arrives. */
-export default function NavigationProtectionDialog({ text, finish }: { text: (typeof interactionText)["en"] | (typeof interactionText)["zh"]; finish: (approved: boolean) => void }) {
+export default function NavigationProtectionDialog({ text, finish }: { text: (typeof interactionText)[keyof typeof interactionText]; finish: (approved: boolean) => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const node = dialog.current;
