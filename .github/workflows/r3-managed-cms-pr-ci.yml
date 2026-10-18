@@ -65,6 +65,7 @@ on:
       - drafts/seo/fc-20260927-cms-native-admission-contract-v1/**
       - backups/fc-20260927-cms-native-admission-contract-v1/**
       - scripts/publish-content-trust-fixes.mjs
+      - scripts/publish-malay-cms-single-target.mjs
       - scripts/supabase-content-publish-release.mjs
       - scripts/supabase-content-publish-release.test.mjs
       - src/lib/contentPublishService.test.ts

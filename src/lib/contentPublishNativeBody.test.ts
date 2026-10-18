@@ -54,12 +54,12 @@ function clientFor(initial: Row, options: { race?: boolean; uncertain?: boolean 
   return { client: client as unknown as ContentPublishClient, writes, predicates, rpcs, row: () => row };
 }
 
-describe("18 exact original-identity bilingual body targets", () => {
-  it("locks 8 services and 10 blogs without changing old identities", () => {
-    expect(names).toHaveLength(18); expect(NATIVE_BODY_TARGETS).toHaveLength(18);
+describe("19 exact original-identity multilingual body targets", () => {
+  it("locks 8 services and 11 blogs without changing old identities", () => {
+    expect(names).toHaveLength(19); expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     expect(NATIVE_BODY_TARGETS.filter((t) => t.contentType === "service")).toHaveLength(8);
     expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
-    expect(MANAGED_TARGETS).toHaveLength(72);
+    expect(MANAGED_TARGETS).toHaveLength(73);
     const workflow = readFileSync(".github/workflows/content-publish-approved.yml", "utf8");
     for (const name of names) {
       const locked = lockedNativeBodyCandidates[name]; const row = frozenRow(name);
@@ -68,13 +68,31 @@ describe("18 exact original-identity bilingual body targets", () => {
       expect(targetConfigs[name].lockedCandidate).toEqual(locked);
       for (const page of locked.publicPaths) {
         const lang = page.path.split("/")[1];
-        expect(page.expected).toBe(String(row[`seo_title_${lang}`]).replaceAll("&", "&amp;"));
+        const expected = lang === "ms" ? locked.desiredFields.title_ms : row[`seo_title_${lang}`];
+        expect(page.expected).toBe(String(expected).replaceAll("&", "&amp;"));
       }
-      expect(workflow.split(name).length - 1).toBe(3);
+      const workflowOccurrences = workflow.split(name).length - 1;
+      if (name === "rental-unit-renovation-kl-malay-v1") expect(workflowOccurrences).toBeGreaterThanOrEqual(3);
+      else expect(workflowOccurrences).toBe(3);
       expect(createHash("sha256").update(readFileSync(locked.sourceCandidatePath)).digest("hex")).toBe(locked.originalFrozenSourceSha256);
       expect(() => assertLockedServiceCandidate(locked, row)).not.toThrow();
       expect(() => assertLockedPublishGate(locked, {}, "invalid")).toThrow();
     }
+  });
+
+  it("exposes the Malay article only through its exact, mode-separated protected publisher", () => {
+    const workflow = readFileSync(".github/workflows/content-publish-approved.yml", "utf8");
+    const preview = workflow.split("      - name: Preview the exact Malay blog candidate without issuing a permit")[1]
+      .split("      - name: Publish the exact Malay blog candidate with one fresh permit")[0];
+    const publish = workflow.split("      - name: Publish the exact Malay blog candidate with one fresh permit")[1]
+      .split("      - name: Preview the exact frozen completion batch")[0];
+    expect(preview).toContain("inputs.target == 'rental-unit-renovation-kl-malay-v1' && inputs.mode == 'dry-run'");
+    expect(preview).toContain("node --experimental-strip-types scripts/publish-malay-cms-single-target.mjs --mode=dry-run");
+    expect(preview).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(publish).toContain("inputs.target == 'rental-unit-renovation-kl-malay-v1' && inputs.mode == 'publish'");
+    expect(publish).toContain("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}");
+    expect(publish).toContain("node --experimental-strip-types scripts/publish-malay-cms-single-target.mjs --mode=publish");
+    expect(publish).not.toContain("PARENT_RUN_ID:");
   });
 
   it.each(names)("%s: preview is zero-write; publish sends exactly two columns with CAS and prevents replay", async (name) => {

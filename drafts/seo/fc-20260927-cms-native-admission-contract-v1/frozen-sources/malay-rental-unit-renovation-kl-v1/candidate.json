@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "task_id": "fc-20261019-malay-cms-published-content-v1",
+  "original_task_id": "fc-20261019-malay-cms-published-content-v1",
+  "candidate_version": "rental-unit-renovation-kl-malay-v1",
+  "record_id": "ef92b60e-3541-40c7-8997-621df78cbdea",
+  "slug": "rental-unit-renovation-kl",
+  "expected_updated_at": "2026-10-10T10:00:01.220898+00:00",
+  "expected_version": 1,
+  "modified_fields": [
+    "title_ms",
+    "excerpt_ms",
+    "content_ms",
+    "alt_ms",
+    "seo_title_ms",
+    "seo_description_ms"
+  ],
+  "candidate_values": {
+    "title_ms": "Renovasi Unit Sewa di Kuala Lumpur: Panduan Bajet dan Ketahanan",
+    "excerpt_ms": "Renovasi unit sewa wajar mengutamakan kemasan yang tahan lasak, mudah dibersihkan dan mudah dibaiki, bukannya semata-mata memilih bahan paling mahal.",
+    "content_ms": "<h2>Mulakan dengan memahami cara penyewa menggunakan ruang</h2><p>Unit sewa boleh memerlukan pembaikan yang kerap selepas digunakan. Untuk lantai, dinding, kabinet dan kunci pintu, utamakan pilihan yang tahan lasak, mudah dibersihkan dan mudah dibaiki atau diganti. Gaya yang kemas dan tidak mudah lapuk sudah memadai.</p><h2>Jangan gunakan seluruh bajet untuk rupa luaran</h2><p>Bahagikan bajet kepada pembaikan asas, bahan tahan lasak, ruang simpanan yang diperlukan dan pembersihan akhir sebelum serahan. Jangan mengurangkan peruntukan secara berlebihan untuk pendawaian, kerja kalis air, pintu atau tingkap. Jika aspek asas ini diabaikan, aduan lebih mudah timbul kemudian.</p><h2>Sediakan maklumat ini sebelum meminta harga</h2><p>Sediakan lokasi unit, keluasan, foto, sasaran kadar sewa, julat bajet dan jangkaan tarikh mula disewakan supaya skop dapat disesuaikan dengan matlamat pelaburan.</p><h2>Bagaimanakah item yang dikekalkan, diganti dan perlu diperiksa boleh dibezakan?</h2><p>Ambil foto lantai, dinding, kabinet, pintu dan peralatan sedia ada bagi setiap bilik. Asingkan item yang boleh dikekalkan, dirancang untuk diganti dan perlu diperiksa lanjut. Kemudian, senaraikan keperluan pembersihan harian, ruang simpanan dan akses penyelenggaraan. Cara ini mengelakkan komponen yang masih boleh digunakan diganti semata-mata untuk menyeragamkan rupa. Isu elektrik, kebocoran atau masalah khusus lain memerlukan pengesahan skop oleh pihak yang sesuai; kemas kini hiasan tidak menggantikan pemeriksaan.</p><h2>Apakah maklumat serahan yang membantu tindakan susulan?</h2><p>Simpan skop yang dipersetujui, foto setiap bilik, model produk yang dipilih, panduan penjagaan yang berkaitan, serta maklumat hubungan dan rekod bagi perkara yang masih belum selesai. Rujuk <a href=\"/ms/blog/renovation-handover-defect-checklist-malaysia\">senarai semak rekod serahan dan kecacatan</a>, kemudian bincangkan skop sebenar melalui <a href=\"/ms/services/renovation\">perancangan pengubahsuaian kediaman</a>. Persediaan ini tidak menjamin peningkatan hasil sewa, penyewaan yang lebih cepat atau kos penyelenggaraan yang tetap.</p>",
+    "alt_ms": "Perancangan pengubahsuaian kediaman untuk unit sewa",
+    "seo_title_ms": "Renovasi Unit Sewa di Kuala Lumpur: Bajet dan Ketahanan | FLASH CAST",
+    "seo_description_ms": "Panduan renovasi unit sewa di Kuala Lumpur untuk merancang bajet, memilih kemasan tahan lasak, menyediakan maklumat sebut harga dan menyimpan rekod serahan."
+  },
+  "source_values": {
+    "title_zh": "KL 出租单位装修：预算与耐用度怎么拿捏",
+    "title_en": "KL Rental Unit Renovation: Budget and Durability Tips",
+    "excerpt_zh": "出租单位装修要把钱花在耐用、易清洁、少维修的地方，而不是一味追求昂贵材料。",
+    "excerpt_en": "Rental-unit renovation should focus on durable, easy-care finishes and sensible spending, not the most expensive materials.",
+    "content_zh": "<h2>先看租客会怎样使用空间</h2><p>出租单位最怕后期维修频繁。地板、墙面、橱柜和门锁要优先选择耐磨、容易清洁、替换方便的做法，风格保持干净耐看就够了。</p><h2>预算别全部压在表面效果</h2><p>可以把预算分成基础维修、耐用材料、必要收纳和交屋清洁。水电、防水、门窗这些看不见的部分如果省过头，后面更容易产生投诉。</p><h2>报价前准备这些资料</h2><p>准备单位地点、面积、照片、目标租金、预算范围和预计出租时间。承包商越早知道使用目标，越容易把规格控制在合理范围。</p>\n\n<h2>出租单位怎样区分保留、更换与待检查项目？</h2>\n<p>逐个房间记录现有地面、墙面、柜体、门和设备的照片，将可保留、拟更换和需要进一步检查的项目分开。再列出日常清洁、储物和维修进入的需求，避免仅为了统一风格把可用部分一并更换。涉及电气、漏水或其他专业问题时，先由适当负责方确认范围，不用装饰升级替代检查。</p>\n<h2>交屋时哪些资料有助于日后跟进？</h2>\n<p>可保留约定范围、房间照片、所选产品型号、适用保养说明和未完成事项的联系人与记录。先看 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付记录清单</a>，再结合 <a href=\"/zh/services/renovation\">住宅装修规划</a> 讨论实际范围。这些准备不保证租金提升、出租速度或固定维修费用。</p>",
+    "content_en": "<h2>Start with tenant usage</h2><p>Rental units need finishes that can handle frequent use. Flooring, walls, cabinets, and locks should be durable, easy to clean, and simple to repair.</p><h2>Do not spend everything on appearance</h2><p>Split the budget into repair work, durable finishes, basic storage, and final cleaning. Wiring, waterproofing, doors, and windows should not be ignored.</p><h2>Prepare details before pricing</h2><p>Share the location, area, photos, target rent, budget range, and expected rental date so the scope can be matched to the investment goal.</p>\n\n<h2>How can a rental unit separate retained, replacement and review items?</h2>\n<p>Record photos of existing floors, walls, cabinetry, doors and equipment by room. Separate items to retain, replace or inspect further, then list cleaning, storage and maintenance-access needs. This avoids replacing usable elements solely for a uniform appearance. Electrical, leakage or other specialist issues need scope confirmation by the appropriate responsible parties; decorative updates do not replace assessment.</p>\n<h2>Which handover information helps later follow-up?</h2>\n<p>Retain the agreed scope, room photos, selected product models, applicable care information and contacts for outstanding items. Review the <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover recording checklist</a> and discuss the actual scope through <a href=\"/en/services/renovation\">residential renovation planning</a>. These preparations do not guarantee rental growth, faster letting or fixed maintenance costs.</p>",
+    "alt_zh": "住宅装修与审批规划",
+    "alt_en": "Home renovation and approval planning",
+    "seo_title_zh": "KL 出租单位装修：预算与耐用度怎么拿捏",
+    "seo_title_en": "KL Rental Unit Renovation: Budget and Durability Tips",
+    "seo_description_zh": "这篇 FLASH CAST 中文指南说明KL 出租单位装修：预算与耐用度怎么拿捏，适合吉隆坡、雪兰莪与巴生谷业主在装修前参考。内容整理预算、材料、审批、施工风险和免费报价准备资料，帮助客户更快做决定。",
+    "seo_description_en": "Rental-unit renovation should focus on durable, easy-care finishes and sensible spending, not the most expensive materials."
+  },
+  "language_review": {
+    "reviewer": "Codex (appointed by the website owner)",
+    "language": "Bahasa Melayu (ms-MY)",
+    "reviewed_at": "2026-10-19",
+    "decision": "PASS_MALAY_TRANSLATION_REVIEW",
+    "method": "Compared each section against the current Chinese and English CMS source; checked terminology, unsupported claims, localized internal links, and title/metadata consistency.",
+    "notes": [
+      "The translation preserves the source's maintenance, budgeting, quotation-preparation and handover guidance.",
+      "The no-guarantee qualification is retained.",
+      "Internal links use verified /ms routes.",
+      "This is a linguistic and source-fidelity review, not a technical inspection or price guarantee."
+    ],
+    "qa_receipt_id": "malay-review-rental-unit-renovation-kl-v1",
+    "qa_receipt_path": "drafts/seo/fc-20260927-cms-native-admission-contract-v1/frozen-sources/malay-rental-unit-renovation-kl-v1/qa-receipt.json",
+    "qa_receipt_sha256": "478751380379d16fa53e7e35af0435aef3c97f8a2c622b0f2f1bf33c4ea16105"
+  },
+  "owner_approval_id": "owner-authorized-malay-cms-20261019"
+}

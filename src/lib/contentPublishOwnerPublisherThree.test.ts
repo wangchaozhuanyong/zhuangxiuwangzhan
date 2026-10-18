@@ -22,8 +22,8 @@ describe("three exact owner-publisher successor bindings", () => {
   it("adds only three candidates while retaining all historical body targets", () => {
     expect(Object.keys(lockedOwnerPublisherThreeCandidates)).toEqual(names);
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
-    expect(NATIVE_BODY_TARGETS).toHaveLength(18);
-    expect(MANAGED_TARGETS).toHaveLength(72);
+    expect(NATIVE_BODY_TARGETS).toHaveLength(19);
+    expect(MANAGED_TARGETS).toHaveLength(73);
     expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

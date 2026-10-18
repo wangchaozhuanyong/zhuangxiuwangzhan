@@ -86,7 +86,7 @@ describe("the fixed eleven-row forward remainder after two truthful stopped runs
     const publish = workflow.split("      - name: Issue and consume")[1].split("      - name: Upload audit package")[0];
     expect(preview).toContain(REMAINDER11_NAME); expect(preview).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(publish).toContain(REMAINDER11_NAME); expect(publish).toContain("inputs.mode == 'publish'");
-    expect(workflow.split("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}")).toHaveLength(2);
+    expect(workflow.split("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}")).toHaveLength(3);
     expect(workflow).toContain("      - name: Upload audit package\n        if: always()");
     const shell = workflow.split("        run: |\n")[1].split("\n      - name:")[0].split("\n").map((line) => line.replace(/^ {10}/, "")).join("\n");
     const gate = (drift) => spawnSync("bash", ["-e", "-c", shell], { encoding: "utf8", env: { PATH: process.env.PATH, GITHUB_REF: "refs/heads/main",

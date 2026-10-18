@@ -93,6 +93,7 @@ on:
           - c13-bilingual-body-v1
           - c14-bilingual-body-v1
           - c15-bilingual-body-v1
+          - rental-unit-renovation-kl-malay-v1
           - v17-owner-publisher-native-preparation-v2-20261007
           - v18-owner-publisher-native-preparation-v2-20261007
           - v20-owner-publisher-native-preparation-v2-20261007
@@ -181,6 +182,13 @@ jobs:
             fi
             case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
           fi
+          if [ "$PUBLISH_TARGET" = "rental-unit-renovation-kl-malay-v1" ]; then
+            if [ "$MANAGED_OPERATION" != "publish" ] || [ "$APPROVAL_ID" != "owner-authorized-malay-cms-20261019" ] || [ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]; then
+              echo "::error::The exact Malay blog candidate requires its owner authorization and a fresh single-use permit from this main workflow."
+              exit 1
+            fi
+            case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
+          fi
           if [ "$MANAGED_OPERATION" = "rollback" ]; then
             case "$PUBLISH_TARGET" in
               paid-three-page-builtin-exact-fields-v1|paid-three-page-kitchen-exact-fields-v1|paid-three-page-renovation-exact-fields-v1|builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1|kitchen-r1-cms-row-20260924-v1|design-r1-cms-row-20260924-v1|selangor-service-area-r1-v4|org-017-bathroom-faq-parity-reconciliation-v4|blog-kitchen-cabinet-cost-r1-v1|blog-renovation-quotation-links-r1-v1|blog-office-checklist-links-r1-v1|office-service-scope-r1-v1|kl-location-intent-r1-v2|design-framework-cms-content-v4|kitchen-initial-framework-body-v1|bathroom-initial-framework-body-v1|c01-bilingual-body-v1|c02-bilingual-body-v1|c03-bilingual-body-v1|c04-bilingual-body-v1|c05-bilingual-body-v1|c06-bilingual-body-v1|c07-bilingual-body-v1|c08-bilingual-body-v1|c09-bilingual-body-v1|c10-bilingual-body-v1|c11-bilingual-body-v1|c12-bilingual-body-v1|c13-bilingual-body-v1|c14-bilingual-body-v1|c15-bilingual-body-v1) ;;
@@ -235,7 +243,7 @@ jobs:
           JS
 
       - name: Check real Chrome before protected browser acceptance
-        if: ${{ inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390' || inputs.target == 'remaining-completion-after-38037667102' || inputs.target == 'v18-owner-publisher-native-preparation-v2-20261007' || inputs.target == 'paid-three-page-native-20261010' }}
+        if: ${{ inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390' || inputs.target == 'remaining-completion-after-38037667102' || inputs.target == 'v18-owner-publisher-native-preparation-v2-20261007' || inputs.target == 'paid-three-page-native-20261010' || inputs.target == 'rental-unit-renovation-kl-malay-v1' }}
         run: |
           node --input-type=module - <<'JS'
           import { chromium } from '@playwright/test';
@@ -256,7 +264,7 @@ jobs:
           test -n "$VITE_SUPABASE_ANON_KEY"
 
       - name: Validate or publish approved updates
-        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' }}
+        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -310,6 +318,33 @@ jobs:
             fi
             npm run content:trust-fixes -- --target="$CONTENT_TARGET" --execute --approval-id="$APPROVAL_ID" --managed-permit-id="$MANAGED_PERMIT_ID" "${extra_args[@]}" --artifact-dir="audits/content-publish-${GITHUB_RUN_ID}"
           done
+
+      - name: Preview the exact Malay blog candidate without issuing a permit
+        if: ${{ inputs.target == 'rental-unit-renovation-kl-malay-v1' && inputs.mode == 'dry-run' }}
+        env:
+          CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL: https://flashcast.com.my
+          PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
+          PUBLISH_TARGET: ${{ inputs.target }}
+          APPROVAL_ID: ${{ inputs.approval_id }}
+          MANAGED_OPERATION: ${{ inputs.managed_operation }}
+        run: node --experimental-strip-types scripts/publish-malay-cms-single-target.mjs --mode=dry-run
+
+      - name: Publish the exact Malay blog candidate with one fresh permit
+        if: ${{ inputs.target == 'rental-unit-renovation-kl-malay-v1' && inputs.mode == 'publish' }}
+        env:
+          CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL: https://flashcast.com.my
+          PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
+          PUBLISH_TARGET: ${{ inputs.target }}
+          APPROVAL_ID: ${{ inputs.approval_id }}
+          MANAGED_OPERATION: ${{ inputs.managed_operation }}
+        run: node --experimental-strip-types scripts/publish-malay-cms-single-target.mjs --mode=publish
 
       - name: Preview the exact frozen completion batch without issuing permits
         if: ${{ ((inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390' || inputs.target == 'remaining-completion-after-38037667102') && inputs.mode == 'dry-run') || (inputs.target == 'paid-three-page-native-20261010' && inputs.mode == 'dry-run') }}
