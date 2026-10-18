@@ -582,7 +582,7 @@ export const surfaceRepairPageText = {
     "replaceLabel": "Regenerate from latest details"
   }
 ,
-  ms: {
+  "ms": {
     "serviceName": "Pembaikan Permukaan Rumah",
     "metaTitle": "Pembaikan Permukaan Rumah di Kuala Lumpur | Perabot, Jubin & Permukaan Kerja | FLASH CAST",
     "metaDescription": "Hantar foto pintu tercalar, perabot tercalar, kabinet rosak, jubin atau atas kerja. Bincangkan pembaikan permukaan tempatan di Kuala Lumpur, Selangor dan Lembah Klang, tertakluk kepada penilaian bahan dan tapak.",
@@ -872,5 +872,5 @@ export const surfaceRepairPageText = {
     "replaceNotice": "Anda mengedit teks pertanyaan. Penjanaan semula akan menggantikan pengeditan tersebut. Simpan teks anda atau gantikannya dengan butiran terkini.",
     "keepLabel": "Simpan teks saya",
     "replaceLabel": "Menjana semula daripada butiran terkini"
-  },
+  }
 } as const;
