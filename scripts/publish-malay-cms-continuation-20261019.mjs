@@ -378,6 +378,24 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
       for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 900 }]) {
         await page.setViewportSize(viewport);
         const response = await page.goto(`${env.VITE_SITE_URL}${path}?malay_cms_browser=${env.GITHUB_RUN_ID}`, { waitUntil: "domcontentloaded", timeout: 40_000 });
+        try {
+          await page.waitForFunction(() => {
+            const content = document.querySelector(".public-route-content");
+            const main = document.querySelector("main");
+            return content?.getAttribute("aria-busy") === "false"
+              && (main?.innerText?.trim().length || 0) >= 20
+              && /^ms(?:-|$)/i.test(document.documentElement.lang);
+          }, undefined, { timeout: 40_000 });
+        } catch {
+          const readiness = await page.evaluate(() => ({
+            lang: document.documentElement.lang,
+            publicBoot: document.documentElement.dataset.publicBoot || null,
+            routeLoading: document.documentElement.dataset.publicRouteLoading || null,
+            contentBusy: document.querySelector(".public-route-content")?.getAttribute("aria-busy") || null,
+            mainLength: document.querySelector("main")?.innerText?.trim().length || 0,
+          }));
+          fail(`Malay page did not finish rendering for ${path}: ${JSON.stringify(readiness)}`);
+        }
         const rendered = await page.evaluate(() => ({
           lang: document.documentElement.lang,
           title: document.title,
@@ -391,7 +409,9 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
         viewportChecks.push(check);
         await page.screenshot({ path: join(artifactRoot, "screenshots", `${Buffer.from(path).toString("hex").slice(0, 36)}-${viewport.width}.png`), fullPage: false });
         if (check.status !== 200 || check.bodyLength < 20 || !check.noHorizontalOverflow
-            || !/^ms(?:-|$)/i.test(check.lang)) fail(`Live Malay browser check failed for ${path} at ${viewport.width}px.`);
+            || !/^ms(?:-|$)/i.test(check.lang)) {
+          fail(`Live Malay browser check failed for ${path} at ${viewport.width}px: ${JSON.stringify(check)}`);
+        }
       }
     }
     await context.close();
