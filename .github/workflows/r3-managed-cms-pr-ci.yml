@@ -53,6 +53,8 @@ on:
       - scripts/lib/publisher-public-readback.test.mjs
       - scripts/publish-malay-cms-single-target.mjs
       - scripts/publish-malay-cms-continuation-20261019.mjs
+      - scripts/lib/malay-publish-runtime.mjs
+      - scripts/lib/malay-publish-runtime.test.mjs
       - drafts/malay-cms-continuation-20261019/**
       - src/lib/malayCmsPublisher.test.ts
       - src/lib/translationSecurity.test.ts
@@ -197,6 +199,9 @@ jobs:
 
       - name: Parse the frozen Malay batch publisher
         run: node --check scripts/publish-malay-cms-continuation-20261019.mjs
+
+      - name: Test Malay publisher token refresh and permit recovery guards
+        run: node --test scripts/lib/malay-publish-runtime.test.mjs
 
       - name: Check bounded GEO source bindings and existing HTML cache
         run: npm test -- src/lib/geoSourceBinding.integration.test.ts src/lib/edgeHtmlCache.integration.test.ts
