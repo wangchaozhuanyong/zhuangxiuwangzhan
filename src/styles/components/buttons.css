@@ -237,10 +237,10 @@
       width: 68px;
       right: 1rem;
       grid-template-columns: 1fr;
-      grid-template-rows: 24px 18px;
+      grid-template-rows: 24px 26px;
       justify-items: center;
-      gap: 3px;
-      padding: 11px 5px 10px;
+      gap: 2px;
+      padding: 7px 5px;
       font-size: 12px;
       text-align: center;
     }
@@ -249,11 +249,15 @@
     .fc-furniture-floating__label { font-size: 12px; line-height: 18px; letter-spacing: 0.015em; }
     .fc-furniture-floating__label--desktop, .fc-furniture-floating__hint { display: none; }
     .fc-furniture-floating__label--mobile { display: block; }
+    .fc-furniture-floating[lang] .fc-furniture-floating__label--mobile {
+      width: 100%;
+      max-width: 100%;
+      white-space: normal;
+      font-size: 11px;
+      line-height: 13px;
+    }
     .fc-furniture-floating__action { position: absolute; right: 5px; top: 5px; width: 12px; height: 12px; border: 0; border-radius: 2px; }
     .fc-furniture-floating__arrow { width: 11px; height: 11px; }
-    .fc-furniture-floating[lang="en"] { grid-template-rows: 24px 26px; gap: 3px; padding-block: 7px; }
-    .fc-furniture-floating[lang="en"] .fc-furniture-floating__label { max-width: 60px; white-space: normal; font-size: 11px; line-height: 13px; }
-    .fc-furniture-floating[lang="en"] .fc-furniture-floating__icon svg { width: 24px; height: 24px; }
     .scheme-a-public-shell:has(.fc-route-quote-page) .fc-furniture-floating {
       transition-property: border-color, transform;
     }

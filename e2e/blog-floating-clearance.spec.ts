@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-for (const language of ["en", "zh"] as const) {
+for (const language of ["en", "zh", "ms"] as const) {
   for (const width of [360, 390, 768, 1024, 1440]) {
     test(`floating shop stays visible and fixed while reading the blog in ${language} at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -26,6 +26,27 @@ for (const language of ["en", "zh"] as const) {
           const dock = page.getByTestId("mobile-bottom-dock");
           await expect(dock).toBeVisible();
           await expect(dock.locator('[data-active="true"]')).toBeVisible();
+          const label = page.locator(".fc-furniture-floating__label--mobile");
+          await expect(label).toBeVisible();
+          const labelGeometry = await label.evaluate(node => {
+            const labelRect = node.getBoundingClientRect();
+            const buttonRect = node.closest(".fc-furniture-floating")!.getBoundingClientRect();
+            return {
+              labelLeft: labelRect.left,
+              labelRight: labelRect.right,
+              labelBottom: labelRect.bottom,
+              buttonLeft: buttonRect.left,
+              buttonRight: buttonRect.right,
+              buttonBottom: buttonRect.bottom,
+              labelHeight: labelRect.height,
+              labelScrollHeight: node.scrollHeight,
+            };
+          });
+          expect(labelGeometry.labelLeft).toBeGreaterThanOrEqual(labelGeometry.buttonLeft);
+          expect(labelGeometry.labelRight).toBeLessThanOrEqual(labelGeometry.buttonRight);
+          expect(labelGeometry.labelBottom).toBeLessThanOrEqual(labelGeometry.buttonBottom);
+          expect(labelGeometry.labelHeight).toBeGreaterThan(0);
+          expect(labelGeometry.labelScrollHeight).toBeLessThanOrEqual(labelGeometry.labelHeight + 1);
         }
         const geometry = await page.evaluate(() => {
           const floating = document.querySelector(".fc-furniture-floating")!.getBoundingClientRect();
