@@ -222,6 +222,26 @@ describe("public Edge HTML cache", () => {
   });
 
   it.each([
+    ["/ms/services/office", "/ms/services/office-renovation"],
+    ["/ms/services/shoplot", "/ms/services/shop-renovation"],
+    ["/ms/blog/renovation-cost-malaysia-2025", "/ms/blog/malaysia-renovation-budget-guide"],
+    ["/ms/blog/renovation-materials-for-malaysia-climate", "/ms/blog/renovation-materials-malaysia"],
+    ["/ms/blog/spc-vs-vinyl-flooring-malaysia", "/ms/blog/spc-vinyl-vs-laminate-flooring"],
+    ["/ms/blog/office-fit-out-checklist-selangor", "/ms/blog/office-renovation-checklist-malaysia"],
+    ["/ms/blog/shop-renovation-opening-timeline-malaysia", "/ms/blog/shop-renovation-before-opening"],
+    ["/ms/blog/kl-condo-renovation-approval", "/ms/blog/condo-renovation-management-approval-malaysia"],
+  ])("permanently redirects Malay legacy path %s to the canonical page", async (path, expectedPath) => {
+    const response = await onRequest({
+      request: new Request(`https://flashcast.com.my${path}`),
+      env: {},
+      next: async () => new Response("not used"),
+    } as never);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
+  });
+
+  it.each([
     ["/en/landing/office-renovation", "/en/services/office-renovation"],
     ["/zh/landing/kitchen-cabinet?source=legacy", "/zh/services/kitchen?source=legacy"],
     ["/en/landing/warehouse-shelving/", "/en/services/warehouse"],

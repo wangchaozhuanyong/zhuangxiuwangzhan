@@ -338,11 +338,12 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
       url.searchParams.set("malay_cms_run", env.GITHUB_RUN_ID);
       const response = await fetch(url, { cache: "no-store", headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(30_000) });
       const html = await response.text();
-      return { path, status: response.status, htmlBytes: Buffer.byteLength(html), hasHtml: /<html\b/i.test(html), hasMain: /<main\b/i.test(html) };
+      return { path, status: response.status, htmlBytes: Buffer.byteLength(html), hasHtml: /<html\b/i.test(html),
+        hasAppRoot: /<div\s+id=["']root["']/i.test(html) };
     }));
     checks.push(...results);
   }
-  const failedRoutes = checks.filter((check) => check.status !== 200 || !check.hasHtml || !check.hasMain);
+  const failedRoutes = checks.filter((check) => check.status !== 200 || !check.hasHtml || !check.hasAppRoot);
   if (failedRoutes.length) {
     writeJson(join(artifactRoot, "public-route-readback-failed.json"), {
       checkedAt: new Date().toISOString(),
@@ -351,7 +352,7 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
       businessWrites: 0,
     });
     const summary = failedRoutes.slice(0, 12)
-      .map(({ path, status, htmlBytes, hasHtml, hasMain }) => `${path} [${status}, ${htmlBytes} bytes, html=${hasHtml}, main=${hasMain}]`)
+      .map(({ path, status, htmlBytes, hasHtml, hasAppRoot }) => `${path} [${status}, ${htmlBytes} bytes, html=${hasHtml}, appRoot=${hasAppRoot}]`)
       .join("; ");
     fail(`Affected Malay routes failed their live read-only page check: ${summary}`);
   }
