@@ -52,6 +52,10 @@ on:
       - scripts/lib/publisher-public-readback.mjs
       - scripts/lib/publisher-public-readback.test.mjs
       - scripts/publish-malay-cms-single-target.mjs
+      - scripts/publish-malay-cms-continuation-20261019.mjs
+      - drafts/malay-cms-continuation-20261019/**
+      - src/lib/malayCmsPublisher.test.ts
+      - src/lib/translationSecurity.test.ts
       - scripts/lib/publisher-reviewed-renderer.mjs
       - scripts/lib/publisher-reviewed-metadata.mjs
       - scripts/check-publisher-reviewed-renderer.mjs
@@ -104,6 +108,7 @@ on:
       - supabase/functions/content-publish/owner-publisher-three-targets.ts
       - supabase/functions/content-publish/unified-content-targets.ts
       - supabase/functions/_shared/managed-targets.ts
+      - supabase/functions/_shared/malay-translation-targets.ts
       - supabase/functions/_shared/unified-content-targets.ts
       - supabase/functions/content-publish/managed-timestamp.ts
       - supabase/functions/content-publish/permit-auth.ts
@@ -156,6 +161,8 @@ jobs:
             src/lib/contentPublishBuiltinWardrobe.test.ts \
             src/lib/contentPublishOrg020V7.test.ts \
             src/lib/contentPublishNativeBody.test.ts \
+            src/lib/malayCmsPublisher.test.ts \
+            src/lib/translationSecurity.test.ts \
             src/lib/contentPublishOwnerPublisherThree.test.ts \
             src/lib/contentPublishUnifiedContent.test.ts \
             src/lib/contentPublishRemainingBatch.test.ts \
@@ -187,6 +194,9 @@ jobs:
         run: |
           npm test -- src/components/services/SurfaceRepairContent.test.tsx src/components/services/DesignServiceContent.cms.test.tsx src/data/services.seo.test.ts src/styles/publicDesignBoundary.test.ts
           node --test scripts/publish-surface-repair.test.mjs
+
+      - name: Parse the frozen Malay batch publisher
+        run: node --check scripts/publish-malay-cms-continuation-20261019.mjs
 
       - name: Check bounded GEO source bindings and existing HTML cache
         run: npm test -- src/lib/geoSourceBinding.integration.test.ts src/lib/edgeHtmlCache.integration.test.ts

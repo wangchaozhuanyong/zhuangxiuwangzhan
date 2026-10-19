@@ -1,4 +1,5 @@
 import type { ContentPublishClient, ContentRow, ServiceRow } from "./types.ts";
+import type { ManagedTarget } from "../_shared/managed-targets.ts";
 
 export async function fetchServiceById(client: ContentPublishClient, id: string): Promise<ServiceRow | null> {
   const { data, error } = await client.from("services").select("*").eq("id", id).maybeSingle();
@@ -83,6 +84,54 @@ export async function updateContentRecordAtVersion(
     .eq("id", id).eq("updated_at", expectedUpdatedAt).select("*").maybeSingle();
   if (error) throw new Error(error.message);
   return data as ContentRow | null;
+}
+
+const MALAY_TRANSLATION_TABLES = new Set([
+  "before_after_items", "blog_posts", "cms_content_entries", "cms_pages", "cms_sections",
+  "cta_blocks", "faqs", "home_sections", "process_steps", "project_images", "service_areas",
+  "services", "site_pages",
+]);
+
+// A Malay patch can touch only a fixed registry row and its explicitly blank
+// fields. Tables with updated_at use that version plus blank-field predicates;
+// project_images has no updated_at, so its complete scalar baseline is the CAS.
+export async function updateMalayTranslationAtVersion(
+  client: ContentPublishClient,
+  target: ManagedTarget,
+  expectedVersion: string,
+  baselineRow: Record<string, unknown>,
+  patch: Record<string, unknown>,
+): Promise<ContentRow | null> {
+  if (target.contentType !== "translation_patch" || !target.table || !MALAY_TRANSLATION_TABLES.has(target.table)
+      || !target.changedFields?.length || !target.baselineProjectionFields?.length
+      || Object.keys(patch).length !== target.changedFields.length
+      || target.changedFields.some((field) => !field.endsWith("_ms") || !(field in patch))) {
+    throw new Error("Malay translation target is outside the fixed row and field registry.");
+  }
+
+  let query = client.from(target.table).update(patch).eq("id", target.id);
+  if (target.versionField === "updated_at") {
+    query = query.eq("updated_at", expectedVersion);
+    for (const field of target.changedFields) query = query.is(field, null);
+  } else if (target.versionField === "created_at" && target.table === "project_images") {
+    if (!target.expectedUpdatedAt || expectedVersion !== target.expectedUpdatedAt) {
+      throw new Error("Malay image target version differs from its fixed baseline.");
+    }
+    for (const field of target.baselineProjectionFields) {
+      if (field === "id") continue;
+      if (!(field in baselineRow)) throw new Error("Malay image baseline is incomplete.");
+      const value = baselineRow[field];
+      if (value === null) query = query.is(field, null);
+      else if (["string", "number", "boolean"].includes(typeof value)) query = query.eq(field, value);
+      else throw new Error("Malay image baseline contains a value that cannot be guarded by scalar CAS.");
+    }
+  } else {
+    throw new Error("Malay translation target has no supported row-version guard.");
+  }
+
+  const { data, error } = await query.select("*").maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as ContentRow | null) || null;
 }
 
 // These RPCs commit the complete publication, audit, and public revision together.

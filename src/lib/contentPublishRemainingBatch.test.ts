@@ -187,7 +187,7 @@ describe("the single frozen 20-row owner-directed completion batch", () => {
     expect(preview).toContain("inputs.mode == 'dry-run'"); expect(preview).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(publish).toContain("inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390' || inputs.target == 'remaining-completion-after-38037667102') && inputs.mode == 'publish'");
     expect(publish).toContain("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}");
-    expect(workflow.split("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}")).toHaveLength(3);
+    expect(workflow.split("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}")).toHaveLength(4);
     expect(workflow).not.toContain("MANAGED_CMS_PERMIT_ISSUER_SECRET");
     expect(workflow).toContain("      - name: Upload audit package\n        if: always()");
     const shell = workflow.split("        run: |\n")[1].split("\n      - name:")[0].split("\n").map((line) => line.replace(/^ {10}/, "")).join("\n");

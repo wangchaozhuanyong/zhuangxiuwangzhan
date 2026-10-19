@@ -3,12 +3,13 @@ import { NATIVE_BODY_TARGETS } from "./native-body-targets.ts";
 import { OWNER_PUBLISHER_THREE_TARGETS } from "./owner-publisher-three-targets.ts";
 import { UNIFIED_CONTENT_TARGETS } from "./unified-content-targets.ts";
 import { BUILTIN_WARDROBE_TARGETS } from "./builtin-wardrobe-targets.ts";
+import { MALAY_TRANSLATION_TARGETS } from "./malay-translation-targets.ts";
 export { ORG020_V7_TARGETS };
 
 export type ManagedTarget = {
   id: string;
   slug: string;
-  contentType: "service" | "service_area" | "blog" | "site_page" | "faq";
+  contentType: "service" | "service_area" | "blog" | "site_page" | "faq" | "translation_patch";
   taskId: string;
   actionId: string;
   candidateVersion: string;
@@ -20,6 +21,7 @@ export type ManagedTarget = {
   rollbackAllowed?: boolean;
   baselineProjectionFields?: readonly string[];
   expectedUpdatedAt?: string;
+  versionField?: "updated_at" | "created_at";
   table?: string;
   rollbackFieldsSha256?: string;
   retainedProjectionFields?: readonly string[];
@@ -126,7 +128,9 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
   {"id": "190d319c-b027-4730-ab34-df5010f4acc0", "slug": "office-renovation-checklist-malaysia", "contentType": "blog", "taskId": "fc-20260926-org027-org028-blog-media-implementation-v1", "actionId": "replace-office-renovation-checklist-malaysia-cover-alt-v1", "candidateVersion": "office-renovation-checklist-malaysia-media-r1-v1", "scope": "flashcast.com.my:blog_posts/190d319c-b027-4730-ab34-df5010f4acc0:cover_image_url,alt_en,alt_zh", "changedFields": ["cover_image_url", "alt_en", "alt_zh"], "baselineFieldsSha256": "b2af6b33a7fbf442190df9773c5672c0bec60df032965630b8e0a0c93d2de326", "desiredFieldsSha256": "266b7153d22f31ae71b46c10675ab7b4213aa4b2c31ff1b67be72e384b6a40db", "requiresParentRun": true, "rollbackAllowed": false},
 ];
 
-export const MANAGED_TARGETS: readonly ManagedTarget[] = [...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS];
+export const MANAGED_TARGETS: readonly ManagedTarget[] = [
+  ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS,
+];
 
 export const findManagedTarget = (
   targets: readonly ManagedTarget[], id: string, slug: string,
@@ -192,7 +196,7 @@ export async function findManagedPreviewCandidate(
 export function isProtectedContentRecord(table: string, record: Record<string, unknown>): boolean {
   const tables: Record<ManagedTarget["contentType"], string> = {
     service: "services", service_area: "service_areas", blog: "blog_posts",
-    site_page: "site_pages", faq: "faqs",
+    site_page: "site_pages", faq: "faqs", translation_patch: "",
   };
   return MANAGED_TARGETS.some((target) => (target.table || tables[target.contentType]) === table
     && (record.id === target.id || (Boolean(target.slug) && (record.slug === target.slug

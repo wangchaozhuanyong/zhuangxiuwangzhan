@@ -137,7 +137,7 @@ describe("fixed eight after a truthful native save and failed identity hook",()=
     const dir=`audits/content-publish-rejected-eight-${process.pid}`;
     const invalid=spawnSync(process.execPath,["--experimental-strip-types","scripts/publish-remainder8-after-38037667102.mjs","--skip=c07",`--artifact-dir=${dir}`],{encoding:"utf8",env:{PATH:process.env.PATH,PUBLISH_TARGET:REMAINDER8_NAME}});
     expect(invalid.status).not.toBe(0);expect(invalid.stderr).toContain("accepts only mode");expect(existsSync(dir)).toBe(false);
-    expect(workflow.split("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}")).toHaveLength(3);
+    expect(workflow.split("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}")).toHaveLength(4);
     expect(workflow).toContain("batch_script=scripts/publish-remainder8-after-38037667102.mjs");
     const ci=readFileSync(".github/workflows/r3-managed-cms-pr-ci.yml","utf8");expect(ci).toContain("src/lib/contentPublishRemainder8.test.ts");
     expect(targetConfigs[completed[11].target].publicPaths).toHaveLength(2);

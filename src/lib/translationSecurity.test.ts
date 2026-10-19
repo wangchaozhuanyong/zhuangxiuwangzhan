@@ -79,7 +79,9 @@ describe("translation authorization and protected content", () => {
     expect(result.body.ok).toBe(true);
     expect(f.writeFilters).toContainEqual(["updated_at", "2026-10-08T00:00:00Z"]);
   });
-  it.each(MANAGED_TARGETS.map((target) => [target.table || ({ service: "services", blog: "blog_posts", service_area: "service_areas", site_page: "site_pages", faq: "faqs" })[target.contentType], target.id]))(
+  it.each(MANAGED_TARGETS
+    .filter((target) => ["services", "projects", "project_images", "blog_posts", "materials", "testimonials", "hero_slides", "service_areas", "landing_pages", "home_sections", "about_sections", "faqs", "cta_blocks", "site_pages", "cms_pages", "cms_sections", "cms_content_entries"].includes(target.table ?? ""))
+    .map((target) => [target.table, target.id]))(
     "cannot bypass protected %s/%s", async (table, id) => {
       const f = fixture("super_admin", true, "aal2", { id, status: "published" });
       expect((await generateEnglishContent(f.req, { table, id, force: true }, f.client)).status).toBe(403);

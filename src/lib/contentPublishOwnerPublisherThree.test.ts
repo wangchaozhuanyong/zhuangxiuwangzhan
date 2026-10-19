@@ -23,8 +23,9 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(Object.keys(lockedOwnerPublisherThreeCandidates)).toEqual(names);
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
     expect(NATIVE_BODY_TARGETS).toHaveLength(19);
-    expect(MANAGED_TARGETS).toHaveLength(73);
-    expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
+    const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
+    expect(historicalTargets).toHaveLength(73);
+    expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 
   it.each(names)("%s binds the exact tuple, projection, CAS and six original field values", (name) => {
