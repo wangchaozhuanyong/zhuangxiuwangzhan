@@ -1,3 +1,4 @@
+import { contactEntryText } from "@/i18n/contactEntryText";
 import { isMalayContentReady } from "@/i18n/localizedContent";
 import { malayFormat } from "@/i18n/malayText";
 import { interactionText } from "@/i18n/interactionText";
@@ -143,7 +144,7 @@ const Contact = () => {
     { label: t.waze, href: buildWazeNavigationUrl(mapAddress, settings.map_latitude, settings.map_longitude) },
     { label: t.appleMaps, href: buildAppleMapNavigationUrl(mapAddress, settings.map_latitude, settings.map_longitude) },
   ];
-  const whatsappHref = settings.whatsapp_url(t.whatsappMessage);
+  const whatsappHref = settings.whatsapp_url(contactEntryText[language].message(contactEntryText[language].genericService));
   const contactItems = [
     { icon: Phone, title: t.phoneTitle, text: settings.phone_display, href: settings.phone_href, track: "phone", action: t.callAction },
     { icon: Mail, title: t.emailTitle, text: settings.email, href: `mailto:${settings.email}`, track: "email", action: t.emailAction },
@@ -187,7 +188,7 @@ const Contact = () => {
                 </div>
                 <Button asChild className="fc-route-contact-primary min-h-12 w-full">
                   <a href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "contact_info", { destination: "whatsapp" })}>
-                    <WhatsAppIcon aria-hidden="true" />{t.whatsappCta}<ArrowRight aria-hidden="true" />
+                    <WhatsAppIcon aria-hidden="true" />{contactEntryText[language].photoCta}<ArrowRight aria-hidden="true" />
                   </a>
                 </Button>
                 <div className="public-contact-list">
@@ -307,7 +308,7 @@ const Contact = () => {
                                 onClick={() => trackCtaClick("whatsapp", "contact_error", { destination: "whatsapp" })}
                               >
                                 <WhatsAppIcon className="w-4 h-4 mr-1.5" />
-                                {t.whatsappCta}
+                                {contactEntryText[language].photoCta}
                               </a>
                             </Button>
                             <Button size="sm" variant="outline" className="btn-press" asChild>

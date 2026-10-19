@@ -4,7 +4,7 @@ import { QUOTE_FORM_ID } from "@/lib/quoteFormTarget";
 const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][aria-modal="true"],dialog[open]';
 const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
-const quoteControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
+const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
 
 const intersects = (left: DOMRect, right: DOMRect) => left.width > 0 && left.height > 0
   && right.width > 0 && right.height > 0 && left.left < right.right && left.right > right.left
@@ -37,15 +37,27 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       if (disposed) return;
       const box = entry.getBoundingClientRect();
       const modalOpen = Array.from(document.querySelectorAll<HTMLElement>(modalContent)).some(isVisible);
+      // Radix can remove the panel a frame before its decorative overlay.
+      // aria-hidden overlays still receive clicks until that layer is gone.
+      const overlayBlocking = Array.from(document.querySelectorAll<HTMLElement>("[data-dialog-overlay]"))
+        .some(element => {
+          const bounds = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return bounds.width > 0 && bounds.height > 0 && style.visibility !== "hidden"
+            && style.pointerEvents !== "none";
+        });
       const recoveryObstructed = Array.from(document.querySelectorAll<HTMLElement>(recoveryContent))
         .some(element => isVisible(element) && intersects(box, element.getBoundingClientRect()));
       const active = document.activeElement;
       const inputObstructed = active instanceof HTMLElement && !entry.contains(active)
-        && active.matches(focusedInput) && isVisible(active) && intersects(box, active.getBoundingClientRect());
-      const quoteObstructed = Array.from(document.getElementById(QUOTE_FORM_ID)?.querySelectorAll<HTMLElement>(quoteControls) || [])
+        && active.matches(focusedInput) && isVisible(active)
+        && (window.matchMedia("(max-width: 767px)").matches || intersects(box, active.getBoundingClientRect()));
+      const formObstructed = Array.from(document.querySelectorAll<HTMLElement>(`#${QUOTE_FORM_ID},.fc-route-contact-form form`))
+        .flatMap(form => Array.from(form.querySelectorAll<HTMLElement>(formControls)))
         .some(element => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
           && !element.matches(":disabled") && isVisible(element) && intersects(box, element.getBoundingClientRect()));
-      setObstructed(modalOpen || recoveryObstructed || inputObstructed || quoteObstructed);
+      const keyboardOpen = window.visualViewport && window.visualViewport.height < window.innerHeight - 120;
+      setObstructed(modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
     };
     const schedule = () => { if (!frame && !disposed) frame = requestAnimationFrame(check); };
     check();
