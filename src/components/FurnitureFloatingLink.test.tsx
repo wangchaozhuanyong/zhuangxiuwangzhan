@@ -28,7 +28,7 @@ for (const language of ["zh", "en", "ms"] as const) {
         expect(trigger.textContent).toBe(contactEntryText[language].trigger);
         expect(document.querySelector('[role="dialog"]')).toBeNull();
         expect(document.querySelector(".fc-furniture-floating")).toBeNull();
-        await act(async () => trigger.click());
+        await act(async () => { trigger.click(); await vi.dynamicImportSettled(); });
         const dialog = document.querySelector('[role="dialog"]')!;
         expect(dialog).toHaveTextContent(contactEntryText[language].title);
         const whatsapp = dialog.querySelector<HTMLAnchorElement>('a[href^="https://wa.me/"]')!;
