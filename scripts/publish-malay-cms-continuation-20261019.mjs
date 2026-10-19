@@ -342,8 +342,18 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
     }));
     checks.push(...results);
   }
-  if (checks.some((check) => check.status !== 200 || !check.hasHtml || !check.hasMain)) {
-    fail("At least one affected Malay route failed its live read-only page check.");
+  const failedRoutes = checks.filter((check) => check.status !== 200 || !check.hasHtml || !check.hasMain);
+  if (failedRoutes.length) {
+    writeJson(join(artifactRoot, "public-route-readback-failed.json"), {
+      checkedAt: new Date().toISOString(),
+      routes: checks,
+      failedRoutes,
+      businessWrites: 0,
+    });
+    const summary = failedRoutes.slice(0, 12)
+      .map(({ path, status, htmlBytes, hasHtml, hasMain }) => `${path} [${status}, ${htmlBytes} bytes, html=${hasHtml}, main=${hasMain}]`)
+      .join("; ");
+    fail(`Affected Malay routes failed their live read-only page check: ${summary}`);
   }
 
   const { chromium } = await import("@playwright/test");
