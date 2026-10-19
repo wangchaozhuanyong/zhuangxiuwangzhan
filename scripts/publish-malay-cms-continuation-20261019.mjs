@@ -6,8 +6,9 @@ import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { MALAY_TRANSLATION_MANIFEST_SHA256, MALAY_TRANSLATION_TARGETS } from "../supabase/functions/_shared/malay-translation-targets.ts";
 import { verifyGithubOidcToken } from "../supabase/functions/content-publish/github-oidc.ts";
-import { issueManagedPermit, readManagedPermit } from "../supabase/functions/content-publish/permit-issuer.ts";
+import { issueManagedPermit, readManagedPermit, revokeManagedPermit } from "../supabase/functions/content-publish/permit-issuer.ts";
 import { samePgTimestamp } from "../supabase/functions/content-publish/managed-timestamp.ts";
+import { githubOidcTokenNeedsRefresh, isExpiredUnclaimedPermitForTarget } from "./lib/malay-publish-runtime.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TASK_ID = "fc-20261019-malay-cms-completion-v1";
@@ -253,6 +254,37 @@ function validateCurrentRows(rows, permits) {
   return plan;
 }
 
+async function revokeExpiredUnclaimedPermits(rows, permits, serviceClient, artifactRoot) {
+  const receipts = [];
+  const checkedAt = new Date().toISOString();
+  for (const permit of permits) {
+    const target = targetById.get(permit.record_id);
+    if (!target || !isExpiredUnclaimedPermitForTarget(permit, target, Date.now(), samePgTimestamp)) continue;
+    const row = rows.get(target.id);
+    const baselineStillEmpty = row && row.id === target.id
+      && samePgTimestamp(row[target.versionField], target.expectedUpdatedAt)
+      && digest(project(row, target.baselineProjectionFields)) === target.baselineFieldsSha256
+      && target.changedFields.every((field) => isEmpty(row[field]));
+    if (!baselineStillEmpty) {
+      fail(`Expired permit for ${target.table}/${target.id} cannot be revoked because its exact reviewed baseline is no longer empty.`);
+    }
+    const revoked = await revokeManagedPermit(serviceClient, permit.permit_id);
+    const readback = await readManagedPermit(serviceClient, permit.permit_id);
+    if (revoked.status !== "revoked" || readback?.status !== "revoked") {
+      fail(`Expired permit revocation was not confirmed for ${target.table}/${target.id}.`);
+    }
+    permit.status = "revoked";
+    receipts.push({ permitId: permit.permit_id, table: target.table, rowId: target.id,
+      priorStatus: "issued", expiresAt: permit.expires_at, status: readback.status,
+      baselineFieldsSha256: target.baselineFieldsSha256 });
+  }
+  if (receipts.length) writeJson(join(artifactRoot, "permit-recovery.json"), {
+    checkedAt, reason: "Expired, unclaimed permits were revoked only after the exact CMS row still matched its empty reviewed baseline.",
+    permits: receipts,
+  });
+  return receipts;
+}
+
 function routeFor(entry, row, extras = {}) {
   if (entry.table === "blog_posts") return `/ms/blog/${row.slug}`;
   if (entry.table === "services") return `/ms/services/${row.slug}`;
@@ -367,22 +399,32 @@ async function main() {
   if (relative(ROOT, artifactRoot).startsWith("..") || relative(ROOT, artifactRoot) === "") fail("Audit evidence must remain inside this project checkout.");
   mkdirSync(artifactRoot, { recursive: true });
   const deployReceipt = await assertMainAndDeployedVersion();
-  const { token: oidcToken, identity } = await managedIdentity();
+  let identitySession = await managedIdentity();
+  const identity = identitySession.identity;
+  const currentManagedOidcToken = async () => {
+    if (githubOidcTokenNeedsRefresh(identitySession.token)) {
+      const refreshed = await managedIdentity();
+      if (!same(refreshed.identity, identity)) fail("Refreshed GitHub identity differs from the locked workflow run.");
+      identitySession = refreshed;
+    }
+    return identitySession.token;
+  };
   const serviceClient = mode === "publish" ? createClient(env.VITE_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY,
     { auth: { persistSession: false, autoRefreshToken: false } }) : null;
 
-  const identityProbe = await postContentPublish({ managedIdentityProbe: true }, oidcToken);
+  const identityProbe = await postContentPublish({ managedIdentityProbe: true }, await currentManagedOidcToken());
   if (identityProbe.performed_write !== false || identityProbe.dry_run !== true
       || identityProbe.identity?.runId !== identity.runId || identityProbe.identity?.workflowSha !== env.GITHUB_SHA) {
     fail("Publisher identity probe did not return the exact current run without a write.");
   }
   const rowsBefore = await readTargetRows();
   const permitRows = mode === "publish" ? await serviceClient.from("managed_cms_release_permits")
-    .select("permit_id,status,operation,task_id,action_id,scope,candidate_version,record_id,slug,payload_sha256,rollback_payload_sha256,expected_updated_at,expires_at,saved_id,saved_updated_at")
+    .select("permit_id,status,operation,task_id,action_id,scope,candidate_version,record_id,slug,payload_sha256,rollback_payload_sha256,expected_updated_at,expires_at,github_run_id,github_run_attempt,saved_id,saved_updated_at")
     .eq("task_id", TASK_ID).then(({ data, error }) => {
       if (error || !Array.isArray(data)) fail("Could not inspect prior permits for this exact Malay batch.");
       return data;
     }) : [];
+  if (serviceClient) await revokeExpiredUnclaimedPermits(rowsBefore, permitRows, serviceClient, artifactRoot);
   const plan = validateCurrentRows(rowsBefore, permitRows);
   if (serviceClient) for (const item of plan.filter((entry) => entry.target.table === "project_images")) {
     await assertPublicParentForImage(serviceClient, item.row);
@@ -400,7 +442,7 @@ async function main() {
   const dryRunReceipts = [];
   for (const item of plan.filter((entry) => entry.state === "pending")) {
     const target = item.target;
-    const receipt = await postContentPublish(requestFor(item.entry, target, "dry-run"), oidcToken);
+    const receipt = await postContentPublish(requestFor(item.entry, target, "dry-run"), await currentManagedOidcToken());
     if (receipt.dry_run !== true || receipt.performed_write !== false || receipt.content_type !== "translation_patch"
         || receipt.existing_id !== target.id || !same(receipt.payload_preview, item.entry.patch)
         || receipt.payload_sha256 !== target.desiredFieldsSha256
@@ -441,6 +483,7 @@ async function main() {
     if (!current || !same(project(current, target.baselineProjectionFields), project(item.row, target.baselineProjectionFields))) {
       fail(`The locked baseline changed immediately before ${target.table}/${target.id}; no permit was issued.`);
     }
+    const publishOidcToken = await currentManagedOidcToken();
     const permitInput = {
       permitId: randomUUID(), taskId: target.taskId, actionId: target.actionId, actionClass: "cms_write",
       operation: "publish", scope: target.scope, candidateVersion: target.candidateVersion,
@@ -470,7 +513,7 @@ async function main() {
       published = await postContentPublish(requestFor(item.entry, target, "publish", "publish", {
         permitId: permitInput.permitId, taskId: target.taskId, actionId: target.actionId,
         operation: "publish", scope: target.scope, candidateVersion: target.candidateVersion,
-      }), oidcToken);
+      }), publishOidcToken);
     } catch (error) {
       writeJson(join(artifactRoot, "stop-after-uncertain-write.json"), { checkedAt: new Date().toISOString(),
         table: target.table, id: target.id, permitId: permitInput.permitId, writesStarted,
