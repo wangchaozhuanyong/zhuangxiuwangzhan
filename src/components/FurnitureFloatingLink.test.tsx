@@ -1,76 +1,57 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
-import { MemoryRouter, useNavigate } from "react-router-dom";
-import { describe, expect, it } from "vitest";
-import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
-import { furnitureText } from "@/i18n/furnitureText";
-import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
+import FurnitureFloatingLink from "./FurnitureFloatingLink";
+import { contactEntryText } from "@/i18n/contactEntryText";
+import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
 
-const shopDestinations = {
-  zh: "https://shop.flashcast.com.my/zh/",
-  en: "https://shop.flashcast.com.my/en/",
-} as const;
+const state = vi.hoisted(() => ({ language: "en" as "en" | "zh" | "ms" }));
+vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: state.language }) }));
+vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettings: () => ({
+  whatsapp_url: (message: string) => `https://wa.me/601128853888?text=${encodeURIComponent(message)}`,
+  phone_href: "tel:+601128853888", phone_display: "+60 11-2885 3888",
+}) }));
 
-for (const language of ["en", "zh"] as const) {
-  describe(`furniture entry ${language} route and accessibility preservation`, () => {
-    it("keeps destination, language and keyboard/press behavior across routes without route exceptions", () => {
-      window.history.replaceState({}, "", `/${language}/quote`);
-      const container = document.createElement("div");
-      document.body.appendChild(container);
+for (const language of ["zh", "en", "ms"] as const) {
+  describe(`${language} shared contact entry`, () => {
+    it("starts collapsed, uses configured contact details and service context, closes with Back and restores focus", async () => {
+      state.language = language;
+      const container = document.createElement("div"); document.body.append(container);
       const root = createRoot(container);
-      let go: ReturnType<typeof useNavigate>;
-      let setLanguage: ReturnType<typeof useLanguage>["setLanguage"];
-      const Probe = () => {
-        go = useNavigate();
-        setLanguage = useLanguage().setLanguage;
-        return <FurnitureFloatingLink />;
-      };
+      const router = createMemoryRouter([{ path: "*", element: <PublicChromeProvider isAdminRoute={false} routeKey="/services/kitchen">
+        <main><h1>Kitchen</h1></main><FurnitureFloatingLink />
+      </PublicChromeProvider> }], { initialEntries: [`/${language}/prior`, `/${language}/services/kitchen?keep=yes#section`] });
       try {
-        act(() => root.render(<LanguageProvider><MemoryRouter initialEntries={[`/${language}/quote`]}><Probe /></MemoryRouter></LanguageProvider>));
-        const entry = container.querySelector<HTMLAnchorElement>("a")!;
-        expect(entry.getAttribute("href")).toBe(shopDestinations[language]);
-        expect(entry.getAttribute("target")).toBe("_blank");
-        expect(entry.getAttribute("rel")).toBe("noopener noreferrer");
-        expect(entry.getAttribute("aria-label")).toBe(furnitureText[language].floatingShop);
-        expect(entry.getAttribute("lang")).toBe(language);
-        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
-        act(() => go(`/${language}/blog/renovation-materials-malaysia`));
-        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
-        act(() => go(`/${language}/blog`));
-        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
-        act(() => go(`/${language}/blog/`));
-        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
-        act(() => go(`/${language}`));
-        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
-        expect(entry.getAttribute("href")).toBe(shopDestinations[language]);
-        const otherLanguage = language === "zh" ? "en" : "zh";
-        act(() => {
-          go(`/${otherLanguage}`);
-          setLanguage(otherLanguage);
+        await act(async () => root.render(<RouterProvider router={router} />));
+        const trigger = container.querySelector<HTMLButtonElement>(".fc-contact-entry")!;
+        expect(trigger.textContent).toBe(contactEntryText[language].trigger);
+        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(document.querySelector(".fc-furniture-floating")).toBeNull();
+        await act(async () => trigger.click());
+        const dialog = document.querySelector('[role="dialog"]')!;
+        expect(dialog).toHaveTextContent(contactEntryText[language].title);
+        const whatsapp = dialog.querySelector<HTMLAnchorElement>('a[href^="https://wa.me/"]')!;
+        expect(new URL(whatsapp.href).pathname).toBe("/601128853888");
+        expect(new URL(whatsapp.href).searchParams.get("text")).toBe(contactEntryText[language].message("Kitchen"));
+        expect(dialog.querySelector('a[href^="tel:"]')).toHaveAttribute("href", "tel:+601128853888");
+        expect(dialog).not.toHaveTextContent(/微信|WeChat/);
+        expect(router.state.location.search).toBe("?keep=yes");
+        expect(router.state.location.hash).toBe("#section");
+        await act(async () => { await router.navigate(-1); });
+        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(router.state.location.pathname).toBe(`/${language}/services/kitchen`);
+        expect(document.activeElement).toBe(trigger);
+        await act(async () => trigger.click());
+        await act(async () => {
+          const close = document.querySelector<HTMLButtonElement>('[role="dialog"] button')!;
+          close.click(); close.click();
         });
-        expect(container.querySelector("a")).toBe(entry);
-        expect(entry.getAttribute("href")).toBe(shopDestinations[otherLanguage]);
-        expect(entry.getAttribute("lang")).toBe(otherLanguage);
-        expect(entry.getAttribute("aria-label")).toBe(furnitureText[otherLanguage].floatingShop);
-        act(() => {
-          go(`/${language}`);
-          setLanguage(language);
-        });
-        expect(entry.getAttribute("href")).toBe(shopDestinations[language]);
-        expect(entry.getAttribute("lang")).toBe(language);
-        expect(entry.getAttribute("aria-label")).toBe(furnitureText[language].floatingShop);
-        entry.focus();
-        expect(document.activeElement).toBe(entry);
-        const down = new Event("pointerdown", { bubbles: true });
-        Object.defineProperties(down, { isPrimary: { value: true }, button: { value: 0 } });
-        act(() => entry.dispatchEvent(down));
-        expect(entry.dataset.pressed).toBe("true");
-        act(() => entry.dispatchEvent(new Event("pointercancel", { bubbles: true })));
-        expect(entry.hasAttribute("data-pressed")).toBe(false);
-      } finally {
-        act(() => root.unmount());
-        container.remove();
-      }
+        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(router.state.location.pathname).toBe(`/${language}/services/kitchen`);
+        await act(async () => trigger.click());
+        expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+      } finally { await act(async () => root.unmount()); container.remove(); router.dispose(); }
     });
   });
 }

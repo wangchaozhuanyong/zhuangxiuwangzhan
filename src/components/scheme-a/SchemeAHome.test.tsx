@@ -89,8 +89,8 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero?.querySelector("img")).toHaveAttribute("src", image);
     expect(hero?.querySelector("img")).toHaveAttribute("alt", alt);
     const heroLinks = hero!.querySelectorAll("a");
-    expect(heroLinks).toHaveLength(2);
-    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "联系 WhatsApp" : "Contact WhatsApp");
+    expect(heroLinks).toHaveLength(3);
+    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "发照片，先聊需求" : "Share photos, discuss your plans");
     expect(heroLinks[0]).toHaveAttribute("href", state.whatsappHref);
     expect(heroLinks[0]).toHaveAttribute("target", "_blank");
     expect(heroLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
@@ -98,6 +98,9 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(heroLinks[1]).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
     expect(heroLinks[1]).toHaveAttribute("href", `/${language}/projects`);
     expect(heroLinks[1]).toHaveClass("scheme-a-button--glass");
+    expect(heroLinks[2]).toHaveAttribute("href", `https://shop.flashcast.com.my/${language}/`);
+    expect(heroLinks[2]).toHaveAttribute("target", "_blank");
+    expect(heroLinks[2]).toHaveAttribute("rel", "noopener noreferrer");
     expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();
     for (const slug of originalServiceSlugs) {
       expect(container.querySelector(`[data-home-section="services"] a[href="/${language}/services/${slug}"]`)).not.toBeNull();
@@ -114,7 +117,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     state.language = language;
     render(bundle());
     const hero = container.querySelector('[data-home-section="hero"]');
-    expect(hero!.querySelectorAll("a")).toHaveLength(2);
+    expect(hero!.querySelectorAll("a")).toHaveLength(3);
     expect(hero!.querySelector('a[target="_blank"]')).toHaveAttribute("href", state.whatsappHref);
     expect(hero!.querySelector(`a[href="/${language}/projects"]`)).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
     expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();

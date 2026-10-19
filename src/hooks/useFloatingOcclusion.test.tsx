@@ -106,6 +106,16 @@ describe("floating promotion stays available while reading", () => {
     await settle(); expectObstructed(false);
   });
 
+  it("waits for a pointer-blocking decorative overlay to leave after its panel closes", async () => {
+    content.innerHTML = '<div data-dialog-overlay aria-hidden="true" data-state="open"></div>';
+    const overlay = content.querySelector<HTMLElement>("[data-dialog-overlay]")!;
+    mount(); expectObstructed(true);
+    overlay.setAttribute("data-state", "closed"); await settle(); expectObstructed(true);
+    overlay.style.pointerEvents = "none"; await settle(); expectObstructed(false);
+    overlay.style.pointerEvents = "auto"; await settle(); expectObstructed(true);
+    overlay.remove(); await settle(); expectObstructed(false);
+  });
+
   it.each([
     'data-interaction-feedback="public"', 'class="public-route-feedback__recovery"', 'class="public-update-notice"',
   ])("yields to overlapping recovery UI (%s) and restores when it moves or is removed", async (attributes) => {
@@ -156,6 +166,14 @@ describe("floating promotion stays available while reading", () => {
     control.disabled = false; control.setAttribute("aria-disabled", "true"); await settle(); expectObstructed(false);
     control.removeAttribute("aria-disabled"); await settle(); expectObstructed(true);
     control.type = "hidden"; await settle(); expectObstructed(false);
+  });
+
+  it("also yields to overlapping contact form controls until they leave the entry area", async () => {
+    content.innerHTML = '<section class="fc-route-contact-form"><form><button type="submit">Send</button></form></section>';
+    const control = content.querySelector("button")!;
+    mount(); expectObstructed(true);
+    boxes.set(control, rect(200)); window.dispatchEvent(new Event("scroll"));
+    await settle(); expectObstructed(false);
   });
 
   it.each([
