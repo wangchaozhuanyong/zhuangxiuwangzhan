@@ -54,8 +54,9 @@ function clientFor(initial: Row, race = false) {
 describe("two exact combined native CMS targets", () => {
   it("registers two additional selectors while preserving historical bindings", () => {
     expect(Object.keys(lockedUnifiedContentCandidates)).toEqual(names);
-    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(MANAGED_TARGETS).toHaveLength(73);
-    expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
+    const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
+    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(historicalTargets).toHaveLength(73);
+    expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 
   it.each(names)("%s binds the exact current projection, source and four fields", (name) => {

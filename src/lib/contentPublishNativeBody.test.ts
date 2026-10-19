@@ -58,8 +58,9 @@ describe("19 exact original-identity multilingual body targets", () => {
   it("locks 8 services and 11 blogs without changing old identities", () => {
     expect(names).toHaveLength(19); expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     expect(NATIVE_BODY_TARGETS.filter((t) => t.contentType === "service")).toHaveLength(8);
-    expect(MANAGED_TARGETS.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
-    expect(MANAGED_TARGETS).toHaveLength(73);
+    const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
+    expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
+    expect(historicalTargets).toHaveLength(73);
     const workflow = readFileSync(".github/workflows/content-publish-approved.yml", "utf8");
     for (const name of names) {
       const locked = lockedNativeBodyCandidates[name]; const row = frozenRow(name);

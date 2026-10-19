@@ -6,6 +6,7 @@ type ContentPublishQueryResult<T = unknown> = {
 type ContentPublishQueryBuilder = PromiseLike<ContentPublishQueryResult<unknown[]>> & {
   select: (columns?: string) => ContentPublishQueryBuilder;
   eq: (field: string, value: unknown) => ContentPublishQueryBuilder;
+  is: (field: string, value: null) => ContentPublishQueryBuilder;
   maybeSingle: () => Promise<ContentPublishQueryResult<unknown | null>>;
   single: () => Promise<ContentPublishQueryResult<unknown>>;
   insert: (payload: Record<string, unknown> | Record<string, unknown>[]) => ContentPublishQueryBuilder;
@@ -39,7 +40,8 @@ export type ContentPublishType =
   | "site_page"
   | "faq"
   | "media"
-  | "cache_invalidation";
+  | "cache_invalidation"
+  | "translation_patch";
 export type ContentStatus = "draft" | "published" | "archived";
 
 export type ContentPublishRequest = {

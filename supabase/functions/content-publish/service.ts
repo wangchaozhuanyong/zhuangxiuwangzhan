@@ -10,6 +10,7 @@ import {
   insertAdminAuditLog,
   insertServiceRecord,
   updateContentRecordAtVersion,
+  updateMalayTranslationAtVersion,
   publishMaterialAtomic,
   publishHomepageAtomic,
   PublicationConflictError,
@@ -487,6 +488,7 @@ async function finishManagedCmsWrite(
   context: PublishContext,
   permitId: string,
   saved: ContentRow | null,
+  savedVersionField = "updated_at",
 ): Promise<boolean> {
   const identity = context.managedIdentity;
   if (!identity) return false;
@@ -495,7 +497,7 @@ async function finishManagedCmsWrite(
     p_github_run_id: identity.runId,
     p_github_run_attempt: identity.runAttempt,
     p_saved_id: saved?.id || null,
-    p_saved_updated_at: saved?.updated_at || null,
+    p_saved_updated_at: saved?.[savedVersionField] || null,
     p_success: Boolean(saved),
   });
   return !error && Array.isArray(data) && data.length === 1;
@@ -1773,7 +1775,8 @@ async function publishHomepageContent(
 
 const managedRecordKey = (input: ContentPublishRequest): string => input.contentType === "faq"
   ? `faq-${String(input.record?.id || "")}`
-  : input.contentType === "site_page" ? String(input.record?.page_key || "") : normalizeSlug(input.record?.slug);
+  : input.contentType === "site_page" ? String(input.record?.page_key || "")
+    : input.contentType === "translation_patch" ? String(input.record?.slug || "") : normalizeSlug(input.record?.slug);
 
 // Existing-row patches only. All validation precedes permit claim and SQL; no insertion or group replacement.
 function isSparseNativeBodyPatch(target: ManagedTarget, record: Record<string, unknown>, operation?: string) {
@@ -1864,6 +1867,127 @@ async function publishOrg020ExactPatch(
   return { body: { ...common, performed_write: true, saved_id: saved.id, saved_updated_at: saved.updated_at, warnings } };
 }
 
+const MALAY_TRANSLATION_APPROVAL_ID = "owner-authorized-malay-cms-completion-20261019";
+
+function isBlankMalayValue(value: unknown): boolean {
+  if (value === null || value === undefined) return true;
+  if (typeof value === "string") return value.trim().length === 0;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "object") return Object.keys(value as Record<string, unknown>).length === 0;
+  return false;
+}
+
+function hasUnsafeMalayMarkup(value: unknown): boolean {
+  if (typeof value === "string") {
+    return /<\s*script\b|\bon[a-z]+\s*=|javascript\s*:|data\s*:\s*text\/html/i.test(value);
+  }
+  if (Array.isArray(value)) return value.some(hasUnsafeMalayMarkup);
+  if (value && typeof value === "object") return Object.values(value as Record<string, unknown>).some(hasUnsafeMalayMarkup);
+  return false;
+}
+
+export async function publishMalayTranslationPatch(
+  input: ContentPublishRequest,
+  client: ContentPublishClient,
+  context: PublishContext,
+  mode: "dry-run" | "publish",
+  target: ManagedTarget | undefined,
+): Promise<ContentPublishResult> {
+  const record = input.record!;
+  if (!target || target.contentType !== "translation_patch" || !target.table || !target.changedFields?.length
+      || !target.baselineProjectionFields?.length || !target.baselineFieldsSha256 || !target.desiredFieldsSha256
+      || !target.expectedUpdatedAt || !target.versionField || target.rollbackAllowed !== false) {
+    return errorResult("Malay publication requires one exact registered row, field set, baseline and forward-only action.", 403);
+  }
+  if (!context.managedIdentity) return errorResult("Malay publication requires a verified GitHub workflow identity.", 403);
+  if (!target.changedFields.every((field) => field.endsWith("_ms"))) {
+    return errorResult("Malay publication may change only registered _ms fields.", 403);
+  }
+  const allowedKeys = new Set(["id", "slug", ...target.changedFields]);
+  if (record.id !== target.id || String(record.slug || "") !== target.slug
+      || Object.keys(record).some((field) => !allowedKeys.has(field))
+      || target.changedFields.some((field) => !(field in record))) {
+    return errorResult("Request fields differ from the exact Malay row and _ms allowlist.", 403);
+  }
+  const expected = String(input.expectedUpdatedAt || "");
+  if (!expected || !samePgTimestamp(expected, target.expectedUpdatedAt)) {
+    return errorResult("Malay row version differs from the fixed candidate. Refresh and obtain new QA.", 409);
+  }
+
+  const existing = await fetchRecordByField(client, target.table, "id", target.id);
+  if (!existing) return errorResult("The exact Malay CMS row was not found.", 404);
+  const currentVersion = existing[target.versionField];
+  if (!samePgTimestamp(currentVersion, expected)) {
+    return errorResult("Malay CMS row version changed after QA. No content was written.", 409);
+  }
+  if ("status" in existing && existing.status !== "published") {
+    return errorResult("Only currently published CMS rows may receive this Malay translation.", 409);
+  }
+  if (!target.baselineProjectionFields.every((field) => field in existing)) {
+    return errorResult("The Malay CMS row no longer matches the registered baseline schema.", 409);
+  }
+  const baseline = Object.fromEntries(target.baselineProjectionFields.map((field) => [field, existing[field] ?? null]));
+  if (await sha256(baseline) !== target.baselineFieldsSha256) {
+    return errorResult("Malay CMS row differs from the content-hash locked baseline. No content was written.", 409);
+  }
+  if (target.changedFields.some((field) => !isBlankMalayValue(existing[field]))) {
+    return errorResult("A target Malay field is no longer empty. No content was written.", 409);
+  }
+  const patch = Object.fromEntries(target.changedFields.map((field) => [field, record[field]]));
+  if (Object.values(patch).some(isBlankMalayValue) || hasUnsafeMalayMarkup(patch)
+      || JSON.stringify(patch).length > 150_000 || await sha256(patch) !== target.desiredFieldsSha256) {
+    return errorResult("Malay translation differs from the reviewed non-empty payload or contains unsafe markup.", 403);
+  }
+
+  // Child project images have no status/version column; their full-row CAS is
+  // safe only while the owning project is still public.
+  if (target.table === "project_images") {
+    const projectId = typeof existing.project_id === "string" ? existing.project_id : "";
+    const parent = projectId ? await fetchRecordByField(client, "projects", "id", projectId) : null;
+    if (!parent || parent.status !== "published") {
+      return errorResult("The linked project is not currently published. No image text was written.", 409);
+    }
+  }
+
+  const common = { ok: true, dry_run: mode === "dry-run", content_type: "translation_patch",
+    action: "update", table: target.table, slug: target.slug, existing_id: target.id,
+    changed_fields: [...target.changedFields], warnings: [], auth_mode: context.authMode || "managed-github" };
+  if (mode === "dry-run") {
+    return { body: { ...common, performed_write: false, payload_preview: patch, expected_updated_at: expected,
+      baseline_fields_sha256: target.baselineFieldsSha256, payload_sha256: target.desiredFieldsSha256 } };
+  }
+  if (input.ownerApproved !== true || input.explicitExecution !== true
+      || input.approvalId !== MALAY_TRANSLATION_APPROVAL_ID || input.managedPermit?.operation !== "publish") {
+    return errorResult("Malay publication requires the exact owner decision and a forward-only one-time permit.", 403);
+  }
+  const denied = await beginManagedCmsWrite(input, client, context, target, existing, target.slug,
+    patch, expected, patch);
+  if (denied) return denied;
+
+  let saved: ContentRow | null;
+  try {
+    saved = await updateMalayTranslationAtVersion(client, target, expected, existing, patch);
+  } catch (error) {
+    await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, null);
+    throw error;
+  }
+  if (!saved || target.changedFields.some((field) =>
+    JSON.stringify(stableValue(saved![field])) !== JSON.stringify(stableValue(patch[field])))
+      || !saved[target.versionField]) {
+    await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, null);
+    return errorResult("The Malay write could not be confirmed against its exact row. Read back before retrying.", 409);
+  }
+  const completed = await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, saved, target.versionField);
+  if (!completed) return errorResult("The one-time permit result is uncertain. Read back before issuing another permit.", 409);
+  const warnings: string[] = [];
+  try {
+    await insertAdminAuditLog(client, { adminUserId: context.adminUserId || null, action: "update",
+      tableName: target.table, recordId: target.id, oldValue: existing, newValue: saved });
+  } catch (error) { warnings.push(error instanceof Error ? error.message : "Audit log failed"); }
+  return { body: { ...common, performed_write: true, saved_id: saved.id,
+    saved_updated_at: saved[target.versionField], warnings } };
+}
+
 export async function publishContent(
   input: ContentPublishRequest,
   client: ContentPublishClient,
@@ -1882,7 +2006,8 @@ export async function publishContent(
     input.contentType !== "faq" &&
     input.contentType !== "service_area" &&
     input.contentType !== "media" &&
-    input.contentType !== "cache_invalidation"
+    input.contentType !== "cache_invalidation" &&
+    input.contentType !== "translation_patch"
   ) {
     return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page, faq (exact managed answers only), media, cache_invalidation.");
   }
@@ -1928,6 +2053,10 @@ export async function publishContent(
   if (!VALID_STATUSES.has(nextStatus)) return errorResult("Invalid nextStatus.");
   if (mode === "publish" && (input.ownerApproved !== true || input.explicitExecution !== true)) {
     return errorResult("Publishing requires ownerApproved=true and explicitExecution=true.", 403);
+  }
+  if (input.contentType === "translation_patch") {
+    return publishMalayTranslationPatch(input, client, context, mode,
+      exact?.contentType === "translation_patch" ? exact : undefined);
   }
   if (exact && (ORG020_V7_TARGETS.includes(exact)
       || isSparseNativeBodyPatch(exact, input.record, selection?.operation))) {

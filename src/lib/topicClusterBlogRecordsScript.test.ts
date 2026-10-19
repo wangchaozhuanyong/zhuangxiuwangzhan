@@ -208,6 +208,8 @@ describe("topic-cluster Blog publish records", () => {
     expect(cases).toHaveLength(2);
     expect(cases[0]).toEqual([...paidThreeTargets, ...rollbackTargets]);
     expect(cases[1]).toEqual(publishTargets);
+    expect(cases[1]).not.toContain("malay-cms-continuation-20261019");
+    expect(workflow).toContain("run: node --experimental-strip-types scripts/publish-malay-cms-continuation-20261019.mjs --mode=publish");
     for (const target of publishTargets) expect(workflow).toContain(`          - ${target}`);
     for (const target of mediaTargets) expect(cases[0]).not.toContain(target);
     for (const target of [wardrobeTarget, ...publisherThreeTargets, ...unifiedTargets]) expect(cases[0]).not.toContain(target);
@@ -215,7 +217,7 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain('if [ "$PUBLISH_TARGET" = "remaining-completion-20261009" ]; then');
     expect(workflow).toContain('[ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ]');
     expect(workflow).toContain('[ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]');
-    expect(workflow).toContain("if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' }}");
+    expect(workflow).toContain("if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' }}");
     expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
       .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
     for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {
