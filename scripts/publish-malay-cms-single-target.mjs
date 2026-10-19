@@ -5,7 +5,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync, execFileSync } from "node:child_process";
 import { lockedNativeBodyCandidates } from "./managed-cms-targets-native-body-v1.mjs";
-import { inspectRawMetadata } from "./lib/publisher-public-readback.mjs";
+import { inspectRawMetadata, withCompanyBrandSuffix } from "./lib/publisher-public-readback.mjs";
 import {
   assertLockedServiceCandidate,
   inspectPublicReadback,
@@ -113,6 +113,23 @@ async function readCurrent() {
   return rows[0];
 }
 
+async function readPublicBrandIdentity() {
+  const url = new URL("/rest/v1/site_settings", environment.VITE_SUPABASE_URL);
+  url.searchParams.set("id", "eq.default");
+  url.searchParams.set("select", "company_name,brand_name");
+  url.searchParams.set("limit", "1");
+  const response = await fetch(url, { cache: "no-store", headers: {
+    apikey: environment.VITE_SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${environment.VITE_SUPABASE_ANON_KEY}`,
+  }, signal: AbortSignal.timeout(20_000) });
+  if (!response.ok) fail(`Current public brand settings read failed with HTTP ${response.status}.`);
+  const rows = await response.json();
+  if (!Array.isArray(rows) || rows.length !== 1) fail("Expected one exact public site brand settings row.");
+  const brandIdentity = { companyName: rows[0].company_name, brandName: rows[0].brand_name };
+  if (!brandIdentity.companyName?.trim() || !brandIdentity.brandName?.trim()) fail("Current public brand settings are incomplete.");
+  return brandIdentity;
+}
+
 async function assertNoPriorActivePermit(client) {
   const { data, error } = await client.from("managed_cms_release_permits").select("permit_id,status,expires_at,github_run_id")
     .eq("task_id", locked.taskId).eq("record_id", locked.recordId).eq("candidate_version", locked.candidateVersion);
@@ -163,6 +180,7 @@ function previewArtifacts(artifactRoot) {
 
 async function verifyPublicMetadataAndBrowser(artifactRoot, desired) {
   const pageChecks = [];
+  const brandIdentity = await readPublicBrandIdentity();
   for (const page of locked.publicPaths) {
     const language = page.path.split("/")[1];
     const titleField = `seo_title_${language}`;
@@ -172,7 +190,8 @@ async function verifyPublicMetadataAndBrowser(artifactRoot, desired) {
     const response = await fetch(url, { cache: "no-store", headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(25_000) });
     const html = await response.text();
     const check = inspectPublicReadback(page, response.status, html);
-    const actualMeta = inspectRawMetadata(html, desired[titleField], desired[descriptionField], true);
+    const expectedPublicTitle = withCompanyBrandSuffix(desired[titleField], brandIdentity);
+    const actualMeta = inspectRawMetadata(html, expectedPublicTitle, desired[descriptionField], true);
     const linkTags = (html.match(/<link\b[^>]*>/gi) || []).map((tag) => {
       const attr = (name) => tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, "i"))?.[1] || "";
       return { rel: attr("rel").toLowerCase(), hrefLang: attr("hreflang").toLowerCase(), href: attr("href") };
@@ -251,7 +270,7 @@ async function verifyPublicMetadataAndBrowser(artifactRoot, desired) {
     await browser.close();
   }
   if (runtimeErrors !== 0) fail("The Malay article browser readback produced a runtime error.");
-  writeJson(join(artifactRoot, TARGET, "public-locales-metadata.json"), { checkedAt: new Date().toISOString(), pageChecks, sitemapCheck });
+  writeJson(join(artifactRoot, TARGET, "public-locales-metadata.json"), { checkedAt: new Date().toISOString(), brandIdentity, pageChecks, sitemapCheck });
   writeJson(join(artifactRoot, TARGET, "public-malay-browser.json"), { checkedAt: new Date().toISOString(), viewports, runtimeErrors, blockedNonReads, businessWrites: 0 });
   return { pageChecks, sitemapCheck, viewports, runtimeErrors, blockedNonReads };
 }

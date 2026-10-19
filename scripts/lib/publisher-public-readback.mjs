@@ -3,6 +3,13 @@ const norm = (value) => String(value || "").replace(/\s+/g, " ").trim();
 const decode = (value) => String(value).replace(/&#(x[\da-f]+|\d+);|&(amp|lt|gt|quot|apos|#39);/gi, (_, code, name) => code
   ? String.fromCodePoint(code[0].toLowerCase() === "x" ? parseInt(code.slice(1), 16) : Number(code))
   : ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'" })[name.toLowerCase()]);
+export function withCompanyBrandSuffix(title, { brandName, companyName } = {}) {
+  const value = typeof title === "string" ? title : "";
+  const brand = typeof brandName === "string" ? brandName : "";
+  const company = typeof companyName === "string" ? companyName : "";
+  if (!value.trim() || !brand.trim() || !company.trim()) throw Error("CMS title and current public brand settings are required for metadata verification");
+  return [brand, company].some((name) => name && value.includes(name)) ? value : `${value} | ${company}`;
+}
 export function inspectRawMetadata(html, title, description, strictTitle = false) {
   const actualTitle = decode(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] || "");
   const tag = (html.match(/<meta\b[^>]*>/gi) || []).find((value) => /\bname\s*=\s*["']description["']/i.test(value));

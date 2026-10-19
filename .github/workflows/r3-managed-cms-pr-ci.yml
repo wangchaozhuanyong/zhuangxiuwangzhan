@@ -50,6 +50,8 @@ on:
       - scripts/publish-remainder9-after-37903094390.mjs
       - scripts/publish-remainder8-after-38037667102.mjs
       - scripts/lib/publisher-public-readback.mjs
+      - scripts/lib/publisher-public-readback.test.mjs
+      - scripts/publish-malay-cms-single-target.mjs
       - scripts/lib/publisher-reviewed-renderer.mjs
       - scripts/lib/publisher-reviewed-metadata.mjs
       - scripts/check-publisher-reviewed-renderer.mjs
@@ -179,6 +181,7 @@ jobs:
       - name: Run exact three-page native issuer and publisher regressions
         run: |
           node --experimental-strip-types --test scripts/paid-three-page-native-batch.test.mjs scripts/paid-three-page-publisher-adapter.test.mjs scripts/paid-three-page-exact-targets.test.mjs
+          node --test scripts/lib/publisher-public-readback.test.mjs
 
       - name: Check repair UI and protected publish guards
         run: |
