@@ -1,3 +1,4 @@
+import PhotoEnquiryLink from "@/components/PhotoEnquiryLink";
 import { isMalayContentReady } from "@/i18n/localizedContent";
 import PublicReadError from "@/components/PublicReadError";
 import { lazy, useMemo, useRef } from "react";
@@ -106,7 +107,7 @@ export default function ServiceDetail() {
         label={[copy.services, conceptLabel].filter(Boolean).join(" · ")}
         title={title}
         description={summary}
-        actions={<Link to={quotePath}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link>}
+        actions={<>{["kitchen", "builtin"].includes(service.slug) && <PhotoEnquiryLink service={title} source="service_hero" />}<Link to={quotePath}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link></>}
       />
       <SchemeAFacts items={copy.facts} />
       <SchemeASection title={copy.overview} description={richDescription ? undefined : display(rawDescription)} className="fc-route-service-overview">

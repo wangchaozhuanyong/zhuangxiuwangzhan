@@ -6,7 +6,6 @@ import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
@@ -20,6 +19,9 @@ import { HomeJournal, HomeServiceAreas } from "@/components/scheme-a/SchemeAHome
 import { homeEditorialText } from "@/i18n/homeEditorialText";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { trackCtaClick } from "@/lib/analytics";
+import PhotoEnquiryLink from "@/components/PhotoEnquiryLink";
+import { contactEntryText } from "@/i18n/contactEntryText";
+import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
 import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHomeSections";
 
 type SchemeAHomeProps = {
@@ -49,7 +51,6 @@ const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
-  const settings = useSiteSettings();
   const copy = schemeAHomeText[language];
   const editorial = homeEditorialText[language];
   const mediaCopy = mediaLabels[language];
@@ -140,19 +141,18 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
               <p className="scheme-a-hero__service">{copy.heroService}</p>
               <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
               <div className="scheme-a-actions">
-                <a
-                  className="scheme-a-button scheme-a-button--paper"
-                  href={settings.whatsapp_url()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackCtaClick("whatsapp", "home_hero", { destination: "whatsapp" })}
-                >
-                  {copy.whatsappCta}
-                </a>
+                <PhotoEnquiryLink className="scheme-a-button scheme-a-button--paper" source="home_hero" />
                 <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
                   {copy.projectsCta}
                   <ArrowUpRight aria-hidden="true" />
                 </LocalizedLink>
+              </div>
+              <div className="scheme-a-home-furniture-entry">
+                <a href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer"
+                  onClick={() => trackCtaClick("furniture_shop", "home_hero", { destination: "furniture_shop" })}>
+                  {contactEntryText[language].furniture}<ArrowUpRight aria-hidden="true" />
+                </a>
+                {contactEntryText[language].shopLanguage && <small>{contactEntryText[language].shopLanguage}</small>}
               </div>
             </div>
           </div>
