@@ -297,10 +297,6 @@
   .fc-furniture-detail__layout { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 767px) {
-  .scheme-a-public-shell:has(.fc-furniture-detail) .fc-furniture-floating { display: none; }
-}
-
 @media (max-width: 540px) {
   .fc-furniture-primary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
   .fc-furniture-primary a { min-width: 0; min-height: 3rem; padding: 0.4rem 0.3rem; font-size: 0.875rem; line-height: 1.15; }
