@@ -362,16 +362,31 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
   const viewportChecks = [];
   let runtimeErrors = 0;
   let blockedNonReads = 0;
+  let allowedPublicReadRpcs = 0;
+  const publicHomeBundleResponseStatuses = [];
+  const publicDatabaseHost = new URL(env.VITE_SUPABASE_URL).hostname;
   try {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await context.route("**/*", (route) => {
       const request = route.request();
+      const requestUrl = new URL(request.url());
+      const readOnlyHomeBundleRpc = request.method() === "POST"
+        && requestUrl.hostname === publicDatabaseHost
+        && requestUrl.pathname === "/rest/v1/rpc/get_public_home_bundle";
       const telemetry = /(google-analytics\.com|googletagmanager\.com|doubleclick\.net|connect\.facebook\.net|clarity\.ms|hotjar\.|\/page_visits(?:\?|$)|\/g\/collect(?:\?|$))/i.test(request.url());
+      if (readOnlyHomeBundleRpc) { allowedPublicReadRpcs++; return route.continue(); }
       if (telemetry || !["GET", "HEAD", "OPTIONS"].includes(request.method())) { blockedNonReads++; return route.abort(); }
       return route.continue();
     });
     const page = await context.newPage();
     page.on("pageerror", () => { runtimeErrors++; });
+    page.on("response", (response) => {
+      const responseUrl = new URL(response.url());
+      if (responseUrl.hostname === publicDatabaseHost
+          && responseUrl.pathname === "/rest/v1/rpc/get_public_home_bundle") {
+        publicHomeBundleResponseStatuses.push(response.status());
+      }
+    });
     const representative = ["/ms", ...routeRows.filter((row) => ["blog_posts", "services", "service_areas", "project_images"].includes(row.table)).map((row) => row.path)];
     const browserRoutes = [...new Set(representative)].slice(0, 16);
     for (const path of browserRoutes) {
@@ -409,13 +424,14 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
           bodyLength: document.querySelector("main")?.innerText?.trim().length || 0,
           scrollWidth: document.documentElement.scrollWidth,
           innerWidth: window.innerWidth,
+          hasFallbackNotice: Boolean(document.querySelector(".fc-public-content-notice")),
         }));
         const check = { path, viewport, status: response?.status() || 0, ...rendered,
           noHorizontalOverflow: rendered.scrollWidth <= rendered.innerWidth + 2 };
         viewportChecks.push(check);
         await page.screenshot({ path: join(artifactRoot, "screenshots", `${Buffer.from(path).toString("hex").slice(0, 36)}-${viewport.width}.png`), fullPage: false });
         if (check.status !== 200 || check.bodyLength < 20 || !check.noHorizontalOverflow
-            || !/^ms(?:-|$)/i.test(check.lang)) {
+            || !/^ms(?:-|$)/i.test(check.lang) || check.hasFallbackNotice) {
           fail(`Live Malay browser check failed for ${path} at ${viewport.width}px: ${JSON.stringify(check)}`);
         }
       }
@@ -424,10 +440,14 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
   } finally {
     await browser.close();
   }
+  if (!publicHomeBundleResponseStatuses.includes(200)) {
+    fail("The read-only public homepage content request did not return HTTP 200.");
+  }
   if (runtimeErrors) fail("A Malay public page produced a browser runtime error.");
   writeJson(join(artifactRoot, "public-route-readback.json"), { checkedAt: new Date().toISOString(), routes: checks,
-    viewportChecks, runtimeErrors, blockedNonReads, businessWrites: 0 });
-  return { routeCount: checks.length, viewportCount: viewportChecks.length, runtimeErrors, blockedNonReads };
+    viewportChecks, runtimeErrors, blockedNonReads, allowedPublicReadRpcs, publicHomeBundleResponseStatuses, businessWrites: 0 });
+  return { routeCount: checks.length, viewportCount: viewportChecks.length, runtimeErrors, blockedNonReads,
+    allowedPublicReadRpcs, publicHomeBundleResponseStatuses };
 }
 
 async function main() {
