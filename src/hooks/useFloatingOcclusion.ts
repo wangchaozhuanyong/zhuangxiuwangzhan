@@ -52,7 +52,7 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       const inputObstructed = active instanceof HTMLElement && !entry.contains(active)
         && active.matches(focusedInput) && isVisible(active)
         && (window.matchMedia("(max-width: 767px)").matches || intersects(box, active.getBoundingClientRect()));
-      const formObstructed = Array.from(document.querySelectorAll<HTMLElement>(`#${QUOTE_FORM_ID},.fc-route-contact-form form`))
+      const formObstructed = Array.from(document.querySelectorAll<HTMLElement>(`#${QUOTE_FORM_ID},.fc-route-contact-form form,.fc-furniture-detail__actions,.fc-furniture-card__actions,.fc-furniture-pagination`))
         .flatMap(form => Array.from(form.querySelectorAll<HTMLElement>(formControls)))
         .some(element => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
           && !element.matches(":disabled") && isVisible(element) && intersects(box, element.getBoundingClientRect()));
