@@ -47,6 +47,8 @@
   .fc-furniture-floating[lang="ms"] { width: 170px; grid-template-columns: 24px minmax(0, 1fr); grid-template-rows: auto; gap: 10px; text-align: left; padding: 9px 12px; }
   .fc-furniture-floating[lang="ms"] .fc-furniture-floating__copy { display: grid; gap: 3px; }
   .fc-furniture-floating[lang="ms"] .fc-furniture-floating__hint { display: block; white-space: normal; }
+  .scheme-a-home-furniture-entry { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .scheme-a-home-furniture-entry small { display: block; max-width: 100%; line-height: 1.5; }
   .fc-contact-panel[role="dialog"] { left: 0; top: auto; bottom: 0; transform: none; width: 100%; max-width: none; max-height: calc(100dvh - 24px); border-radius: 18px 18px 0 0; padding: 28px 20px calc(24px + env(safe-area-inset-bottom, 0px)); }
 }
 
