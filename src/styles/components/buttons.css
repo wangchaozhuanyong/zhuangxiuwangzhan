@@ -95,9 +95,7 @@
   }
 
   .fc-furniture-floating {
-    position: fixed;
-    right: clamp(1rem, 2vw, 2rem);
-    bottom: calc(var(--public-floating-bottom) + env(safe-area-inset-bottom));
+    position: relative;
     z-index: 105;
     display: grid;
     grid-template-columns: 36px minmax(0, 1fr) 38px;
@@ -235,7 +233,6 @@
     .scheme-a-public-shell { --public-floating-bottom: calc(68px + 1rem); --public-floating-height: 68px; }
     .fc-furniture-floating {
       width: 68px;
-      right: 1rem;
       grid-template-columns: 1fr;
       grid-template-rows: 24px 26px;
       justify-items: center;
@@ -264,14 +261,6 @@
     /* Keep the fixed mobile square anchored; press feedback lives inside it. */
     .fc-furniture-floating:is(:active, [data-pressed="true"]) { transform: none; }
     .fc-furniture-floating:is(:active, [data-pressed="true"]) .fc-furniture-floating__icon { transform: scale(.88); transition-duration: 70ms; }
-    .scheme-a-public-shell:has(.scheme-a-mobile-switcher[data-mode="hidden"]) .fc-furniture-floating {
-      visibility: hidden;
-      pointer-events: none;
-    }
-  }
-
-  @media (max-width: 767px) and (max-height: 600px) {
-    .fc-furniture-floating { display: none; }
   }
 
   /* Shared collision detection preserves the page width and yields the promotion

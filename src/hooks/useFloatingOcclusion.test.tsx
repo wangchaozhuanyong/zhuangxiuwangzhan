@@ -32,6 +32,13 @@ beforeEach(() => {
 });
 afterEach(() => { act(() => root.unmount()); container.remove(); content.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe("floating promotion stays available while reading", () => {
+  it.each(["fc-furniture-detail__actions", "fc-furniture-card__actions", "fc-furniture-pagination"])("protects %s controls and restores the entries after they leave the corner", async (className) => {
+    content.innerHTML = `<div class="${className}"><a href="/shop">Buy</a></div>`;
+    const action = content.querySelector<HTMLAnchorElement>("a")!;
+    mount(); await settle(); expectObstructed(true);
+    boxes.set(action, rect(300));
+    window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
+  });
   it("ignores overlapping text, cards, links and idle form controls across scrolling and routes", async () => {
     content.innerHTML = '<main id="main-content"><h1>Heading</h1><p>Paragraph</p><a href="/article"><h2>Whole card</h2><p>Card text</p></a><label>Form label<input /></label><button>Submit</button></main>';
     const ordinary = Array.from(content.querySelectorAll<HTMLElement>("h1,h2,p,a,label,input,button"));

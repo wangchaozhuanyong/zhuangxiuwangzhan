@@ -117,7 +117,7 @@ describe("public design boundary", () => {
     }
   });
 
-  it("keeps the furniture entry viewport-fixed across public skins", () => {
+  it("anchors both entries through one viewport-fixed contact stack", () => {
     const componentDirectory = resolve(process.cwd(), "src/styles/components");
     const positions: string[] = [];
     for (const file of readdirSync(componentDirectory).filter((name) => name.endsWith(".css"))) {
@@ -129,12 +129,16 @@ describe("public design boundary", () => {
         }
       });
     }
-    expect(positions).toEqual(["fixed"]);
+    expect(positions).toEqual(["relative"]);
     const globalStyles = readFileSync(resolve(process.cwd(), "src/styles/components.css"), "utf8");
     const buttons = readFileSync(resolve(componentDirectory, "buttons.css"), "utf8");
     expect(globalStyles).toContain('@import "./components/buttons.css"');
     expect(buttons).toContain("--public-floating-bottom: calc(68px + 1rem)");
-    expect(buttons).toContain("bottom: calc(var(--public-floating-bottom) + env(safe-area-inset-bottom))");
+    const contact = readFileSync(resolve(componentDirectory, "contact-entry.css"), "utf8");
+    const stack = postcss.parse(contact).nodes.find((node) => node.type === "rule" && node.selector === ".fc-contact-stack");
+    expect(stack?.toString()).toContain("position: fixed");
+    expect(stack?.toString()).toContain("gap: 12px");
+    expect(buttons).not.toContain('.scheme-a-mobile-switcher[data-mode="hidden"]) .fc-furniture-floating');
   });
 
   it.each(retiredPublicDesignFiles)("keeps retired design file deleted: %s", (file) => {
