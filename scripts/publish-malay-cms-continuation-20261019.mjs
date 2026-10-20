@@ -382,15 +382,21 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
           await page.waitForFunction(() => {
             const content = document.querySelector(".public-route-content");
             const main = document.querySelector("main");
-            return content?.getAttribute("aria-busy") === "false"
+            return !document.documentElement.dataset.publicBoot
+              && !document.getElementById("flashcast-public-boot")
+              && !document.getElementById("root")?.hasAttribute("inert")
+              && content?.getAttribute("aria-busy") === "false"
               && (main?.innerText?.trim().length || 0) >= 20
               && /^ms(?:-|$)/i.test(document.documentElement.lang);
           }, undefined, { timeout: 40_000 });
+          await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         } catch {
           const readiness = await page.evaluate(() => ({
             lang: document.documentElement.lang,
             publicBoot: document.documentElement.dataset.publicBoot || null,
             routeLoading: document.documentElement.dataset.publicRouteLoading || null,
+            bootScreenPresent: Boolean(document.getElementById("flashcast-public-boot")),
+            rootInert: Boolean(document.getElementById("root")?.hasAttribute("inert")),
             contentBusy: document.querySelector(".public-route-content")?.getAttribute("aria-busy") || null,
             mainLength: document.querySelector("main")?.innerText?.trim().length || 0,
           }));
