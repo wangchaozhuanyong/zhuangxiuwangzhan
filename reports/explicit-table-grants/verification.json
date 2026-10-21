@@ -1,0 +1,220 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-10-21T07:12:04.626649+00:00",
+  "root": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/.worktrees/supabase-explicit-grants-20261021",
+  "head": "d3584c6687341c08aeac32226c0f2b6e95ad2777",
+  "image": "postgres:17-alpine",
+  "image_id": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+  "verifier_sha256": "14933f79137cc1b43715795aaa09027e58ff380d458cad2fe22ac1f4491eb14e",
+  "scope": "PostgreSQL 17 ACL/RLS with minimal Auth/Storage SQL contracts; no hosted/API/UI verification",
+  "migrations": [
+    {
+      "file": "202605240001_flashcast_lead_gen_schema.sql",
+      "sha256": "77a5a53377ecefcfa60828824f52a524df66796147b2366680b03509654d5767"
+    },
+    {
+      "file": "202605240002_materials_and_service_area_fields.sql",
+      "sha256": "146a127ef47fa1ce4c7de1c64438428f52ddd4ed3078003da749e0e0eb5c89f3"
+    },
+    {
+      "file": "202605240003_services_content.sql",
+      "sha256": "e84d17b1a66aefa3bcfe4a3552fba519c43c3a30d2665fa79e884226a3f0d05a"
+    },
+    {
+      "file": "202605240004_storage_site_images.sql",
+      "sha256": "acf5161715ac1c691e0f8eeaa21958b91fb05971cbb68cf71f3d7025b9eeb87c"
+    },
+    {
+      "file": "202605240005_admin_access_policies.sql",
+      "sha256": "0180737d7c9c9628e2203d8c0d2cbdbb37af8672a94c3070b383dde85c55b519"
+    },
+    {
+      "file": "202605240006_landing_pages.sql",
+      "sha256": "a6bc48165e0dc8cc4e0ca36e18e5b3f99b3a6289daf085d32478e655c837bdc2"
+    },
+    {
+      "file": "202605240007_lead_workflow_fields.sql",
+      "sha256": "a0c0186b187954b8fe1a4be5b9d400de94b426596b99581b068db34e3112a0ae"
+    },
+    {
+      "file": "202605240008_notification_settings.sql",
+      "sha256": "cb31b52edd5d9cadccfe0b407287902afd9c09c7488c0ac1f0a576f49a4cefc2"
+    },
+    {
+      "file": "202605240009_maintenance_reminders.sql",
+      "sha256": "20479a42a8f2b1b47cf21fb31b98f3d9ce437c357b9685c604de75c8c8edba7e"
+    },
+    {
+      "file": "202605280001_admin_cms_upgrade.sql",
+      "sha256": "0ecf83a6ef8faea10d6cb537859494b7e77519ab7da123ffe12b085bb87b54d5"
+    },
+    {
+      "file": "202605280002_media_and_home_content.sql",
+      "sha256": "a8b30357f0971f921db58a342ed3719e70a4374cdac292a8e183b64e4d4a2b27"
+    },
+    {
+      "file": "202605280003_admin_backend_full_fix.sql",
+      "sha256": "36e4e1a330b671b3253e0bc6c053b0df6738b5b3c9f0ad44f67421d9b18a4f4a"
+    },
+    {
+      "file": "202605290001_form_submit_via_edge.sql",
+      "sha256": "acd585dea88a4ffe5007af95c7d1d442e3179b371f7fe142b71110608a04f592"
+    },
+    {
+      "file": "202605290002_admin_default_content_guards.sql",
+      "sha256": "b9f4ef10cd2f780cbde7bd4919366b3f0be7715a93fc8788665b3a70f51122b1"
+    },
+    {
+      "file": "202605290003_site_settings_geo.sql",
+      "sha256": "5a90355e22917e214ed58fcef6ca328be7a7d7bab2c6e91a345d17aac396c03d"
+    },
+    {
+      "file": "202605290004_site_pages.sql",
+      "sha256": "1e8cedbb809dff54800010f51e4ebc3908a6a57e80b1b4c7f177af78962bf5c3"
+    },
+    {
+      "file": "202605290005_projects_image_url.sql",
+      "sha256": "83dc205f7422df3fd7ede481e626a1c7524cc66f46fa7cfc5ccd410706d74056"
+    },
+    {
+      "file": "202605300001_professional_admin_foundation.sql",
+      "sha256": "eb98ad9a122637e7aac2a7a370b9973c39fd0a1ab542aa89d10161275bcb4e0e"
+    },
+    {
+      "file": "202605300002_security_ops_hardening.sql",
+      "sha256": "c790198733f3971ce02c1718cff09f08c8564929f24637bad1ed2040aa3d6b2d"
+    },
+    {
+      "file": "202605310001_fill_admin_content_blanks.sql",
+      "sha256": "64fa945329b2f250a1e3d3ecf6ff8a3b66995eb06ea1cfd32d71bb89a542c1f2"
+    },
+    {
+      "file": "202605310002_admin_security_performance.sql",
+      "sha256": "57a42a09cb336ea8b6b3c691cbb214ae057b240e7544a23933d83f4e80ea5bdb"
+    },
+    {
+      "file": "202605310003_premium_page_hero_images.sql",
+      "sha256": "bd8d57224c801243cf58ca8b0f8cf499409d7ea6d6a5287ae0d0473ae2661ef3"
+    },
+    {
+      "file": "202605310004_admin_role_policy_hardening.sql",
+      "sha256": "4f3687402248fe936bdf103a814e5ff764e69d9efaa66f8176995f0dfa22c29e"
+    },
+    {
+      "file": "202605310005_media_upload_automation.sql",
+      "sha256": "494f80fb073a93c0b07768eb34c2f1db2c2897a7c5b97debb94027ff79fa7878"
+    },
+    {
+      "file": "202606020001_chinese_seo_geo_defaults.sql",
+      "sha256": "58dbfb51a2d24040cd98019821299456a96168736eb1447b3fa3a5fa325b456a"
+    },
+    {
+      "file": "202606020002_public_home_content_bundle.sql",
+      "sha256": "4f6515745bdae90f6d06d3b4b0ebe61eb6c01937c6ce27494ad3aed79232ecd3"
+    },
+    {
+      "file": "202606050001_admin_disabled_precedence.sql",
+      "sha256": "f65c3de35392d48fed34800b41ed142c7a7cce0a778062573529d9047f160510"
+    },
+    {
+      "file": "202607260001_managed_growth_attribution.sql",
+      "sha256": "729b427985971d587d6f1f90798647509a66ed91e1aaedd3718e83bd464bca89"
+    },
+    {
+      "file": "20260815022657_material_price_and_gallery.sql",
+      "sha256": "f4e1c96d376812ee5572694a207c679c96a1b9960c474d3bdf799993003f45e7"
+    },
+    {
+      "file": "20260830085643_admin_role_safety.sql",
+      "sha256": "94ef92cf01d2b26e93373fa185eebc0414b76d211106ca592dd3ee75f716c81a"
+    },
+    {
+      "file": "20260830085644_admin_mfa_enforcement.sql",
+      "sha256": "1ee4c0f15a284d03f731a3a94c5cd928ec5aa271ef5720717aa83794027b0aec"
+    },
+    {
+      "file": "20260830085645_admin_identity_immutability.sql",
+      "sha256": "e2db8da7580680908ca0b0ebc87571a987ce17b470c44544a361b7ab05c6b825"
+    },
+    {
+      "file": "20260921194000_managed_cms_release_permits.sql",
+      "sha256": "cafa7a3cfd21fad3d94469f12b138fad700faec1cc8eefe0f1074a3fd90a2739"
+    },
+    {
+      "file": "202610080001_atomic_content_publication.sql",
+      "sha256": "6513690c0751da838fd3efbfa7ff23cb0582a6493b950fffd318fb7fb9eb0206"
+    },
+    {
+      "file": "202610080002_notification_settings_edge_only.sql",
+      "sha256": "402d126e4e2f2e09eeb17f111e6b69590553ab3bc813b1e594d45bef5f5ba757"
+    },
+    {
+      "file": "202610080003_atomic_form_rate_limit.sql",
+      "sha256": "29533f40af549bbb1cb6982eebd9cdda3b243156534839ab4b840dcdb4e11656"
+    },
+    {
+      "file": "202610180001_malay_content_fields.sql",
+      "sha256": "e5eafd69721a79302b709f4745d9dd583f18232399eb986fcd18726708c61642"
+    },
+    {
+      "file": "20261021070913_explicit_table_privileges.sql",
+      "sha256": "fc83f06061e7f12d8c3c7ace6f3778cd7403fed4a3ee7a3772b81c707ef90ba2"
+    }
+  ],
+  "checks": [
+    "strict: all 37 historical migrations replay",
+    "strict: every application table has an explicit reviewed classification",
+    "strict: missing-grant failure reproduced before patch",
+    "strict: RLS, function ACLs, Storage and defaults unchanged",
+    "strict: all existing application rows unchanged",
+    "strict: exact least-privilege matrix (756 assertions)",
+    "strict: migration is idempotent",
+    "strict: anon sees published cms_pages, excludes draft/deleted",
+    "strict: anon sees published cms_content_entries, excludes draft/deleted",
+    "strict: anon sees published projects, excludes draft/deleted",
+    "strict: anon sees published materials, excludes draft/deleted",
+    "strict: anon filters CMS sections by parent",
+    "strict: anon filters project_images by parent/activity",
+    "strict: anon filters material_images by parent/activity",
+    "strict: anon can read media records",
+    "strict: anon public homepage RPC remains callable",
+    "strict: authenticated sees published cms_pages, excludes draft/deleted",
+    "strict: authenticated sees published cms_content_entries, excludes draft/deleted",
+    "strict: authenticated sees published projects, excludes draft/deleted",
+    "strict: authenticated sees published materials, excludes draft/deleted",
+    "strict: authenticated filters CMS sections by parent",
+    "strict: authenticated filters project_images by parent/activity",
+    "strict: authenticated filters material_images by parent/activity",
+    "strict: authenticated can read media records",
+    "strict: ordinary login cannot read leads",
+    "strict: ordinary login cannot read quote_requests",
+    "strict: ordinary login cannot read admin_users",
+    "strict: ordinary login cannot read cms_revisions",
+    "strict: ordinary login cannot read system_event_logs",
+    "strict: ordinary login cannot update published CMS",
+    "strict: authenticated public homepage RPC remains callable",
+    "strict: editor-created draft remains hidden from visitors",
+    "strict: editor save/publication reads back to visitors",
+    "strict: CMS revision trigger works without granting direct revision writes",
+    "strict: editor media write reads back to visitors",
+    "strict: viewer cannot write CMS",
+    "strict: lead manager cannot write CMS",
+    "strict: disabled admin cannot write CMS",
+    "strict: editor without MFA cannot write CMS",
+    "strict: server-only data denied even to logged-in super admins",
+    "strict: lead manager reads leads",
+    "strict: content editor cannot read leads",
+    "strict: server form write succeeds without default grants",
+    "strict: atomic attempt RPC still works for server",
+    "strict: server attempt cleanup retains required DELETE",
+    "strict: admin logging works, ordinary-user logging is denied",
+    "strict: future unclassified tables remain closed",
+    "strict: migration fails closed if a required table lacks RLS",
+    "legacy: all 37 historical migrations replay",
+    "legacy: every application table has an explicit reviewed classification",
+    "legacy: existing installations lose no table privileges",
+    "legacy: existing RLS, function ACLs, Storage and defaults unchanged",
+    "legacy: all existing application rows unchanged",
+    "legacy: notification secrets remain inaccessible to browser roles"
+  ]
+}
