@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-21T07:13:14.400Z",
+  "project": "rbsnyexjifounogswrjp",
+  "results": [
+    {
+      "table": "cms_pages",
+      "status": 200,
+      "passed": true,
+      "rows": 1
+    },
+    {
+      "table": "projects",
+      "status": 200,
+      "passed": true,
+      "rows": 1
+    },
+    {
+      "table": "media_assets",
+      "status": 200,
+      "passed": true,
+      "rows": 1
+    },
+    {
+      "table": "notification_settings",
+      "status": 401,
+      "passed": true,
+      "code": "42501"
+    },
+    {
+      "table": "managed_cms_release_permits",
+      "status": 400,
+      "passed": false,
+      "code": "42703"
+    }
+  ]
+}
