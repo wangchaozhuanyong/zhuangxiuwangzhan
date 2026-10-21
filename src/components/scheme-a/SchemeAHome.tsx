@@ -1,4 +1,4 @@
-import { ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
+import { Armchair, ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
 import type { FocusEvent, PointerEvent } from "react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
@@ -21,6 +21,7 @@ import { mediaLabels } from "@/i18n/mediaLabels";
 import { trackCtaClick } from "@/lib/analytics";
 import PhotoEnquiryLink from "@/components/PhotoEnquiryLink";
 import { contactEntryText } from "@/i18n/contactEntryText";
+import { homeFurnitureText } from "@/i18n/homeFurnitureText";
 import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
 import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHomeSections";
 
@@ -148,11 +149,18 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                 </LocalizedLink>
               </div>
               <div className="scheme-a-home-furniture-entry">
-                <a href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer"
+                <a className="scheme-a-home-furniture-entry__card"
+                  href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer"
+                  aria-label={homeFurnitureText[language].heroShopLabel}
                   onClick={() => trackCtaClick("furniture_shop", "home_hero", { destination: "furniture_shop" })}>
-                  {contactEntryText[language].furniture}<ArrowUpRight aria-hidden="true" />
+                  <span className="scheme-a-home-furniture-entry__icon" aria-hidden="true"><Armchair strokeWidth={1.6} /></span>
+                  <span className="scheme-a-home-furniture-entry__copy">
+                    <span className="scheme-a-home-furniture-entry__title">{homeFurnitureText[language].heroShopTitle}</span>
+                    <span className="scheme-a-home-furniture-entry__description">{homeFurnitureText[language].heroShopDescription}</span>
+                    {contactEntryText[language].shopLanguage && <small>{contactEntryText[language].shopLanguage}</small>}
+                  </span>
+                  <ArrowUpRight className="scheme-a-home-furniture-entry__arrow" aria-hidden="true" />
                 </a>
-                {contactEntryText[language].shopLanguage && <small>{contactEntryText[language].shopLanguage}</small>}
               </div>
             </div>
           </div>
