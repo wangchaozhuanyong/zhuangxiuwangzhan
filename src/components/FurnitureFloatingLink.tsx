@@ -92,7 +92,10 @@ export default function FurnitureFloatingLink() {
           state: { ...location.state, contactEntry: owner }, preventScrollReset: true,
         });
         trackCtaClick("contact_open", "contact_entry");
-      }}><MessageCircle aria-hidden="true" /><span aria-live="polite">{loading ? text.loading : loadError ? text.loadError : text.trigger}</span></button>
+      }}>
+      <span className="fc-contact-entry__icon" aria-hidden="true"><MessageCircle /></span>
+      <span className="fc-contact-entry__label" aria-live="polite">{loading ? text.loading : loadError ? text.loadError : text.trigger}</span>
+    </button>
     </div>
     {open && Panel && <Panel message={message} onClose={close}
         onCloseAutoFocus={(event) => {
