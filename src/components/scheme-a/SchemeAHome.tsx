@@ -141,26 +141,28 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
               </h1>
               <p className="scheme-a-hero__service">{copy.heroService}</p>
               <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
-              <div className="scheme-a-actions">
-                <PhotoEnquiryLink className="scheme-a-button scheme-a-button--paper" source="home_hero" />
-                <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
-                  {copy.projectsCta}
-                  <ArrowUpRight aria-hidden="true" />
-                </LocalizedLink>
-              </div>
-              <div className="scheme-a-home-furniture-entry">
-                <a className="scheme-a-home-furniture-entry__card"
-                  href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer"
-                  aria-label={homeFurnitureText[language].heroShopLabel}
-                  onClick={() => trackCtaClick("furniture_shop", "home_hero", { destination: "furniture_shop" })}>
-                  <span className="scheme-a-home-furniture-entry__icon" aria-hidden="true"><Armchair strokeWidth={1.6} /></span>
-                  <span className="scheme-a-home-furniture-entry__copy">
-                    <span className="scheme-a-home-furniture-entry__title">{homeFurnitureText[language].heroShopTitle}</span>
-                    <span className="scheme-a-home-furniture-entry__description">{homeFurnitureText[language].heroShopDescription}</span>
-                    {contactEntryText[language].shopLanguage && <small>{contactEntryText[language].shopLanguage}</small>}
-                  </span>
-                  <ArrowUpRight className="scheme-a-home-furniture-entry__arrow" aria-hidden="true" />
-                </a>
+              <div className="scheme-a-hero__actions-group">
+                <div className="scheme-a-actions">
+                  <PhotoEnquiryLink className="scheme-a-button scheme-a-button--paper" source="home_hero" />
+                  <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
+                    {copy.projectsCta}
+                    <ArrowUpRight aria-hidden="true" />
+                  </LocalizedLink>
+                </div>
+                <div className="scheme-a-home-furniture-entry">
+                  <a className="scheme-a-home-furniture-entry__card"
+                    href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer"
+                    aria-label={homeFurnitureText[language].heroShopLabel}
+                    onClick={() => trackCtaClick("furniture_shop", "home_hero", { destination: "furniture_shop" })}>
+                    <span className="scheme-a-home-furniture-entry__icon" aria-hidden="true"><Armchair strokeWidth={1.6} /></span>
+                    <span className="scheme-a-home-furniture-entry__copy">
+                      <span className="scheme-a-home-furniture-entry__title">{homeFurnitureText[language].heroShopTitle}</span>
+                      <span className="scheme-a-home-furniture-entry__description">{homeFurnitureText[language].heroShopDescription}</span>
+                      {contactEntryText[language].shopLanguage && <small>{contactEntryText[language].shopLanguage}</small>}
+                    </span>
+                    <ArrowUpRight className="scheme-a-home-furniture-entry__arrow" aria-hidden="true" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>

@@ -82,10 +82,12 @@
   .fc-contact-panel__primary:hover, .fc-contact-panel__qr-save:hover { filter: brightness(1.18); }
   .fc-contact-panel__row:hover, .fc-contact-panel__quote:hover, .fc-contact-panel__copy:hover, .fc-contact-panel__qr summary:hover, .fc-contact-panel__qr-original:hover { background: hsl(var(--secondary) / .5); }
 }
-.scheme-a-home-furniture-entry { margin-top: 20px; }
+.scheme-a-hero__actions-group { display: grid; grid-template-columns: minmax(0, 1fr); width: fit-content; max-width: 100%; }
+.scheme-a-hero__actions-group .scheme-a-actions > a { flex: 1 1 auto; }
+.scheme-a-home-furniture-entry { min-width: 0; margin-top: 20px; }
 .scheme-a-home-furniture-entry__card {
   display: flex; align-items: center; gap: 12px;
-  width: min(100%, 312px); min-height: 72px; padding: 14px 16px;
+  width: 100%; min-height: 72px; padding: 14px 16px;
   border: 1px solid var(--public-border, #d8d9d0); border-radius: var(--radius);
   background: var(--luxury-paper, #fbf7ee); color: var(--public-text-primary, #292e29);
   box-shadow: 0 2px 8px rgb(21 17 13 / .04); text-decoration: none;
