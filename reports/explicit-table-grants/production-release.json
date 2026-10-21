@@ -1,0 +1,44 @@
+{
+  "project": "rbsnyexjifounogswrjp",
+  "migration": "20261021070913_explicit_table_privileges",
+  "productionApplied": true,
+  "recordedSqlMd5": "c17359d6d54073a84868da41b0224837",
+  "localSqlMatchesLedger": true,
+  "baseCommit": "d3584c6687341c08aeac32226c0f2b6e95ad2777",
+  "requiredGrants": 253,
+  "effectiveAclChanges": 0,
+  "publicTableCount": 37,
+  "targetTableCount": 36,
+  "policiesUnchanged": true,
+  "policyCount": 106,
+  "functionAclsUnchanged": true,
+  "storageAclsUnchanged": true,
+  "defaultAclsUnchanged": true,
+  "securityAdvisorFindingsUnchanged": true,
+  "extraTableUnchanged": "whatsapp_growth_events",
+  "readOnlySqlChecks": {
+    "anonymous": {
+      "home_rpc_type": "object",
+      "projects_visible": 38,
+      "cms_pages_visible": 12,
+      "lead_rows_visible": 0,
+      "permit_direct_access": false,
+      "cms_draft_or_deleted_leaks": 0,
+      "notification_direct_access": false
+    },
+    "ordinaryAuthenticated": {
+      "admin_role": null,
+      "projects_visible": 38,
+      "lead_rows_visible": 0,
+      "revisions_visible": 0,
+      "admin_users_visible": 0,
+      "permit_direct_access": false,
+      "notification_direct_access": false
+    }
+  },
+  "backupRun": "https://github.com/wangchaozhuanyong/zhuangxiuwangzhan/actions/runs/39559603694",
+  "backupSha256": "c9f835e3cf3c330203a44984cc7b5dba0ef66b9bee43c9e76e654282bc69e6d4",
+  "backupPrivateReadbackVerified": true,
+  "businessDataWrites": 0,
+  "websiteOrEdgeDeploymentPerformed": false
+}
