@@ -1,5 +1,8 @@
 export const homeFurnitureText = {
   zh: {
+    heroShopTitle: "家具商城",
+    heroShopDescription: "沙发 · 餐桌 · 卧室家具",
+    heroShopLabel: "家具商城（新窗口打开）",
     title: "为空间，找到合适的家具。",
     description: "从一张休闲椅到一套餐桌椅，浏览家具款式，为日常生活找到合适的搭配。",
     sceneCaption: "设计效果图",
@@ -10,6 +13,9 @@ export const homeFurnitureText = {
     empty: "精选家具正在更新，您可以进入家具展示或商城继续浏览。",
   },
   en: {
+    heroShopTitle: "Furniture shop",
+    heroShopDescription: "Sofas · Dining · Bedroom",
+    heroShopLabel: "Furniture shop (opens in a new window)",
     title: "Find the pieces that make it yours.",
     description: "From a lounge chair to a dining set, explore furniture that brings your space into everyday life.",
     sceneCaption: "Design rendering",
@@ -21,6 +27,9 @@ export const homeFurnitureText = {
   },
 
   ms: {
+    heroShopTitle: "Kedai perabot",
+    heroShopDescription: "Sofa · Ruang makan · Bilik tidur",
+    heroShopLabel: "Kedai perabot dalam bahasa Inggeris (dibuka dalam tetingkap baharu)",
     title: "Cari kepingan yang menjadikannya milik anda.",
     description: "Daripada kerusi rehat kepada set makan, terokai perabot yang membawa ruang anda ke dalam kehidupan seharian.",
     sceneCaption: "Penyampaian reka bentuk",
