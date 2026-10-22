@@ -13,7 +13,7 @@ import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryN
 import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCatalogProductsForCategory, getFurnitureListingPage, furnitureListingPagePath, normalizeFurnitureListingPage, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import { rememberFurnitureNavigationScroll } from "@/lib/publicScrollRestoration";
 import { withLanguagePrefix } from "@/i18n/routes";
-import { furnitureListingPictureSources } from "@/lib/furnitureListingImages";
+import { furnitureListingImageSizes, furnitureListingPictureSources } from "@/lib/furnitureListingImages";
 
 const keepFurnitureScrollPosition = (event: MouseEvent<HTMLAnchorElement>) => {
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -96,10 +96,10 @@ export default function FurnitureShowcase() {
               const image = product.images[0] || product.sourceImages[0];
               return (
                 <article className={`fc-furniture-card${product.availabilityNote ? " fc-furniture-card--reviewed-display" : ""}`} key={product.sourceUrl}>
-                    <div className="fc-furniture-card__image">
-                      {image ? <SmartImage src={image} alt={product.name} pictureSources={furnitureListingPictureSources(image)} width={480} height={480} loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} showFailureFallback retryOnError /> : <span>{product.name}</span>}
-                      <LocalizedLink className="fc-furniture-card__image-link" to={furnitureProductPath(product)} onClick={(event) => openProduct(event, furnitureProductPath(product))} aria-label={`${copy.viewDetails}: ${product.name}`} tabIndex={-1} />
-                    </div>
+                  <div className="fc-furniture-card__image">
+                    {image ? <SmartImage src={image} alt={product.name} pictureSources={furnitureListingPictureSources(image)} sizes={furnitureListingImageSizes} width={480} height={480} loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} showFailureFallback retryOnError /> : <span>{product.name}</span>}
+                    <LocalizedLink className="fc-furniture-card__image-link" to={furnitureProductPath(product)} onClick={(event) => openProduct(event, furnitureProductPath(product))} aria-label={`${copy.viewDetails}: ${product.name}`} tabIndex={-1} />
+                  </div>
                   <LocalizedLink className="fc-furniture-card__main" to={furnitureProductPath(product)} onClick={(event) => openProduct(event, furnitureProductPath(product))} aria-label={`${copy.viewDetails}: ${product.name}`}>
                     <div className="fc-furniture-card__body">
                       <h3>{product.name}</h3>

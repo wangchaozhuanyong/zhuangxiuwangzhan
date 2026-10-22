@@ -1,7 +1,7 @@
 import generatedImages from "@/data/furnitureListingImages.json";
 
 const images: Record<string, { width: number; variants: Record<string, number> }> = generatedImages;
-const sizes = "(max-width: 540px) 148px, (max-width: 760px) 50vw, (max-width: 1050px) 33vw, 25vw";
+export const furnitureListingImageSizes = "(max-width: 540px) 148px, (max-width: 760px) 50vw, (max-width: 1050px) 33vw, 25vw";
 
 /** Only known, generated covers use variants; CMS replacements keep their original source. */
 export function furnitureListingPictureSources(src: string) {
@@ -13,5 +13,5 @@ export function furnitureListingPictureSources(src: string) {
     candidates.set(actualWidth, src.replace("/assets/", `/listing/w${width}/`));
   }
   candidates.set(image.width, src);
-  return [{ srcSet: [...candidates].sort(([a], [b]) => a - b).map(([width, url]) => `${url} ${width}w`).join(", "), sizes }];
+  return [{ srcSet: [...candidates].sort(([a], [b]) => a - b).map(([width, url]) => `${url} ${width}w`).join(", "), sizes: furnitureListingImageSizes }];
 }
