@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { interactionText } from "@/i18n/interactionText";
 import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
 import { isLocalImageSrc, preferWebpSrc, toLocalStaticImageSrc } from "@/lib/imageUrl";
 import {
@@ -40,6 +42,8 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
   revealOnLoad?: boolean;
   /** A deferred wrapper can report when it admits media into its loading range. */
   loadAdmitted?: boolean;
+  /** Retry one interrupted transfer before leaving the image's manual recovery available. */
+  retryOnError?: boolean;
 };
 
 type NativeFetchPriority = "high" | "low" | "auto";
@@ -61,9 +65,11 @@ const retrySrcSet = (srcSet: string | undefined, retry: number) =>
 export function SmartImage({
   src, alt, className, loading, decoding, fetchPriority, width, height, sizes,
   candidateWidths, sourceWidth, quality, resize, targetAspectRatio,
-  pictureSources, pictureClassName, critical = false, showFailureFallback = false, revealOnLoad = false, loadAdmitted,
+  pictureSources, pictureClassName, critical = false, showFailureFallback = false, revealOnLoad = false, loadAdmitted, retryOnError = false,
   onLoad, onError, ...rest
 }: SmartImageProps) {
+  const { language } = useLanguage();
+  const feedback = interactionText[language];
   const isSupabase = isSupabasePublicObjectUrl(src);
   const normalizedSrc = isSupabase ? src : toLocalStaticImageSrc(src);
   const normalizedLocalSrc = !isSupabase && isLocalImageSrc(normalizedSrc) ? preferWebpSrc(normalizedSrc) : normalizedSrc;
@@ -135,6 +141,15 @@ export function SmartImage({
     return () => window.clearTimeout(timer);
   }, [framed, requestAdmitted, imageState, feedbackKey]);
   const slowImage = requestAdmitted && imageState === "loading" && slowSource === feedbackKey;
+  const automaticRetries = React.useRef(new Set<string>());
+  React.useEffect(() => {
+    if (!retryOnError || imageState !== "error" || automaticRetries.current.has(resolvedSrc)) return;
+    const timer = window.setTimeout(() => {
+      automaticRetries.current.add(resolvedSrc);
+      setRetry(Date.now());
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [retryOnError, imageState, resolvedSrc]);
 
   React.useLayoutEffect(() => {
     const img = imgRef.current;
@@ -281,8 +296,8 @@ export function SmartImage({
       {selectedImage}
       {imageState === "error" || slowImage ? (
         <span className={cn("smart-image-failure", slowImage && "smart-image-slow")} role={slowImage ? "status" : "alert"}>
-          <span lang="zh-CN">{slowImage ? "图片加载较慢" : "图片加载失败"}</span><span lang="en">{slowImage ? "Image loading slowly" : "Image unavailable"}</span>
-          <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); setRetry(Date.now()); }}><span lang="zh-CN">重试</span><span lang="en">Retry</span></button>
+          <span>{slowImage ? feedback.imageSlow : feedback.imageUnavailable}</span>
+          <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); setRetry(Date.now()); }}>{feedback.retry}</button>
         </span>
       ) : null}
     </span>

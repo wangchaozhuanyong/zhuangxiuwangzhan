@@ -17,6 +17,55 @@ function mockCompleteImages(decode: () => Promise<void>) {
 }
 
 describe("SmartImage", () => {
+  it("retries a failed transfer once, then keeps manual recovery without an automatic retry loop", async () => {
+    vi.useFakeTimers();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/interrupted.webp" alt="Interrupted" showFailureFallback retryOnError pictureSources={[{ srcSet: "/small.webp 360w, /large.webp 640w" }]} />));
+      const image = container.querySelector<HTMLImageElement>(".smart-image")!;
+      await act(async () => image.dispatchEvent(new Event("error", { bubbles: true })));
+      expect(image.dataset.imageState).toBe("error");
+      await act(async () => vi.advanceTimersByTime(300));
+      const retrySource = image.src;
+      expect(retrySource).toContain("image_retry=");
+      expect(container.querySelector("source")?.srcset.match(/image_retry=/g)).toHaveLength(2);
+      expect(image.dataset.imageState).toBe("loading");
+      expect(image.dataset.decodedSrc).toBeUndefined();
+      await act(async () => image.dispatchEvent(new Event("error", { bubbles: true })));
+      await act(async () => vi.advanceTimersByTime(5000));
+      expect(image.src).toBe(retrySource);
+      expect(image.dataset.imageState).toBe("error");
+      await act(async () => container.querySelector<HTMLButtonElement>(".smart-image-failure button")!.click());
+      expect(image.src).not.toBe(retrySource);
+      expect(image.dataset.imageState).toBe("loading");
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.useRealTimers();
+    }
+  });
+
+  it("cancels a scheduled automatic retry when the image source changes", async () => {
+    vi.useFakeTimers();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/old-interrupted.webp" alt="Old" retryOnError />));
+      await act(async () => container.querySelector("img")!.dispatchEvent(new Event("error", { bubbles: true })));
+      await act(async () => root.render(<SmartImage src="/new-product.webp" alt="New" retryOnError />));
+      await act(async () => vi.advanceTimersByTime(5000));
+      expect(container.querySelector("img")?.src).not.toContain("image_retry=");
+      expect(container.querySelector("img")?.src).toContain("/new-product.webp");
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.useRealTimers();
+    }
+  });
+
   it("keeps a successfully decoded candidate ready after a real unmount and remount", async () => {
     const decode = vi.fn(() => Promise.resolve());
     const restore = mockCompleteImages(decode);
