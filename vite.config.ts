@@ -38,13 +38,20 @@ export default defineConfig(({ mode }) => ({
     // Load lazy route scripts through import(); keep entry and CSS preloads.
     modulePreload: {
       resolveDependencies: (_filename, dependencies, { hostType }) =>
-        hostType === "js" ? dependencies.filter((dependency) => dependency.endsWith(".css")) : dependencies,
+        hostType === "js"
+          ? dependencies.filter((dependency) => dependency.endsWith(".css"))
+          : dependencies.filter((dependency) => dependency.endsWith(".css") || dependency.includes("vendor") || dependency.includes("runtime")),
     },
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-          if (/[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/.test(id)) return "vendor";
+          if (id.includes("node_modules")) {
+            if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|@remix-run[\\/]router)[\\/]/.test(id)) return "vendor";
+            return;
+          }
+          if (id.includes("furnitureCatalogZh.json")) return "furniture-catalog-zh";
+          if (id.includes("furnitureCatalogEn.json")) return "furniture-catalog-en";
+          if (id.includes("furnitureCatalog.json")) return "furniture-catalog-base";
         },
       },
     },

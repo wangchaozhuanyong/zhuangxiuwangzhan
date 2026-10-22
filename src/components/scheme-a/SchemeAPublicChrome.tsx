@@ -34,7 +34,7 @@ import {
   type PublicNavGroupKey,
   type PublicNavItem,
 } from "@/config/publicNavigation";
-import { furnitureShopText } from "@/i18n/furnitureShopText";
+import { furnitureText } from "@/i18n/furnitureText";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -47,7 +47,7 @@ import { languageTag } from "@/i18n/languageDetection";
 import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
-import { QUOTE_FORM_PATH } from "@/lib/quoteFormTarget";
+import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 import { addCacheBuster, type SiteSettings } from "@/lib/siteSettingsApi";
 import { safeSocialProfileUrl } from "@/config/site";
 import logoFallback from "@/assets/logo-flashcast.webp";
@@ -184,7 +184,7 @@ export const SchemeANavbar = () => {
     : null;
   const publicPath = stripLanguagePrefix(location.pathname);
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
-    ? pageWhatsAppMessage || furnitureShopText[language].generalEnquiryMessage
+    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
     : undefined;
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
 
@@ -198,6 +198,8 @@ export const SchemeANavbar = () => {
     const preferred = getComputedStyle(header).color;
     const previous = new Map<HTMLElement, string>();
     const pixels = new WeakMap<HTMLImageElement, { source: string; data: ImageData | null }>();
+    const imageStyles = new WeakMap<HTMLImageElement, { objectFit: string; objectPosition: string }>();
+    const targetBackgrounds = new WeakMap<HTMLElement, RgbColor | null>();
     let frame = 0;
     let disposed = false;
     const clear = (target: HTMLElement) => {
@@ -235,10 +237,8 @@ export const SchemeANavbar = () => {
       )).filter((img) => img.complete && img.naturalWidth > 0 && getComputedStyle(img).visibility !== "hidden");
       targets.forEach((target) => {
         if (!target.getClientRects().length) { clear(target); return; }
-        const label = target.querySelector("img, span") || target;
-        const range = document.createRange();
-        range.selectNodeContents(label);
-        const rect = label instanceof HTMLImageElement ? label.getBoundingClientRect() : range.getBoundingClientRect();
+        const label = target.querySelector<HTMLElement>("img, span") || target;
+        const rect = label.getBoundingClientRect();
         if (!rect.width || !rect.height) { clear(target); return; }
         // Standard split heroes sit below the header and keep the regular skin color.
         const img = images.find((candidate) => {
@@ -247,8 +247,17 @@ export const SchemeANavbar = () => {
         });
         if (!img) { clear(target); return; }
         const box = img.getBoundingClientRect();
-        const imageStyle = getComputedStyle(img);
-        const background = parseCssColor(getComputedStyle(target).backgroundColor);
+        let imageStyle = imageStyles.get(img);
+        if (!imageStyle) {
+          const computed = getComputedStyle(img);
+          imageStyle = { objectFit: computed.objectFit, objectPosition: computed.objectPosition };
+          imageStyles.set(img, imageStyle);
+        }
+        let background = targetBackgrounds.get(target);
+        if (background === undefined) {
+          background = parseCssColor(getComputedStyle(target).backgroundColor);
+          targetBackgrounds.set(target, background);
+        }
         const data = readPixels(img);
         const samples: (RgbColor | null)[] = [];
         for (const x of [0.15, 0.5, 0.85]) {
@@ -381,12 +390,21 @@ export const SchemeANavbar = () => {
     updateScrolled();
     const observer = "IntersectionObserver" in window ? new IntersectionObserver(updateScrolled, { threshold: 0 }) : null;
     observer?.observe(sentinel);
-    window.addEventListener("scroll", updateScrolled, { passive: true });
-    window.addEventListener("resize", updateScrolled, { passive: true });
+    let scrollRaf = 0;
+    const scheduleUpdateScrolled = () => {
+      if (scrollRaf) return;
+      scrollRaf = window.requestAnimationFrame(() => {
+        scrollRaf = 0;
+        updateScrolled();
+      });
+    };
+    window.addEventListener("scroll", scheduleUpdateScrolled, { passive: true });
+    window.addEventListener("resize", scheduleUpdateScrolled, { passive: true });
     return () => {
       observer?.disconnect();
-      window.removeEventListener("scroll", updateScrolled);
-      window.removeEventListener("resize", updateScrolled);
+      if (scrollRaf) window.cancelAnimationFrame(scrollRaf);
+      window.removeEventListener("scroll", scheduleUpdateScrolled);
+      window.removeEventListener("resize", scheduleUpdateScrolled);
     };
   }, [hasImmersiveHero, publicPath]);
 
@@ -571,7 +589,7 @@ export const SchemeAFooterPrelude = () => {
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHome = publicPath === "/";
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
-    ? pageWhatsAppMessage || furnitureShopText[language].generalEnquiryMessage
+    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
     : undefined;
 
   if (hasPageConsultation) return null;

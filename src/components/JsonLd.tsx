@@ -10,7 +10,7 @@ const getSameAs = getSocialProfileUrls;
 
 const JsonLdScript = ({ data }: { data: unknown }) => {
   const managed = useStructuredDataNode(data);
-  if (managed || data === null) return null;
+  if (managed || data === null || !import.meta.env.DEV) return null;
 
   return (
     <script

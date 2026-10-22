@@ -101,6 +101,8 @@
     padding-top: clamp(4.5rem, 6.5vw, 7rem);
     padding-bottom: clamp(5rem, 7vw, 7.5rem);
     background: var(--atelier-paper);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 700px;
   }
 
   html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-section-head {
@@ -410,6 +412,8 @@
       radial-gradient(circle at 78% 18%, rgb(228 232 222 / 0.07), transparent 32rem),
       var(--public-surface-section);
     color: var(--public-text-primary);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
   }
 
   html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__layout {

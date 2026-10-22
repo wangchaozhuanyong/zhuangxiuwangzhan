@@ -1,6 +1,8 @@
 @layer components {
   .site-footer-art {
     position: relative;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
   }
 
   .footer-surface {
