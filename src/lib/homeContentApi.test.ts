@@ -1,16 +1,111 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getPublishedHomeContentBundle, getPublishedHomeOptionalSectionVisibility, isPublishedHomeSectionEnabled, mapSitePageRows } from "@/lib/homeContentApi";
+import { getPublishedHomeContentBundle, getPublishedHomeOptionalSectionVisibility, getPublishedSitePage, isPublishedHomeSectionEnabled, mapSitePageRows } from "@/lib/homeContentApi";
 
 const readers = vi.hoisted(() => ({
   bundle: vi.fn(), visibility: vi.fn(), configured: vi.fn(() => true),
+  legacyPage: vi.fn(), cmsPage: vi.fn(),
 }));
 vi.mock("@/backend/modules/cms/repository/publicContentRepository", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/backend/modules/cms/repository/publicContentRepository")>(),
   fetchPublicHomeBundleData: readers.bundle,
   fetchPublishedHomeSectionRow: readers.visibility,
   hasPublicContentDatabaseClient: readers.configured,
+  fetchPublishedLegacySitePageRow: readers.legacyPage,
+  fetchPublishedCmsPageByPageKey: readers.cmsPage,
 }));
-beforeEach(() => { readers.bundle.mockReset(); readers.visibility.mockReset(); readers.configured.mockReturnValue(true); });
+beforeEach(() => {
+  readers.bundle.mockReset(); readers.visibility.mockReset(); readers.configured.mockReturnValue(true);
+  readers.legacyPage.mockReset().mockResolvedValue(null);
+  readers.cmsPage.mockReset().mockResolvedValue(null);
+});
+
+describe("published site page reads", () => {
+  const legacy = {
+    id: "legacy", page_key: "services", path: "/services",
+    title_en: "Legacy services", title_zh: "原服务页",
+    description_en: "Legacy description", description_zh: "原页面说明",
+    seo_title_en: "Published SEO", seo_title_zh: "已发布 SEO",
+    image_url: "/images/legacy.webp",
+  };
+  const cms = {
+    id: "cms", page_key: "services", path: "/services",
+    title_en: "CMS services", title_zh: "CMS 服务页",
+    seo_title_en: "CMS SEO", seo_title_zh: "CMS SEO",
+    cms_sections: [{
+      id: "hero", status: "published", section_type: "hero",
+      content_en: { image_url: "/images/cms.webp" },
+      content_zh: { image_url: "/images/cms.webp" },
+    }],
+  };
+
+  it.each(["legacy", "cms"] as const)("starts both reads before either resolves, including when %s finishes first", async (first) => {
+    let finishLegacy!: (row: typeof legacy) => void;
+    let finishCms!: (row: typeof cms) => void;
+    readers.legacyPage.mockReturnValue(new Promise<typeof legacy>((resolve) => { finishLegacy = resolve; }));
+    readers.cmsPage.mockReturnValue(new Promise<typeof cms>((resolve) => { finishCms = resolve; }));
+    const signal = new AbortController().signal;
+    let settled = false;
+    const pending = getPublishedSitePage("en", "services", signal).then((page) => { settled = true; return page; });
+    expect(readers.legacyPage).toHaveBeenCalledExactlyOnceWith("services", signal);
+    expect(readers.cmsPage).toHaveBeenCalledExactlyOnceWith("services", signal);
+
+    if (first === "legacy") finishLegacy(legacy); else finishCms(cms);
+    await Promise.resolve();
+    expect(settled).toBe(false);
+    if (first === "legacy") finishCms(cms); else finishLegacy(legacy);
+    expect(await pending).toMatchObject({
+      title: "CMS services", description: "Legacy description", image_url: "/images/cms.webp",
+      seo_title: "Published SEO", seoImage: "/images/legacy.webp",
+    });
+  });
+
+  it.each(["en", "zh"] as const)("preserves CMS content, legacy fallbacks, and page-level metadata in %s", async (language) => {
+    readers.legacyPage.mockResolvedValue(legacy);
+    readers.cmsPage.mockResolvedValue(cms);
+    expect(await getPublishedSitePage(language, "services")).toEqual(mapSitePageRows({ site_pages: [legacy], cms_pages: [cms] }, language));
+  });
+
+  it.each([
+    { legacyRow: legacy, cmsRow: null },
+    { legacyRow: null, cmsRow: cms },
+    { legacyRow: null, cmsRow: null },
+  ])("preserves confirmed empty-source fallbacks: $legacyRow.id / $cmsRow.id", async ({ legacyRow, cmsRow }) => {
+    readers.legacyPage.mockResolvedValue(legacyRow);
+    readers.cmsPage.mockResolvedValue(cmsRow);
+    expect(await getPublishedSitePage("en", "services")).toEqual(mapSitePageRows({
+      site_pages: legacyRow ? [legacyRow] : [], cms_pages: cmsRow ? [cmsRow] : [],
+    }, "en"));
+  });
+
+  it.each(["legacyPage", "cmsPage"] as const)("propagates a failed %s read instead of treating it as missing content", async (source) => {
+    const error = new Error("Content read failed");
+    readers[source].mockRejectedValue(error);
+    await expect(getPublishedSitePage("en", "services")).rejects.toBe(error);
+  });
+
+  it("passes cancellation to both reads and preserves the abort error", async () => {
+    const controller = new AbortController();
+    const cancelledRead = (_pageKey: string, signal: AbortSignal) => new Promise<never>((_resolve, reject) => {
+      signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+    });
+    readers.legacyPage.mockImplementation(cancelledRead);
+    readers.cmsPage.mockImplementation(cancelledRead);
+    const pending = getPublishedSitePage("en", "services", controller.signal);
+    const error = new DOMException("Read cancelled", "AbortError");
+    const rejected = expect(pending).rejects.toBe(error);
+    controller.abort(error);
+    await rejected;
+    expect(readers.legacyPage).toHaveBeenCalledExactlyOnceWith("services", controller.signal);
+    expect(readers.cmsPage).toHaveBeenCalledExactlyOnceWith("services", controller.signal);
+  });
+
+  it("does not start remote reads without a configured content source", async () => {
+    readers.configured.mockReturnValue(false);
+    expect(await getPublishedSitePage("en", "services")).toBeNull();
+    expect(readers.legacyPage).not.toHaveBeenCalled();
+    expect(readers.cmsPage).not.toHaveBeenCalled();
+  });
+});
 
 describe("independent optional homepage visibility", () => {
   it("returns the successful core bundle without starting or awaiting optional reads", async () => {
