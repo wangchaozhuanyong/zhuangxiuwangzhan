@@ -159,6 +159,12 @@
   object-fit: contain;
 }
 
+.fc-furniture-card__image { position: relative; }
+.fc-furniture-card__image-link { position: absolute; inset: 0; z-index: 1; }
+/* Recovery sits above the image link, with no button nested inside an anchor. */
+.fc-furniture-card__image .smart-image-failure { padding: 0.5rem; gap: 0.4rem; font-size: 0.75rem; }
+.fc-furniture-card__image .smart-image-failure button { min-height: 44px; }
+
 .fc-furniture-card__body {
   display: flex;
   flex: 1;

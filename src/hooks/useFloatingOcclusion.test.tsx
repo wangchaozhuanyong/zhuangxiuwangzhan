@@ -138,7 +138,7 @@ describe("floating promotion stays available while reading", () => {
   });
 
   it.each([
-    'data-interaction-feedback="public"', 'class="public-route-feedback__recovery"', 'class="public-update-notice"',
+    'data-interaction-feedback="public"', 'class="public-route-feedback__recovery"', 'class="public-update-notice"', 'class="smart-image-failure"',
   ])("yields to overlapping recovery UI (%s) and restores when it moves or is removed", async (attributes) => {
     mount(); entry().focus(); await settle();
     content.innerHTML = `<aside ${attributes}><button>Retry</button></aside>`;

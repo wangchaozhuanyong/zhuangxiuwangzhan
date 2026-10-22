@@ -1,5 +1,6 @@
 export const interactionText = {
   zh: {
+    imageSlow: "图片加载较慢", imageUnavailable: "图片加载失败",
     savedWhileEditing: "上次提交已成功，当前新增修改尚未提交。", loading: "正在加载内容", loadingFailed: "内容加载失败，请重试。", refreshing: "正在更新", slow: "加载需要较长时间，可以重试。",
     offline: "网络已断开，已有内容仍可查看。", retry: "重试", refresh: "刷新数据",
     leaveTitle: "还有未保存的内容", leaveBody: "离开后会丢失尚未保存的修改。正在提交的操作请等待完成。",
@@ -8,6 +9,7 @@ export const interactionText = {
     syncDone: "网页同步完成", syncFailed: "网页同步暂未完成，请稍后重试。", refreshFailed: "更新未完成，已保留上次取得的内容。",
   },
   en: {
+    imageSlow: "Image loading slowly", imageUnavailable: "Image unavailable",
     savedWhileEditing: "Your previous submission succeeded. Your new edits have not been submitted.", loading: "Loading content", loadingFailed: "Content could not be loaded. Please retry.", refreshing: "Updating", slow: "Loading is taking longer than expected. You can retry.",
     offline: "You are offline. Previously loaded content is still available.", retry: "Retry", refresh: "Refresh data",
     leaveTitle: "You have unsaved changes", leaveBody: "Leaving will discard unsaved changes. Wait for any submission to finish.",
@@ -17,6 +19,7 @@ export const interactionText = {
   },
 
   ms: {
+    imageSlow: "Imej lambat dimuatkan", imageUnavailable: "Imej tidak tersedia",
     savedWhileEditing: "Penyerahan anda sebelum ini berjaya. Suntingan baharu anda belum diserahkan.", loading: "Memuatkan kandungan", loadingFailed: "Kandungan tidak dapat dimuatkan. Sila cuba semula.", refreshing: "Mengemas kini", slow: "Memuatkan mengambil masa lebih lama daripada yang dijangkakan. Anda boleh mencuba semula.",
     offline: "Anda berada di luar talian. Kandungan yang dimuatkan sebelum ini masih tersedia.", retry: "Cuba semula", refresh: "Muat semula data",
     leaveTitle: "Anda mempunyai perubahan yang belum disimpan", leaveBody: "Meninggalkan akan membuang perubahan yang tidak disimpan. Tunggu sebarang penyerahan selesai.",

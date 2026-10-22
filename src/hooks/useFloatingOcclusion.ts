@@ -2,7 +2,7 @@ import { useLayoutEffect, useState, type RefObject } from "react";
 import { QUOTE_FORM_ID } from "@/lib/quoteFormTarget";
 
 const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][aria-modal="true"],dialog[open]';
-const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';
+const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice,.smart-image-failure';
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
 const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
 const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form`;

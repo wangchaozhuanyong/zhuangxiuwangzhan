@@ -7,8 +7,6 @@
     border-bottom: 1px solid rgba(198, 164, 106, 0.34);
     color: rgba(255, 250, 238, 0.94);
     background: linear-gradient(128deg, #302a22 0%, #18201f 46%, #12100d 100%);
-    content-visibility: auto;
-    contain-intrinsic-size: auto 420px;
   }
 
   .home-footer-prelude::before,
