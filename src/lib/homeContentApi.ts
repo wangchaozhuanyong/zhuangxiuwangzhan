@@ -526,10 +526,15 @@ export const getPublishedSitePage = async (
  signal?: AbortSignal): Promise<PublishedSitePage | null> => {
 
   if (!hasPublicContentDatabaseClient()) return null;
-  const row = toRecord(await fetchPublishedLegacySitePageRow(pageKey, signal));
+  // Independent sources can load together; their merge priority stays unchanged.
+  const [legacyRow, publishedCmsRow] = await Promise.all([
+    fetchPublishedLegacySitePageRow(pageKey, signal),
+    fetchPublishedCmsPageByPageKey(pageKey, signal),
+  ]);
+  const row = toRecord(legacyRow);
   const legacy = Object.keys(row).length ? mapLegacySitePage(row, language) : null;
 
-  const cmsRow = toRecord(await fetchPublishedCmsPageByPageKey(pageKey, signal));
+  const cmsRow = toRecord(publishedCmsRow);
   if (!Object.keys(cmsRow).length) return legacy;
 
   return mapPublishedCmsPage(cmsRow, language, legacy);
