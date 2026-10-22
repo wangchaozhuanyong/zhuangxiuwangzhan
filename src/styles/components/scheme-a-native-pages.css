@@ -6,6 +6,17 @@
   background: var(--public-surface-base);
 }
 
+@supports (content-visibility: auto) {
+  .fc-route-page > section:not(.fc-route-hero) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
+  .fc-route-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 400px;
+  }
+}
+
 /* `overflow-x: hidden` on the legacy wrapper created an unnecessary nested
    scroll container and made every desktop section 15px narrower on the right. */
 .public-main--subpage,
@@ -414,6 +425,7 @@ html[data-public-theme="warm-stone"] .scheme-a-public-shell input[type="range"] 
 .fc-route-card-media img {
   object-fit: cover;
   filter: none !important;
+  will-change: transform;
   transition: transform var(--motion-hover) var(--motion-ease);
 }
 

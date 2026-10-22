@@ -5,20 +5,28 @@ const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][ar
 const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
 const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
+const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form,.fc-furniture-detail__actions,.fc-furniture-card__actions,.fc-furniture-pagination`;
 
 const intersects = (left: DOMRect, right: DOMRect) => left.width > 0 && left.height > 0
   && right.width > 0 && right.height > 0 && left.left < right.right && left.right > right.left
   && left.top < right.bottom && left.bottom > right.top;
 
-const isVisible = (element: HTMLElement) => {
+const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, boolean>) => {
   if (!element.isConnected || element.closest('[aria-hidden="true"],[hidden],[inert],[data-state="closed"],dialog:not([open])')) return false;
   const box = element.getBoundingClientRect();
   if (box.width <= 0 || box.height <= 0 || box.bottom <= 0 || box.right <= 0
     || box.top >= window.innerHeight || box.left >= window.innerWidth) return false;
   for (let ancestor: HTMLElement | null = element; ancestor; ancestor = ancestor.parentElement) {
+    const cached = cache.get(ancestor);
+    if (cached !== undefined) {
+      if (!cached) return false;
+      continue;
+    }
     const style = getComputedStyle(ancestor);
-    if (style.visibility === "hidden" || style.visibility === "collapse" || style.display === "none"
-      || style.opacity === "0" || style.contentVisibility === "hidden") return false;
+    const visible = !(style.visibility === "hidden" || style.visibility === "collapse" || style.display === "none"
+      || style.opacity === "0" || style.contentVisibility === "hidden");
+    cache.set(ancestor, visible);
+    if (!visible) return false;
   }
   return true;
 };
@@ -36,26 +44,37 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       frame = 0;
       if (disposed) return;
       const box = entry.getBoundingClientRect();
+      const cache = new WeakMap<HTMLElement, boolean>();
+      const isVisible = (element: HTMLElement) => isVisibleElement(element, cache);
+
       const modalOpen = Array.from(document.querySelectorAll<HTMLElement>(modalContent)).some(isVisible);
+
       // Radix can remove the panel a frame before its decorative overlay.
       // aria-hidden overlays still receive clicks until that layer is gone.
       const overlayBlocking = Array.from(document.querySelectorAll<HTMLElement>("[data-dialog-overlay]"))
-        .some(element => {
+        .some((element) => {
           const bounds = element.getBoundingClientRect();
           const style = getComputedStyle(element);
           return bounds.width > 0 && bounds.height > 0 && style.visibility !== "hidden"
             && style.pointerEvents !== "none";
         });
+
       const recoveryObstructed = Array.from(document.querySelectorAll<HTMLElement>(recoveryContent))
-        .some(element => isVisible(element) && intersects(box, element.getBoundingClientRect()));
+        .some((element) => intersects(box, element.getBoundingClientRect()) && isVisible(element));
+
       const active = document.activeElement;
       const inputObstructed = active instanceof HTMLElement && !entry.contains(active)
-        && active.matches(focusedInput) && isVisible(active)
-        && (window.matchMedia("(max-width: 767px)").matches || intersects(box, active.getBoundingClientRect()));
-      const formObstructed = Array.from(document.querySelectorAll<HTMLElement>(`#${QUOTE_FORM_ID},.fc-route-contact-form form,.fc-furniture-detail__actions,.fc-furniture-card__actions,.fc-furniture-pagination`))
-        .flatMap(form => Array.from(form.querySelectorAll<HTMLElement>(formControls)))
-        .some(element => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
-          && !element.matches(":disabled") && isVisible(element) && intersects(box, element.getBoundingClientRect()));
+        && active.matches(focusedInput)
+        && (window.matchMedia("(max-width: 767px)").matches || intersects(box, active.getBoundingClientRect()))
+        && isVisible(active);
+
+      const formContainers = document.querySelectorAll<HTMLElement>(formContainersSelector);
+      const formObstructed = Array.from(formContainers)
+        .filter((form) => intersects(box, form.getBoundingClientRect()))
+        .flatMap((form) => Array.from(form.querySelectorAll<HTMLElement>(formControls)))
+        .some((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
+          && !element.matches(":disabled") && intersects(box, element.getBoundingClientRect()) && isVisible(element));
+
       const keyboardOpen = window.visualViewport && window.visualViewport.height < window.innerHeight - 120;
       setObstructed(modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
     };

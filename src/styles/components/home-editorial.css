@@ -3,6 +3,8 @@
   .scheme-a-home--editorial :is(.home-renovation, .home-services, .home-materials, .home-furniture, .home-journal, .home-areas) {
     color: var(--public-text-primary);
     background: var(--public-surface-base);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
   }
   .scheme-a-home--editorial :is(.home-renovation, .home-materials, .home-areas) {
     background: var(--public-surface-section);

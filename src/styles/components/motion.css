@@ -35,12 +35,10 @@
   from {
     opacity: 0.92;
     transform: scale(var(--page-hero-image-scale-start, 1.055));
-    filter: saturate(1.02) contrast(1.01);
   }
   to {
     opacity: 1;
     transform: scale(var(--page-hero-image-scale-end, 1.025));
-    filter: saturate(1.04) contrast(1.02);
   }
 }
 
@@ -82,12 +80,10 @@
   from {
     opacity: 0.92;
     transform: scale(1.018);
-    filter: saturate(1) contrast(1);
   }
   to {
     opacity: 1;
     transform: scale(1);
-    filter: saturate(1) contrast(1);
   }
 }
 
@@ -253,6 +249,7 @@
   [data-cinematic-section][data-cinematic-state="pending"] {
     opacity: 0.82;
     transform: translate3d(0, 6px, 0);
+    will-change: opacity, transform;
   }
 
   [data-cinematic-section][data-cinematic-state="visible"] {

@@ -238,6 +238,7 @@
     z-index: 90;
     height: 76px;
     color: var(--public-text-primary);
+    transform: translateZ(0);
     /* Foreground and backdrop switch together to avoid unreadable intermediate colors. */
     transition: box-shadow var(--motion-hover) var(--motion-ease);
   }
@@ -274,7 +275,8 @@
     color: var(--public-text-primary);
     background: var(--public-surface-card);
     box-shadow: none;
-    backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(12px) saturate(130%);
+    -webkit-backdrop-filter: blur(12px) saturate(130%);
   }
 
   .scheme-a-chrome__spacer {
