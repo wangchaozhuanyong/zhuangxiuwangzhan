@@ -5,7 +5,7 @@ const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][ar
 const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
 const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
-const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form,.fc-furniture-detail__actions,.fc-furniture-card__actions,.fc-furniture-pagination`;
+const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form`;
 
 const intersects = (left: DOMRect, right: DOMRect) => left.width > 0 && left.height > 0
   && right.width > 0 && right.height > 0 && left.left < right.right && left.right > right.left

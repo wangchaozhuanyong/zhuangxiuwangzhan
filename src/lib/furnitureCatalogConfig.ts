@@ -7,4 +7,4 @@ export const furnitureShopUrlForLanguage = (language: "en" | "zh" | "ms") =>
 
 /** Check the resolved pathname, never page search text or a partial segment. */
 export const isFurniturePublicPath = (pathname: string) =>
-  /^\/(?:zh|en|ms)\/furniture(?:\/|$)/.test(pathname);
+  /^\/(?:(?:zh|en|ms)\/)?furniture(?:\/|$)/.test(pathname);
