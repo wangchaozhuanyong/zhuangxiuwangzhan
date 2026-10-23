@@ -16,6 +16,8 @@ The offline audit is `npm run verify:content-links -- --snapshot <project snapsh
 
 The new fixed targets use the existing translation_patch publisher with exact baseline hash, payload hash, row version, original-text predicate, verified workflow identity and single-use permits. Existing empty-field translation targets retain their NULL-only predicates. Corrections require their own owner approval reference and cannot use rollback permits.
 
+Public HTML acceptance compares the exact changed anchors: each corrected destination must appear and its previous wrong address must be absent. Unchanged external citations follow the public renderer's existing source policy. A completed permit and matching saved row version allow a later acceptance run to skip that content write.
+
 Run the existing approved content workflow with target `content-link-repair-20261024`, first dry-run, then publish. The website and remote main must match the workflow commit. Deploy both existing Edge functions from that same main revision through the protected Supabase release workflow, selecting one function per serialized run. Translation deployment requires scope `flashcast.com.my:edge/generate-english-content:content-link-integrity-v1`. No schema changes or automatic production rollback are included.
 
 ## Architecture compliance

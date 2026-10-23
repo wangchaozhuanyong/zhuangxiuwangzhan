@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { auditContentSnapshot, buildContentLinkRepairPlan } from "../../scripts/verify-content-links.mjs";
+import { auditContentSnapshot, buildContentLinkRepairPlan, inspectContentRepairReadback } from "../../scripts/verify-content-links.mjs";
 
 const record = (id: string, fields: Record<string, unknown>, table_name = "services", slug = id) =>
   ({ table_name, id, slug, updated_at: "2026-10-24T00:00:00.123456Z", fields });
@@ -34,5 +34,26 @@ describe("full content link audit and conservative repair planning", () => {
     expect(auditContentSnapshot(rows, ["/en/blog/missing"]).issues.map(issue => issue.reason)).toEqual(["wrong_language"]);
     expect(auditContentSnapshot(rows).recordCount).toBe(1);
     expect(auditContentSnapshot(rows).issueCount).toBe(3);
+  });
+});
+
+describe("exact published repair readback", () => {
+  const before = { content_ms: '<a href="/ms/services/pejabat-renovation">pejabat</a><a href="https://reference.invalid/policy">citation</a>' };
+  const after = { content_ms: before.content_ms.replace("pejabat-renovation", "office-renovation") };
+  it("accepts the repaired internal anchor when an unchanged external citation is filtered", () => {
+    expect(inspectContentRepairReadback('<a href="/ms/services/office-renovation">pejabat</a>', before, after))
+      .toMatchObject({ ok: true, missing: [], stale: [], changedLinks: [{ before: "/ms/services/pejabat-renovation", after: "/ms/services/office-renovation" }] });
+  });
+  it("rejects the old link even if the new target also appears elsewhere", () => {
+    expect(inspectContentRepairReadback(before.content_ms + after.content_ms, before, after))
+      .toMatchObject({ ok: false, stale: ["/ms/services/pejabat-renovation"] });
+  });
+  it("rejects a missing repaired target", () => {
+    expect(inspectContentRepairReadback('<a href="https://reference.invalid/policy">citation</a>', before, after))
+      .toMatchObject({ ok: false, missing: ["/ms/services/office-renovation"] });
+  });
+  it("rejects removed anchors and candidates with no actual repairs", () => {
+    expect(inspectContentRepairReadback("", before, { content_ms: "" })).toMatchObject({ ok: false, shapeMatches: false });
+    expect(inspectContentRepairReadback(before.content_ms, before, before)).toMatchObject({ ok: false, changedLinks: [] });
   });
 });
