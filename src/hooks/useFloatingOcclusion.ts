@@ -47,6 +47,9 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       const cache = new WeakMap<HTMLElement, boolean>();
       const isVisible = (element: HTMLElement) => isVisibleElement(element, cache);
 
+      const purchaseActionsVisible = Array.from(
+        document.querySelectorAll<HTMLElement>(".fc-furniture-detail__actions"),
+      ).some(isVisible);
       const modalOpen = Array.from(document.querySelectorAll<HTMLElement>(modalContent)).some(isVisible);
 
       // Radix can remove the panel a frame before its decorative overlay.
@@ -76,7 +79,7 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
           && !element.matches(":disabled") && intersects(box, element.getBoundingClientRect()) && isVisible(element));
 
       const keyboardOpen = window.visualViewport && window.visualViewport.height < window.innerHeight - 120;
-      setObstructed(modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
+      setObstructed(purchaseActionsVisible || modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
     };
     const schedule = () => { if (!frame && !disposed) frame = requestAnimationFrame(check); };
     check();

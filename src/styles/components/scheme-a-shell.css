@@ -365,6 +365,7 @@
 
   .scheme-a-chrome__primary {
     display: flex;
+    min-width: 0;
     align-items: center;
     justify-content: center;
     gap: clamp(1.4rem, 2.4vw, 2.9rem);
@@ -1371,7 +1372,7 @@
     display: none;
   }
 
-  @media (min-width: 1180px) and (max-width: 1365px) {
+  @media (min-width: 1180px) and (max-width: 1535px) {
     .scheme-a-chrome__brand img {
       height: 34px;
       max-height: 34px;
