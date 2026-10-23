@@ -306,7 +306,11 @@ export const projectHomeContentBundleForPreload = (bundle: PublicProjectionRecor
   projectTable("faqs", (row) => pickFields(row, FAQ_FIELDS));
   projectTable("projects", projectProjectSummary);
   projectTable("services", projectServiceSummary);
-  projectTable("cms_pages", projectCmsPage);
+  // mapSitePageRows uses the published home site_pages record in preference to
+  // cms_pages. Do not ship its unused sections twice in the homepage document.
+  if (toRows(bundle.site_pages)[0]?.page_key !== "home") {
+    projectTable("cms_pages", projectCmsPage);
+  }
   projectTable("cta_blocks", projectCtaBlockForPreload);
   projectTable("site_pages", (row) => pickFields(row, HOME_SITE_PAGE_FIELDS));
   projectTable("hero_slides", (row) => pickFields(row, HERO_SLIDE_FIELDS));
