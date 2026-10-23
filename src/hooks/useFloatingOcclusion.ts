@@ -6,8 +6,8 @@ const recoveryContent = '[data-interaction-feedback],.public-route-feedback__rec
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
 const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
 const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form`;
-const primaryActions = ':is(main,.scheme-a-footer-prelude) :is(button,[role="button"],[data-ui="button"],'
-  + 'a[class*="button"],input[type="submit"],input[type="button"],a[href^="https://wa.me/"],'
+const primaryActions = '.scheme-a-public-shell :is(button,[role="button"],[data-ui="button"],'
+  + 'a[class*="button"],a.public-contact-row,input[type="submit"],input[type="button"],a[href^="https://wa.me/"],'
   + 'a[href^="tel:"],a[href*="/quote"],a[href="#landing-quote"]),'
   + ':is(.scheme-a-actions,.actions,[class*="__actions"],[class*="-actions"],.fc-route-action-panel,.fc-furniture-pagination) a[href]';
 
