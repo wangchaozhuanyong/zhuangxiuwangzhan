@@ -31,6 +31,7 @@ const VIDEO_BUCKET = "site-videos";
 const POSTER_BUCKET = "site-images";
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 const POSTER_QUALITY = 0.82;
+const VIDEO_PROCESSING_TIMEOUT_MS = 30_000;
 const ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/quicktime"]);
 const ALLOWED_VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov", "m4v"]);
 type AdminVideoUploadText = Record<keyof typeof adminVideoUploadText.en, string>;
@@ -69,6 +70,22 @@ const getPosterBlob = async (video: HTMLVideoElement, text: AdminVideoUploadText
   return encodeWebp(canvas, POSTER_QUALITY);
 };
 
+const waitForVideo = (video: HTMLVideoElement, event: "loadeddata" | "seeked", start: () => void, failure: string, timeout: string) =>
+  new Promise<void>((resolve, reject) => {
+    const finish = (error?: Error) => {
+      window.clearTimeout(timer);
+      video.removeEventListener(event, ready);
+      video.removeEventListener("error", failed);
+      if (error) reject(error); else resolve();
+    };
+    const ready = () => finish();
+    const failed = () => finish(new Error(failure));
+    const timer = window.setTimeout(() => finish(new Error(timeout)), VIDEO_PROCESSING_TIMEOUT_MS);
+    video.addEventListener(event, ready);
+    video.addEventListener("error", failed);
+    try { start(); } catch { failed(); }
+  });
+
 async function prepareVideo(file: File, text: AdminVideoUploadText, encodeWebp: AdminWebpEncoder): Promise<PreparedVideo> {
   const mime = file.type || "";
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
@@ -88,22 +105,14 @@ async function prepareVideo(file: File, text: AdminVideoUploadText, encodeWebp: 
   video.playsInline = true;
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      // Metadata alone does not guarantee a decoded frame, particularly for
-      // sub-second clips that do not take the seek path below.
-      video.onloadeddata = () => resolve();
-      video.onerror = () => reject(new Error(text.readFailed));
-      video.src = objectUrl;
-    });
+    // Metadata alone does not guarantee a decoded frame. Seek within short
+    // clips too, so WebKit finishes decoding before canvas captures the frame.
+    await waitForVideo(video, "loadeddata", () => { video.src = objectUrl; }, text.readFailed, text.processingTimeout);
 
     const duration = Number.isFinite(video.duration) ? video.duration : 0;
-    const seekTime = duration > 1 ? Math.min(1, duration * 0.1) : 0;
+    const seekTime = duration > 0 ? Math.min(1, duration * 0.1) : 0;
     if (seekTime > 0) {
-      await new Promise<void>((resolve, reject) => {
-        video.onseeked = () => resolve();
-        video.onerror = () => reject(new Error(text.seekFailed));
-        video.currentTime = seekTime;
-      });
+      await waitForVideo(video, "seeked", () => { video.currentTime = seekTime; }, text.seekFailed, text.processingTimeout);
     }
 
     const posterBlob = await getPosterBlob(video, text, encodeWebp);
@@ -115,9 +124,6 @@ async function prepareVideo(file: File, text: AdminVideoUploadText, encodeWebp: 
       poster,
     };
   } finally {
-    video.onloadeddata = null;
-    video.onseeked = null;
-    video.onerror = null;
     video.removeAttribute("src");
     video.load();
     URL.revokeObjectURL(objectUrl);
@@ -177,7 +183,7 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
       setMessage(text.uploaded);
       onUploaded(videoUrl, uploadInfo);
     } catch (e) {
-      const validationMessages = [text.invalidType, text.readFailed, text.seekFailed, text.posterFailed, text.posterUnsupported,
+      const validationMessages = [text.invalidType, text.readFailed, text.seekFailed, text.posterFailed, text.posterUnsupported, text.processingTimeout,
         formatText(text.tooLarge, { max: formatBytes(MAX_VIDEO_BYTES) })];
       setError(e instanceof AdminVideoUploadStorageError
         ? e.reason === "unconfirmed" ? text.uploadUnconfirmed : e.reason === "cleanup_failed" ? text.cleanupFailed : text.uploadFailed
