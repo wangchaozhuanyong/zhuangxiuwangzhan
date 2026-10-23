@@ -45,7 +45,7 @@ describe("floating promotion stays available while reading", () => {
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
   });
 
-  it.each(["fc-furniture-detail__actions", "fc-furniture-card__actions", "fc-furniture-pagination"])(
+  it.each(["fc-furniture-card__actions", "fc-furniture-pagination"])(
     "does not suppress floating entries for %s in furniture routes",
     async (className) => {
       content.innerHTML = `<div class="${className}"><a href="/shop">Buy</a></div>`;
@@ -53,6 +53,17 @@ describe("floating promotion stays available while reading", () => {
       expectObstructed(false);
     },
   );
+  it("yields while furniture purchase actions are visible and restores when they leave the viewport", async () => {
+    content.innerHTML = '<div class="fc-furniture-detail__actions"><a href="/shop">Buy now</a><a href="/contact">WhatsApp</a></div>';
+    const actions = content.querySelector<HTMLElement>(".fc-furniture-detail__actions")!;
+    boxes.set(actions, rect(600, 600, 320, 50));
+    mount(); expectObstructed(true);
+    boxes.set(actions, rect(-100, 600, 320, 50));
+    window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
+    boxes.set(actions, rect(400, 600, 320, 50));
+    window.dispatchEvent(new Event("resize")); await settle(); expectObstructed(true);
+    actions.remove(); await settle(); expectObstructed(false);
+  });
   it("ignores overlapping text, cards, links and idle form controls across scrolling and routes", async () => {
     content.innerHTML = '<main id="main-content"><h1>Heading</h1><p>Paragraph</p><a href="/article"><h2>Whole card</h2><p>Card text</p></a><label>Form label<input /></label><button>Submit</button></main>';
     const ordinary = Array.from(content.querySelectorAll<HTMLElement>("h1,h2,p,a,label,input,button"));
