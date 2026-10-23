@@ -9,7 +9,19 @@ beforeEach(() => {
 });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
-describe("English form submission identity", () => {
+describe("public form submission identity", () => {
+  it.each([
+    ["contact", "/zh/contact"], ["contact", "/ms/contact"],
+    ["quote", "/zh/quote"], ["quote", "/ms/quote"], ["quote", "/en/quote/"],
+    ["quote", "/en/landing/campaign"], ["quote", "/zh/landing/campaign"], ["quote", "/ms/landing/campaign"],
+  ] as const)("protects %s retries on %s", async (type, path) => {
+    const identity = await import("@/lib/leadSubmissionIdentity");
+    const first = await identity.getLeadSubmissionId(type, path, fields);
+    expect(first).toMatch(/^[0-9a-f-]{36}$/);
+    expect(await identity.getLeadSubmissionId(type, path, fields)).toBe(first);
+    vi.resetModules();
+    expect(await (await import("@/lib/leadSubmissionIdentity")).getLeadSubmissionId(type, path, fields)).toBe(first);
+  });
   it.each(["quote", "contact"] as const)("reuses the %s logical attempt across retries and reload without storing form values", async (type) => {
     const identity = await import("@/lib/leadSubmissionIdentity");
     const first = await identity.getLeadSubmissionId(type, `/en/${type}`, fields);
@@ -47,9 +59,9 @@ describe("English form submission identity", () => {
     const first = await identity.getLeadSubmissionId("contact", "/en/contact", fields);
     expect(await identity.getLeadSubmissionId("contact", "/en/contact", fields)).toBe(first);
   });
-  it("does not alter fixed TEST or routes outside the authorized English scope", async () => {
+  it("does not alter fixed TEST or unrelated form routes", async () => {
     const identity = await import("@/lib/leadSubmissionIdentity");
-    for (const path of ["/zh/quote", "/en/quote?fc_test=fc_paid_20261008_T01", "/en/quote/", "/en/contact"]) {
+    for (const path of ["/en/quote?fc_test=fc_paid_20261008_T01", "/ms/quote?fc_test=unknown", "/en/contact", "/admin/quotes", "/de/quote"]) {
       expect(await identity.getLeadSubmissionId("quote", path, fields)).toBeUndefined();
     }
     expect(window.sessionStorage.length).toBe(0);

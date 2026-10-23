@@ -1,8 +1,9 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileActionBar from "@/components/MobileActionBar";
 import { SchemeAMobileDock } from "@/components/scheme-a/SchemeAPublicChrome";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
+import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
 
 type MobileDockMode = "navigation" | "actions" | "hidden";
 
@@ -21,8 +22,10 @@ const isEditableTarget = (target: EventTarget | null) => {
 const MobileBottomDock = () => {
   const { key: routeKey } = useLocation();
   const { menuOpen, showMobileActionBar } = usePublicChrome();
+  const dockRef = useRef<HTMLDivElement>(null);
+  const obstructed = useFloatingOcclusion(dockRef, routeKey);
   const [formControlFocused, setFormControlFocused] = useState(false);
-  const mode: MobileDockMode = menuOpen || formControlFocused
+  const mode: MobileDockMode = menuOpen || formControlFocused || obstructed
     ? "hidden"
     : showMobileActionBar
       ? "actions"
@@ -59,7 +62,7 @@ const MobileBottomDock = () => {
   const actionsActive = mode === "actions";
 
   return (
-    <div className="scheme-a-mobile-switcher" data-mode={mode} data-testid="mobile-bottom-dock">
+    <div ref={dockRef} className="scheme-a-mobile-switcher" data-mode={mode} data-testid="mobile-bottom-dock">
       <div
         className="scheme-a-mobile-switcher__panel scheme-a-mobile-switcher__panel--navigation"
         data-active={navigationActive ? "true" : "false"}

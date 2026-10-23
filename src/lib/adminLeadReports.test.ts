@@ -6,6 +6,49 @@ import {
 } from "@/lib/adminLeadReports";
 
 describe("adminLeadReports", () => {
+  it("recognizes the source stored by the contact submission backend", () => {
+    const report = buildAdminLeadReport({
+      language: "zh", period: "all", quotes: [],
+      leads: [
+        { id: "backend-contact", source: "website_contact", source_path: "/ms/contact" },
+        { id: "backend-contact-legacy", source: "website_contact", source_path: null },
+        { id: "backend-service", source: "website_contact", source_path: "/ms/contact?source=service&title=Kitchen" },
+      ],
+    });
+    expect(report.sourceRows.find(row => row.sourcePath === "/ms/contact")).toMatchObject({ sourceType: "contact", label: "联系页 · /contact" });
+    expect(report.sourceRows.find(row => row.sourcePath === null)).toMatchObject({ sourceType: "contact", label: "联系页" });
+    expect(report.sourceRows.find(row => row.sourceType === "service")?.label).toBe("服务详情：Kitchen");
+  });
+
+  it.each(["/", "/contact", "/quote", "/services/kitchen", "/projects/example", "/materials/example"])(
+    "groups the same source across all public languages: %s",
+    (path) => {
+      const leads = ["zh", "en", "ms"].map((language, index) => ({
+        id: `language-source-${index}`,
+        status: "new",
+        source_path: `/${language}${path === "/" ? "" : path}`,
+      }));
+      const report = buildAdminLeadReport({ language: "en", period: "all", leads, quotes: [] });
+
+      expect(report.sourceRows).toHaveLength(1);
+      expect(report.sourceRows[0]).toMatchObject({ total: 3 });
+      expect(report.sourceRows[0].sourceType).not.toBe("unknown");
+      expect(report.totals.submitted).toBe(3);
+    },
+  );
+
+  it("keeps explicit attribution while removing the Malay route prefix from grouping", () => {
+    const report = buildAdminLeadReport({
+      language: "zh", period: "all", leads: [],
+      quotes: ["zh", "en", "ms"].map((language, index) => ({
+        id: `language-quote-${index}`,
+        source_path: `/${language}/quote?source=service`,
+      })),
+    });
+    expect(report.sourceRows).toHaveLength(1);
+    expect(report.sourceRows[0]).toMatchObject({ sourceType: "service", quotes: 3, total: 3 });
+  });
+
   it("normalizes report period values", () => {
     expect(normalizeAdminLeadReportPeriod("30d")).toBe("30d");
     expect(normalizeAdminLeadReportPeriod("all")).toBe("all");

@@ -148,7 +148,7 @@ const inReportPeriod = (createdAt: string | null | undefined, period: AdminLeadR
 };
 
 const inferSourceTypeFromPath = (pathname: string) => {
-  const clean = pathname.replace(/^\/(zh|en)(?=\/|$)/, "") || "/";
+  const clean = pathname.replace(/^\/(zh|en|ms)(?=\/|$)/, "") || "/";
   if (clean === "/") return "home";
   if (clean.startsWith("/quote")) return "quote";
   if (clean.startsWith("/contact")) return "contact";
@@ -173,7 +173,7 @@ const readSourceInfo = (
   language: Language,
 ) => {
   const rawPath = sourcePath || "";
-  let sourceType = fallbackSource || "unknown";
+  let sourceType = fallbackSource === "website_contact" ? "contact" : fallbackSource || "unknown";
   let title = "";
   let pathname = "";
 
@@ -188,7 +188,7 @@ const readSourceInfo = (
   }
 
   const baseLabel = sourceTypeLabel(sourceType, language);
-  const pathLabel = pathname ? pathname.replace(/^\/(zh|en)(?=\/|$)/, "") || "/" : "";
+  const pathLabel = pathname ? pathname.replace(/^\/(zh|en|ms)(?=\/|$)/, "") || "/" : "";
   const label = title ? `${baseLabel}：${title}` : pathLabel && pathLabel !== "/" ? `${baseLabel} · ${pathLabel}` : baseLabel;
   const key = `${sourceType}:${title || pathLabel || rawPath || "unknown"}`.toLowerCase();
 

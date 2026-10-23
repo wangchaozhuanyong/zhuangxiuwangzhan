@@ -1216,7 +1216,7 @@ const buildDynamicSeoEntry = (
     readString(row, "cover_image_url") ||
     readString(row, "hero_image_url") ||
     readString(row, "image_url") ||
-    fallback?.ogImage ||
+    (kind === "site_page" ? DEFAULT_OG_IMAGE : fallback?.ogImage) ||
     DEFAULT_OG_IMAGE;
   const reviewedImage = kind === "blog"
     ? resolveReviewedBlogCover(readString(row, "slug"), imageUrl)

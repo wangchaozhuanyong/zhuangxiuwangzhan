@@ -106,13 +106,13 @@ const sitemapXml = readFileSync("public/sitemap.xml", "utf8");
 const sitemapLocs = [...sitemapXml.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
 const duplicateLocs = sitemapLocs.filter((loc, index) => sitemapLocs.indexOf(loc) !== index);
 const nonCanonicalLocs = sitemapLocs.filter((loc) => !loc.startsWith("https://flashcast.com.my/"));
-const legacyLocs = sitemapLocs.filter((loc) => !/^https:\/\/flashcast\.com\.my\/(en|zh)(\/|$)/.test(loc));
+const legacyLocs = sitemapLocs.filter((loc) => !/^https:\/\/flashcast\.com\.my\/(en|zh|ms)(\/|$)/.test(loc));
 const queryLocs = sitemapLocs.filter((loc) => loc.includes("?"));
 
 if (!sitemapLocs.length) failures.push("sitemap: no <loc> entries");
 if (duplicateLocs.length) failures.push(`sitemap: duplicate URLs: ${[...new Set(duplicateLocs)].slice(0, 5).join(", ")}`);
 if (nonCanonicalLocs.length) failures.push(`sitemap: non-canonical host URLs: ${nonCanonicalLocs.slice(0, 5).join(", ")}`);
-if (legacyLocs.length) failures.push(`sitemap: URLs without /en or /zh prefix: ${legacyLocs.slice(0, 5).join(", ")}`);
+if (legacyLocs.length) failures.push(`sitemap: URLs without /en, /zh or /ms prefix: ${legacyLocs.slice(0, 5).join(", ")}`);
 if (queryLocs.length) failures.push(`sitemap: query URLs should not be listed: ${queryLocs.slice(0, 5).join(", ")}`);
 
 if (RUN_SITEMAP_CRAWL_CHECKS) {
