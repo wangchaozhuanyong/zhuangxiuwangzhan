@@ -356,7 +356,7 @@
     white-space: nowrap;
   }
 
-  .scheme-a-chrome__wordmark-name:lang(en) {
+  .scheme-a-chrome__wordmark-name:is(:lang(en), :lang(ms)) {
     font-family: "Inter Tight Local", var(--font-body);
     font-size: 20px;
     font-weight: 600;
@@ -1380,7 +1380,7 @@
 
     .scheme-a-chrome__symbol { width: 38px; height: 34px; }
     .scheme-a-chrome__wordmark-name { font-size: 22px; }
-    .scheme-a-chrome__wordmark-name:lang(en) { font-size: 18px; }
+    .scheme-a-chrome__wordmark-name:is(:lang(en), :lang(ms)) { font-size: 18px; }
 
     .scheme-a-chrome__primary {
       gap: clamp(0.7rem, 1.1vw, 0.95rem);
@@ -1453,7 +1453,7 @@
     .scheme-a-chrome__wordmark--localized { gap: 8px; }
     .scheme-a-chrome__symbol { width: 35px; height: 32px; }
     .scheme-a-chrome__wordmark-name { font-size: 20px; }
-    .scheme-a-chrome__wordmark-name:lang(en) { font-size: 15px; letter-spacing: 0.02em; }
+    .scheme-a-chrome__wordmark-name:is(:lang(en), :lang(ms)) { font-size: 15px; letter-spacing: 0.02em; }
 
     .scheme-a-chrome__actions {
       display: flex !important;
@@ -1863,7 +1863,7 @@
     .scheme-a-chrome__symbol { width: 26px; height: 24px; }
     .scheme-a-chrome__symbol img { height: 24px !important; max-height: 24px !important; }
     .scheme-a-chrome__wordmark-name { font-size: 15.5px; letter-spacing: 0.025em; }
-    .scheme-a-chrome__wordmark-name:lang(en) { font-size: 12px; letter-spacing: -0.03em; }
+    .scheme-a-chrome__wordmark-name:is(:lang(en), :lang(ms)) { font-size: 12px; letter-spacing: -0.03em; }
 
     .scheme-a-chrome__language {
       min-width: 70px;
