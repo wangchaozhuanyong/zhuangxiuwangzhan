@@ -8,6 +8,12 @@ on:
         required: true
         type: choice
         options: [dry-run, deploy]
+      edge_function:
+        description: Exact existing Edge function to release
+        required: true
+        default: content-publish
+        type: choice
+        options: [content-publish, generate-english-content]
       expected_sha:
         description: Exact reviewed main commit SHA
         required: true
@@ -32,6 +38,9 @@ on:
         description: Exact approved flashcast.com.my scope
         required: true
         type: string
+
+env:
+  EDGE_FUNCTION: ${{ inputs.edge_function || 'content-publish' }}
 
 permissions:
   contents: read
@@ -60,7 +69,7 @@ jobs:
           RELEASE_MODE: ${{ inputs.mode }}
         run: |
           node scripts/supabase-content-publish-release.mjs identity
-          node --test scripts/supabase-content-publish-release.test.mjs
+          EDGE_FUNCTION=content-publish node --test scripts/supabase-content-publish-release.test.mjs
           npm run arch:check
       - name: Verify protected environment before loading credentials
         env:
@@ -132,20 +141,20 @@ jobs:
           supabase init --workdir "$RUNNER_TEMP/edge-before" --yes
           supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-before-download.json"
           node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-before-download.json" > "$RUNNER_TEMP/edge-version-before-download.txt"
-          supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-before"
-          test -s "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts"
+          supabase functions download "$EDGE_FUNCTION" --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-before"
+          test -s "$RUNNER_TEMP/edge-before/supabase/functions/$EDGE_FUNCTION/index.ts"
           node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before.json"
           node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before.sha256"
           supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-before.json"
           node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-before.txt"
           cmp -s "$RUNNER_TEMP/edge-version-before-download.txt" "$RUNNER_TEMP/edge-version-before.txt"
-          sha256sum "$RUNNER_TEMP/public-schema-before.sql" "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts" > "$RUNNER_TEMP/pre-release-hashes.txt"
-          echo "Previous content-publish version: $(cat "$RUNNER_TEMP/edge-version-before.txt"); source SHA-256: $(cat "$RUNNER_TEMP/edge-source-before.sha256")." >> "$GITHUB_STEP_SUMMARY"
+          sha256sum "$RUNNER_TEMP/public-schema-before.sql" "$RUNNER_TEMP/edge-before/supabase/functions/$EDGE_FUNCTION/index.ts" > "$RUNNER_TEMP/pre-release-hashes.txt"
+          echo "Previous ${EDGE_FUNCTION} version: $(cat "$RUNNER_TEMP/edge-version-before.txt"); source SHA-256: $(cat "$RUNNER_TEMP/edge-source-before.sha256")." >> "$GITHUB_STEP_SUMMARY"
       - name: Retain previous Edge source for controlled recovery
         if: ${{ inputs.mode == 'deploy' }}
         uses: actions/upload-artifact@v4
         with:
-          name: content-publish-before-${{ github.sha }}
+          name: ${{ env.EDGE_FUNCTION }}-before-${{ github.sha }}
           path: |
             ${{ runner.temp }}/edge-before/supabase/functions/
             ${{ runner.temp }}/edge-source-before.json
@@ -170,6 +179,7 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
+          export EDGE_FUNCTION="${EDGE_FUNCTION:-content-publish}"
           if ! node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions" > "$RUNNER_TEMP/edge-source-before-recheck.sha256" || \
              ! cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-before-recheck.sha256"; then
             echo '::error::The frozen prior Edge backup changed; deployment is blocked.'
@@ -188,18 +198,20 @@ jobs:
             echo 'Deployment blocked: the public website no longer runs the reviewed SHA, or its version could not be read.' >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-          if supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api && \
+          jwt_args=()
+          if [ "$EDGE_FUNCTION" = content-publish ]; then jwt_args+=(--no-verify-jwt); fi
+          if supabase functions deploy "$EDGE_FUNCTION" --project-ref rbsnyexjifounogswrjp "${jwt_args[@]}" --use-api && \
              supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-after.json" && \
              node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-after.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-after.txt" && \
              mkdir -p "$RUNNER_TEMP/edge-after" && \
              supabase init --workdir "$RUNNER_TEMP/edge-after" --yes && \
-             supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-after" && \
+             supabase functions download "$EDGE_FUNCTION" --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-after" && \
              node scripts/supabase-content-publish-release.mjs source-deployed supabase/functions "$RUNNER_TEMP/edge-after/supabase/functions" > "$RUNNER_TEMP/edge-source-after.sha256" && \
              node scripts/supabase-content-publish-release.mjs source-manifest "$RUNNER_TEMP/edge-after/supabase/functions" > "$RUNNER_TEMP/edge-source-after.json" && \
              supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-after-download.json" && \
              node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-after-download.json" > "$RUNNER_TEMP/edge-version-after-download.txt" && \
              cmp -s "$RUNNER_TEMP/edge-version-after.txt" "$RUNNER_TEMP/edge-version-after-download.txt"; then
-            echo "content-publish version advanced to $(cat "$RUNNER_TEMP/edge-version-after.txt"); full runtime source matches the reviewed checkout; managed switch remains off." >> "$GITHUB_STEP_SUMMARY"
+            echo "${EDGE_FUNCTION} version advanced to $(cat "$RUNNER_TEMP/edge-version-after.txt"); full runtime source matches the reviewed checkout; managed switch remains off." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           echo '::error::Edge deploy or verification failed. No automatic prior-source deploy was attempted; inspect the actual current version before a separately reviewed recovery.'
@@ -209,7 +221,7 @@ jobs:
         if: ${{ always() && inputs.mode == 'deploy' }}
         uses: actions/upload-artifact@v4
         with:
-          name: content-publish-readback-${{ github.sha }}
+          name: ${{ env.EDGE_FUNCTION }}-readback-${{ github.sha }}
           path: |
             ${{ runner.temp }}/edge-after/supabase/functions/
             ${{ runner.temp }}/edge-source-after.json
@@ -231,5 +243,5 @@ jobs:
           if [ "$RELEASE_MODE" = dry-run ]; then
             echo 'Supabase R3 preflight only: no migration, Edge deploy, secret change, or CMS write.' >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Existing R3 migration rechecked without a schema write; content-publish Edge deployed at ${GITHUB_SHA}. The managed release switch remains off; no CMS content was published." >> "$GITHUB_STEP_SUMMARY"
+            echo "Existing R3 migration rechecked without a schema write; ${EDGE_FUNCTION} Edge deployed at ${GITHUB_SHA}. The managed release switch remains off; no CMS content was published." >> "$GITHUB_STEP_SUMMARY"
           fi

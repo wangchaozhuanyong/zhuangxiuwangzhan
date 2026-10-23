@@ -30,6 +30,8 @@ export const formatAdminMutationError = (error: unknown, language: Language = "z
     if (reason === "missing") return operation === "remove" ? text.missingRemove : text.missingSave;
     if (reason === "stale") return operation === "remove" ? text.staleRemove : text.staleSave;
     if (reason === "privacy") return text.privacy.replace("{fields}", (details || []).join(", "));
+    if (reason === "content_links") return text.contentLinks.replace("{links}", (details || []).join(", "));
+    if (reason === "content_link_check") return text.contentLinkCheck;
     if (sourceError) return formatAdminMutationError(sourceError, language);
     return error.message;
   }

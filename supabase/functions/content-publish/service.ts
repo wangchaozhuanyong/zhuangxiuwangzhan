@@ -1,3 +1,4 @@
+import { CONTENT_LINK_REPAIR_TARGETS, CONTENT_LINK_REPAIR_APPROVAL_ID } from "../_shared/content-link-repair-targets.ts";
 import { publishMediaContent } from "./mediaPublishing.ts";
 import { cleanText, errorResult } from "./publishValues.ts";
 import { dispatchContentPublish } from "./dispatch.ts";
@@ -14,11 +15,13 @@ import {
   publishMaterialAtomic,
   publishHomepageAtomic,
   PublicationConflictError,
+  resolvePublishedContentLink,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus, PublishContext } from "./types.ts";
 import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
+import { pendingContentPaths, validateContentLinks } from "../_shared/content-links.mjs";
 
 const CONTENT_WRITE_ROLES = new Set(["super_admin", "content_editor"]);
 // Managed rows cannot be written through the legacy cron/admin path.
@@ -1930,7 +1933,7 @@ export async function publishMalayTranslationPatch(
   if (await sha256(baseline) !== target.baselineFieldsSha256) {
     return errorResult("Malay CMS row differs from the content-hash locked baseline. No content was written.", 409);
   }
-  if (target.changedFields.some((field) => !isBlankMalayValue(existing[field]))) {
+  if (!CONTENT_LINK_REPAIR_TARGETS.includes(target) && target.changedFields.some((field) => !isBlankMalayValue(existing[field]))) {
     return errorResult("A target Malay field is no longer empty. No content was written.", 409);
   }
   const patch = Object.fromEntries(target.changedFields.map((field) => [field, record[field]]));
@@ -1957,7 +1960,7 @@ export async function publishMalayTranslationPatch(
       baseline_fields_sha256: target.baselineFieldsSha256, payload_sha256: target.desiredFieldsSha256 } };
   }
   if (input.ownerApproved !== true || input.explicitExecution !== true
-      || input.approvalId !== MALAY_TRANSLATION_APPROVAL_ID || input.managedPermit?.operation !== "publish") {
+      || input.approvalId !== (CONTENT_LINK_REPAIR_TARGETS.includes(target) ? CONTENT_LINK_REPAIR_APPROVAL_ID : MALAY_TRANSLATION_APPROVAL_ID) || input.managedPermit?.operation !== "publish") {
     return errorResult("Malay publication requires the exact owner decision and a forward-only one-time permit.", 403);
   }
   const denied = await beginManagedCmsWrite(input, client, context, target, existing, target.slug,
@@ -2053,6 +2056,23 @@ export async function publishContent(
   if (!VALID_STATUSES.has(nextStatus)) return errorResult("Invalid nextStatus.");
   if (mode === "publish" && (input.ownerApproved !== true || input.explicitExecution !== true)) {
     return errorResult("Publishing requires ownerApproved=true and explicitExecution=true.", 403);
+  }
+  if ((nextStatus === "published" || input.contentType === "translation_patch")
+      && !["media", "cache_invalidation"].includes(input.contentType) && (!selection || exact)) {
+    const tables: Record<string, string> = { service: "services", blog: "blog_posts", material: "materials", project: "projects",
+      service_area: "service_areas", site_page: "site_pages" };
+    try {
+      const contentBeingSaved = exact?.changedFields
+        ? Object.fromEntries(exact.changedFields.filter(field => field in input.record!).map(field => [field, input.record![field]]))
+        : input.record;
+      const issues = await validateContentLinks(contentBeingSaved, target => resolvePublishedContentLink(client, target), {
+        pendingPaths: pendingContentPaths(exact?.table || tables[input.contentType], { ...input.record, status: nextStatus }),
+      });
+      if (issues.length) return errorResult("Content links must point to published pages in the field language.", 400,
+        { link_issues: issues });
+    } catch {
+      return errorResult("Content link targets could not be checked. Retry before publishing.", 503);
+    }
   }
   if (input.contentType === "translation_patch") {
     return publishMalayTranslationPatch(input, client, context, mode,

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -62,7 +63,7 @@ function mockClient(initial: Row, options: { replay?: boolean; race?: boolean; u
       return { data: [{}], error: null };
     },
   } as unknown as ContentPublishClient;
-  return { client, row, writes, calls, inserts };
+  return { client: withPublishedLinkTargets(client), row, writes, calls, inserts };
 }
 
 describe("ORG-020 exact existing-row publisher capability", () => {

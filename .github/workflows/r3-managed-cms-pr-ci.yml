@@ -111,6 +111,15 @@ on:
       - supabase/functions/content-publish/unified-content-targets.ts
       - supabase/functions/_shared/managed-targets.ts
       - supabase/functions/_shared/malay-translation-targets.ts
+      - supabase/functions/_shared/content-link*
+      - supabase/functions/_shared/catalog-link-targets.ts
+      - supabase/functions/generate-english-content/**
+      - src/lib/contentLink*.test.ts
+      - src/lib/malayTranslation.test.ts
+      - src/test/helpers/publishedLinkTargets.ts
+      - src/test/fixtures/published-link-targets.json
+      - scripts/verify-content-links.mjs
+      - drafts/content-link-repair-20261024/**
       - supabase/functions/_shared/unified-content-targets.ts
       - supabase/functions/content-publish/managed-timestamp.ts
       - supabase/functions/content-publish/permit-auth.ts
@@ -164,6 +173,11 @@ jobs:
             src/lib/contentPublishOrg020V7.test.ts \
             src/lib/contentPublishNativeBody.test.ts \
             src/lib/malayCmsPublisher.test.ts \
+            src/lib/malayTranslation.test.ts \
+            src/lib/contentLinkIntegrity.test.ts \
+            src/lib/contentLinkAudit.test.ts \
+            src/lib/contentLinkWriteGates.test.ts \
+            src/lib/contentLinkRepairPublisher.test.ts \
             src/lib/translationSecurity.test.ts \
             src/lib/contentPublishOwnerPublisherThree.test.ts \
             src/lib/contentPublishUnifiedContent.test.ts \

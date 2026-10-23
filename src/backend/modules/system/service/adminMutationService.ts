@@ -5,10 +5,12 @@ import {
   insertAdminAuditLog,
   insertAdminMutationRecord,
   updateAdminMutationRecord,
+  resolveAdminContentLink,
   type AdminMutationDbRecord,
   type AdminMutationVersion,
 } from "@/backend/modules/system/repository/adminMutationRepository";
 import { getLandingProjectPrivacyIssues } from "@/lib/landingContentPrivacy";
+import { linkedContentTables, pendingContentPaths, validateContentLinks, type ContentLinkIssue } from "../../../../../supabase/functions/_shared/content-links.mjs";
 
 type DbRecord = AdminMutationDbRecord;
 
@@ -40,7 +42,7 @@ export type AdminMutationResult<T extends DbRecord = DbRecord> = {
 };
 
 type MutationErrorContext = {
-  reason?: "missing" | "stale" | "privacy";
+  reason?: "missing" | "stale" | "privacy" | "content_links" | "content_link_check";
   operation?: "save" | "remove";
   sourceError?: unknown;
   details?: string[];
@@ -127,6 +129,20 @@ export async function persistAdminRecord<T extends DbRecord = DbRecord>({
   }
 
   const effectiveRecord = { ...(before || {}), ...clean };
+  if (linkedContentTables.has(table) && effectiveRecord.status === "published") {
+    let issues: ContentLinkIssue[];
+    try {
+      const contentBeingSaved = before?.status === "published" ? clean : effectiveRecord;
+      issues = await validateContentLinks(contentBeingSaved, target => resolveAdminContentLink(target), {
+        pendingPaths: pendingContentPaths(table, effectiveRecord),
+      });
+    } catch {
+      throw new AdminMutationError("validation", "Content links could not be checked.", "validation",
+        { reason: "content_link_check", operation: "save" });
+    }
+    if (issues.length) throw new AdminMutationError("validation", "Content link validation failed.", "validation",
+      { reason: "content_links", operation: "save", details: [...new Set(issues.map(issue => issue.href))] });
+  }
   if (table === "landing_pages" && effectiveRecord.status === "published") {
     const privacyIssues = getLandingProjectPrivacyIssues(effectiveRecord.slug, effectiveRecord.related_projects);
     if (privacyIssues.length) {

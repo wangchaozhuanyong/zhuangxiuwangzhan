@@ -7,9 +7,11 @@ import {
   updateTranslationRecord,
   TranslationConflictError,
   createTranslationRecordGuard,
+  resolveTranslationContentLink,
 } from "./repository.ts";
 import { isBlankValue, translateValue } from "./translator.ts";
 import type { GenerateEnglishClient, GenerateEnglishRequest, GenerateEnglishResult } from "./types.ts";
+import { pendingContentPaths, validateContentLinks } from "../_shared/content-links.mjs";
 
 const allowedTables = new Set([
   "services",
@@ -111,6 +113,16 @@ export async function generateEnglishContent(
   }
 
   try {
+    if (record.status === "published") {
+      const issues = await validateContentLinks(translated, target => resolveTranslationContentLink(client, target), {
+        pendingPaths: pendingContentPaths(table, record),
+      });
+      if (issues.length) {
+        const message = "Translated content has invalid page links. Correct the source links before translating.";
+        await createTranslationJob(client, table, id, "failed", message, targetLanguage);
+        return errorResult(message, 400);
+      }
+    }
     await updateTranslationRecord(client, table, id, translated, guard);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

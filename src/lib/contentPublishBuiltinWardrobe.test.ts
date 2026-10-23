@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -121,7 +122,7 @@ function clientFor(initial: Row, options: { race?: boolean; denyClaim?: boolean;
     },
   };
   return {
-    client: client as unknown as ContentPublishClient, writes, predicates, rpcs, tables, audits,
+    client: withPublishedLinkTargets(client as unknown as ContentPublishClient), writes, predicates, rpcs, tables, audits,
     row: () => clone(row), resetRowForReplay: () => { row = clone(initial); },
   };
 }
