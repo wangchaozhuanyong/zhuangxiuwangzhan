@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -59,7 +60,7 @@ function mockClient(initial: Row, { race = false, replay = false } = {}) {
     if (name === "begin_managed_cms_release_write" && race) row.updated_at = "2026-08-22T12:23:13.790059+00:00";
     return { data: [{}], error: null };
   } } as unknown as ContentPublishClient;
-  return { client, row, writes, calls };
+  return { client: withPublishedLinkTargets(client), row, writes, calls };
 }
 
 const requestFor = (target: typeof MANAGED_BLOGS[number], row: Row, changes: Row = {}): ContentPublishRequest => ({

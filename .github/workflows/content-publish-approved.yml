@@ -95,6 +95,7 @@ on:
           - c15-bilingual-body-v1
           - rental-unit-renovation-kl-malay-v1
           - malay-cms-continuation-20261019
+          - content-link-repair-20261024
           - v17-owner-publisher-native-preparation-v2-20261007
           - v18-owner-publisher-native-preparation-v2-20261007
           - v20-owner-publisher-native-preparation-v2-20261007
@@ -190,6 +191,13 @@ jobs:
             fi
             case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
           fi
+          if [ "$PUBLISH_TARGET" = "content-link-repair-20261024" ]; then
+            if [ "$MANAGED_OPERATION" != "publish" ] || [ "$APPROVAL_ID" != "owner-authorized-content-link-repair-20261024" ] || [ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]; then
+              echo "::error::Exact href repair requires its owner decision and new row-scoped permits."
+              exit 1
+            fi
+            case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
+          fi
           if [ "$PUBLISH_TARGET" = "malay-cms-continuation-20261019" ]; then
             if [ "$MANAGED_OPERATION" != "publish" ] || [ "$APPROVAL_ID" != "owner-authorized-malay-cms-completion-20261019" ] || [ -n "$MANAGED_PERMIT_ID" ] || [ -n "$PARENT_RUN_ID" ]; then
               echo "::error::The frozen Malay continuation requires its exact owner authorization and fresh row-scoped permits; rollback and supplied permits are disabled."
@@ -251,7 +259,7 @@ jobs:
           JS
 
       - name: Check real Chrome before protected browser acceptance
-        if: ${{ inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390' || inputs.target == 'remaining-completion-after-38037667102' || inputs.target == 'v18-owner-publisher-native-preparation-v2-20261007' || inputs.target == 'paid-three-page-native-20261010' || inputs.target == 'rental-unit-renovation-kl-malay-v1' || inputs.target == 'malay-cms-continuation-20261019' }}
+        if: ${{ inputs.target == 'remaining-completion-20261009' || inputs.target == 'remaining-completion-after-37893433883' || inputs.target == 'remaining-completion-after-37898568406' || inputs.target == 'remaining-completion-after-37903094390' || inputs.target == 'remaining-completion-after-38037667102' || inputs.target == 'v18-owner-publisher-native-preparation-v2-20261007' || inputs.target == 'paid-three-page-native-20261010' || inputs.target == 'rental-unit-renovation-kl-malay-v1' || inputs.target == 'malay-cms-continuation-20261019' || inputs.target == 'content-link-repair-20261024' }}
         run: |
           node --input-type=module - <<'JS'
           import { chromium } from '@playwright/test';
@@ -272,7 +280,7 @@ jobs:
           test -n "$VITE_SUPABASE_ANON_KEY"
 
       - name: Validate or publish approved updates
-        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' }}
+        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' && inputs.target != 'content-link-repair-20261024' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -355,7 +363,7 @@ jobs:
         run: node --experimental-strip-types scripts/publish-malay-cms-single-target.mjs --mode=publish
 
       - name: Preview the locked Malay completion batch without writing CMS rows
-        if: ${{ inputs.target == 'malay-cms-continuation-20261019' && inputs.mode == 'dry-run' }}
+        if: ${{ (inputs.target == 'malay-cms-continuation-20261019' || inputs.target == 'content-link-repair-20261024') && inputs.mode == 'dry-run' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -369,7 +377,7 @@ jobs:
         run: node --experimental-strip-types scripts/publish-malay-cms-continuation-20261019.mjs --mode=dry-run --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
 
       - name: Publish the locked Malay completion batch with row-scoped one-time permits
-        if: ${{ inputs.target == 'malay-cms-continuation-20261019' && inputs.mode == 'publish' }}
+        if: ${{ (inputs.target == 'malay-cms-continuation-20261019' || inputs.target == 'content-link-repair-20261024') && inputs.mode == 'publish' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

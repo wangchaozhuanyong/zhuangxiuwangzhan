@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
@@ -51,7 +52,7 @@ function clientFor(initial: Row, options: { race?: boolean; uncertain?: boolean 
       return { data: [{}], error: null };
     },
   };
-  return { client: client as unknown as ContentPublishClient, writes, predicates, rpcs, row: () => row };
+  return { client: withPublishedLinkTargets(client as unknown as ContentPublishClient), writes, predicates, rpcs, row: () => row };
 }
 
 describe("19 exact original-identity multilingual body targets", () => {

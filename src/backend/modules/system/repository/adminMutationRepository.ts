@@ -2,6 +2,11 @@ import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
 import type { Json } from "@/lib/database.types";
 import type { ManagedPreviewCandidate } from "../../../../../supabase/functions/_shared/managed-targets.ts";
+import { publishedContentLinkExists, type ContentLinkClient } from "../../../../../supabase/functions/_shared/content-link-repository.ts";
+import type { ContentLinkTarget } from "../../../../../supabase/functions/_shared/content-links.mjs";
+
+export const resolveAdminContentLink = (target: ContentLinkTarget) =>
+  publishedContentLinkExists(requireSupabase() as unknown as ContentLinkClient, target);
 
 export type AdminMutationDbRecord = Record<string, unknown>;
 

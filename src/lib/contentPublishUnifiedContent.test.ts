@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
@@ -48,7 +49,7 @@ function clientFor(initial: Row, race = false) {
       if (claimed) return { data: [], error: null }; claimed = true;
     } return { data: [{}], error: null }; },
   };
-  return { client: client as unknown as ContentPublishClient, writes, predicates, rpcs, row: () => row };
+  return { client: withPublishedLinkTargets(client as unknown as ContentPublishClient), writes, predicates, rpcs, row: () => row };
 }
 
 describe("two exact combined native CMS targets", () => {

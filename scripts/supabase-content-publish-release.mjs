@@ -4,6 +4,8 @@ import { lstat, readFile, readdir } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
+export const EDGE_FUNCTION = process.env.EDGE_FUNCTION || 'content-publish';
+if (!['content-publish', 'generate-english-content'].includes(EDGE_FUNCTION)) throw new Error('Unsupported Edge release target');
 export const PROJECT_REF = 'rbsnyexjifounogswrjp';
 export const MIGRATION_VERSION = '20260921194000';
 export const MIGRATION_FILE = `${MIGRATION_VERSION}_managed_cms_release_permits.sql`;
@@ -91,6 +93,14 @@ export function verifyReleaseApproval({ allowlistJson, taskId, actionId, actionC
   return { approvalId: matches[0].approvalId, payloadSha256: matches[0].payloadSha256 };
 }
 
+export function verifyEdgeScope(scope, functionName = EDGE_FUNCTION) {
+  assert(['content-publish', 'generate-english-content'].includes(functionName), 'unsupported Edge release target');
+  if (functionName === 'generate-english-content') {
+    assert(typeof scope === 'string' && scope.startsWith('flashcast.com.my:edge/generate-english-content:'),
+      'translation Edge release requires its exact function scope');
+  }
+}
+
 export function verifyEnvironment(environment) {
   assert(environment?.name === ENVIRONMENT, 'protected environment is absent');
   assert(
@@ -131,7 +141,7 @@ export function functionVersion(output) {
     throw new Error('unrecognized Supabase functions JSON');
   }
   assert(Array.isArray(functions), 'Supabase functions list must be an array');
-  const matches = functions.filter((item) => item?.slug === 'content-publish');
+  const matches = functions.filter((item) => item?.slug === EDGE_FUNCTION);
   assert(matches.length === 1, 'content-publish function must appear exactly once');
   const { status, version } = matches[0];
   assert(status === 'ACTIVE', 'content-publish function is not active');
@@ -146,18 +156,18 @@ export function verifyAdvancedFunctionVersion(currentOutput, previousOutput) {
   return current;
 }
 
-const EDGE_ENTRYPOINT = 'content-publish/index.ts';
+const EDGE_ENTRYPOINT = `${EDGE_FUNCTION}/index.ts`;
 
 function runtimeSourceRoot(directory) {
   const root = resolve(directory);
   // Keep the existing CLI's downloaded content-publish directory argument usable.
-  return basename(root) === 'content-publish' ? dirname(root) : root;
+  return ['content-publish', 'generate-english-content'].includes(basename(root)) ? dirname(root) : root;
 }
 
 function ownedSourcePath(root, file) {
   const path = relative(root, resolve(root, file)).split(sep).join('/');
   assert(!isAbsolute(path) && path !== '..' && !path.startsWith('../')
-    && /^(content-publish|_shared)\/.+\.ts$/.test(path),
+    && /^(content-publish|generate-english-content|_shared)\/.+\.(?:ts|mjs|mts)$/.test(path),
   'Edge source dependency escapes its owned TypeScript directories');
   return path;
 }
@@ -396,6 +406,7 @@ async function main() {
     return;
   }
   if (command === 'approval') {
+    verifyEdgeScope(process.env.RELEASE_SCOPE);
     verifyReleaseIdentity({
       ref: process.env.GITHUB_REF,
       sha: process.env.GITHUB_SHA,

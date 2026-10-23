@@ -18,6 +18,7 @@ import {
   verifyDryRunEvidence,
   verifyDeployedSource,
   verifyEnvironment,
+  verifyEdgeScope,
   verifyMigrationList,
   verifyReleaseIdentity,
   verifyReleaseApproval,
@@ -136,7 +137,7 @@ test('repeat Edge release requires an already-applied migration and performs no 
   const firstGate = workflow.indexOf(appliedGate);
   const backup = workflow.indexOf('Retain previous Edge source for controlled recovery');
   const secondGate = workflow.indexOf(appliedGate, firstGate + appliedGate.length);
-  const edgeDeploy = workflow.indexOf('supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp');
+  const edgeDeploy = workflow.indexOf('supabase functions deploy "$EDGE_FUNCTION" --project-ref rbsnyexjifounogswrjp');
   assert.ok(firstGate > 0 && firstGate < backup, 'applied migration must be checked before backup');
   assert.ok(secondGate > backup && secondGate < edgeDeploy, 'migration must be rechecked before Edge deploy');
   assert.doesNotMatch(workflow, /supabase db push/);
@@ -377,7 +378,7 @@ test('workflow retains full shared closure, frozen recovery backup and strict fo
   const backupRecheck = release.indexOf('cmp -s "$RUNNER_TEMP/edge-source-before.sha256" "$RUNNER_TEMP/edge-source-before-recheck.sha256"');
   const forwardDeploy = release.indexOf('if supabase functions deploy');
   assert.ok(backupRecheck > 0 && backupRecheck < forwardDeploy, 'frozen full backup must be checked before the forward deploy');
-  assert.equal(release.match(/supabase functions deploy content-publish/g)?.length, 1);
+  assert.equal(release.match(/supabase functions deploy "\$EDGE_FUNCTION"/g)?.length, 1);
   assert.doesNotMatch(release, /supabase functions deploy[^\n]*--workdir|rollback_succeeded_verified|edge-restored/);
   assert.ok(release.indexOf('edge-version-pre-edge.txt"; then') < release.indexOf('if supabase functions deploy'));
   assert.ok(release.indexOf('website-version-pre-edge.json"; then') < release.indexOf('if supabase functions deploy'));
@@ -566,4 +567,21 @@ test('dry-run evidence recovery captures stderr without weakening the gate', asy
   await assert.rejects(verifyDryRunEvidence('', async () => (
     { code: 0, signal: null, stdout: '', stderr: actualDryRun + ' • 20260922120000_other.sql\n' }
   )), /did not select only|unexpected migration/);
+});
+
+test('translation deployment uses its own exact function scope and complete source closure', async () => {
+  verifyEdgeScope('flashcast.com.my:edge/generate-english-content:content-link-integrity-v1', 'generate-english-content');
+  assert.throws(() => verifyEdgeScope('flashcast.com.my:edge/content-publish:other', 'generate-english-content'), /exact function scope/);
+  assert.throws(() => verifyEdgeScope('flashcast.com.my:other', 'unregistered-function'), /unsupported/);
+  const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
+  const root = dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
+  const result = spawnSync(process.execPath, [helper, 'source-expected', 'supabase/functions'], {
+    cwd: root, encoding: 'utf8', env: {...process.env, EDGE_FUNCTION:'generate-english-content'},
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(result.stdout);
+  assert.equal(manifest.entrypoint, 'generate-english-content/index.ts');
+  assert.ok(manifest.files.some(file => file.path === '_shared/content-links.mjs'));
+  assert.ok(manifest.files.some(file => file.path === '_shared/catalog-link-targets.ts'));
+  assert.ok(manifest.files.every(file => /^(generate-english-content|_shared)\//.test(file.path)));
 });
