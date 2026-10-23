@@ -79,6 +79,29 @@ describe("floating promotion stays available while reading", () => {
     boxes.set(action, rect(-100));
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
   });
+  it.each([
+    '<button type="button">Back to top</button>',
+    '<button class="language-selector" type="button">BM</button>',
+    '<a class="public-contact-row" href="mailto:studio@example.test">Email studio</a>',
+  ])("protects shared footer controls outside main content: %s", async (html) => {
+    content.innerHTML = `<footer>${html}</footer>`;
+    const action = content.querySelector<HTMLElement>("footer > *")!;
+    mount(); await settle(); expectObstructed(true);
+    boxes.set(action, rect(300));
+    window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
+  });
+  it.each([
+    '<button type="button" aria-haspopup="dialog" aria-expanded="false" data-state="closed">Directions</button>',
+    '<button type="button" aria-expanded="false" data-state="closed">Expand details</button>',
+    '<a href="/quote" role="button" aria-expanded="false" data-state="closed">Open quote</a>',
+  ])("protects visible closed triggers without exposing a closed parent panel: %s", async (html) => {
+    content.innerHTML = `<main><div data-state="open">${html}</div></main>`;
+    const panel = content.querySelector<HTMLElement>("main > div")!;
+    mount(); await settle(); expectObstructed(true);
+    panel.setAttribute("data-state", "closed"); await settle(); expectObstructed(false);
+    panel.setAttribute("data-state", "open"); await settle(); expectObstructed(true);
+    panel.style.visibility = "hidden"; await settle(); expectObstructed(false);
+  });
   it("yields while furniture purchase actions are visible and restores when they leave the viewport", async () => {
     content.innerHTML = '<div class="fc-furniture-detail__actions"><a href="/shop">Buy now</a><a href="/contact">WhatsApp</a></div>';
     const actions = content.querySelector<HTMLElement>(".fc-furniture-detail__actions")!;
@@ -186,8 +209,10 @@ describe("floating promotion stays available while reading", () => {
     await settle(); expectObstructed(true);
     const feedback = content.querySelector("aside")!;
     boxes.set(feedback, rect(100));
+    boxes.set(feedback.querySelector("button")!, rect(100));
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
     boxes.set(feedback, rect());
+    boxes.set(feedback.querySelector("button")!, rect());
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(true);
     feedback.remove(); await settle(); expectObstructed(false);
   });
