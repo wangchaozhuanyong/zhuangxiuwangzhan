@@ -245,16 +245,17 @@ test("back/forward and offline recovery preserve business and language storage",
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
   networkUnavailable = true;
-  // Playwright's WebKit offline switch aborts navigation with an internal engine
-  // error before the Worker fallback runs. Disconnect the real fixture server instead.
+  // The compatibility worker no longer supplies a document on network failure.
+  // Disconnect the fixture server as well, including WebKit navigation requests.
   if (browserName !== "webkit") await context.setOffline(true);
   let offlineError = "";
   await page.goto(`${origin}/en/services?offline-check=1`, { waitUntil: "domcontentloaded" }).catch((error: unknown) => { offlineError = String(error); });
-  await test.info().attach("offline-diagnostics", { body: JSON.stringify({ offlineError, ...await page.evaluate(async () => ({ url: location.href, title: document.title, text: document.body.textContent?.slice(0, 200), offlineCached: Boolean(await caches.match("/offline")) })) }), contentType: "application/json" });
-  await expect(page.getByRole("heading", { name: "当前网络不可用" })).toBeVisible();
+  await test.info().attach("offline-diagnostics", { body: JSON.stringify({ offlineError, url: page.url() }), contentType: "application/json" });
+  expect(offlineError).not.toBe("");
+  await expect(page.getByRole("heading", { name: "当前网络不可用" })).toHaveCount(0);
   if (browserName !== "webkit") await context.setOffline(false);
   networkUnavailable = false;
-  await page.reload({ waitUntil: "load" });
+  await page.goto(`${origin}/en`, { waitUntil: "load" });
   await ready(page);
   expect(await page.evaluate(() => [localStorage.getItem("fixture-business-draft"), sessionStorage.getItem("fixture-login-state")])).toEqual(["keep", "keep"]);
   await noAutomaticRecovery(page);

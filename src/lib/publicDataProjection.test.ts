@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { mapRemoteHomeContentBundle } from "./homeContentApi";
 import {
   projectBlogPostSummariesForPreload,
   projectHomeContentBundleForPreload,
@@ -10,6 +11,42 @@ import {
 } from "../../functions/publicDataProjection";
 
 describe("public HTML data projection", () => {
+  it.each(["en", "zh", "ms"] as const)("omits unused CMS home sections without changing the %s render", (language) => {
+    const published = {
+      id: "published-home", page_key: "home", path: "/",
+      title_en: "Published home", title_zh: "已发布首页", title_ms: "Laman utama",
+      description_en: "Published intro", description_zh: "已发布介绍", description_ms: "Pengenalan",
+      seo_title_en: "Home SEO", seo_title_zh: "首页 SEO", seo_title_ms: "SEO utama",
+    };
+    const payload = {
+      site_pages: [published],
+      cms_pages: [{
+        id: "cms-home", page_key: "home", title_en: "Unused home",
+        cms_sections: [{ section_key: "hero", section_type: "hero", status: "published",
+          content_en: { title: "Unused hero", description: "unused".repeat(1500) } }],
+      }],
+      home_sections: [{ section_key: "stats", status: "published", items_en: [{ label: "Rooms" }],
+        items_zh: [{ label: "房间" }], items_ms: [{ label: "Bilik" }] }],
+      projects: [{ id: "project", slug: "one", image_url: "/project.webp", title_en: "Project" }],
+    };
+    const projected = projectHomeContentBundleForPreload(payload);
+    expect(projected).not.toHaveProperty("cms_pages");
+    expect(mapRemoteHomeContentBundle(projected, language)).toEqual(mapRemoteHomeContentBundle(payload, language));
+    expect(JSON.stringify(payload).length - JSON.stringify(projected).length).toBeGreaterThan(9000);
+  });
+
+  it.each([{ sitePages: [] }, { sitePages: [{ page_key: "services" }] }])("keeps the CMS fallback when the selected legacy row is not home ($sitePages)", ({ sitePages }) => {
+    const payload = {
+      site_pages: sitePages,
+      cms_pages: [{ id: "cms-home", page_key: "home", title_en: "CMS home",
+        cms_sections: [{ section_key: "hero", section_type: "hero", status: "published",
+          content_en: { title: "CMS hero", description: "CMS description" } }] }],
+    };
+    const projected = projectHomeContentBundleForPreload(payload);
+    expect(projected.cms_pages).toHaveLength(1);
+    expect(mapRemoteHomeContentBundle(projected, "en")).toEqual(mapRemoteHomeContentBundle(payload, "en"));
+  });
+
   it("keeps the bilingual homepage render contract while dropping detail-only fields", () => {
     const projected = projectHomeContentBundleForPreload({
       services: [{
