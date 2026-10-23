@@ -9,6 +9,7 @@ import { verifyGithubOidcToken } from "../supabase/functions/content-publish/git
 import { issueManagedPermit, readManagedPermit, revokeManagedPermit } from "../supabase/functions/content-publish/permit-issuer.ts";
 import { samePgTimestamp } from "../supabase/functions/content-publish/managed-timestamp.ts";
 import { githubOidcTokenNeedsRefresh, isExpiredUnclaimedPermitForTarget } from "./lib/malay-publish-runtime.mjs";
+import { inspectContentRepairReadback } from "./verify-content-links.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 import { CONTENT_LINK_REPAIR_TARGETS, CONTENT_LINK_REPAIR_MANIFEST_SHA256 } from "../supabase/functions/_shared/content-link-repair-targets.ts";
@@ -342,10 +343,11 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
       const response = await fetch(url, { cache: "no-store", headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(30_000) });
       const html = await response.text();
       const repaired = LINK_REPAIR ? plan.find((item) => routeFor(item.entry, item.row) === path) : null;
-      const repairedLinks = repaired ? [...String(repaired.entry.patch.content_ms).matchAll(/href=["']([^"']+)["']/g)].map((match) => match[1]) : [];
-      const linkRepairVerified = !LINK_REPAIR || Boolean(repaired && repairedLinks.every((href) => html.includes(href))
-        && !/\/ms\/(?:services\/pejabat-renovation|blog\/pejabat-fit-out-me-it-planning-checklist-malaysia|blog\/kitchen-cabinet-bahan-guide)["']/.test(html));
-      return { path, linkRepairVerified, status: response.status, htmlBytes: Buffer.byteLength(html), hasHtml: /<html\b/i.test(html),
+      const linkRepairReadback = repaired ? inspectContentRepairReadback(html,
+        { content_ms: repaired.entry.baseline.content_ms }, repaired.entry.patch) : null;
+      const linkRepairVerified = !LINK_REPAIR || Boolean(linkRepairReadback?.ok
+        && linkRepairReadback.changedLinks.length === repaired.entry.repairs);
+      return { path, linkRepairVerified, linkRepairReadback, status: response.status, htmlBytes: Buffer.byteLength(html), hasHtml: /<html\b/i.test(html),
         hasAppRoot: /<div\s+id=["']root["']/i.test(html) };
     }));
     checks.push(...results);

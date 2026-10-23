@@ -5,6 +5,20 @@ import { createHash } from "node:crypto";
 import { collectContentLinks, contentLinkTarget, localizeContentLink } from "../supabase/functions/_shared/content-links.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+/** Check the exact repaired anchors; unrelated citations may be filtered by the public renderer. */
+export function inspectContentRepairReadback(html, before, after) {
+  const original = collectContentLinks(before), desired = collectContentLinks(after);
+  const shapeMatches = original.length === desired.length && original.every((link, index) => link.field === desired[index].field);
+  if (!shapeMatches) return { ok: false, shapeMatches, changedLinks: [], missing: [], stale: [] };
+  const changedLinks = original.flatMap((link, index) => link.href === desired[index].href ? []
+    : [{ field: link.field, before: link.href, after: desired[index].href }]);
+  const visible = new Set(collectContentLinks(html).map(link => link.href));
+  const missing = [...new Set(changedLinks.map(link => link.after))].filter(href => !visible.has(href));
+  const stale = [...new Set(changedLinks.map(link => link.before))].filter(href => visible.has(href));
+  return { ok: changedLinks.length > 0 && !missing.length && !stale.length, shapeMatches, changedLinks, missing, stale };
+}
+
 const prefixes = { services: "services", projects: "projects", blog_posts: "blog", materials: "materials", service_areas: "locations", landing_pages: "landing" };
 const canonical = href => href.replace(/^\/(?:en|zh|ms)(?=\/|$)/, "") || "/";
 const digest = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
