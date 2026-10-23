@@ -144,6 +144,8 @@ export function functionVersion(output) {
   const matches = functions.filter((item) => item?.slug === EDGE_FUNCTION);
   assert(matches.length === 1, 'content-publish function must appear exactly once');
   const { status, version } = matches[0];
+  assert(!('verify_jwt' in matches[0]) || matches[0].verify_jwt === (EDGE_FUNCTION !== 'content-publish'),
+    'Edge JWT policy differs from the existing function policy');
   assert(status === 'ACTIVE', 'content-publish function is not active');
   assert(Number.isSafeInteger(version) && version > 0, 'content-publish version is invalid');
   return version;

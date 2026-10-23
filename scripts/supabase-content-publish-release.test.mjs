@@ -585,3 +585,18 @@ test('translation deployment uses its own exact function scope and complete sour
   assert.ok(manifest.files.some(file => file.path === '_shared/catalog-link-targets.ts'));
   assert.ok(manifest.files.every(file => /^(generate-english-content|_shared)\//.test(file.path)));
 });
+
+test('each existing function retains its deployed JWT gateway policy', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /jwt_args=\(\)\n\s+if \[ "\$EDGE_FUNCTION" = content-publish \]; then jwt_args\+=\(--no-verify-jwt\); fi/);
+  assert.match(workflow, /supabase functions deploy "\$EDGE_FUNCTION"[^\n]*"\$\{jwt_args\[@\]\}"/);
+  const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
+  const code = `import { functionVersion } from ${JSON.stringify(new URL('./supabase-content-publish-release.mjs', import.meta.url).href)}; functionVersion(JSON.stringify([{slug:process.env.EDGE_FUNCTION,status:'ACTIVE',version:10,verify_jwt:process.env.CHECK_JWT==='true'}]));`;
+  for (const fn of ['content-publish','generate-english-content']) {
+    for (const jwt of [true,false]) {
+      const result=spawnSync(process.execPath,['--input-type=module','-e',code],{encoding:'utf8',env:{...process.env,EDGE_FUNCTION:fn,CHECK_JWT:String(jwt)}});
+      assert.equal(result.status===0,jwt===(fn==='generate-english-content'),result.stderr);
+    }
+  }
+  assert.ok(helper);
+});

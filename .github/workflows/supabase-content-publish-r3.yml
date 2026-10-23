@@ -198,7 +198,9 @@ jobs:
             echo 'Deployment blocked: the public website no longer runs the reviewed SHA, or its version could not be read.' >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-          if supabase functions deploy "$EDGE_FUNCTION" --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api && \
+          jwt_args=()
+          if [ "$EDGE_FUNCTION" = content-publish ]; then jwt_args+=(--no-verify-jwt); fi
+          if supabase functions deploy "$EDGE_FUNCTION" --project-ref rbsnyexjifounogswrjp "${jwt_args[@]}" --use-api && \
              supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-after.json" && \
              node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-after.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-after.txt" && \
              mkdir -p "$RUNNER_TEMP/edge-after" && \
