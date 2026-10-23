@@ -6,6 +6,10 @@ const recoveryContent = '[data-interaction-feedback],.public-route-feedback__rec
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
 const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
 const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form`;
+const primaryActions = ':is(main,.scheme-a-footer-prelude) :is(button,[role="button"],[data-ui="button"],'
+  + 'a[class*="button"],input[type="submit"],input[type="button"],a[href^="https://wa.me/"],'
+  + 'a[href^="tel:"],a[href*="/quote"],a[href="#landing-quote"]),'
+  + ':is(.scheme-a-actions,.actions,[class*="__actions"],[class*="-actions"],.fc-route-action-panel,.fc-furniture-pagination) a[href]';
 
 const intersects = (left: DOMRect, right: DOMRect) => left.width > 0 && left.height > 0
   && right.width > 0 && right.height > 0 && left.left < right.right && left.right > right.left
@@ -32,7 +36,7 @@ const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, bool
 };
 
 /** Keep the promotion stable during reading. Active dialogs, recovery actions,
- * focused inputs and overlapping quote controls take priority over this entry. */
+ * focused inputs and overlapping primary controls take priority over this entry. */
 export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string) {
   const [obstructed, setObstructed] = useState(false);
   useLayoutEffect(() => {
@@ -50,6 +54,9 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       const purchaseActionsVisible = Array.from(
         document.querySelectorAll<HTMLElement>(".fc-furniture-detail__actions"),
       ).some(isVisible);
+      const actionObstructed = Array.from(document.querySelectorAll<HTMLElement>(primaryActions))
+        .some((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
+          && !element.matches(":disabled") && intersects(box, element.getBoundingClientRect()) && isVisible(element));
       const modalOpen = Array.from(document.querySelectorAll<HTMLElement>(modalContent)).some(isVisible);
 
       // Radix can remove the panel a frame before its decorative overlay.
@@ -79,7 +86,7 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
           && !element.matches(":disabled") && intersects(box, element.getBoundingClientRect()) && isVisible(element));
 
       const keyboardOpen = window.visualViewport && window.visualViewport.height < window.innerHeight - 120;
-      setObstructed(purchaseActionsVisible || modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
+      setObstructed(purchaseActionsVisible || actionObstructed || modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
     };
     const schedule = () => { if (!frame && !disposed) frame = requestAnimationFrame(check); };
     check();

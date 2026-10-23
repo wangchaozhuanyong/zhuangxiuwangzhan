@@ -45,28 +45,58 @@ describe("floating promotion stays available while reading", () => {
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
   });
 
-  it.each(["fc-furniture-card__actions", "fc-furniture-pagination"])(
-    "does not suppress floating entries for %s in furniture routes",
+  it.each(["fc-furniture-card__actions", "fc-furniture-pagination", "scheme-a-footer__invitation-actions"])(
+    "protects overlapping %s links and restores entries outside the corner",
     async (className) => {
       content.innerHTML = `<div class="${className}"><a href="/shop">Buy</a></div>`;
+      const action = content.querySelector<HTMLElement>("a")!;
       mount(); await settle();
-      expectObstructed(false);
+      expectObstructed(true);
+      boxes.set(action, rect(300));
+      window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
     },
   );
+  it.each(["scheme-a-button", "scheme-a-page-cta__button", "fc-route-button"])(
+    "protects the shared %s primary action outside a furniture page",
+    async (className) => {
+      content.innerHTML = `<main><a class="${className}" href="/quote">Request quote</a></main>`;
+      mount(); await settle(); expectObstructed(true);
+      content.querySelector("a")!.setAttribute("aria-disabled", "true");
+      await settle(); expectObstructed(false);
+    },
+  );
+  it.each([
+    '<button type="button">Filter</button>',
+    '<a href="/en/quote">Request quote</a>',
+    '<a href="https://wa.me/123">Enquire</a>',
+    '<input type="submit" value="Send" />',
+  ])("protects enabled primary controls without relying on a page-specific class: %s", async (html) => {
+    content.innerHTML = `<main>${html}</main>`;
+    const action = content.querySelector<HTMLElement>("main > *")!;
+    mount(); await settle(); expectObstructed(true);
+    action.hidden = true; await settle(); expectObstructed(false);
+    action.hidden = false; await settle(); expectObstructed(true);
+    boxes.set(action, rect(-100));
+    window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
+  });
   it("yields while furniture purchase actions are visible and restores when they leave the viewport", async () => {
     content.innerHTML = '<div class="fc-furniture-detail__actions"><a href="/shop">Buy now</a><a href="/contact">WhatsApp</a></div>';
     const actions = content.querySelector<HTMLElement>(".fc-furniture-detail__actions")!;
-    boxes.set(actions, rect(600, 600, 320, 50));
+    const moveActions = (top: number) => {
+      boxes.set(actions, rect(top, 600, 320, 50));
+      actions.querySelectorAll<HTMLElement>("a").forEach((action) => boxes.set(action, rect(top, 600, 140, 50)));
+    };
+    moveActions(600);
     mount(); expectObstructed(true);
-    boxes.set(actions, rect(-100, 600, 320, 50));
+    moveActions(-100);
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
-    boxes.set(actions, rect(400, 600, 320, 50));
+    moveActions(400);
     window.dispatchEvent(new Event("resize")); await settle(); expectObstructed(true);
     actions.remove(); await settle(); expectObstructed(false);
   });
   it("ignores overlapping text, cards, links and idle form controls across scrolling and routes", async () => {
-    content.innerHTML = '<main id="main-content"><h1>Heading</h1><p>Paragraph</p><a href="/article"><h2>Whole card</h2><p>Card text</p></a><label>Form label<input /></label><button>Submit</button></main>';
-    const ordinary = Array.from(content.querySelectorAll<HTMLElement>("h1,h2,p,a,label,input,button"));
+    content.innerHTML = '<main id="main-content"><h1>Heading</h1><p>Paragraph</p><a href="/article"><h2>Whole card</h2><p>Card text</p></a><label>Form label<input /></label></main>';
+    const ordinary = Array.from(content.querySelectorAll<HTMLElement>("h1,h2,p,a,label,input"));
     const measurements = ordinary.map(element => {
       const measure = vi.fn(() => boxes.get(element) ?? rect());
       element.getBoundingClientRect = measure;
