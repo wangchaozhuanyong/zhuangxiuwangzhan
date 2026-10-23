@@ -6,6 +6,8 @@ const recoveryContent = '[data-interaction-feedback],.public-route-feedback__rec
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
 const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
 const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form`;
+// Radix also marks visible triggers as closed; only closed content hides its descendants.
+const closedPanel = '[data-state="closed"]:not(:is(button,a[href],[role="button"],input,select,textarea))';
 const primaryActions = '.scheme-a-public-shell :is(button,[role="button"],[data-ui="button"],'
   + 'a[class*="button"],a.public-contact-row,input[type="submit"],input[type="button"],a[href^="https://wa.me/"],'
   + 'a[href^="tel:"],a[href*="/quote"],a[href="#landing-quote"]),'
@@ -16,7 +18,7 @@ const intersects = (left: DOMRect, right: DOMRect) => left.width > 0 && left.hei
   && left.top < right.bottom && left.bottom > right.top;
 
 const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, boolean>) => {
-  if (!element.isConnected || element.closest('[aria-hidden="true"],[hidden],[inert],[data-state="closed"],dialog:not([open])')) return false;
+  if (!element.isConnected || element.closest(`[aria-hidden="true"],[hidden],[inert],${closedPanel},dialog:not([open])`)) return false;
   const box = element.getBoundingClientRect();
   if (box.width <= 0 || box.height <= 0 || box.bottom <= 0 || box.right <= 0
     || box.top >= window.innerHeight || box.left >= window.innerWidth) return false;

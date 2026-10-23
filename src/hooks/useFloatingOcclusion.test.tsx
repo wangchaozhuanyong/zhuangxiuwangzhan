@@ -90,6 +90,18 @@ describe("floating promotion stays available while reading", () => {
     boxes.set(action, rect(300));
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
   });
+  it.each([
+    '<button type="button" aria-haspopup="dialog" aria-expanded="false" data-state="closed">Directions</button>',
+    '<button type="button" aria-expanded="false" data-state="closed">Expand details</button>',
+    '<a href="/quote" role="button" aria-expanded="false" data-state="closed">Open quote</a>',
+  ])("protects visible closed triggers without exposing a closed parent panel: %s", async (html) => {
+    content.innerHTML = `<main><div data-state="open">${html}</div></main>`;
+    const panel = content.querySelector<HTMLElement>("main > div")!;
+    mount(); await settle(); expectObstructed(true);
+    panel.setAttribute("data-state", "closed"); await settle(); expectObstructed(false);
+    panel.setAttribute("data-state", "open"); await settle(); expectObstructed(true);
+    panel.style.visibility = "hidden"; await settle(); expectObstructed(false);
+  });
   it("yields while furniture purchase actions are visible and restores when they leave the viewport", async () => {
     content.innerHTML = '<div class="fc-furniture-detail__actions"><a href="/shop">Buy now</a><a href="/contact">WhatsApp</a></div>';
     const actions = content.querySelector<HTMLElement>(".fc-furniture-detail__actions")!;
