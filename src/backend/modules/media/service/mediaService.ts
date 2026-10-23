@@ -7,6 +7,8 @@ import {
   fetchMediaAssetCreatorId,
   getMediaStoragePublicUrl,
   hasMediaStorageClient,
+  mediaStorageObjectExists,
+  removeMediaStorageObject,
   tryUploadMediaStorageObject,
   updateMediaAssetRecord,
   uploadMediaStorageObject,
@@ -48,6 +50,43 @@ export function uploadAdminMediaObject(
   options: MediaStorageUploadOptions,
 ) {
   return uploadMediaStorageObject(bucket, objectPath, file, options);
+}
+
+export class AdminVideoUploadStorageError extends Error {
+  constructor(readonly reason: "failed" | "unconfirmed" | "cleanup_failed") {
+    super("Video storage upload did not complete.");
+  }
+}
+
+export async function uploadAdminVideoObjects(input: {
+  posterPath: string;
+  videoPath: string;
+  poster: File;
+  video: File;
+}) {
+  // Paths belong to this upload attempt and contain a fresh UUID. An error can
+  // mean the response was lost after Storage committed the object.
+  const uploadConfirmed = async (bucket: string, path: string, file: File) => {
+    try {
+      await uploadMediaStorageObject(bucket, path, file, {
+        cacheControl: "31536000", upsert: false, contentType: file.type || undefined,
+      });
+      return true;
+    } catch {
+      try { return await mediaStorageObjectExists(bucket, path); }
+      catch { throw new AdminVideoUploadStorageError("unconfirmed"); }
+    }
+  };
+  if (!await uploadConfirmed("site-images", input.posterPath, input.poster)) {
+    throw new AdminVideoUploadStorageError("failed");
+  }
+  if (!await uploadConfirmed("site-videos", input.videoPath, input.video)) {
+    // Only compensate the poster confirmed created by this failed attempt.
+    // Unknown video outcomes keep their poster until they can be confirmed.
+    try { await removeMediaStorageObject("site-images", input.posterPath); }
+    catch { throw new AdminVideoUploadStorageError("cleanup_failed"); }
+    throw new AdminVideoUploadStorageError("failed");
+  }
 }
 
 export function tryUploadAdminMediaObject(

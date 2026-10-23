@@ -7,7 +7,6 @@ import SmartImage from "@/components/SmartImage";
 import { adminImageUploadText } from "@/i18n/adminImageUploadText";
 import {
   getMediaStoragePublicUrl,
-  downloadAdminMediaWebp,
   hasMediaStorageClient,
   tryUploadAdminMediaObject,
   uploadAdminMediaObject,
@@ -17,6 +16,7 @@ import type { AdminUploadedMedia } from "@/lib/adminMedia";
 import { useCreateAdminMediaAsset } from "@/lib/adminMediaQueries";
 import { resolveImageDeliveryProfile, type ImageDeliveryProfile } from "@/lib/imageDeliveryPolicy";
 import { cn } from "@/lib/utils";
+import { createAdminMediaWebpEncoder, isWebpBlob, type AdminWebpEncoder } from "@/lib/adminMediaWebp";
 
 export type AdminImagePreviewVariant = "cover" | "logo" | "icon" | "og";
 
@@ -116,59 +116,9 @@ const getFaviconBounds = (imageData: ImageData): PixelBounds | null => {
   return transparentRatio > 0.05 ? alphaBounds : nonWhiteBounds || alphaBounds;
 };
 
-const canvasBlob = (canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> =>
-  new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error(A("conversionFailed")))),
-      type,
-      quality,
-    );
-  });
-
-const isWebpBlob = async (blob: Blob): Promise<boolean> => {
-  if (blob.type !== "image/webp" || blob.size < 12) return false;
-  const header = new Uint8Array(await blob.slice(0, 12).arrayBuffer());
-  const marker = (offset: number) => String.fromCharCode(...header.slice(offset, offset + 4));
-  return marker(0) === "RIFF" && marker(8) === "WEBP"
-    && new DataView(header.buffer).getUint32(4, true) === blob.size - 8;
-};
-
-type WebpEncoder = (canvas: HTMLCanvasElement, quality: number) => Promise<Blob>;
-
-const createWebpEncoder = (folderPath: string, stamp: number, name: string): WebpEncoder => {
-  let canvasUnsupported = false;
-  let conversionPath: string | undefined;
-  return async (canvas, quality) => {
-    try {
-      if (!canvasUnsupported) {
-        const encoded = await canvasBlob(canvas, "image/webp", quality);
-        if (await isWebpBlob(encoded)) return encoded;
-        // Safari can return PNG when the requested encoder is unavailable.
-        canvasUnsupported = true;
-      }
-      if (!conversionPath) {
-        const png = await canvasBlob(canvas, "image/png");
-        if (png.type !== "image/png" || png.size > MAX_SOURCE_BYTES) throw new Error(A("conversionFailed"));
-        const candidate = `${folderPath}/processing/${stamp}-${sanitizeName(name)}.png`;
-        await uploadAdminMediaObject(ORIGINAL_BUCKET, candidate, new File([png], "conversion-source.png", { type: "image/png" }), {
-          upsert: false,
-          contentType: "image/png",
-        });
-        conversionPath = candidate;
-      }
-      const transformed = await downloadAdminMediaWebp(ORIGINAL_BUCKET, conversionPath, {
-        width: canvas.width,
-        height: canvas.height,
-        quality: Math.round(quality * 100),
-      });
-      if (!await isWebpBlob(transformed)) throw new Error(A("conversionFailed"));
-      return transformed;
-    } catch {
-      // Do not surface signed URLs or private Storage response details.
-      throw new Error(A("conversionFailed"));
-    }
-  };
-};
+type WebpEncoder = AdminWebpEncoder;
+const createWebpEncoder = (folderPath: string, stamp: number, name: string): WebpEncoder =>
+  createAdminMediaWebpEncoder({ folderPath, stamp, name: sanitizeName(name), errorMessage: A("conversionFailed") });
 
 const prepareIconUploadFile = async (
   file: File,

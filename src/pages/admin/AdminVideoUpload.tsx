@@ -6,12 +6,14 @@ import { Input } from "@/components/ui/input";
 import {
   getMediaStoragePublicUrl,
   hasMediaStorageClient,
-  uploadAdminMediaObject,
+  uploadAdminVideoObjects,
+  AdminVideoUploadStorageError,
 } from "@/backend/modules/media/service/mediaService";
 import type { AdminUploadedMedia } from "@/lib/adminMedia";
 import { formatBytes } from "@/lib/adminMedia";
 import { adminVideoUploadText } from "@/i18n/adminVideoUploadText";
 import { getAdminLang } from "@/lib/adminLocale";
+import { createAdminMediaWebpEncoder, type AdminWebpEncoder } from "@/lib/adminMediaWebp";
 
 interface AdminVideoUploadProps {
   folder?: string;
@@ -55,23 +57,19 @@ const sanitizeFolder = (value: string) =>
     .filter(Boolean)
     .join("/") || "videos";
 
-const getPosterBlob = (video: HTMLVideoElement, text: AdminVideoUploadText) =>
-  new Promise<Blob>((resolve, reject) => {
-    const width = Math.max(1, video.videoWidth || 1280);
-    const height = Math.max(1, video.videoHeight || 720);
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      reject(new Error(text.posterUnsupported));
-      return;
-    }
-    ctx.drawImage(video, 0, 0, width, height);
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error(text.posterFailed))), "image/webp", POSTER_QUALITY);
-  });
+const getPosterBlob = async (video: HTMLVideoElement, text: AdminVideoUploadText, encodeWebp: AdminWebpEncoder) => {
+  const width = Math.max(1, video.videoWidth || 1280);
+  const height = Math.max(1, video.videoHeight || 720);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error(text.posterUnsupported);
+  ctx.drawImage(video, 0, 0, width, height);
+  return encodeWebp(canvas, POSTER_QUALITY);
+};
 
-async function prepareVideo(file: File, text: AdminVideoUploadText): Promise<PreparedVideo> {
+async function prepareVideo(file: File, text: AdminVideoUploadText, encodeWebp: AdminWebpEncoder): Promise<PreparedVideo> {
   const mime = file.type || "";
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
 
@@ -85,13 +83,15 @@ async function prepareVideo(file: File, text: AdminVideoUploadText): Promise<Pre
 
   const objectUrl = URL.createObjectURL(file);
   const video = document.createElement("video");
-  video.preload = "metadata";
+  video.preload = "auto";
   video.muted = true;
   video.playsInline = true;
 
   try {
     await new Promise<void>((resolve, reject) => {
-      video.onloadedmetadata = () => resolve();
+      // Metadata alone does not guarantee a decoded frame, particularly for
+      // sub-second clips that do not take the seek path below.
+      video.onloadeddata = () => resolve();
       video.onerror = () => reject(new Error(text.readFailed));
       video.src = objectUrl;
     });
@@ -106,7 +106,7 @@ async function prepareVideo(file: File, text: AdminVideoUploadText): Promise<Pre
       });
     }
 
-    const posterBlob = await getPosterBlob(video, text);
+    const posterBlob = await getPosterBlob(video, text, encodeWebp);
     const poster = new File([posterBlob], `${sanitizeName(file.name)}-poster.webp`, { type: "image/webp" });
     return {
       width: video.videoWidth || 0,
@@ -115,6 +115,11 @@ async function prepareVideo(file: File, text: AdminVideoUploadText): Promise<Pre
       poster,
     };
   } finally {
+    video.onloadeddata = null;
+    video.onseeked = null;
+    video.onerror = null;
+    video.removeAttribute("src");
+    video.load();
     URL.revokeObjectURL(objectUrl);
   }
 }
@@ -136,25 +141,15 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
     setMessage("");
 
     try {
-      const prepared = await prepareVideo(file, text);
       const folderPath = sanitizeFolder(folder);
-      const stamp = Date.now();
+      const stamp = `${Date.now()}-${crypto.randomUUID()}`;
       const safeName = sanitizeName(file.name);
+      const prepared = await prepareVideo(file, text, createAdminMediaWebpEncoder({ folderPath, stamp, name: safeName, errorMessage: text.posterFailed }));
       const ext = file.name.split(".").pop()?.toLowerCase() || "mp4";
       const videoPath = `${folderPath}/${stamp}-${safeName}.${ext}`;
       const posterPath = `${folderPath}/posters/${stamp}-${safeName}.webp`;
 
-      await uploadAdminMediaObject(POSTER_BUCKET, posterPath, prepared.poster, {
-        cacheControl: "31536000",
-        upsert: false,
-        contentType: "image/webp",
-      });
-
-      await uploadAdminMediaObject(VIDEO_BUCKET, videoPath, file, {
-        cacheControl: "31536000",
-        upsert: false,
-        contentType: file.type || undefined,
-      });
+      await uploadAdminVideoObjects({ posterPath, videoPath, poster: prepared.poster, video: file });
 
       const videoUrl = getMediaStoragePublicUrl(VIDEO_BUCKET, videoPath);
       const posterUrl = getMediaStoragePublicUrl(POSTER_BUCKET, posterPath);
@@ -182,7 +177,11 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
       setMessage(text.uploaded);
       onUploaded(videoUrl, uploadInfo);
     } catch (e) {
-      setError(e instanceof Error ? e.message : text.uploadFailed);
+      const validationMessages = [text.invalidType, text.readFailed, text.seekFailed, text.posterFailed, text.posterUnsupported,
+        formatText(text.tooLarge, { max: formatBytes(MAX_VIDEO_BYTES) })];
+      setError(e instanceof AdminVideoUploadStorageError
+        ? e.reason === "unconfirmed" ? text.uploadUnconfirmed : e.reason === "cleanup_failed" ? text.cleanupFailed : text.uploadFailed
+        : e instanceof Error && validationMessages.includes(e.message) ? e.message : text.uploadFailed);
     } finally {
       setUploading(false);
     }
