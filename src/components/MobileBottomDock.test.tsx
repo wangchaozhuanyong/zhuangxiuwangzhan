@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MobileBottomDock from "@/components/MobileBottomDock";
 import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 
-const chrome = vi.hoisted(() => ({ menuOpen: false, showMobileActionBar: false }));
+const chrome = vi.hoisted(() => ({ menuOpen: false, hasOpenDialog: false, showMobileActionBar: false }));
 vi.mock("@/contexts/PublicChromeContext", () => ({ usePublicChrome: () => chrome }));
 vi.mock("@/components/MobileActionBar", () => ({ default: () => <nav>Contact actions</nav> }));
 vi.mock("@/components/scheme-a/SchemeAPublicChrome", () => ({ SchemeAMobileDock: () => <nav>Navigation</nav> }));
@@ -30,6 +30,7 @@ describe("MobileBottomDock focus recovery", () => {
 
   beforeEach(() => {
     chrome.menuOpen = false;
+    chrome.hasOpenDialog = false;
     chrome.showMobileActionBar = false;
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -128,6 +129,15 @@ describe("MobileBottomDock focus recovery", () => {
     expect(field).toHaveFocus();
     expect(dock()).toHaveAttribute("data-mode", "navigation");
     field.remove();
+  });
+
+  it("hides both panels for a registered language dialog and restores navigation on close", () => {
+    chrome.hasOpenDialog = true;
+    render();
+    expect(dock()).toHaveAttribute("data-mode", "hidden");
+    chrome.hasOpenDialog = false;
+    render();
+    expect(dock()).toHaveAttribute("data-mode", "navigation");
   });
 
   it("still hides both panels while the menu is open", () => {

@@ -21,11 +21,11 @@ const isEditableTarget = (target: EventTarget | null) => {
 /** 保持两个底栏同时挂载，通过滚动方向在同一高度内互斥切换。 */
 const MobileBottomDock = () => {
   const { key: routeKey } = useLocation();
-  const { menuOpen, showMobileActionBar } = usePublicChrome();
+  const { menuOpen, hasOpenDialog, showMobileActionBar } = usePublicChrome();
   const dockRef = useRef<HTMLDivElement>(null);
   const obstructed = useFloatingOcclusion(dockRef, routeKey, "fixed");
   const [formControlFocused, setFormControlFocused] = useState(false);
-  const mode: MobileDockMode = menuOpen || formControlFocused || obstructed
+  const mode: MobileDockMode = menuOpen || hasOpenDialog || formControlFocused || obstructed
     ? "hidden"
     : showMobileActionBar
       ? "actions"
