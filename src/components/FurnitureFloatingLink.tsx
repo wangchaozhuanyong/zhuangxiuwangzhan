@@ -1,27 +1,16 @@
-import { lazy, Suspense, useLayoutEffect, useRef, useState, type ComponentType } from "react";
+import { useLayoutEffect, useRef, useState, type ComponentType } from "react";
 import { MessageCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { contactEntryText } from "@/i18n/contactEntryText";
-import { furnitureShopUrlForLanguage, isFurniturePublicPath } from "@/lib/furnitureCatalogConfig";
 import type { ContactEntryPanelProps } from "./ContactEntryPanel";
 import { trackCtaClick } from "@/lib/analytics";
 import "@/styles/components/contact-entry.css";
 
 
-function FurnitureShopFallback() {
-  const { language } = useLanguage();
-  const text = contactEntryText[language];
-  return <a className="fc-furniture-floating fc-furniture-floating--fallback" lang={language}
-    href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer">
-    <span>{text.furniture}</span>{text.shopLanguage && <small>{text.shopLanguage}</small>}
-  </a>;
-}
-const FurnitureShopEntry = lazy(() => import("./FurnitureShopEntry").catch(() => ({ default: FurnitureShopFallback })));
-
-/** One shared position and collision boundary for the public contact/shop entries. */
+/** The same contact entry and position on every public page. */
 export default function FurnitureFloatingLink() {
   const { language } = useLanguage();
   const location = useLocation();
@@ -45,7 +34,7 @@ export default function FurnitureFloatingLink() {
   useLayoutEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const state = location.state as { contactEntry?: string } | null;
   const open = state?.contactEntry === owner;
-  const obstructed = useFloatingOcclusion(stackRef, `${location.pathname}${location.search}`, true);
+  const obstructed = useFloatingOcclusion(stackRef, `${location.pathname}${location.search}`, "fixed");
   useLayoutEffect(() => { opening.current = open; if (open) closing.current = false; }, [open]);
   useLayoutEffect(() => {
     if (!returnFocus || open || menuOpen || hasOpenDialog || obstructed) return;
@@ -62,7 +51,6 @@ export default function FurnitureFloatingLink() {
   return <>
     <div ref={stackRef} className="fc-contact-stack" data-obstructed={suppressed || undefined}
       aria-hidden={suppressed || undefined}>
-    {isFurniturePublicPath(location.pathname) && <Suspense fallback={<FurnitureShopFallback />}><FurnitureShopEntry /></Suspense>}
     <button ref={entryRef} type="button" className="fc-contact-entry" lang={language}
       disabled={loading} aria-busy={loading || undefined} aria-haspopup="dialog" aria-expanded={open}
       onClick={async () => {

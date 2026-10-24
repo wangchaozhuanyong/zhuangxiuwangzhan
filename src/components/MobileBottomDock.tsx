@@ -23,7 +23,7 @@ const MobileBottomDock = () => {
   const { key: routeKey } = useLocation();
   const { menuOpen, showMobileActionBar } = usePublicChrome();
   const dockRef = useRef<HTMLDivElement>(null);
-  const obstructed = useFloatingOcclusion(dockRef, routeKey);
+  const obstructed = useFloatingOcclusion(dockRef, routeKey, "fixed");
   const [formControlFocused, setFormControlFocused] = useState(false);
   const mode: MobileDockMode = menuOpen || formControlFocused || obstructed
     ? "hidden"

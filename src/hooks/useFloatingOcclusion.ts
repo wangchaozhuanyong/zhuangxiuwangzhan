@@ -2,8 +2,15 @@ import { useLayoutEffect, useState, type RefObject } from "react";
 import { QUOTE_FORM_ID } from "@/lib/quoteFormTarget";
 
 const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][aria-modal="true"],dialog[open]';
+const fixedRecoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';
 const recoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice,.smart-image-failure';
 const focusedInput = 'input:not([type="hidden"]):not(:disabled),textarea:not(:disabled),select:not(:disabled),[role="textbox"],[contenteditable]:not([contenteditable="false"])';
+const isEditingInput = (element: HTMLElement) => {
+  if (element instanceof HTMLInputElement) return !element.disabled && !element.readOnly
+    && ["text", "search", "email", "tel", "url", "password", "number"].includes(element.type);
+  if (element instanceof HTMLTextAreaElement) return !element.disabled && !element.readOnly;
+  return element.matches('[role="textbox"]:not([aria-readonly="true"]),[contenteditable]:not([contenteditable="false"])');
+};
 const formControls = `${focusedInput},button:not(:disabled),a[href],[role="button"]`;
 const formContainersSelector = `#${QUOTE_FORM_ID},.fc-route-contact-form form`;
 // Radix also marks visible triggers as closed; only closed content hides its descendants.
@@ -55,13 +62,16 @@ const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, bool
   return true;
 };
 
-/** Ordinary actions move the entries instead of removing them. Dialogs, recovery
- * actions and active input retain priority over the public contact entries. */
-export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string, reposition = false) {
+/** Fixed public chrome follows scroll direction, not passing page buttons.
+ * Dialogs, recovery actions and active input still take priority. The legacy
+ * avoid/reposition modes remain available for content-bound promotions. */
+export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string, placement: boolean | "fixed" = false) {
   const [obstructed, setObstructed] = useState(false);
   useLayoutEffect(() => {
     const entry = ref.current;
     if (!entry) return;
+    const reposition = placement === true;
+    const fixed = placement === "fixed";
     let frame = 0;
     let disposed = false;
     let lift = 0;
@@ -75,7 +85,7 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       const cache = new WeakMap<HTMLElement, boolean>();
       const isVisible = (element: HTMLElement) => isVisibleElement(element, cache);
 
-      const actions = Array.from(document.querySelectorAll<HTMLElement>(primaryActions))
+      const actions = fixed ? [] : Array.from(document.querySelectorAll<HTMLElement>(primaryActions))
         .filter((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
           // The contact stack moves down when the dock yields. Treating that
           // companion as a page action would keep the dock hidden forever.
@@ -100,9 +110,9 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
         lift = next;
       }
       const placed = unshifted(baseline, -lift);
-      // Full-width bottom docks keep their existing yield behavior; only the
-      // floating contact stack opts into placement handled by contact-entry.css.
-      const actionObstructed = !reposition && actions.some((bounds) => intersects(box, bounds));
+      // Content-bound entries can still yield or move. Fixed public chrome
+      // must not disappear each time an ordinary page action passes it.
+      const actionObstructed = !fixed && !reposition && actions.some((bounds) => intersects(box, bounds));
       const priorityOverlap = (bounds: DOMRect) => intersects(baseline, bounds) || intersects(placed, bounds);
       const modalOpen = Array.from(document.querySelectorAll<HTMLElement>(modalContent)).some(isVisible);
 
@@ -116,17 +126,17 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
             && style.pointerEvents !== "none";
         });
 
-      const recoveryObstructed = Array.from(document.querySelectorAll<HTMLElement>(recoveryContent))
+      const recoveryObstructed = Array.from(document.querySelectorAll<HTMLElement>(fixed ? fixedRecoveryContent : recoveryContent))
         .some((element) => priorityOverlap(element.getBoundingClientRect()) && isVisible(element));
 
       const active = document.activeElement;
       const inputObstructed = active instanceof HTMLElement && !entry.contains(active)
-        && active.matches(focusedInput)
+        && (fixed ? isEditingInput(active) : active.matches(focusedInput))
         && (window.matchMedia("(max-width: 767px)").matches || priorityOverlap(active.getBoundingClientRect()))
         && isVisible(active);
 
       const formContainers = document.querySelectorAll<HTMLElement>(formContainersSelector);
-      const formObstructed = Array.from(formContainers)
+      const formObstructed = !fixed && Array.from(formContainers)
         .filter((form) => priorityOverlap(form.getBoundingClientRect()))
         .flatMap((form) => Array.from(form.querySelectorAll<HTMLElement>(formControls)))
         .some((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
@@ -171,6 +181,6 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       resize?.disconnect();
       changes.disconnect();
     };
-  }, [ref, routeKey, reposition]);
+  }, [ref, routeKey, placement]);
   return obstructed;
 }

@@ -95,7 +95,10 @@ export function PublicChromeProvider({
 
     const updateScrollDirection = () => {
       scrollFrame = 0;
-      const currentScrollY = window.scrollY;
+      // Safari rubber-band scrolling can report positions beyond the document.
+      // Its rebound is not a deliberate change in the visitor's direction.
+      const currentScrollY = Math.max(0, Math.min(window.scrollY,
+        Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
       const scrollDelta = currentScrollY - lastMobileScrollY.current;
       lastMobileScrollY.current = currentScrollY;
 

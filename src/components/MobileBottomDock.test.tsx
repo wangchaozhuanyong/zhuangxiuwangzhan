@@ -137,7 +137,7 @@ describe("MobileBottomDock focus recovery", () => {
     expect(container.querySelectorAll('[data-active="false"]')).toHaveLength(2);
   });
 
-  it("does not reveal the dock over a submit button when the last field loses focus", async () => {
+  it("restores navigation after editing even while a page button crosses the dock", async () => {
     let overlap = true;
     const bounds = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
       const top = this.classList.contains("scheme-a-mobile-switcher") ? 700
@@ -153,7 +153,7 @@ describe("MobileBottomDock focus recovery", () => {
       await act(async () => { fixture.querySelector("input")!.focus(); await Promise.resolve(); vi.runAllTimers(); });
       expect(dock()).toHaveAttribute("data-mode", "hidden");
       await act(async () => { fixture.querySelector("button")!.focus(); await Promise.resolve(); vi.runAllTimers(); });
-      expect(dock()).toHaveAttribute("data-mode", "hidden");
+      expect(dock()).toHaveAttribute("data-mode", "navigation");
       overlap = false;
       await act(async () => { fixture.querySelector("button")!.blur(); window.dispatchEvent(new Event("scroll")); vi.runAllTimers(); });
       expect(dock()).toHaveAttribute("data-mode", "navigation");
