@@ -54,6 +54,11 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => root.unmount()); client.clear(); container.remove(); vi.unstubAllGlobals(); });
 
 describe("admin editors wait for a confirmed initial read", () => {
+  it("exposes the home invitation editor through desktop tabs and the mobile picker", async () => {
+    readHome.mockResolvedValue(homeData); await render(AdminHomeEditor);
+    expect(container.querySelector('option[value="cta"]')).not.toBeNull();
+    expect(Array.from(container.querySelectorAll('[role="tab"]')).some(tab => tab.textContent === "首页行动引导")).toBe(true);
+  });
   it("allows a confirmed empty about section to start as a draft and exposes its CTA editor", async () => {
     readAbout.mockResolvedValue({ sections: {}, ctaBlock: null });
     await render(AdminAboutEditor);

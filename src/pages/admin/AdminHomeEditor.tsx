@@ -325,6 +325,7 @@ export default function AdminHomeEditor() {
             <option value="process">{A("tabProcess")}</option>
             <option value="testimonials">{A("tabTestimonials")}</option>
             <option value="faq">{A("tabFaq")}</option>
+            <option value="cta">{A("tabCta")}</option>
           </select>
         </label>
         <div className="mb-4 hidden overflow-auto sm:block">
@@ -335,6 +336,7 @@ export default function AdminHomeEditor() {
             <TabsTrigger value="process">{A("tabProcess")}</TabsTrigger>
             <TabsTrigger value="testimonials">{A("tabTestimonials")}</TabsTrigger>
             <TabsTrigger value="faq">{A("tabFaq")}</TabsTrigger>
+            <TabsTrigger value="cta">{A("tabCta")}</TabsTrigger>
           </TabsList>
         </div>
 
