@@ -98,7 +98,7 @@ const AdminTranslationJobs = () => {
       const friendlyReason = friendlyTranslationError(job.error_message, lang);
       const group = classifyTranslationFailure(job.error_message, lang);
       const matchesFailureGroup = failureGroupFilter === "all" || [translationFailureKind(job.error_message),
-        classifyTranslationFailure(job.error_message, "zh"), classifyTranslationFailure(job.error_message, "en")].includes(failureGroupFilter);
+        classifyTranslationFailure(job.error_message, "zh"), classifyTranslationFailure(job.error_message, "en")].some(value => value === failureGroupFilter);
       const haystack = [job.table_name, job.record_label, job.status, job.error_message, friendlyReason, group].join(" ").toLowerCase();
       return matchesStatus && matchesFailureGroup && (!query || haystack.includes(query));
     });
@@ -212,7 +212,7 @@ const AdminTranslationJobs = () => {
           >
             <option value="all">{t.allFailureGroups}</option>
             {failureGroups.map(({ key, group, count }) => (
-              <option key={group} value={group}>
+              <option key={key} value={key}>
                 {group}（{count}）
               </option>
             ))}
@@ -229,7 +229,7 @@ const AdminTranslationJobs = () => {
         <div className="rounded-xl border border-border bg-card p-5">
           <h2 className="font-display text-xl font-bold">{t.failureGroups}</h2>
           <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
-            {failureGroups.map(({ group, count }) => (
+            {failureGroups.map(({ key, group, count }) => (
               <Button
                 key={key}
                 type="button"
