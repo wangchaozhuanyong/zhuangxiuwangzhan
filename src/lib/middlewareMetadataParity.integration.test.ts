@@ -58,6 +58,20 @@ describe("current public metadata contract", () => {
     });
     expect(document.querySelector('meta[property="og:image"]')?.getAttribute("content")).toBe("https://flashcast.com.my/current-share.webp");
   });
+  it.each([
+    ["/ms/materials/category/countertops-stone-surfaces", "Countertop & Permukaan Batu", "Pilihan kuarza, batu tersinter, bahan permukaan pejal dan papak porselin"],
+    ["/ms/materials/category/countertops-stone-surfaces/porcelain-slab", "Papak Porcelain", "Papak porselin nipis untuk kaunter tumpuan, pelindung percikan dan kemasan dinding."],
+  ])("localizes reviewed material fallback metadata before hydration: %s", async (path, title, description) => {
+    const { response, document } = await render(path, null);
+    expect(response.status).toBe(200);
+    expect(document.documentElement.lang).toBe("ms-MY");
+    expect(document.title).toContain(title);
+    expect(document.querySelector('meta[name="description"]')?.getAttribute("content")).toContain(description);
+    expect(document.querySelector('meta[property="og:description"]')?.getAttribute("content")).toContain(description);
+    expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://flashcast.com.my${path}`);
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute("content")).toContain("noindex");
+    expect(document.querySelector('link[hreflang="ms-MY"]')).toBeNull();
+  });
   it.each([["images/current.webp", "https://flashcast.com.my/images/current.webp"], ["http://", "https://flashcast.com.my/current-share.webp"], ["javascript:alert(1)", "https://flashcast.com.my/current-share.webp"]])("normalizes or rejects saved metadata image %s", async (image_url, expected) => {
     const { document } = await render("/en/contact", { id: "contact-image", path: "/contact", page_key: "contact", status: "published", title_en: "Contact", description_en: "Current", image_url });
     expect(document.querySelector('meta[property="og:image"]')?.getAttribute("content")).toBe(expected);

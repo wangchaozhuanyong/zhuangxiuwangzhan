@@ -2,6 +2,7 @@
   position: fixed; z-index: 38; right: 24px; bottom: 28px;
   display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
   max-width: calc(100vw - 32px); pointer-events: none;
+  transform: translateY(calc(-1 * var(--fc-contact-lift, 0px)));
 }
 .fc-contact-stack > * { flex: none; pointer-events: auto; }
 .fc-contact-stack .fc-furniture-floating--fallback {
@@ -9,6 +10,28 @@
   width: 170px; padding: 12px; white-space: normal; font-size: 13px;
 }
 .fc-furniture-floating--fallback small { font-size: 10px; }
+/* One compact pair fits between product actions without removing either entry. */
+.fc-contact-stack[data-compact] {
+  flex-direction: row; align-items: stretch; gap: 8px;
+  width: min(360px, calc(100% - 32px));
+}
+.fc-contact-stack[data-compact] > * { flex: 1 1 0; min-width: 0; }
+.fc-contact-stack[data-compact] .fc-furniture-floating {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: auto; height: auto; min-height: 48px; padding: 6px 10px;
+  border-radius: var(--radius); font-size: 13px; white-space: normal; text-align: left;
+}
+.fc-contact-stack[data-compact] .fc-furniture-floating__icon { flex: none; width: 24px; height: 24px; }
+.fc-contact-stack[data-compact] .fc-furniture-floating__icon svg { width: 24px; height: 24px; }
+.fc-contact-stack[data-compact] .fc-furniture-floating__copy { display: grid; gap: 2px; }
+.fc-contact-stack[data-compact] .fc-furniture-floating__label { font-size: 13px; line-height: 1.25; }
+.fc-contact-stack[data-compact] .fc-furniture-floating__label--desktop,
+.fc-contact-stack[data-compact] .fc-furniture-floating__action { display: none; }
+.fc-contact-stack[data-compact] .fc-furniture-floating__label--mobile { display: block; }
+.fc-contact-stack[data-compact] .fc-furniture-floating__hint { display: none; }
+.fc-contact-stack[data-compact] .fc-furniture-floating[lang="ms"] .fc-furniture-floating__hint { display: block; font-size: 10px; }
+.fc-contact-stack[data-compact] .fc-contact-entry { justify-content: center; min-height: 48px; padding: 6px; gap: 8px; font-size: 13px; }
+.fc-contact-stack[data-compact] .fc-contact-entry__icon { width: 30px; height: 30px; }
 /* Keep its measured footprint while yielding, so collision checks stay stable. */
 .fc-contact-stack[data-obstructed="true"], .fc-contact-stack[data-obstructed="true"] > * {
   visibility: hidden; pointer-events: none;

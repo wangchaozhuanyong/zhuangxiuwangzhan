@@ -1,5 +1,6 @@
 import type { Language } from "@/i18n/routes";
 import { localizeMalayContent } from "@/i18n/malayContent";
+import { translateMaterialCatalogDescription } from "@/i18n/materialCatalogText";
 
 type LabelPair = { en: string; zh: string; ms: string };
 
@@ -1563,58 +1564,52 @@ const extraZhTextReplacements: Record<string, string> = {
   "Electrical": "电工",
 };
 
-const escapeDisplayPattern = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const extraZhRules = Object.entries(extraZhTextReplacements).map(([key, replacement]) => ({
-  sourceLower: key.toLowerCase(), pattern: new RegExp(escapeDisplayPattern(key), "gi"), replacement,
+const zhDisplayReplacements = Array.from(new Map([
+  ...displayTextReplacements.map((entry) => [normalizeKey(entry.key), entry.value.zh] as const),
+  ...Object.entries(extraZhTextReplacements).map(([key, value]) => [normalizeKey(key), value] as const),
+])).sort(([left], [right]) => right.length - left.length);
+const exactZhDisplayText = new Map(zhDisplayReplacements);
+const zhDisplayFragments = zhDisplayReplacements.map(([key, replacement]) => ({
+  sourceLower: key,
+  pattern: new RegExp(`(^|[^A-Za-z0-9])${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=$|[^A-Za-z0-9])`, "gi"),
+  replacement,
 }));
-const displayZhRules = displayTextReplacements.map((entry) => ({
-  sourceLower: entry.key.toLowerCase(),
-  pattern: new RegExp(`(^|[^A-Za-z0-9])${escapeDisplayPattern(entry.key)}(?=$|[^A-Za-z0-9])`, "gi"),
-  replacement: entry.value.zh,
-}));
-// This guard follows the dictionaries, so a future non-ASCII-only source label
-// automatically disables the fast path rather than silently losing its mapping.
-const displayZhRequiresAscii = [...Object.keys(extraZhTextReplacements), ...displayTextReplacements.map((entry) => entry.key)]
-  .every((key) => /[A-Za-z]/.test(key));
-
-const cleanChineseDisplaySpacing = (value: string) => value
-  .replace(/\s+([，。！？；：、])/g, "$1")
-  .replace(/([（【])\s+/g, "$1")
-  .replace(/\s+([）】])/g, "$1")
-  .replace(/([\u4e00-\u9fff])\s+([\u4e00-\u9fff])/g, "$1$2")
-  .replace(/\s{2,}/g, " ")
-  .trim();
+// A future non-ASCII-only source label must retain the full matching path.
+const zhDisplayRequiresAscii = zhDisplayReplacements.every(([key]) => /[A-Za-z]/.test(key));
 
 export const translateDisplayText = (value: string, language: Language) => {
+  if (language === "en" || !value) return value;
+  const materialDescription = translateMaterialCatalogDescription(value, language);
+  if (materialDescription) return materialDescription;
   if (language === "ms") return displayTextReplacements.find((entry) => normalizeKey(entry.key) === normalizeKey(value))?.value.ms || localizeMalayContent(value);
-  if (language !== "zh" || !value) return value;
-  if (displayZhRequiresAscii && !/[A-Za-z]/.test(value)) return cleanChineseDisplaySpacing(value);
-
-  let withExtraReplacements = value;
-  let searchable = value.toLowerCase();
-  for (const { sourceLower, pattern, replacement } of extraZhRules) {
-    if (!searchable.includes(sourceLower)) continue;
-    withExtraReplacements = withExtraReplacements.replace(pattern, replacement);
-    // Keep ordered/cascading replacements exactly as before.
-    searchable = withExtraReplacements.toLowerCase();
-  }
+  const exact = exactZhDisplayText.get(normalizeKey(value));
+  if (exact) return exact;
 
   // Preserve untranslated prose as readable English. Fragment-by-fragment replacement
   // inside a sentence creates mixed copy and can corrupt words such as "Malaysian".
   const englishWordCount = value.match(/[A-Za-z][A-Za-z'-]*/g)?.length || 0;
-  if (withExtraReplacements === value && !/[\u3400-\u9fff]/.test(value) && englishWordCount >= 6) {
+  if (englishWordCount >= 6 || /[.!?。！？;；]/.test(value)) {
     return value.trim();
   }
 
-  let translated = withExtraReplacements;
-  searchable = translated.toLowerCase();
-  for (const { sourceLower, pattern, replacement } of displayZhRules) {
-    if (!searchable.includes(sourceLower)) continue;
-    translated = translated.replace(pattern, (_match, prefix: string) => `${prefix}${replacement}`);
-    searchable = translated.toLowerCase();
+  let translated = value;
+  if (!zhDisplayRequiresAscii || /[A-Za-z]/.test(value)) {
+    let searchable = value.toLowerCase();
+    for (const { sourceLower, pattern, replacement } of zhDisplayFragments) {
+      if (!searchable.includes(sourceLower)) continue;
+      translated = translated.replace(pattern, (_match, prefix: string) => `${prefix}${replacement}`);
+      // Preserve latest-main ordered/cascading substitutions and word boundaries.
+      searchable = translated.toLowerCase();
+    }
   }
 
-  return cleanChineseDisplaySpacing(translated);
+  return translated
+    .replace(/\s+([，。！？；：、])/g, "$1")
+    .replace(/([（【])\s+/g, "$1")
+    .replace(/\s+([）】])/g, "$1")
+    .replace(/([\u4e00-\u9fff])\s+([\u4e00-\u9fff])/g, "$1$2")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 };
 
 // Exact shared project labels only; CMS prose and unrelated slugs remain untouched.

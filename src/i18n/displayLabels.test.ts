@@ -60,7 +60,7 @@ describe("translateDisplayText", () => {
       .toBe("The contractor will review the site before discussing the project scope.");
   });
 
-  it("localizes only the two curated whole-house fallback sentences and keeps EN/CMS text", () => {
+  it("retains the curated whole-house fallback translations and keeps EN/CMS text", () => {
     const pairs = [
       ["Built-in and walk-in wardrobes with modern sliding or swing doors.", "内嵌式衣柜与步入式衣帽间，可结合空间规划推拉门或平开门。"],
       ["Multi-purpose storage solutions for every room.", "适用于不同房间用途的多用途收纳规划。"],
@@ -78,6 +78,22 @@ describe("translateDisplayText", () => {
   it("keeps untranslated English prose intact instead of creating mixed fragments", () => {
     const title = "SPC Vinyl vs Laminate Flooring: Which is Better for Malaysian Homes?";
     expect(translateDisplayText(title, "zh")).toBe(title);
+  });
+
+  it.each([
+    "Thin premium surfaces for counters in a future material range",
+    "Smooth surfaces for counters.",
+    "Show surfaces, counters, and bathrooms together.",
+    "后台已审核的说明使用 solid surface，并保留原有用词。",
+  ])("does not partially translate unreviewed prose containing known fragments: %s", (value) => {
+    expect(translateDisplayText(value, "zh")).toBe(value);
+    expect(translateDisplayText(value, "en")).toBe(value);
+  });
+
+  it("does not replace a fragment inside a plural or a longer word", () => {
+    expect(translateDisplayText("surfaces", "zh")).toBe("surfaces");
+    expect(translateDisplayText("counterspell", "zh")).toBe("counterspell");
+    expect(translateDisplayText("Surface", "zh")).toBe("表面材料");
   });
 
   it("still translates exact short material labels", () => {

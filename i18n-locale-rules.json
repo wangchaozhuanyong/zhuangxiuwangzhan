@@ -66,7 +66,9 @@
     "src/i18n/materialCategoryPageText.ts",
     "src/i18n/materialDetailPageText.ts",
     "src/i18n/materialSubcategoryPageText.ts",
+    "src/i18n/materialSubcategoryGuidance.ts",
     "src/i18n/materialsPageText.ts",
+    "src/i18n/materialCatalogText.ts",
     "src/i18n/mobileActionBarText.ts",
     "src/i18n/navbarText.ts",
     "src/i18n/notFoundPageText.ts",
@@ -328,6 +330,12 @@
         "locale": "zh-CN",
         "url": "/zh/materials"
       },
+      { "locale": "zh-CN", "url": "/zh/materials/category/countertops-stone-surfaces" },
+      { "locale": "zh-CN", "url": "/zh/materials/category/countertops-stone-surfaces/porcelain-slab" },
+      { "locale": "en-US", "url": "/en/materials/category/countertops-stone-surfaces" },
+      { "locale": "en-US", "url": "/en/materials/category/countertops-stone-surfaces/porcelain-slab" },
+      { "locale": "ms-MY", "url": "/ms/materials/category/countertops-stone-surfaces" },
+      { "locale": "ms-MY", "url": "/ms/materials/category/countertops-stone-surfaces/porcelain-slab" },
       {
         "locale": "zh-CN",
         "url": "/zh/projects"
