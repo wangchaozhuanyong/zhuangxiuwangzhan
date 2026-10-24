@@ -1,3 +1,4 @@
+import { CONTENT_LINK_REPAIR_TARGETS } from "./content-link-repair-targets.ts";
 import { ORG020_V7_TARGETS } from "./org020-v7-targets.ts";
 import { NATIVE_BODY_TARGETS } from "./native-body-targets.ts";
 import { OWNER_PUBLISHER_THREE_TARGETS } from "./owner-publisher-three-targets.ts";
@@ -129,7 +130,7 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_TARGETS: readonly ManagedTarget[] = [
-  ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS,
+  ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
 
 export const findManagedTarget = (

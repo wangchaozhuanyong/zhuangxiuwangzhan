@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -59,7 +60,7 @@ function mockClient(initial: Row) {
       return { data: [{}], error: null };
     },
   } as unknown as ContentPublishClient;
-  return { client, row, writes, calls };
+  return { client: withPublishedLinkTargets(client), row, writes, calls };
 }
 
 const requestFor = (name: string, row: Row): ContentPublishRequest => {

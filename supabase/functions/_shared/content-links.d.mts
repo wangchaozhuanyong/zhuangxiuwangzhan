@@ -1,0 +1,14 @@
+export type ContentLanguage = "en" | "zh" | "ms";
+export type ContentLink = { field: string; language?: ContentLanguage; href: string; start: number; end: number };
+export type ContentLinkTarget = { path: string; canonicalPath: string; language?: ContentLanguage; static: boolean; table: string; key: string; value: string };
+export type ContentLinkIssue = ContentLink & { reason: "invalid_url" | "wrong_language" | "missing_published_target" };
+export type ContentLinkOptions = { field?: string; language?: ContentLanguage; basePath?: string; pendingPaths?: string[] };
+export const stableTranslationField: RegExp;
+export const linkedContentTables: Set<string>;
+export function pendingContentPaths(table: string, record: Record<string, unknown>): string[];
+export function contentLinkUrl(href: string, language?: string, basePath?: string): URL | null;
+export function localizeContentLink(href: string, language: ContentLanguage): string;
+export function localizeHtmlLinks(html: string, language: ContentLanguage): string;
+export function collectContentLinks(value: unknown, options?: ContentLinkOptions): ContentLink[];
+export function contentLinkTarget(href: string, language?: string, basePath?: string): ContentLinkTarget | null;
+export function validateContentLinks(value: unknown, resolve: (target: ContentLinkTarget) => Promise<boolean> | boolean, options?: ContentLinkOptions): Promise<ContentLinkIssue[]>;

@@ -9,13 +9,17 @@ import { verifyGithubOidcToken } from "../supabase/functions/content-publish/git
 import { issueManagedPermit, readManagedPermit, revokeManagedPermit } from "../supabase/functions/content-publish/permit-issuer.ts";
 import { samePgTimestamp } from "../supabase/functions/content-publish/managed-timestamp.ts";
 import { githubOidcTokenNeedsRefresh, isExpiredUnclaimedPermitForTarget } from "./lib/malay-publish-runtime.mjs";
+import { inspectContentRepairReadback } from "./verify-content-links.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const TASK_ID = "fc-20261019-malay-cms-completion-v1";
-const TARGET_NAME = "malay-cms-continuation-20261019";
-const APPROVAL_ID = "owner-authorized-malay-cms-completion-20261019";
-const QA_RECEIPT_ID = "fc-malay-cms-qa-20261019-v1";
-const POLICY_DECISION_ID = "managed-cms-malay-empty-fields-v1";
+import { CONTENT_LINK_REPAIR_TARGETS, CONTENT_LINK_REPAIR_MANIFEST_SHA256 } from "../supabase/functions/_shared/content-link-repair-targets.ts";
+const LINK_REPAIR = process.env.PUBLISH_TARGET === "content-link-repair-20261024";
+const MANIFEST_SHA256 = LINK_REPAIR ? CONTENT_LINK_REPAIR_MANIFEST_SHA256 : MALAY_TRANSLATION_MANIFEST_SHA256;
+const TASK_ID = LINK_REPAIR ? "fc-20261024-content-link-repair-v1" : "fc-20261019-malay-cms-completion-v1";
+const TARGET_NAME = LINK_REPAIR ? "content-link-repair-20261024" : "malay-cms-continuation-20261019";
+const APPROVAL_ID = LINK_REPAIR ? "owner-authorized-content-link-repair-20261024" : "owner-authorized-malay-cms-completion-20261019";
+const QA_RECEIPT_ID = LINK_REPAIR ? "fc-content-link-review-20261024-v1" : "fc-malay-cms-qa-20261019-v1";
+const POLICY_DECISION_ID = LINK_REPAIR ? "managed-cms-exact-href-repair-v1" : "managed-cms-malay-empty-fields-v1";
 const WORKFLOW_REF = "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main";
 const AUDIENCE = "api://flashcast-managed-cms-publish";
 const REPOSITORY_ID = 1248188229;
@@ -34,8 +38,8 @@ const stable = (value) => Array.isArray(value) ? value.map(stable)
 const digest = (value) => createHash("sha256").update(JSON.stringify(stable(value))).digest("hex");
 const project = (row, fields) => Object.fromEntries(fields.map((field) => [field, row[field] ?? null]));
 const same = (a, b) => digest(a) === digest(b);
-const candidate = JSON.parse(readFileSync(join(ROOT, "drafts/malay-cms-continuation-20261019/candidates-v1.json"), "utf8"));
-const targets = MALAY_TRANSLATION_TARGETS;
+const candidate = JSON.parse(readFileSync(join(ROOT, LINK_REPAIR ? "drafts/content-link-repair-20261024/candidates-v1.json" : "drafts/malay-cms-continuation-20261019/candidates-v1.json"), "utf8"));
+const targets = LINK_REPAIR ? CONTENT_LINK_REPAIR_TARGETS : MALAY_TRANSLATION_TARGETS;
 const targetById = new Map(targets.map((target) => [target.id, target]));
 const entryById = new Map(candidate.entries.map((entry) => [entry.id, entry]));
 
@@ -43,9 +47,9 @@ function buildTargetProjection() {
   return candidate.entries.map((entry) => ({
     id: entry.id, slug: entry.slug, contentType: "translation_patch",
     taskId: TASK_ID,
-    actionId: `publish-malay-${entry.table}-${entry.id.slice(0, 8)}`,
-    candidateVersion: `malay-cms-continuation-v1-${entry.id.slice(0, 8)}`,
-    scope: `flashcast.com.my:${entry.table}/${entry.id}:${entry.changedFields.join(",")}:malay-v1`,
+    actionId: LINK_REPAIR ? `repair-content-links-${entry.id.slice(0, 8)}` : `publish-malay-${entry.table}-${entry.id.slice(0, 8)}`,
+    candidateVersion: LINK_REPAIR ? `content-link-repair-v1-${entry.id.slice(0, 8)}` : `malay-cms-continuation-v1-${entry.id.slice(0, 8)}`,
+    scope: `flashcast.com.my:${entry.table}/${entry.id}:${entry.changedFields.join(",")}:${LINK_REPAIR ? "link-repair-v1" : "malay-v1"}`,
     changedFields: entry.changedFields,
     desiredFieldsSha256: entry.desiredFieldsSha256,
     baselineFieldsSha256: entry.baselineFieldsSha256,
@@ -82,9 +86,9 @@ function assertRunEnvironment() {
     fail("The protected permit issuer credential is missing.");
   }
   if (candidate.taskId !== TASK_ID || candidate.languageReview?.status !== "reviewed-final-static-qa"
-      || candidate.rowCount !== 231 || candidate.fieldCount !== 926 || candidate.entries.length !== 231
-      || candidate.manifestSha256 !== MALAY_TRANSLATION_MANIFEST_SHA256
-      || digest(buildTargetProjection()) !== MALAY_TRANSLATION_MANIFEST_SHA256
+      || candidate.rowCount !== (LINK_REPAIR ? 10 : 231) || candidate.fieldCount !== (LINK_REPAIR ? 10 : 926) || candidate.entries.length !== (LINK_REPAIR ? 10 : 231)
+      || candidate.manifestSha256 !== MANIFEST_SHA256
+      || digest(buildTargetProjection()) !== MANIFEST_SHA256
       || targets.length !== candidate.entries.length) {
     fail("The candidate, final language review, or exact 231-row manifest differs from its pinned registry.");
   }
@@ -246,7 +250,7 @@ function validateCurrentRows(rows, permits) {
     }
     const baseline = project(row, target.baselineProjectionFields);
     if (digest(baseline) !== target.baselineFieldsSha256
-        || target.changedFields.some((field) => !isEmpty(row[field]))) {
+        || !LINK_REPAIR && target.changedFields.some((field) => !isEmpty(row[field]))) {
       fail(`The current ${target.table}/${target.id} row or empty Malay field differs from its locked baseline.`);
     }
     plan.push({ target, entry, row, state: "pending" });
@@ -326,7 +330,7 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
     if (error || !Array.isArray(data)) fail("Could not map public CMS section rows to their page routes.");
     for (const row of data) if (row.status === "published" && row.path) cmsPagePath.set(row.id, row.path);
   }
-  const routes = new Set(["/ms", "/ms/services", "/ms/blog", "/ms/projects", "/ms/locations", "/ms/materials", "/ms/faq", "/ms/process", "/ms/contact"]);
+  const routes = new Set(LINK_REPAIR ? [] : ["/ms", "/ms/services", "/ms/blog", "/ms/projects", "/ms/locations", "/ms/materials", "/ms/faq", "/ms/process", "/ms/contact"]);
   const routeRows = plan.map(({ entry, row }) => ({ table: entry.table, id: entry.id, path: routeFor(entry, row, { projectSlug, cmsPagePath }) }));
   for (const item of routeRows) routes.add(item.path);
   const checks = [];
@@ -338,12 +342,17 @@ async function routeReadback(plan, artifactRoot, serviceClient) {
       url.searchParams.set("malay_cms_run", env.GITHUB_RUN_ID);
       const response = await fetch(url, { cache: "no-store", headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(30_000) });
       const html = await response.text();
-      return { path, status: response.status, htmlBytes: Buffer.byteLength(html), hasHtml: /<html\b/i.test(html),
+      const repaired = LINK_REPAIR ? plan.find((item) => routeFor(item.entry, item.row) === path) : null;
+      const linkRepairReadback = repaired ? inspectContentRepairReadback(html,
+        { content_ms: repaired.entry.baseline.content_ms }, repaired.entry.patch) : null;
+      const linkRepairVerified = !LINK_REPAIR || Boolean(linkRepairReadback?.ok
+        && linkRepairReadback.changedLinks.length === repaired.entry.repairs);
+      return { path, linkRepairVerified, linkRepairReadback, status: response.status, htmlBytes: Buffer.byteLength(html), hasHtml: /<html\b/i.test(html),
         hasAppRoot: /<div\s+id=["']root["']/i.test(html) };
     }));
     checks.push(...results);
   }
-  const failedRoutes = checks.filter((check) => check.status !== 200 || !check.hasHtml || !check.hasAppRoot);
+  const failedRoutes = checks.filter((check) => check.status !== 200 || !check.hasHtml || !check.hasAppRoot || check.linkRepairVerified === false);
   if (failedRoutes.length) {
     writeJson(join(artifactRoot, "public-route-readback-failed.json"), {
       checkedAt: new Date().toISOString(),
@@ -548,7 +557,7 @@ async function main() {
       payloadSha256: target.desiredFieldsSha256, rollbackPayloadSha256: target.rollbackFieldsSha256,
       githubActorId: identity.actorId, githubWorkflowSha: identity.workflowSha,
       qaReceiptId: QA_RECEIPT_ID, operationsDecisionId: APPROVAL_ID, policyDecisionId: POLICY_DECISION_ID,
-      issuerEvidenceSha256: digest({ manifestSha256: MALAY_TRANSLATION_MANIFEST_SHA256, runId: identity.runId,
+      issuerEvidenceSha256: digest({ manifestSha256: MANIFEST_SHA256, runId: identity.runId,
         targetId: target.id, baselineSha256: target.baselineFieldsSha256, payloadSha256: target.desiredFieldsSha256,
         dryRunReceiptSha256: digest(dryRunReceipts) }),
       expiresAt: new Date(Date.now() + 10 * 60_000).toISOString(),
@@ -582,7 +591,9 @@ async function main() {
       fail(`Protected publisher did not confirm the exact one-time write for ${target.table}/${target.id}.`);
     }
     const saved = await readExactRow(target);
-    if (!saved || !same(changedProjection(saved, target.changedFields), item.entry.patch)) {
+    if (!saved || !same(changedProjection(saved, target.changedFields), item.entry.patch)
+        || !same(project(saved, target.baselineProjectionFields.filter((field) => ![...target.changedFields, target.versionField].includes(field))),
+          project(item.row, target.baselineProjectionFields.filter((field) => ![...target.changedFields, target.versionField].includes(field))))) {
       fail(`Public row readback differs from the reviewed Malay patch for ${target.table}/${target.id}.`);
     }
     const permit = await readManagedPermit(serviceClient, permitInput.permitId);

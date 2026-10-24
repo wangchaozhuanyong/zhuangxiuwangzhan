@@ -1,5 +1,10 @@
 import type { AdminCheckResult, GenerateEnglishClient, TranslationJobStatus, TranslationRecordGuard } from "./types.ts";
 import { requireAdminAccess } from "../_shared/admin-auth.ts";
+import { publishedContentLinkExists, type ContentLinkClient } from "../_shared/content-link-repository.ts";
+import type { ContentLinkTarget } from "../_shared/content-links.mjs";
+
+export const resolveTranslationContentLink = (client: GenerateEnglishClient, target: ContentLinkTarget) =>
+  publishedContentLinkExists(client as unknown as ContentLinkClient, target);
 
 export class TranslationConflictError extends Error {}
 

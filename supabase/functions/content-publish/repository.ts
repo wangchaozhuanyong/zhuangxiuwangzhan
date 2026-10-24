@@ -1,5 +1,11 @@
+import { CONTENT_LINK_REPAIR_TARGETS } from "../_shared/content-link-repair-targets.ts";
 import type { ContentPublishClient, ContentRow, ServiceRow } from "./types.ts";
 import type { ManagedTarget } from "../_shared/managed-targets.ts";
+import { publishedContentLinkExists, type ContentLinkClient } from "../_shared/content-link-repository.ts";
+import type { ContentLinkTarget } from "../_shared/content-links.mjs";
+
+export const resolvePublishedContentLink = (client: ContentPublishClient, target: ContentLinkTarget) =>
+  publishedContentLinkExists(client as unknown as ContentLinkClient, target);
 
 export async function fetchServiceById(client: ContentPublishClient, id: string): Promise<ServiceRow | null> {
   const { data, error } = await client.from("services").select("*").eq("id", id).maybeSingle();
@@ -93,7 +99,8 @@ const MALAY_TRANSLATION_TABLES = new Set([
 ]);
 
 // A Malay patch can touch only a fixed registry row and its explicitly blank
-// fields. Tables with updated_at use that version plus blank-field predicates;
+// fields. Registered link repairs use the exact prior text instead of NULL.
+// Tables with updated_at use that version plus field predicates;
 // project_images has no updated_at, so its complete scalar baseline is the CAS.
 export async function updateMalayTranslationAtVersion(
   client: ContentPublishClient,
@@ -112,7 +119,12 @@ export async function updateMalayTranslationAtVersion(
   let query = client.from(target.table).update(patch).eq("id", target.id);
   if (target.versionField === "updated_at") {
     query = query.eq("updated_at", expectedVersion);
-    for (const field of target.changedFields) query = query.is(field, null);
+    for (const field of target.changedFields) {
+      if (CONTENT_LINK_REPAIR_TARGETS.includes(target)) {
+        if (typeof baselineRow[field] !== "string") throw new Error("Link repair requires its exact existing text baseline.");
+        query = query.eq(field, baselineRow[field]);
+      } else query = query.is(field, null);
+    }
   } else if (target.versionField === "created_at" && target.table === "project_images") {
     if (!target.expectedUpdatedAt || expectedVersion !== target.expectedUpdatedAt) {
       throw new Error("Malay image target version differs from its fixed baseline.");
