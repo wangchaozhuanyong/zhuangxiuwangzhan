@@ -105,6 +105,25 @@ type EdgeRowsReadResult =
   | { ok: true; rows: PublicDataRow[]; durationMs: number; status: number; requestId?: string }
   | { ok: false; category: "timeout" | "network" | "http" | "invalid_response"; durationMs: number; status?: number; requestId?: string };
 
+type PublicReadFailureCode = "configuration" | "timeout" | "network" | "http" | "invalid-response" | "invalid-source" | "catalog-unavailable" | "unclassified";
+type PublicReadFailureSource = PublicSourceTable | "configuration" | "furniture-settings" | "home-furniture" | "unclassified";
+class PublicReadFailure extends Error {
+  constructor(readonly code: PublicReadFailureCode, readonly source: PublicReadFailureSource, readonly status?: number) {
+    super("Public read unavailable");
+    this.name = "PublicReadFailure";
+  }
+}
+const publicRowsFailure = (source: PublicReadFailureSource, result: Extract<EdgeRowsReadResult, { ok: false }>) =>
+  new PublicReadFailure(result.category === "invalid_response" ? "invalid-response" : result.category, source, result.status);
+
+// Only controlled codes/source names enter logs and response headers. Provider
+// exception text, request headers, credentials and source-row data stay private.
+const reportPublicReadFailure = (route: string, error: unknown, source: PublicReadFailureSource = "unclassified") => {
+  const failure = error instanceof PublicReadFailure ? error : new PublicReadFailure("unclassified", source);
+  console.warn("[flashcast-public-read]", JSON.stringify({ route, code: failure.code, source: failure.source, status: failure.status }));
+  return failure;
+};
+
 type PagesEnv = {
   [key: string]: unknown;
   CF_PAGES_COMMIT_SHA?: string;
@@ -1467,9 +1486,13 @@ const fetchHomeDiscoveryRows = async (
 const fetchHomeFurniture = async (env: Record<string, string | undefined>) => {
   try {
     const catalog = await fetchFurnitureCatalogPreload(env);
-    if (!catalog || !Array.isArray(catalog.materials) || !catalog.materials.every(isRecord)) return null;
+    if (!catalog || !Array.isArray(catalog.materials) || !catalog.materials.every(isRecord)) {
+      reportPublicReadFailure("home-furniture", new PublicReadFailure("catalog-unavailable", "home-furniture"));
+      return null;
+    }
     return mapHomeFurnitureSeed(catalog.materials as FurnitureMaterialRow[], catalog.setting);
-  } catch {
+  } catch (error) {
+    reportPublicReadFailure("home-furniture", error, "home-furniture");
     return null;
   }
 };
@@ -1832,7 +1855,7 @@ const isAssetPath = (pathname: string) =>
   (/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith(".html"));
 
 const fetchLiveSitemapXml = async (env: PagesEnv) => {
-  if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) throw new Error("Public discovery source access missing");
+  if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) throw new PublicReadFailure("configuration", "configuration");
   const sources = Object.entries(sourceKinds) as [PublicSourceTable, PublicContentKind][];
   const readSource = async ([table, kind]: [PublicSourceTable, PublicContentKind]) => {
     const rows: PublicDataRow[] = [];
@@ -1846,14 +1869,14 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
         if (table === "cms_pages") url.searchParams.set("deleted_at", "is.null");
         if (cursor) url.searchParams.set("id", `gt.${cursor}`);
       });
-      if (!result.ok) throw new Error(`Public discovery source unavailable: ${table}`);
+      if (result.ok === false) throw publicRowsFailure(table, result);
       if (!result.rows.length) return rows;
       for (const row of result.rows) {
         const id = readString(row, "id");
         const knownTemplate = knownSourceTemplates[table]?.has(readString(row, "path"));
         if (!id || (cursor && id <= cursor) || row.status !== "published"
           || (!knownTemplate && !currentSourcePath(row, kind)) || (table === "cms_pages" && row.deleted_at)) {
-          throw new Error(`Public discovery source invalid: ${table}`);
+          throw new PublicReadFailure("invalid-source", table);
         }
         cursor = id;
         rows.push(row);
@@ -1888,7 +1911,7 @@ const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefin
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("limit", "1");
   });
-  if (!result.ok) throw new Error("Furniture catalog settings unavailable");
+  if (result.ok === false) throw publicRowsFailure("furniture-settings", result);
   return result.rows[0] || null;
 };
 
@@ -1912,8 +1935,12 @@ const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefin
   // Preserve the existing normalized-slug, last-valid-save-wins semantics.
   const detailSetting = setting && detailSlug ? { ...setting, items_zh: readFurnitureCatalogOverrides(setting.items_zh)
     .filter(item => normalizeFurnitureSlug(item.slug) === decodedDetailSlug).slice(-1) } : setting;
-  return materials ? { materials, setting: detailSetting, ...(detailSlug ? { detailSlug } : {}) } : null;
-  } catch { return null; }
+  if (!materials) {
+    reportPublicReadFailure("furniture-catalog", new PublicReadFailure("catalog-unavailable", "materials"));
+    return null;
+  }
+  return { materials, setting: detailSetting, ...(detailSlug ? { detailSlug } : {}) };
+  } catch (error) { reportPublicReadFailure("furniture-catalog", error); return null; }
 };
 
 const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => {
@@ -2014,9 +2041,15 @@ const serveDynamicSeoAsset = async (
   let values: [Response, string, PublicDataRow | null];
   try {
     values = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchFurnitureCatalogSetting(env as Record<string, string | undefined>, true)]);
-  } catch {
+  } catch (error) {
+    const failure = reportPublicReadFailure(pathname, error);
     return new Response(request.method === "HEAD" ? null : "Public discovery temporarily unavailable.", {
-      status: 503, headers: dynamicAssetHeaders(pathname === "/sitemap.xml" ? "application/xml; charset=utf-8" : "text/plain; charset=utf-8"),
+      status: 503, headers: {
+        ...dynamicAssetHeaders(pathname === "/sitemap.xml" ? "application/xml; charset=utf-8" : "text/plain; charset=utf-8"),
+        [EDGE_FALLBACK_HEADER]: `discovery-${failure.code}`,
+        "x-flashcast-discovery-source": failure.source,
+        ...(failure.status === undefined ? {} : { "x-flashcast-discovery-status": String(failure.status) }),
+      },
     });
   }
   const [staticResponse, dynamicXml, furnitureSetting] = values;

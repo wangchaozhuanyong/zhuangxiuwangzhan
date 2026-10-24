@@ -110,7 +110,7 @@ describe("fresh public discovery recovery", () => {
     ["invalid JSON", () => new Response("broken JSON")],
     ["non-array JSON", () => new Response("{}")],
     ["invalid published row", () => new Response('[{"id":"x","status":"published","slug":"wrong/path"}]')],
-  ])("does not retry %s and fails closed", async (_label, fail) => {
+  ])("does not retry %s and fails closed", async (label, fail) => {
     let attempts = 0;
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       if (!new URL(String(input)).pathname.endsWith("/blog_posts")) return new Response("[]");
@@ -120,6 +120,10 @@ describe("fresh public discovery recovery", () => {
     const response = await invoke();
     expect(response.status).toBe(503);
     expect(response.headers.get("cache-control")).toBe("no-store");
+    const code = label === "invalid published row" ? "invalid-source"
+      : label.includes("JSON") ? "invalid-response" : "http";
+    expect(response.headers.get("x-flashcast-edge-fallback")).toBe(`discovery-${code}`);
+    expect(response.headers.get("x-flashcast-discovery-source")).toBe("blog_posts");
     expect(await response.text()).not.toContain(withdrawn);
     expect(attempts).toBe(1);
   });
@@ -133,6 +137,7 @@ describe("fresh public discovery recovery", () => {
     }));
     const response = await invoke();
     expect(response.status).toBe(503);
+    expect(response.headers.get("x-flashcast-discovery-status")).toBe("502");
     expect(await response.text()).not.toContain(withdrawn);
     expect(attempts).toBe(2);
   });
@@ -161,5 +166,39 @@ describe("fresh public discovery recovery", () => {
     const response = await invoke(pathname);
     expect(response.status).toBe(200);
     expect(attempts).toBe(2);
+  });
+
+  it("classifies missing runtime configuration without exposing credential values", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("[]")));
+    const response = await onRequest({ request: new Request("https://flashcast.com.my/sitemap.xml"),
+      env: { ...env, VITE_SUPABASE_ANON_KEY: undefined }, next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
+    expect(response.status).toBe(503);
+    expect(response.headers.get("x-flashcast-edge-fallback")).toBe("discovery-configuration");
+    expect(await response.text()).toBe("Public discovery temporarily unavailable.");
+    expect(JSON.stringify([...response.headers])).not.toContain(env.VITE_SUPABASE_ANON_KEY);
+  });
+
+  it("classifies a settings read failure separately from a content source", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => new Response(
+      new URL(String(input)).pathname.endsWith("/home_sections") ? "unavailable" : "[]",
+      { status: new URL(String(input)).pathname.endsWith("/home_sections") ? 503 : 200 },
+    )));
+    const response = await invoke();
+    expect(response.status).toBe(503);
+    expect(response.headers.get("x-flashcast-edge-fallback")).toBe("discovery-http");
+    expect(response.headers.get("x-flashcast-discovery-source")).toBe("furniture-settings");
+    expect(response.headers.get("x-flashcast-discovery-status")).toBe("503");
+  });
+
+  it("does not expose an unclassified provider exception in headers, body or logs", async () => {
+    const privateMessage = "private-provider-detail-not-for-browser";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("[]")));
+    const response = await onRequest({ request: new Request("https://flashcast.com.my/sitemap.xml"),
+      env: { ...env, ASSETS: { fetch: async () => { throw new Error(privateMessage); } } },
+      next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
+    expect(response.status).toBe(503);
+    expect(response.headers.get("x-flashcast-edge-fallback")).toBe("discovery-unclassified");
+    expect(JSON.stringify([...response.headers]) + await response.text() + JSON.stringify(warn.mock.calls)).not.toContain(privateMessage);
   });
 });
