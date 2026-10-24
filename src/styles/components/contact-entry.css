@@ -193,7 +193,6 @@
   .fc-contact-entry { min-height: 48px; padding: 6px 16px 6px 6px; gap: 9px; font-size: 13px; }
   .fc-contact-entry__icon { width: 34px; height: 34px; }
   .fc-contact-entry__icon svg { width: 18px; height: 18px; }
-  .scheme-a-public-shell:has(.scheme-a-mobile-switcher[data-mode="hidden"]) .fc-contact-stack { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
   .scheme-a-home-furniture-entry__card { padding: 12px 14px; gap: 10px; }
   .scheme-a-home-furniture-entry__icon { width: 42px; height: 42px; border-radius: 12px; }
   .scheme-a-home-furniture-entry__icon svg { width: 28px; height: 28px; }

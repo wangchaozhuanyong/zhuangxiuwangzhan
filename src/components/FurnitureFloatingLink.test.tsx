@@ -6,7 +6,6 @@ import FurnitureFloatingLink from "./FurnitureFloatingLink";
 import { contactEntryText } from "@/i18n/contactEntryText";
 import { wechatContactText } from "@/i18n/wechatContactText";
 import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
-import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
 
 const state = vi.hoisted(() => ({ language: "en" as "en" | "zh" | "ms", wechatId: "" }));
 vi.mock("@/config/site", async (importOriginal) => {
@@ -86,11 +85,11 @@ for (const language of ["zh", "en", "ms"] as const) {
     });
 
     it.each([
-      ["/furniture", true], ["/furniture/", true], ["/furniture/living-room", true],
-      ["/furniture/living-room/sofas?page=2&filter=chair", true], ["/furniture/product/chair", true],
-      ["/", false], ["/contact?destination=furniture", false], ["/about?next=/furniture", false],
-      ["/furniture-sale", false], ["/services/furniture", false],
-    ])("scopes the shop to the resolved furniture segment: %s", async (path, showShop) => {
+      "/furniture", "/furniture/", "/furniture/living-room",
+      "/furniture/living-room/sofas?page=2&filter=chair", "/furniture/product/chair",
+      "/", "/contact?destination=furniture", "/about?next=/furniture",
+      "/furniture-sale", "/services/furniture",
+    ])("shows only the shared contact entry on %s", async (path) => {
       state.language = language;
       const container = document.createElement("div"); document.body.append(container);
       const root = createRoot(container);
@@ -102,20 +101,13 @@ for (const language of ["zh", "en", "ms"] as const) {
         const stack = container.querySelector(".fc-contact-stack")!;
         const contact = container.querySelector(".fc-contact-entry")!;
         expect(contact.parentElement).toBe(stack);
-        const shop = container.querySelector<HTMLAnchorElement>(".fc-furniture-floating");
-        expect(Boolean(shop)).toBe(showShop);
-        if (shop) {
-          expect(stack.firstElementChild).toBe(shop);
-          expect(shop.nextElementSibling).toBe(contact);
-          expect(shop.href).toBe(furnitureShopUrlForLanguage(language));
-          expect(shop).toHaveAttribute("target", "_blank");
-          expect(shop.rel).toContain("noopener");
-          if (language === "ms") expect(shop).toHaveTextContent(contactEntryText.ms.shopLanguage);
-        }
+        expect(container.querySelector(".fc-furniture-floating")).toBeNull();
+        expect(stack.children).toHaveLength(1);
+        expect(contact).toHaveTextContent(contactEntryText[language].trigger);
       } finally { await act(async () => root.unmount()); container.remove(); router.dispose(); }
     });
 
-    it("yields both entries to contact and restores the shop after repeated dismissal", async () => {
+    it("restores only the contact entry after repeated dismissal", async () => {
       state.language = language;
       const container = document.createElement("div"); document.body.append(container);
       const root = createRoot(container);
@@ -138,7 +130,7 @@ for (const language of ["zh", "en", "ms"] as const) {
         expect(router.state.location.search).toBe("?from=catalog");
         expect(router.state.location.hash).toBe("#photos");
         expect(stack).not.toHaveAttribute("aria-hidden");
-        expect(container.querySelector(".fc-furniture-floating")).not.toBeNull();
+        expect(container.querySelector(".fc-furniture-floating")).toBeNull();
         await vi.waitFor(() => expect(document.activeElement).toBe(trigger));
       } finally { await act(async () => root.unmount()); container.remove(); router.dispose(); }
     });

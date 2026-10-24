@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MobileBottomDock from "@/components/MobileBottomDock";
 import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 
-const chrome = vi.hoisted(() => ({ menuOpen: false, showMobileActionBar: false }));
+const chrome = vi.hoisted(() => ({ menuOpen: false, hasOpenDialog: false, showMobileActionBar: false }));
 vi.mock("@/contexts/PublicChromeContext", () => ({ usePublicChrome: () => chrome }));
 vi.mock("@/components/MobileActionBar", () => ({ default: () => <nav>Contact actions</nav> }));
 vi.mock("@/components/scheme-a/SchemeAPublicChrome", () => ({ SchemeAMobileDock: () => <nav>Navigation</nav> }));
@@ -30,6 +30,7 @@ describe("MobileBottomDock focus recovery", () => {
 
   beforeEach(() => {
     chrome.menuOpen = false;
+    chrome.hasOpenDialog = false;
     chrome.showMobileActionBar = false;
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -130,6 +131,15 @@ describe("MobileBottomDock focus recovery", () => {
     field.remove();
   });
 
+  it("hides both panels for a registered language dialog and restores navigation on close", () => {
+    chrome.hasOpenDialog = true;
+    render();
+    expect(dock()).toHaveAttribute("data-mode", "hidden");
+    chrome.hasOpenDialog = false;
+    render();
+    expect(dock()).toHaveAttribute("data-mode", "navigation");
+  });
+
   it("still hides both panels while the menu is open", () => {
     chrome.menuOpen = true;
     render();
@@ -137,7 +147,7 @@ describe("MobileBottomDock focus recovery", () => {
     expect(container.querySelectorAll('[data-active="false"]')).toHaveLength(2);
   });
 
-  it("does not reveal the dock over a submit button when the last field loses focus", async () => {
+  it("restores navigation after editing even while a page button crosses the dock", async () => {
     let overlap = true;
     const bounds = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
       const top = this.classList.contains("scheme-a-mobile-switcher") ? 700
@@ -153,7 +163,7 @@ describe("MobileBottomDock focus recovery", () => {
       await act(async () => { fixture.querySelector("input")!.focus(); await Promise.resolve(); vi.runAllTimers(); });
       expect(dock()).toHaveAttribute("data-mode", "hidden");
       await act(async () => { fixture.querySelector("button")!.focus(); await Promise.resolve(); vi.runAllTimers(); });
-      expect(dock()).toHaveAttribute("data-mode", "hidden");
+      expect(dock()).toHaveAttribute("data-mode", "navigation");
       overlap = false;
       await act(async () => { fixture.querySelector("button")!.blur(); window.dispatchEvent(new Event("scroll")); vi.runAllTimers(); });
       expect(dock()).toHaveAttribute("data-mode", "navigation");

@@ -12,7 +12,7 @@ let boxes: WeakMap<HTMLElement, DOMRect>;
 const rect = (top = 700, left = 283, width = 76, height = 76): DOMRect => ({
   x: left, y: top, left, right: left + width, top, bottom: top + height, width, height, toJSON: () => ({}),
 });
-function Entry({ route, reposition = true }: { route: string; reposition?: boolean }) {
+function Entry({ route, reposition = true }: { route: string; reposition?: boolean | "fixed" }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const hidden = useFloatingOcclusion(ref, route, reposition);
   return <a ref={ref} className="entry" href="/shop" data-obstructed={hidden || undefined}>Shop</a>;
@@ -41,6 +41,31 @@ beforeEach(() => {
 });
 afterEach(() => { act(() => root.unmount()); container.remove(); content.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe("floating promotion stays available while reading", () => {
+  it.each(["fc-furniture-card__actions", "fc-route-contact-form", "scheme-a-actions"])(
+    "keeps fixed chrome stable while unfocused %s controls pass underneath", async (className) => {
+      content.innerHTML = `<div class="${className}"><form><input /><button>Continue</button></form></div>`;
+      act(() => root.render(<Entry route="/zh/contact" reposition="fixed" />));
+      for (const top of [710, 680, 700, 300, 720]) {
+        content.querySelectorAll<HTMLElement>("input,button,form").forEach(node => boxes.set(node, rect(top)));
+        window.dispatchEvent(new Event("scroll")); await settle();
+        expectObstructed(false);
+        expect(entry().style.getPropertyValue("--fc-contact-lift")).toBe("");
+      }
+      content.innerHTML = '<div role="dialog" aria-modal="true">Contact panel</div>';
+      await settle(); expectObstructed(true);
+      content.innerHTML = ''; await settle(); expectObstructed(false);
+    },
+  );
+
+  it.each(['<input type="checkbox" />', '<input type="range" />', '<input readonly />', '<select><option>One</option></select>'])(
+    "keeps fixed chrome visible for non-editing focus: %s", async (html) => {
+      content.innerHTML = html + '<div class="smart-image-failure"><button>Retry image</button></div>';
+      act(() => root.render(<Entry route="/zh/contact" reposition="fixed" />));
+      content.querySelector<HTMLElement>("input,select")!.focus();
+      await settle(); expectObstructed(false);
+    },
+  );
+
   it("restores the bottom dock after a content action leaves, without yielding to its companion contact entry", async () => {
     content.innerHTML = '<div class="fc-contact-stack"><button class="fc-contact-entry">Contact us</button></div><main><button>Request quote</button></main>';
     const action = content.querySelector<HTMLElement>("main button")!;
