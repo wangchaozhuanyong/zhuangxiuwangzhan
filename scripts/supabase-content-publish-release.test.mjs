@@ -592,10 +592,10 @@ test('each existing function retains its deployed JWT gateway policy', async () 
   assert.match(workflow, /supabase functions deploy "\$EDGE_FUNCTION"[^\n]*"\$\{jwt_args\[@\]\}"/);
   const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
   const code = `import { functionVersion } from ${JSON.stringify(new URL('./supabase-content-publish-release.mjs', import.meta.url).href)}; functionVersion(JSON.stringify([{slug:process.env.EDGE_FUNCTION,status:'ACTIVE',version:10,verify_jwt:process.env.CHECK_JWT==='true'}]));`;
-  for (const fn of ['content-publish','generate-english-content','submit-lead']) {
+  for (const fn of ['content-publish','generate-english-content','submit-lead','notification-settings','maintenance-reminder']) {
     for (const jwt of [true,false]) {
       const result=spawnSync(process.execPath,['--input-type=module','-e',code],{encoding:'utf8',env:{...process.env,EDGE_FUNCTION:fn,CHECK_JWT:String(jwt)}});
-      assert.equal(result.status===0,jwt===(fn==='generate-english-content'),result.stderr);
+      assert.equal(result.status===0,jwt===!['content-publish','submit-lead'].includes(fn),result.stderr);
     }
   }
   assert.ok(helper);
@@ -644,5 +644,26 @@ test('submit-lead release requires its exact scope and the complete reviewed sou
   assert.notEqual(rejected.status, 0);
   assert.match(rejected.stderr, /Unsupported Edge release target/);
   const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /options: \[content-publish, generate-english-content, submit-lead\]/);
+  assert.match(workflow, /options: \[content-publish, generate-english-content, submit-lead, notification-settings, maintenance-reminder\]/);
 });
+
+for (const target of ['notification-settings', 'maintenance-reminder']) {
+  test(`${target} requires its own exact scope`, () => {
+    verifyEdgeScope(`flashcast.com.my:edge/${target}:notification-ack`, target);
+    for (const scope of [undefined, 'flashcast.com.my:edge/submit-lead:other', `flashcast.com.my:edge/${target}-other:other`]) {
+      assert.throws(() => verifyEdgeScope(scope, target), /exact function scope/);
+    }
+  });
+  test(`${target} captures its actual shared acknowledgement dependency`, () => {
+    const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
+    const root = dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
+    const result = spawnSync(process.execPath, [helper, 'source-expected', 'supabase/functions'], {
+      cwd: root, encoding: 'utf8', env: {...process.env, EDGE_FUNCTION:target},
+    });
+    assert.equal(result.status, 0, result.stderr);
+    const manifest = JSON.parse(result.stdout);
+    assert.equal(manifest.entrypoint, `${target}/index.ts`);
+    assert.ok(manifest.files.some(file => file.path === '_shared/telegram-request.ts'));
+    assert.ok(manifest.files.every(file => file.path.startsWith(target+'/') || file.path.startsWith('_shared/')));
+  });
+}
