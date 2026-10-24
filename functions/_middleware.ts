@@ -1087,10 +1087,24 @@ const fetchFreshPublicRowsResult = async (
   } catch (error) {
     return {
       ok: false,
-      category: edgeErrorCategory(error),
+      category: error instanceof SyntaxError ? "invalid_response" : edgeErrorCategory(error),
       durationMs: Date.now() - startedAt,
     };
   }
+};
+
+// Discovery must use a complete fresh snapshot. Retry one transient read, never
+// a rejected/invalid source or a stale generated snapshot after a failed read.
+const fetchDiscoveryRowsResult = async (
+  env: Record<string, string | undefined>,
+  table: string,
+  configureUrl: (url: URL) => void,
+): Promise<EdgeRowsReadResult> => {
+  const diagnostics = { route: `/${table}`, stage: "discovery-row" };
+  const result = await fetchFreshPublicRowsResult(env, table, configureUrl, diagnostics);
+  const transient = result.ok === false && (result.category === "timeout" || result.category === "network"
+    || (result.category === "http" && result.status !== undefined && result.status >= 500));
+  return transient ? fetchFreshPublicRowsResult(env, table, configureUrl, diagnostics) : result;
 };
 
 const fetchFreshPublicRows = async (
@@ -1824,7 +1838,7 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
     const rows: PublicDataRow[] = [];
     let cursor: string | undefined;
     while (true) {
-      const result = await fetchFreshPublicRowsResult(env as Record<string, string | undefined>, table, (url) => {
+      const result = await fetchDiscoveryRowsResult(env as Record<string, string | undefined>, table, (url) => {
         url.searchParams.set("select", sourceFields[table]);
         url.searchParams.set("status", "eq.published");
         url.searchParams.set("order", "id.asc");
@@ -1860,8 +1874,9 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
   return `<!-- flashcast-sitemap-snapshot:v1 complete=true generated-at="${new Date().toISOString()}" -->\n<urlset>${blocks.join("\n")}</urlset>`;
 };
 
-const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefined>) => {
-  const result = await fetchFreshPublicRowsResult(env, "home_sections", (url) => {
+const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefined>, recoverDiscoveryRead = false) => {
+  const readRows = recoverDiscoveryRead ? fetchDiscoveryRowsResult : fetchFreshPublicRowsResult;
+  const result = await readRows(env, "home_sections", (url) => {
     url.searchParams.set("select", "section_key,items_zh,updated_at");
     url.searchParams.set("section_key", `eq.${FURNITURE_CATALOG_SECTION_KEY}`);
     url.searchParams.set("status", "eq.published");
@@ -1992,7 +2007,7 @@ const serveDynamicSeoAsset = async (
 ) => {
   let values: [Response, string, PublicDataRow | null];
   try {
-    values = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchFurnitureCatalogSetting(env as Record<string, string | undefined>)]);
+    values = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchFurnitureCatalogSetting(env as Record<string, string | undefined>, true)]);
   } catch {
     return new Response(request.method === "HEAD" ? null : "Public discovery temporarily unavailable.", {
       status: 503, headers: dynamicAssetHeaders(pathname === "/sitemap.xml" ? "application/xml; charset=utf-8" : "text/plain; charset=utf-8"),
