@@ -56,6 +56,27 @@ const productOverride = (enabled: boolean) => ({
 });
 
 describe("furniture pagination in original Edge HTML", () => {
+  it("keeps a large catalog's detail seed within budget using only the last matching override", async () => {
+    const unrelated = Array.from({ length: 320 }, (_, index) => ({
+      ...productOverride(true), slug: `unrelated-${index}`,
+      description_en: "Unrelated catalog description. ".repeat(80),
+      description_zh: "无关商品详情。".repeat(80),
+    }));
+    const current = { ...productOverride(true), slug: decodedProductSlug, name_en: "Last current override" };
+    const { response, document, html } = await fixture({ overrides: [productOverride(false), ...unrelated, current] })(`/en/furniture/product/${canonicalProductSlug}`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-flashcast-public-data")).not.toBe("omitted-too-large");
+    const script = document.querySelector("#flashcast-public-data");
+    expect(script).not.toBeNull();
+    const payload = JSON.parse(script!.textContent!);
+    expect(payload.furnitureCatalog.setting.items_zh).toEqual([current]);
+    expect(document.title).toContain("Last current override");
+    expect(html).not.toContain("Unrelated catalog description");
+    const reads = vi.mocked(fetch).mock.calls.map(([input]) => new URL(input instanceof Request ? input.url : String(input)))
+      .filter(url => url.pathname.endsWith("/home_sections"));
+    expect(reads).toHaveLength(1);
+  });
+
   it.each(["en", "zh"] as const)("keeps distinct %s page 1/3/9/14 identities, products, alternates and cache hits", async (language) => {
     const read = fixture();
     const seen = new Set<string>();
