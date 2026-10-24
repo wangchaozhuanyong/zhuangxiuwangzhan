@@ -7,6 +7,7 @@ import AdminHomeEditor from "./AdminHomeEditor";
 import AdminAboutEditor from "./AdminAboutEditor";
 import type { AdminAboutEditorData, AdminHomeEditorData } from "@/lib/adminEditorData";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { getAdminTableHelp } from "@/lib/adminHelpText";
 
 const { readHome, readAbout, save, warn, malayFields } = vi.hoisted(() => ({ readHome: vi.fn(), readAbout: vi.fn(), save: vi.fn(), warn: vi.fn(), malayFields: vi.fn() }));
 vi.mock("@/lib/adminEditorData", async (original) => ({
@@ -58,6 +59,13 @@ describe("admin editors wait for a confirmed initial read", () => {
     readHome.mockResolvedValue(homeData); await render(AdminHomeEditor);
     expect(container.querySelector('option[value="cta"]')).not.toBeNull();
     expect(Array.from(container.querySelectorAll('[role="tab"]')).some(tab => tab.textContent === "首页行动引导")).toBe(true);
+  });
+  it("explains that homepage hero media is editable while approved conversion buttons stay fixed", async () => {
+    readHome.mockResolvedValue(homeData); await render(AdminHomeEditor);
+    expect(container.textContent).toContain('首屏按钮固定使用 WhatsApp、案例和家具入口');
+    expect(container.querySelector('a[href="/admin/content/hero_slides"]')).toHaveTextContent('管理首屏图片');
+    expect(getAdminTableHelp('hero_slides')).toContain('第一条已发布记录的图片和替代文字');
+    expect(getAdminTableHelp('hero_slides')).not.toContain('固定播放视频');
   });
   it("allows a confirmed empty about section to start as a draft and exposes its CTA editor", async () => {
     readAbout.mockResolvedValue({ sections: {}, ctaBlock: null });
