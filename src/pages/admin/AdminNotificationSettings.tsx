@@ -35,6 +35,7 @@ const copy = {
   en: {
     notifications: "Notifications",
     pageDescription: "Configure Telegram notifications, maintenance reminders, and test requests.",
+    helpText: "Choose which admin events request Telegram notifications, including new enquiries, quotes, and weekly maintenance reminders.",
     leadAlerts: "Telegram Lead Alerts",
     leadDesc: "Configure Telegram Bot API alerts for contact leads and quote requests. The bot token is stored server-side and only a masked value is shown after saving.",
     savedToken: "Saved token",
@@ -85,6 +86,7 @@ const copy = {
   zh: {
     notifications: "通知",
     pageDescription: "设置 Telegram 通知、维护提醒和测试消息。",
+    helpText: "这里控制哪些后台事件会发到 Telegram，比如新咨询、报价请求和每周维护提醒。",
     leadAlerts: "Telegram 咨询提醒",
     leadDesc: "配置 Telegram Bot API，用来接收客户咨询和报价请求提醒。机器人令牌会保存在服务端，保存后后台只显示部分遮罩内容。",
     savedToken: "已保存令牌",
@@ -267,7 +269,7 @@ const AdminNotificationSettings = () => {
       <AdminPageHeader
         title={t.notifications}
         description={t.pageDescription}
-        helpText="这里控制哪些后台事件会发到 Telegram，比如新咨询、报价请求和每周维护提醒。"
+        helpText={t.helpText}
       />
 
       {!canManageSettings && <AdminPermissionHint action="settings.write" />}

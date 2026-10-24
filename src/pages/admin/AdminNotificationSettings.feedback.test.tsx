@@ -22,7 +22,12 @@ const mount = async (lang: "zh" | "en") => { setAdminLang(lang); await act(async
 const click = async (name: string) => { const button = [...container.querySelectorAll("button")].find(x => x.textContent?.trim() === name); expect(button).toBeDefined(); expect(button?.disabled).toBe(false); await act(async () => button!.click()); return button!; };
 
 describe("notification settings localized completion feedback", () => {
-  it("renders English labels, descriptions and hints without Chinese UI", async () => { await mount("en"); expect(container.textContent).not.toMatch(/[\u3400-\u9fff]/); });
+  it("renders English labels, descriptions and opened help without Chinese UI", async () => {
+    await mount("en"); expect(container.textContent).not.toMatch(/[\u3400-\u9fff]/);
+    await act(async () => (container.querySelector("[data-admin-page-header] button") as HTMLButtonElement).focus());
+    expect(document.querySelector('[role="tooltip"]')).not.toBeNull();
+    expect(document.body.textContent).not.toMatch(/[\u3400-\u9fff]/);
+  });
   it.each(["zh", "en"] as const)("%s confirms request acceptance without claiming recipient delivery", async lang => {
     await mount(lang); await click(lang === "zh" ? "发送测试消息" : "Send Test Message");
     expect(fixture.telegram).toHaveBeenCalledOnce(); const title = fixture.toast.mock.calls.at(-1)?.[0].title;
