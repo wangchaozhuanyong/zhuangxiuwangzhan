@@ -21,15 +21,24 @@ export const verifyTurnstileToken = async (
   form.set("response", token.trim());
   if (remoteIp) form.set("remoteip", remoteIp);
 
-  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    body: form,
-  });
-  const data = await response.json().catch(() => null) as { success?: boolean } | null;
-
-  if (!response.ok || !data?.success) {
-    return { ok: false, status: 400, error: "Bot verification failed" };
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8_000);
+  const unavailable: TurnstileVerification = {
+    ok: false, status: 503, error: "Bot verification temporarily unavailable",
+  };
+  try {
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body: form,
+      signal: controller.signal,
+    });
+    const data = await response.json().catch(() => null) as { success?: boolean } | null;
+    if (!response.ok || typeof data?.success !== "boolean") return unavailable;
+    if (!data.success) return { ok: false, status: 400, error: "Bot verification failed" };
+    return { ok: true, enforced: true };
+  } catch {
+    return unavailable;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return { ok: true, enforced: true };
 };
