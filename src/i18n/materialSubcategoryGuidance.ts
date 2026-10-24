@@ -172,7 +172,11 @@ const fallbackContext = (language: Language): CategoryPlanningContext => languag
       service: { title: "装修服务与现场规划", description: "把材料选择与现场条件、施工范围和使用需求一起确认。", href: "/services/renovation" },
       guide: { title: "装修材料选择指南", description: "按实际空间、基层条件、安装和维护需求比较材料。", href: "/blog/renovation-materials-malaysia" },
     }
-  : {
+  : language === "ms" ? {
+      focus: "ruang penggunaan, ukuran tapak, kemasan bersebelahan, keperluan pembersihan, syarat pemasangan dan skop bertulis yang disahkan",
+      service: { title: "Perkhidmatan pengubahsuaian dan perancangan tapak", description: "Selaraskan pemilihan bahan dengan keadaan sebenar tapak, keperluan penggunaan dan skop pengubahsuaian.", href: "/services/renovation" },
+      guide: { title: "Panduan pemilihan bahan pengubahsuaian", description: "Bandingkan bahan mengikut ruang, keadaan permukaan asas serta keperluan pemasangan dan penyelenggaraan.", href: "/blog/renovation-materials-malaysia" },
+    } : {
       focus: "the intended space, measured site conditions, adjoining finishes, cleaning needs, installation constraints, and the confirmed written scope",
       service: { title: "Renovation service and site planning", description: "Coordinate the material decision with actual site conditions, use requirements and the renovation scope.", href: "/services/renovation" },
       guide: { title: "Renovation materials selection guide", description: "Compare materials by the space, substrate, installation and maintenance requirements.", href: "/blog/renovation-materials-malaysia" },
@@ -211,6 +215,35 @@ export const getMaterialSubcategoryGuidance = (
         { id: "related-service", label: "相关服务", ...context.service },
         { id: "planning-guide", label: "规划指南", ...context.guide },
         { id: "project-enquiry", label: "项目咨询", title: `咨询 ${subcategoryName} 的项目适用性`, description: "提供空间类型、地点、现场照片、尺寸和预期用途，方便先确认需要补充的资料与范围。", href: "/quote#quote-form" },
+      ],
+    };
+  }
+
+  if (language === "ms") {
+    return {
+      checklistTitle: `Perkara yang perlu disahkan sebelum memilih ${subcategoryName}`,
+      checklistDescription: `${subcategoryName} tidak sepatutnya dipilih berdasarkan gambar katalog sahaja. Bandingkan kegunaan, keadaan tapak, sampel dan skop pemasangan bertulis dalam perancangan ${categoryName.toLowerCase()} sebelum membuat keputusan.`,
+      checklist: [
+        {
+          title: `Tentukan cara ${subcategoryName} akan digunakan`,
+          description: `Catat ruang, kegunaan harian, pendedahan kepada kelembapan, haba, cahaya matahari atau lalu lintas yang tinggi serta keperluan pembersihan. Untuk kategori ini, bandingkan ${context.focus}. Gambar katalog hanya memberi gambaran dan tidak menggantikan pengesahan tapak serta sampel sebenar.`,
+        },
+        {
+          title: "Ukur tapak sedia ada sebelum memilih",
+          description: "Periksa dimensi siap, aras, bahan bersebelahan, titik utiliti, ruang kelegaan penggunaan, laluan penghantaran dan kerja yang akan dikekalkan. Keadaan ini boleh mempengaruhi spesifikasi, kaedah pemasangan dan urutan kerja yang sesuai.",
+        },
+        {
+          title: "Sahkan sampel dan skop bertulis",
+          description: "Semak warna, tekstur, sambungan dan butiran tepi di bawah pencahayaan sebenar projek. Sebut harga perlu menyatakan sampel pilihan, penyediaan, aksesori, pemasangan, pengecualian dan sebarang perlindungan pembekal atau mutu kerja yang disahkan secara bertulis.",
+        },
+      ],
+      relatedTitle: `Rancang langkah seterusnya untuk ${subcategoryName}`,
+      relatedDescription: "Teruskan semakan melalui kategori utama, perkhidmatan pengubahsuaian berkaitan dan panduan praktikal. Apabila maklumat projek sudah tersedia, kongsikan keadaan tapak dan kegunaan yang dirancang untuk semakan yang lebih khusus.",
+      relatedLinks: [
+        { id: "parent-category", label: "Kategori bahan", title: `Lihat semua ${categoryName}`, description: `Kembali ke kategori ${categoryName.toLowerCase()} untuk membandingkan subkategori lain dan pilihan bahan yang telah diterbitkan.`, href: `/materials/category/${categorySlug}` },
+        { id: "related-service", label: "Perkhidmatan berkaitan", ...context.service },
+        { id: "planning-guide", label: "Panduan perancangan", ...context.guide },
+        { id: "project-enquiry", label: "Pertanyaan projek", title: `Tanya tentang kesesuaian ${subcategoryName} untuk projek anda`, description: "Kongsikan jenis ruang, lokasi, gambar tapak, ukuran dan kegunaan yang dirancang supaya maklumat tambahan serta skop dapat diperjelaskan terlebih dahulu.", href: "/quote#quote-form" },
       ],
     };
   }

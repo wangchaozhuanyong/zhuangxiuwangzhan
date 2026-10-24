@@ -1,5 +1,6 @@
 import type { Language } from "@/i18n/routes";
 import { localizeMalayContent } from "@/i18n/malayContent";
+import { translateMaterialCatalogDescription } from "@/i18n/materialCatalogText";
 
 type LabelPair = { en: string; zh: string; ms: string };
 
@@ -1563,28 +1564,33 @@ const extraZhTextReplacements: Record<string, string> = {
   "Electrical": "电工",
 };
 
+const zhDisplayReplacements = Array.from(new Map([
+  ...displayTextReplacements.map((entry) => [normalizeKey(entry.key), entry.value.zh] as const),
+  ...Object.entries(extraZhTextReplacements).map(([key, value]) => [normalizeKey(key), value] as const),
+])).sort(([left], [right]) => right.length - left.length);
+const exactZhDisplayText = new Map(zhDisplayReplacements);
+const zhDisplayFragments = zhDisplayReplacements.map(([key, replacement]) => ({
+  pattern: new RegExp(`(^|[^A-Za-z0-9])${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=$|[^A-Za-z0-9])`, "gi"),
+  replacement,
+}));
+
 export const translateDisplayText = (value: string, language: Language) => {
+  if (language === "en" || !value) return value;
+  const materialDescription = translateMaterialCatalogDescription(value, language);
+  if (materialDescription) return materialDescription;
   if (language === "ms") return displayTextReplacements.find((entry) => normalizeKey(entry.key) === normalizeKey(value))?.value.ms || localizeMalayContent(value);
-  if (language !== "zh" || !value) return value;
-
-  const escapePattern = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-  const withExtraReplacements = Object.entries(extraZhTextReplacements).reduce((text, [key, replacement]) => {
-    return text.replace(new RegExp(escapePattern(key), "gi"), replacement);
-  }, value);
+  const exact = exactZhDisplayText.get(normalizeKey(value));
+  if (exact) return exact;
 
   // Preserve untranslated prose as readable English. Fragment-by-fragment replacement
   // inside a sentence creates mixed copy and can corrupt words such as "Malaysian".
   const englishWordCount = value.match(/[A-Za-z][A-Za-z'-]*/g)?.length || 0;
-  if (withExtraReplacements === value && !/[\u3400-\u9fff]/.test(value) && englishWordCount >= 6) {
+  if (englishWordCount >= 6 || /[.!?。！？;；]/.test(value)) {
     return value.trim();
   }
 
-  const translated = displayTextReplacements.reduce((text, entry) => {
-    const replacement = entry.value.zh;
-    const pattern = new RegExp(`(^|[^A-Za-z0-9])${escapePattern(entry.key)}(?=$|[^A-Za-z0-9])`, "gi");
-    return text.replace(pattern, (_match, prefix: string) => `${prefix}${replacement}`);
-  }, withExtraReplacements);
+  const translated = zhDisplayFragments.reduce((text, { pattern, replacement }) =>
+    text.replace(pattern, (_match, prefix: string) => `${prefix}${replacement}`), value);
 
   return translated
     .replace(/\s+([，。！？；：、])/g, "$1")

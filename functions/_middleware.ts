@@ -21,7 +21,10 @@ import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
 import { notFoundPageText } from "../src/i18n/notFoundPageText";
 import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
-import { translateDisplayText } from "../src/i18n/displayLabels";
+import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
+import { materialCatalogText } from "../src/i18n/materialCatalogText";
+import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
+import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { stripHtml } from "../src/lib/text";
 import { getSocialProfileUrls } from "../src/lib/socialProfiles";
 import { getPublicSiteName, getPublicBrandAliases, getChineseBrandLine, withChineseBrandMetadata } from "../src/i18n/brandIdentity";
@@ -2030,6 +2033,27 @@ const servePublicVersion = async (request: Request, env: PagesEnv) => {
   });
 };
 
+const localizeMalayMaterialFallback = (entry: SeoEntry, key: string): SeoEntry => {
+  const match = key.match(/^\/ms\/materials\/category\/([^/]+)(?:\/([^/]+))?$/);
+  if (!match) return entry;
+  const catalogKey = match[2] ? `${match[1]}/${match[2]}` : match[1];
+  const source = materialCatalogText.en[catalogKey];
+  const description = materialCatalogText.ms[catalogKey];
+  if (!source || !description) return entry;
+  const [name, category] = entry.title.split(" | ");
+  const englishName = match[2] ? name : name.replace(/\s+Materials$/, "");
+  const copy = match[2] ? materialSubcategoryPageText : materialCategoryPageText;
+  // Only project-owned fallback prose is translated. Retain custom CMS excerpts.
+  if (entry.description !== source && entry.description !== copy.en.metaDescription(source, englishName)) return entry;
+  const localizedName = match[2] ? translateMaterialSubcategory(englishName, "ms") : translateMaterialCategory(englishName, "ms");
+  const localizedCategory = match[2] ? translateMaterialCategory(category || "", "ms") : materialCategoryPageText.ms.breadcrumbMaterials;
+  return {
+    ...entry,
+    title: copy.ms.metaTitle(localizedName, localizedCategory),
+    description: copy.ms.metaDescription(description, localizedName),
+  };
+};
+
 export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
   const url = new URL(request.url);
@@ -2098,7 +2122,7 @@ export const onRequest: PagesFunction = async (context) => {
 
   const key = normalizePath(url.pathname);
   const englishMeta = key.startsWith("/ms") ? (manifest as Record<string, SeoEntry>)[key.replace(/^\/ms(?=\/|$)/, "/en")] : undefined;
-  const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...englishMeta, lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
+  const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...localizeMalayMaterialFallback(englishMeta, key), lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
   const isPublicLanguagePath = /^\/(?:en|zh|ms)(?:\/|$)/.test(key);
   const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;
   // Look up the last known revision while settings are revalidated. This is

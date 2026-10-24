@@ -45,7 +45,7 @@ export default function FurnitureFloatingLink() {
   useLayoutEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const state = location.state as { contactEntry?: string } | null;
   const open = state?.contactEntry === owner;
-  const obstructed = useFloatingOcclusion(stackRef, `${location.pathname}${location.search}`);
+  const obstructed = useFloatingOcclusion(stackRef, `${location.pathname}${location.search}`, true);
   useLayoutEffect(() => { opening.current = open; if (open) closing.current = false; }, [open]);
   useLayoutEffect(() => {
     if (!returnFocus || open || menuOpen || hasOpenDialog || obstructed) return;
