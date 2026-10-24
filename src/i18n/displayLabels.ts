@@ -1570,9 +1570,12 @@ const zhDisplayReplacements = Array.from(new Map([
 ])).sort(([left], [right]) => right.length - left.length);
 const exactZhDisplayText = new Map(zhDisplayReplacements);
 const zhDisplayFragments = zhDisplayReplacements.map(([key, replacement]) => ({
+  sourceLower: key,
   pattern: new RegExp(`(^|[^A-Za-z0-9])${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=$|[^A-Za-z0-9])`, "gi"),
   replacement,
 }));
+// A future non-ASCII-only source label must retain the full matching path.
+const zhDisplayRequiresAscii = zhDisplayReplacements.every(([key]) => /[A-Za-z]/.test(key));
 
 export const translateDisplayText = (value: string, language: Language) => {
   if (language === "en" || !value) return value;
@@ -1589,8 +1592,16 @@ export const translateDisplayText = (value: string, language: Language) => {
     return value.trim();
   }
 
-  const translated = zhDisplayFragments.reduce((text, { pattern, replacement }) =>
-    text.replace(pattern, (_match, prefix: string) => `${prefix}${replacement}`), value);
+  let translated = value;
+  if (!zhDisplayRequiresAscii || /[A-Za-z]/.test(value)) {
+    let searchable = value.toLowerCase();
+    for (const { sourceLower, pattern, replacement } of zhDisplayFragments) {
+      if (!searchable.includes(sourceLower)) continue;
+      translated = translated.replace(pattern, (_match, prefix: string) => `${prefix}${replacement}`);
+      // Preserve latest-main ordered/cascading substitutions and word boundaries.
+      searchable = translated.toLowerCase();
+    }
+  }
 
   return translated
     .replace(/\s+([，。！？；：、])/g, "$1")

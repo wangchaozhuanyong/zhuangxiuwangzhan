@@ -1,7 +1,46 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { translateDisplayText, translateMaterialSubcategory } from "@/i18n/displayLabels";
 
 describe("translateDisplayText", () => {
+  it("does not rebuild static translation regular expressions for each rendered field", () => {
+    const NativeRegExp = RegExp;
+    const constructors = vi.spyOn(globalThis, "RegExp").mockImplementation(function (pattern?: string | RegExp, flags?: string) {
+      return new NativeRegExp(pattern, flags);
+    });
+    let result: string;
+    let count: number;
+    try {
+      result = translateDisplayText("SPC Vinyl Flooring", "zh");
+      count = constructors.mock.calls.length;
+    } finally { constructors.mockRestore(); }
+    expect(result!).toBe("SPC 地板");
+    expect(count!).toBe(0);
+  });
+
+  it("keeps already Chinese CMS copy on bounded cleanup work instead of scanning the dictionaries", () => {
+    const replacements = vi.spyOn(String.prototype, "replace");
+    let result: string;
+    let count: number;
+    try {
+      result = translateDisplayText(" 中文 说明 ， ", "zh");
+      count = replacements.mock.calls.length;
+    } finally { replacements.mockRestore(); }
+    expect(result!).toBe("中文说明，");
+    expect(count!).toBeLessThanOrEqual(10);
+  });
+
+  it("does not run replacement regexes against every unrelated short English field", () => {
+    const replacements = vi.spyOn(String.prototype, "replace");
+    let result: string;
+    let count: number;
+    try {
+      result = translateDisplayText("OpaqueXYZ123", "zh");
+      count = replacements.mock.calls.length;
+    } finally { replacements.mockRestore(); }
+    expect(result!).toBe("OpaqueXYZ123");
+    expect(count!).toBeLessThanOrEqual(10);
+  });
+
   it.each([
     ["Kajang renovation contractor、装修公司", "Kajang 装修承包商、装修公司"],
     ["Wangsa Maju 装修公司、renovation contractor", "Wangsa Maju 装修公司、装修承包商"],
