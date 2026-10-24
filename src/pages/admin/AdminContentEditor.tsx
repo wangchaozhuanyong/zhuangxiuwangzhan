@@ -1,5 +1,5 @@
 import AdminMalayFields from "@/components/admin/AdminMalayFields";
-import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
+import { completeAdminTranslationDelivery, translationDeliveryNotice } from "@/lib/adminTranslation";
 import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
 import { interactionText } from "@/i18n/interactionText";
@@ -118,7 +118,7 @@ const AdminContentEditor = () => {
       if (translation?.record) {
         applyRemote(translation.record, savedRecord);
       }
-      setStatus(translation?.publicSyncPending ? `${t.generated} ${interactionText[lang].savedSyncPending}` : t.generated);
+      setStatus([t.generated, translationDeliveryNotice(translation, lang)].filter(Boolean).join(" "));
       await invalidateAdminResource(queryClient, type);
       return;
     }
@@ -146,7 +146,7 @@ const AdminContentEditor = () => {
     if (translation?.record) {
       applyRemote(translation.record, record);
     }
-    setStatus(translation?.publicSyncPending ? `${t.regenerated} ${interactionText[lang].savedSyncPending}` : t.regenerated);
+    setStatus([t.regenerated, translationDeliveryNotice(translation, lang)].filter(Boolean).join(" "));
     await invalidateAdminResource(queryClient, type);
   });
 

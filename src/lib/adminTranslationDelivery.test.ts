@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { generateAdminEnglishContent } from "./adminTranslation";
+import { generateAdminEnglishContent, translationDeliveryNotice } from "./adminTranslation";
 import { getPublicSyncIssues, resolvePublicSyncIssue } from "@/lib/publicSyncRecovery";
 
 const fixtures = vi.hoisted(() => ({ generate: vi.fn(), synchronize: vi.fn() }));
@@ -17,6 +17,14 @@ beforeEach(() => {
 afterEach(clearRecovery);
 
 describe("English content delivery recovery", () => {
+  it.each(["zh", "en"] as const)("shows a saved translation with unconfirmed job status without repeating it in %s", async (lang) => {
+    fixtures.generate.mockResolvedValue({ ...synced, translated: { title_en: "Saved English" }, warnings: ["Translation job status could not be confirmed."] });
+    const result = await generateAdminEnglishContent(input);
+    expect(result.ok).toBe(true);
+    expect(translationDeliveryNotice(result, lang)).toContain(lang === "zh" ? "勿重复翻译" : "without repeating translation");
+    expect(fixtures.generate).toHaveBeenCalledOnce();
+    expect(getPublicSyncIssues()).toHaveLength(0);
+  });
   it.each([
     { ok: false, revision: null, edge_purge_requested: { ok: true } },
     { ok: true, revision: "saved-revision", edge_purge_requested: { ok: false } },

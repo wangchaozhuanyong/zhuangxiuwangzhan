@@ -1,5 +1,4 @@
 import { languageSelectorText } from "@/i18n/languageSelectorText";
-import { interactionText } from "@/i18n/interactionText";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
@@ -21,7 +20,7 @@ import { buildTranslationRecordEditHref, translationTargetNeedsRecord } from "@/
 import { useAdminContentRecord } from "@/lib/adminCmsQueries";
 import { useAdminTranslationJobs } from "@/lib/adminSystemQueries";
 import { toast } from "@/hooks/use-toast";
-import { classifyTranslationFailure, friendlyTranslationError, translationTableLabels } from "@/lib/adminTranslation";
+import { classifyTranslationFailure, friendlyTranslationError, translationDeliveryNotice, translationFailureKind, translationTableLabels } from "@/lib/adminTranslation";
 import { generateAdminEnglishContent } from "@/lib/adminTranslation";
 import { formatUserFacingError } from "@/lib/userFacingText";
 
@@ -82,27 +81,28 @@ const AdminTranslationJobs = () => {
 
   const failedJobs = useMemo(() => jobs.filter((job) => job.status === "failed"), [jobs]);
   const failureGroups = useMemo(() => {
-    const groups = new Map<string, number>();
+    const groups = new Map<string, { label: string; count: number }>();
     for (const job of failedJobs) {
-      const group = classifyTranslationFailure(job.error_message);
-      groups.set(group, (groups.get(group) || 0) + 1);
+      const key = translationFailureKind(job.error_message);
+      groups.set(key, { label: classifyTranslationFailure(job.error_message, lang), count: (groups.get(key)?.count || 0) + 1 });
     }
     return Array.from(groups.entries())
-      .map(([group, count]) => ({ group, count }))
+      .map(([key, { label: group, count }]) => ({ key, group, count }))
       .sort((a, b) => b.count - a.count || a.group.localeCompare(b.group));
-  }, [failedJobs]);
+  }, [failedJobs, lang]);
 
   const filteredJobs = useMemo(() => {
     const query = search.trim().toLowerCase();
     return jobs.filter((job) => {
       const matchesStatus = statusFilter === "all" || job.status === statusFilter;
-      const friendlyReason = friendlyTranslationError(job.error_message);
-      const group = classifyTranslationFailure(job.error_message);
-      const matchesFailureGroup = failureGroupFilter === "all" || group === failureGroupFilter;
+      const friendlyReason = friendlyTranslationError(job.error_message, lang);
+      const group = classifyTranslationFailure(job.error_message, lang);
+      const matchesFailureGroup = failureGroupFilter === "all" || [translationFailureKind(job.error_message),
+        classifyTranslationFailure(job.error_message, "zh"), classifyTranslationFailure(job.error_message, "en")].includes(failureGroupFilter);
       const haystack = [job.table_name, job.record_label, job.status, job.error_message, friendlyReason, group].join(" ").toLowerCase();
       return matchesStatus && matchesFailureGroup && (!query || haystack.includes(query));
     });
-  }, [failureGroupFilter, jobs, search, statusFilter]);
+  }, [failureGroupFilter, jobs, lang, search, statusFilter]);
 
   const refreshJobs = async () => {
     await Promise.all([
@@ -120,7 +120,7 @@ const AdminTranslationJobs = () => {
     try {
       const translation = await generateAdminEnglishContent({ table: job.table_name, id: job.record_id, force: job.target_language !== "ms", targetLanguage: job.target_language === "ms" ? "ms" : "en" });
       setRetryingId(null);
-      toast({ title: t.retryOk, description: translation?.publicSyncPending ? interactionText[lang].savedSyncPending : undefined });
+      toast({ title: t.retryOk, description: translationDeliveryNotice(translation, lang) });
       await refreshJobs();
     } catch (retryError) {
       setRetryingId(null);
@@ -148,17 +148,19 @@ const AdminTranslationJobs = () => {
     setRetryAllProgress({ total: targets.length, done: 0, failed: 0 });
     let failed = 0;
     let publicSyncPending = false;
+    const warnings: string[] = [];
     for (const job of targets) {
       try {
         const translation = await generateAdminEnglishContent({ table: job.table_name!, id: job.record_id!, force: job.target_language !== "ms", targetLanguage: job.target_language === "ms" ? "ms" : "en" });
         publicSyncPending ||= Boolean(translation?.publicSyncPending);
+        warnings.push(...(translation?.warnings || []));
       } catch {
         failed += 1;
       }
       setRetryAllProgress((current) => current ? { ...current, done: current.done + 1, failed } : current);
     }
     setRetryAllBusy(false);
-    toast({ title: formatText(t.retryAllFinished, { success: targets.length - failed, failed }), description: publicSyncPending ? interactionText[lang].savedSyncPending : undefined });
+    toast({ title: formatText(t.retryAllFinished, { success: targets.length - failed, failed }), description: translationDeliveryNotice({ publicSyncPending, warnings }, lang) });
     await refreshJobs();
   });
 
@@ -209,7 +211,7 @@ const AdminTranslationJobs = () => {
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">{t.allFailureGroups}</option>
-            {failureGroups.map(({ group, count }) => (
+            {failureGroups.map(({ key, group, count }) => (
               <option key={group} value={group}>
                 {group}（{count}）
               </option>
@@ -229,12 +231,12 @@ const AdminTranslationJobs = () => {
           <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
             {failureGroups.map(({ group, count }) => (
               <Button
-                key={group}
+                key={key}
                 type="button"
                 size="sm"
-                variant={failureGroupFilter === group ? "default" : "outline"}
+                variant={failureGroupFilter === key || failureGroupFilter === group ? "default" : "outline"}
                 onClick={() => {
-                  setFailureGroupFilter(group);
+                  setFailureGroupFilter(key);
                   setStatusFilter("failed");
                 }}
               >
@@ -248,7 +250,7 @@ const AdminTranslationJobs = () => {
 
       <div className="space-y-3">
         {filteredJobs.map((job) => {
-          const failureGroup = classifyTranslationFailure(job.error_message);
+          const failureGroup = classifyTranslationFailure(job.error_message, lang);
           return (
             <article key={job.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -281,7 +283,7 @@ const AdminTranslationJobs = () => {
                 </div>
               </div>
               <p className="mt-3 rounded-lg bg-muted/70 p-3 text-sm text-muted-foreground">
-                {t.error}: {job.error_message ? friendlyTranslationError(job.error_message) : t.noError}
+                {t.error}: {job.error_message ? friendlyTranslationError(job.error_message, lang) : t.noError}
               </p>
             </article>
           );

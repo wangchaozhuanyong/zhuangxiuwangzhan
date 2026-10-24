@@ -1,6 +1,19 @@
 import { generateAdminEnglishContent as generateEnglishContent, requestPublicContentInvalidation,
   type GenerateEnglishContentRequest, type GenerateEnglishContentResponse } from "@/backend/modules/system";
 import { getPublicSyncIssues, registerPublicSyncIssue, resolvePublicSyncIssue, type PublicSyncIssue } from "@/lib/publicSyncRecovery";
+import { adminTranslationErrorsText } from "@/i18n/adminTranslationErrorsText";
+import { interactionText } from "@/i18n/interactionText";
+import { getAdminLang, type AdminLang } from "@/lib/adminLocale";
+
+export function translationDeliveryNotice(
+  result: Pick<GenerateEnglishContentResponse, "warnings"> & { publicSyncPending?: boolean } | undefined,
+  lang: AdminLang = getAdminLang(),
+) {
+  return [
+    result?.warnings?.includes("Translation job status could not be confirmed.") ? adminTranslationErrorsText[lang].jobPending : "",
+    result?.publicSyncPending ? interactionText[lang].savedSyncPending : "",
+  ].filter(Boolean).join(" ") || undefined;
+}
 
 /** Browser delivery adapter. A retry never repeats an already saved translation. */
 export async function completeAdminTranslationDelivery<T extends GenerateEnglishContentResponse>(
@@ -86,24 +99,25 @@ export const isBlankTranslationValue = (value: unknown) => {
 export const hasAnyMissingEnglish = (record: Record<string, unknown>, fields: string[]) =>
   fields.some((field) => isBlankTranslationValue(record[field]));
 
-export const friendlyTranslationError = (message?: string | null) => {
+export const translationFailureKind = (message?: string | null): keyof typeof adminTranslationErrorsText.zh.groups => {
   const raw = String(message || "").trim();
-  if (!raw) return "没有错误信息。";
-  if (/service role key/i.test(raw)) return "英文生成服务没有配置后台密钥，需要先检查 Supabase Function 环境变量。";
-  if (/not enabled for table/i.test(raw)) return "这张表还没有接入自动英文生成。";
-  if (/No Chinese fields/i.test(raw)) return "这条内容没有可翻译的中文字段，请先填写中文内容。";
-  if (/authorization|jwt|token/i.test(raw)) return "登录状态或权限不正确，请重新登录后台后再试。";
-  if (/google translate|translation failed|request failed/i.test(raw)) return "自动翻译服务暂时不可用，可以稍后重试。";
-  return raw;
+  if (!raw) return "empty";
+  if (/protected (?:placeholder|HTML)|protected HTML or placeholders/i.test(raw)) return "protection";
+  if (/invalid page links/i.test(raw)) return "links";
+  if (/content (?:has changed|version is unavailable)/i.test(raw)) return "conflict";
+  if (/approved content publishing workflow/i.test(raw)) return "workflow";
+  if (/Malay content fields|unsupported translation language/i.test(raw)) return "language";
+  if (/job could not be started/i.test(raw)) return "start";
+  if (/service role key/i.test(raw)) return "configuration";
+  if (/not enabled for table/i.test(raw)) return "unsupported";
+  if (/No Chinese fields/i.test(raw)) return "source";
+  if (/authorization|jwt|token|Admin access|editor access|assurance|MFA/i.test(raw)) return "access";
+  if (/google translate|translation failed|request failed|fetch|network/i.test(raw)) return "provider";
+  return "unknown";
 };
 
-export const classifyTranslationFailure = (message?: string | null) => {
-  const raw = String(message || "").trim();
-  if (!raw) return "未知原因";
-  if (/service role key/i.test(raw)) return "服务配置问题";
-  if (/not enabled for table/i.test(raw)) return "内容表未接入";
-  if (/No Chinese fields/i.test(raw)) return "没有中文源内容";
-  if (/authorization|jwt|token|Admin access/i.test(raw)) return "权限或登录问题";
-  if (/google translate|translation failed|request failed|fetch|network/i.test(raw)) return "翻译服务不可用";
-  return "其它失败";
-};
+export const friendlyTranslationError = (message?: string | null, lang: AdminLang = getAdminLang()) =>
+  adminTranslationErrorsText[lang][translationFailureKind(message)];
+
+export const classifyTranslationFailure = (message?: string | null, lang: AdminLang = getAdminLang()) =>
+  adminTranslationErrorsText[lang].groups[translationFailureKind(message)];

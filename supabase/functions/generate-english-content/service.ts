@@ -2,6 +2,7 @@ import { isProtectedContentRecord } from "../_shared/managed-targets.ts";
 import { syncPublicContent } from "../_shared/public-content-sync.ts";
 import {
   createTranslationJob,
+  finishTranslationJob,
   fetchTranslationRecord,
   requireAdmin,
   updateTranslationRecord,
@@ -72,7 +73,23 @@ export async function generateEnglishContent(
   if (targetLanguage === "ms" && !Object.keys(record).some((key) => key.endsWith("_ms"))) {
     return errorResult("Malay content fields are not available. Apply the Malay content migration first.", 409);
   }
-  await createTranslationJob(client, table, id, "processing", undefined, targetLanguage);
+  let jobId: string;
+  try {
+    jobId = await createTranslationJob(client, table, id, targetLanguage);
+  } catch {
+    return errorResult("Translation job could not be started. No content was saved.", 500);
+  }
+  const jobWarnings: string[] = [];
+  const finishJob = async (status: "completed" | "failed", message?: string) => {
+    try {
+      await finishTranslationJob(client, jobId, status, message);
+    } catch {
+      jobWarnings.push("Translation job status could not be confirmed.");
+    }
+  };
+  const withJobWarnings = (result: GenerateEnglishResult): GenerateEnglishResult => jobWarnings.length
+    ? { ...result, body: { ...result.body, warnings: [...(result.body.warnings || []), ...jobWarnings] } }
+    : result;
 
   const translatable = Object.fromEntries(
     [
@@ -85,8 +102,8 @@ export async function generateEnglishContent(
 
   if (expectedKeys.length === 0) {
     const message = "No Chinese fields ending with _zh were found to translate";
-    await createTranslationJob(client, table, id, "failed", message, targetLanguage);
-    return errorResult(message);
+    await finishJob("failed", message);
+    return withJobWarnings(errorResult(message));
   }
 
   const translatedRaw: Record<string, unknown> = {};
@@ -101,15 +118,15 @@ export async function generateEnglishContent(
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Google Translate web translation failed";
-    await createTranslationJob(client, table, id, "failed", message, targetLanguage);
-    return errorResult(message, 500);
+    await finishJob("failed", message);
+    return withJobWarnings(errorResult(message, 500));
   }
 
   const translated = Object.fromEntries(Object.entries(translatedRaw).filter(([key]) => expectedKeys.includes(key)));
 
   if (Object.keys(translated).length === 0) {
-    await createTranslationJob(client, table, id, "completed", undefined, targetLanguage);
-    return { body: { ok: true, translated: {}, ...(targetLanguage === "en" ? { skipped_existing_english: true as const } : { skipped_existing_translation: true as const }) } };
+    await finishJob("completed");
+    return withJobWarnings({ body: { ok: true, translated: {}, ...(targetLanguage === "en" ? { skipped_existing_english: true as const } : { skipped_existing_translation: true as const }) } });
   }
 
   try {
@@ -119,24 +136,24 @@ export async function generateEnglishContent(
       });
       if (issues.length) {
         const message = "Translated content has invalid page links. Correct the source links before translating.";
-        await createTranslationJob(client, table, id, "failed", message, targetLanguage);
-        return errorResult(message, 400);
+        await finishJob("failed", message);
+        return withJobWarnings(errorResult(message, 400));
       }
     }
     await updateTranslationRecord(client, table, id, translated, guard);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await createTranslationJob(client, table, id, "failed", message, targetLanguage);
-    return errorResult(message, error instanceof TranslationConflictError ? 409 : 500);
+    await finishJob("failed", message);
+    return withJobWarnings(errorResult(message, error instanceof TranslationConflictError ? 409 : 500));
   }
 
-  await createTranslationJob(client, table, id, "completed", undefined, targetLanguage);
+  await finishJob("completed");
   // Child records have no status, so they may belong to a published parent.
   if (record.status === "published" || !("status" in record)) {
     const sync = await syncPublicContent(client, {
       apiToken: Deno.env.get("CLOUDFLARE_API_TOKEN"), zoneId: Deno.env.get("CLOUDFLARE_ZONE_ID"),
     });
-    return { body: { ok: true, translated, ...sync } };
+    return withJobWarnings({ body: { ok: true, translated, ...sync } });
   }
-  return { body: { ok: true, translated } };
+  return withJobWarnings({ body: { ok: true, translated } });
 }
