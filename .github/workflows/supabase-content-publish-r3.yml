@@ -13,7 +13,7 @@ on:
         required: true
         default: content-publish
         type: choice
-        options: [content-publish, generate-english-content, submit-lead]
+        options: [content-publish, generate-english-content, submit-lead, notification-settings, maintenance-reminder]
       expected_sha:
         description: Exact reviewed main commit SHA
         required: true

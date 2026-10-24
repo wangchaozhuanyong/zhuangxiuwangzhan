@@ -1,4 +1,5 @@
 import { formatAdminDateTime } from "../_shared/admin-notification-format.ts";
+import { sendTelegramRequest } from "../_shared/telegram-request.ts";
 import { categoryLabelMap, itemTitleMap, siteUrl } from "./config.ts";
 import {
   collectMaintenanceMetrics,
@@ -68,18 +69,7 @@ const sendTelegramMessage = async (settings: TelegramSettings, message: string):
   if (!enabled) return { skipped: true, reason: "Telegram notification is disabled" };
   if (!token || !chatId) return { skipped: true, reason: "Telegram Bot Token or Chat ID is missing" };
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: message.slice(0, 3900),
-      disable_web_page_preview: true,
-    }),
-  });
-
-  if (!response.ok) return { skipped: false, ok: false, error: await response.text() };
-  return { skipped: false, ok: true };
+  return { skipped: false, ...await sendTelegramRequest(token, chatId, message.slice(0, 3900)) };
 };
 
 const shouldLogTelegramResult = (result: DeliveryResult) =>
@@ -119,6 +109,14 @@ export async function runMaintenanceReminder(
 
   if (!input.isTest && telegram.ok) {
     await updateMaintenanceLastSentAt(client, new Date().toISOString());
+  }
+
+  // A test button must fail visibly when delivery was skipped or not acknowledged.
+  if (input.isTest && telegram.ok !== true) {
+    return {
+      status: 400,
+      body: { ok: false, telegram, preview: message, error: telegram.error || telegram.reason || "Maintenance reminder was not accepted" },
+    };
   }
 
   return { body: { ok: true, telegram, preview: message } };

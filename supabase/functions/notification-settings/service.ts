@@ -1,9 +1,8 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildTelegramTestMessage } from "../_shared/admin-notification-format.ts";
+import { sendTelegramRequest } from "../_shared/telegram-request.ts";
 import { getSettings, upsertSettings } from "./repository.ts";
 import type { NotificationSettingsActionResult, TelegramSettings } from "./types.ts";
-
-type SupabaseClient = ReturnType<typeof createClient>;
 
 const maskToken = (token?: string | null) => {
   if (!token) return "";
@@ -34,24 +33,7 @@ const sendTelegramTest = async (settings: TelegramSettings) => {
     };
   }
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: buildTelegramTestMessage(),
-      disable_web_page_preview: true,
-    }),
-  });
-
-  if (!response.ok) {
-    return {
-      ok: false,
-      error: await response.text(),
-    };
-  }
-
-  return { ok: true };
+  return sendTelegramRequest(token, chatId, buildTelegramTestMessage());
 };
 
 const validReminderDays = new Set([
