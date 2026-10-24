@@ -56,6 +56,9 @@ const toPublishStatus = (value: string): PublishStatus =>
 const toHomeSectionItem = (value: unknown): HomeSectionItem =>
   value && typeof value === "object" && !Array.isArray(value) ? (value as HomeSectionItem) : {};
 const toRecordPayload = (value: Record<string, unknown>): Record<string, unknown> => value;
+const emptyHomeSection = (sectionKey: string): HomeSectionRow => ({
+  section_key: sectionKey, items_zh: [], items_en: [], status: "draft", sort_order: 0,
+});
 
 const mergeSectionItems = (itemsZh?: unknown, itemsEn?: unknown): HomeSectionItem[] => {
   const zh = Array.isArray(itemsZh) ? itemsZh.map(toHomeSectionItem) : [];
@@ -76,8 +79,8 @@ export default function AdminHomeEditor() {
   const initialLoading = !bundle && isFetching;
 
   const remoteForm = useMemo(() => ({
-    statsSection: bundle?.stats ?? null,
-    whySection: bundle?.why ?? null,
+    statsSection: bundle?.stats ?? emptyHomeSection("stats"),
+    whySection: bundle?.why ?? emptyHomeSection("why_choose_us"),
     brandPartnersVisibility: bundle?.brandPartnersVisibility ?? null,
     brandPartnersEnabled: bundle?.brandPartnersVisibility?.status === "published",
     processSteps: bundle?.processSteps ?? [] as ProcessStepRow[],
@@ -119,7 +122,7 @@ export default function AdminHomeEditor() {
 
   const saveHomeSectionItems = protectSubmission("saveHomeSectionItems", async (row: HomeSectionRow | null, items: HomeSectionItem[]) => {
     if (!supabase) return;
-    if (!row?.id) {
+    if (!row?.section_key) {
       toast({ title: A("cannotSave"), description: A("homeDataNotLoaded"), variant: "destructive" });
       return;
     }
@@ -127,12 +130,12 @@ export default function AdminHomeEditor() {
     try {
       const saved = await saveAdminRecord<HomeSectionRow>({
         table: "home_sections",
-        payload: { ...malayFieldsPatch(row), items_zh: cleaned, items_en: cleaned },
+        payload: { ...malayFieldsPatch(row), section_key: row.section_key, status: row.status || "published", items_zh: cleaned, items_en: cleaned },
         id: row.id,
         expectedUpdatedAt: row.updated_at || null,
         queryClient,
       });
-      const sectionKey = row.id === statsSection?.id ? "statsSection" : "whySection";
+      const sectionKey = row.section_key === "stats" ? "statsSection" : "whySection";
       const itemsKey = sectionKey === "statsSection" ? "statsItems" : "whyItems";
       applyPatchRemote({ [sectionKey]: saved, [itemsKey]: cleaned }, { [sectionKey]: row, [itemsKey]: items });
     } catch (error) {
@@ -370,7 +373,11 @@ export default function AdminHomeEditor() {
               }}
             />
 
-            {statsSection && <AdminMalayFields record={statsSection} table="home_sections" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setStatsSection((current) => current ? { ...current, ...patch } : current)} />}
+            {statsSection && <AdminMalayFields record={{ ...statsSection, items_en: statsItems.map(item => ({ value: item.value || "", label: item.label_en || "", desc: item.desc_en || "", icon: item.icon || "" })) }} table="home_sections" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setStatsSection((current) => current ? { ...current, ...patch } : current)} />}
+            <label htmlFor="home-stats-status" className="mt-4 block text-sm font-medium">{L("status")}</label>
+            <select id="home-stats-status" value={statsSection?.status || "draft"} disabled={isSubmitting} onChange={(event) => setStatsSection((current) => current ? { ...current, status: toPublishStatus(event.target.value) } : current)} className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3">
+              {publishStatusOptions().map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+            </select>
             <div data-admin-card-actions className="mt-4 flex gap-2">
               <Button onClick={() => void saveHomeSectionItems(statsSection, statsItems)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
@@ -395,6 +402,10 @@ export default function AdminHomeEditor() {
             />
 
             {whySection && <AdminMalayFields record={whySection} table="home_sections" dirty={formDirty} disabled={isSubmitting} onChange={(patch) => setWhySection((current) => current ? { ...current, ...patch } : current)} />}
+            <label htmlFor="home-why-status" className="mt-4 block text-sm font-medium">{L("status")}</label>
+            <select id="home-why-status" value={whySection?.status || "draft"} disabled={isSubmitting} onChange={(event) => setWhySection((current) => current ? { ...current, status: toPublishStatus(event.target.value) } : current)} className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3">
+              {publishStatusOptions().map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+            </select>
             <div data-admin-card-actions className="mt-4 flex gap-2">
               <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
