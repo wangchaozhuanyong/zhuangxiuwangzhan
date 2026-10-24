@@ -65,7 +65,12 @@ export default function LanguageDrawer({ close, triggerRef }: { close: () => voi
   return <Root open onOpenChange={(next) => { if (!next) close(); }}>
     <Portal>
       <Overlay className="language-drawer__overlay" />
-      <Content className="language-drawer" onCloseAutoFocus={(event) => { event.preventDefault(); triggerRef.current?.focus(); }}>
+      <Content className="language-drawer"
+        onKeyDownCapture={(event) => {
+          if (event.key !== "Escape") return;
+          event.preventDefault(); event.stopPropagation(); close();
+        }}
+        onCloseAutoFocus={(event) => { event.preventDefault(); triggerRef.current?.focus(); }}>
         <LanguageDrawerContents close={close} />
       </Content>
     </Portal>
