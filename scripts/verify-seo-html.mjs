@@ -2,6 +2,7 @@
  * Fetch key URLs and assert raw HTML contains expected SEO tags (no JS).
  */
 import { existsSync, readFileSync } from "node:fs";
+import { build } from "esbuild";
 import { loadMaterialSeoPaths } from "./seo-material-pages.mjs";
 
 const BASE = (process.env.PREVIEW_URL || process.env.SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
@@ -9,6 +10,13 @@ const RUN_EDGE_CHECKS = process.env.VERIFY_EDGE_SEO === "1";
 const RUN_GEO_CHECKS = process.env.VERIFY_GEO_HTML === "1";
 const RUN_CONTENT_MATCH_CHECKS = process.env.VERIFY_CONTENT_MATCH === "1";
 const RUN_SITEMAP_CRAWL_CHECKS = process.env.VERIFY_SITEMAP_CRAWL === "1";
+const brandMetadata = RUN_CONTENT_MATCH_CHECKS ? await (async () => {
+  const result = await build({
+    stdin: { contents: 'export { withChineseBrandMetadata } from "./src/i18n/brandIdentity.ts";', resolveDir: process.cwd() },
+    bundle: true, write: false, platform: "node", format: "esm", logLevel: "silent",
+  });
+  return (await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString("base64")}`)).withChineseBrandMetadata;
+})() : null;
 
 const paths = [
   "/zh",
@@ -84,13 +92,21 @@ for (const path of paths) {
   if (!expected) failures.push(`${path}: missing route in seo manifest`);
 
   if (RUN_CONTENT_MATCH_CHECKS && expected) {
+    let settings;
+    try {
+      const payload = html.match(/<script\b[^>]*\bid=["']flashcast-public-data["'][^>]*>([\s\S]*?)<\/script>/i)?.[1];
+      settings = payload ? JSON.parse(payload)?.siteSettings : undefined;
+    } catch {
+      failures.push(`${path}: malformed public branding data`);
+    }
+    const metadata = brandMetadata({ title: expected.title, description: expected.description }, lang, path, settings);
     const title = getTitle(html);
     const description = getMetaContent(html, "name", "description");
     const ogDescription = getMetaContent(html, "property", "og:description");
 
-    if (title !== expected.title) failures.push(`${path}: title does not match manifest`);
-    if (description !== expected.description) failures.push(`${path}: description does not match manifest`);
-    if (ogDescription !== expected.description) failures.push(`${path}: og:description does not match manifest`);
+    if (title !== metadata.title) failures.push(`${path}: title does not match manifest and published brand identity`);
+    if (description !== metadata.description) failures.push(`${path}: description does not match manifest and published brand identity`);
+    if (ogDescription !== metadata.description) failures.push(`${path}: og:description does not match manifest and published brand identity`);
   }
 
   if (RUN_GEO_CHECKS) {

@@ -16,7 +16,7 @@ export type PublicDataPayload = {
   serviceAreas?: UnknownRecord[];
   blogPosts?: UnknownRecord[];
   processSteps?: UnknownRecord[];
-  ctaBlocks?: Record<string, UnknownRecord>;
+  ctaBlocks?: Record<string, UnknownRecord | null>;
   furnitureCatalog?: { materials: UnknownRecord[]; setting: UnknownRecord | null; detailSlug?: string };
 };
 

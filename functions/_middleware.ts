@@ -1481,7 +1481,7 @@ const fetchPublicCtaBlock = async (env: Record<string, string | undefined>, bloc
     url.searchParams.set("block_key", `eq.${blockKey}`);
     url.searchParams.set("limit", "1");
   });
-  return rows?.[0] ?? null;
+  return rows === null ? undefined : rows[0] ?? null;
 };
 
 const fetchProjectDetailBySlug = async (env: Record<string, string | undefined>, slug: string) => {
@@ -1564,7 +1564,7 @@ const shouldPreloadFooterCtaBlock = (key: string) => {
     path === "/faq" ||
     path.startsWith("/landing/");
 
-  return path !== "/" && !hasDedicatedSubpageCta;
+  return !hasDedicatedSubpageCta;
 };
 
 const getProjectDetailSlugFromKey = (key: string) => {
@@ -2127,12 +2127,15 @@ export const onRequest: PagesFunction = async (context) => {
     appShellUrl.search = "";
     const earlyHome = Boolean(staticMeta && isHomePageKey(key));
     const earlyPageKey = staticMeta ? getTopLevelPublicPageKey(key) : null;
+    const footerCtaBlockKey = getPathWithoutLanguage(key) === "/about" ? "about_final" : "home_final";
     // These independent projections are still included in the same document;
     // start them before route metadata instead of adding another serial round.
     const earlyPageBundle = earlyPageKey ? fetchPublicSitePageBundle(env as Record<string, string | undefined>, earlyPageKey) : null;
     const earlyHomeFurniture = earlyHome ? fetchHomeFurniture(env as Record<string, string | undefined>) : null;
     const earlyHomeJournal = earlyHome ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : null;
     const earlyHomeAreas = earlyHome ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : null;
+    const earlyFooterCtaBlock = staticMeta && shouldPreloadFooterCtaBlock(key)
+      ? fetchPublicCtaBlock(env as Record<string, string | undefined>, footerCtaBlockKey) : null;
     const [dynamicRouteState, response] = await Promise.all([
       fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta, () => { unpublishedBlog = true; }),
       env.ASSETS ? env.ASSETS.fetch(new Request(appShellUrl.toString(), request)) : next("/"),
@@ -2224,7 +2227,7 @@ export const onRequest: PagesFunction = async (context) => {
       : Promise.resolve(null),
     shouldInjectServiceAreas ? fetchPublicServiceAreas(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
-    shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
+    shouldInjectGlobalCtaBlock ? earlyFooterCtaBlock || fetchPublicCtaBlock(env as Record<string, string | undefined>, footerCtaBlockKey) : Promise.resolve(undefined),
     shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeFurniture || fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeJournal || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
@@ -2303,9 +2306,9 @@ export const onRequest: PagesFunction = async (context) => {
     publicDataPayload.blogPosts = projectBlogPostSummariesForPreload(blogPosts);
   }
   if (processSteps) publicDataPayload.processSteps = processSteps;
-  if (footerCtaBlock) {
+  if (footerCtaBlock !== undefined) {
     publicDataPayload.ctaBlocks = {
-      home_final: projectCtaBlockForPreload(footerCtaBlock),
+      [footerCtaBlockKey]: footerCtaBlock ? projectCtaBlockForPreload(footerCtaBlock) : null,
     };
   }
   if (furniturePreload) publicDataPayload.furnitureCatalog = furniturePreload;
