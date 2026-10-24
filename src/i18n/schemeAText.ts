@@ -2,6 +2,7 @@ export const schemeAHomeText = {
   zh: {
     heroKicker: "服务吉隆坡 · 雪兰莪 · 巴生谷",
     heroTitle: "更好的空间，",
+    brandPartnersTitle: "品牌合作", testimonialsTitle: "客户评价",
     heroService: "住宅与商业装修 · 全屋定制",
     heroTitleAccent: "更美好的生活。",
     heroScope: "从现场需求出发，逐项确认设计、材料与施工范围。",
@@ -86,6 +87,7 @@ export const schemeAHomeText = {
   en: {
     heroKicker: "Kuala Lumpur · Selangor · Klang Valley",
     heroTitle: "A Better Space.",
+    brandPartnersTitle: "Brand partners", testimonialsTitle: "Testimonials",
     heroService: "Home & commercial renovation",
     heroTitleAccent: "A Brighter Life.",
     heroScope: "Start with the site needs, then confirm design, materials and work scope.",
@@ -171,6 +173,7 @@ export const schemeAHomeText = {
   ms: {
     heroKicker: "Kuala Lumpur · Selangor · Lembah Klang",
     heroTitle: "Ruang yang Lebih Baik.",
+    brandPartnersTitle: "Rakan jenama", testimonialsTitle: "Ulasan pelanggan",
     heroService: "Pengubahsuaian rumah & komersial",
     heroTitleAccent: "Kehidupan yang Lebih Terang.",
     heroScope: "Mulakan dengan keperluan tapak, kemudian sahkan reka bentuk, bahan dan skop kerja.",
