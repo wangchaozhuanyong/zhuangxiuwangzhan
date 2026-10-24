@@ -19,9 +19,70 @@ const completeRows = (url: URL) => url.searchParams.has("id") ? [] : [{
   title_en: "Current post", content_en: "Current published source body",
 }];
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
 describe("fresh public discovery recovery", () => {
+  it("leaves a connection slot for the static asset while reading every public source", async () => {
+    let pendingHeaders = 0;
+    let maximum = 0;
+    const tables = new Set<string>();
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      tables.add(new URL(String(input)).pathname.split("/").at(-1)!);
+      maximum = Math.max(maximum, ++pendingHeaders);
+      await Promise.resolve();
+      pendingHeaders--;
+      return new Response("[]");
+    }));
+    expect((await invoke()).status).toBe(200);
+    expect(tables.size).toBe(9);
+    expect(maximum).toBeLessThanOrEqual(5);
+  });
+
+  it("starts deadlines after application queuing instead of exhausting retries in a six-header-connection runtime", async () => {
+    vi.useFakeTimers();
+    vi.spyOn(AbortSignal, "timeout").mockImplementation((milliseconds) => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(new DOMException("read deadline", "TimeoutError")), milliseconds);
+      return controller.signal;
+    });
+    let active = 0;
+    const queued: (() => void)[] = [];
+    vi.stubGlobal("fetch", vi.fn((input: RequestInfo | URL, init?: RequestInit) => new Promise<Response>((resolve, reject) => {
+      const url = new URL(String(input));
+      let started = false;
+      let ended = false;
+      let timer: ReturnType<typeof setTimeout>;
+      const release = () => {
+        ended = true;
+        if (started) active--;
+        while (active < 6 && queued.length) queued.shift()!();
+      };
+      const start = () => {
+        if (ended) return;
+        started = true;
+        active++;
+        timer = setTimeout(() => {
+          release();
+          const empty = url.pathname.endsWith("/home_sections") || url.searchParams.has("id");
+          resolve(new Response(JSON.stringify(empty ? [] : [{
+            id: "current", status: "published", slug: "runtime-fixture", path: "/runtime-fixture",
+            title_en: "Published fixture", content_en: "Published source body",
+          }])));
+        }, 1400);
+      };
+      init?.signal?.addEventListener("abort", () => {
+        if (ended) return;
+        clearTimeout(timer);
+        release();
+        reject(init.signal?.reason);
+      }, { once: true });
+      if (active < 6) start(); else queued.push(start);
+    })));
+    const pending = invoke();
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect((await pending).status).toBe(200);
+  });
+
   it.each<[string, Failure]>([
     ["503", () => new Response("unavailable", { status: 503 })],
     ["network", () => { throw new TypeError("fetch failed"); }],
