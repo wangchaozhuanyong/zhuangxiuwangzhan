@@ -225,11 +225,11 @@ const AdminContentEditor = () => {
               <p className="text-sm text-muted-foreground">{t.bilingualDesc}</p>
             </div>
             <div data-admin-mobile-actions className="flex flex-col gap-2 sm:flex-row">
-              <Button variant="outline" onClick={regenerateEnglish} disabled={!isSupabaseConfigured || !record.id}>
+              <Button variant="outline" onClick={regenerateEnglish} disabled={isSubmitting || !isSupabaseConfigured || !record.id}>
                 {t.regenerate}
               </Button>
-              <Button onClick={save} disabled={!isSupabaseConfigured || readOnlyTables.has(type)}>
-                {t.save}
+              <Button onClick={save} disabled={isSubmitting || !isSupabaseConfigured || readOnlyTables.has(type)} aria-busy={isSubmitting}>
+                {isSubmitting ? t.saving : t.save}
               </Button>
             </div>
           </div>
