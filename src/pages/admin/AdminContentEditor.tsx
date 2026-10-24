@@ -253,8 +253,8 @@ const AdminContentEditor = () => {
                 <div key={field} className={isWide ? "md:col-span-2" : ""}>
                   {readOnlyFields.has(field) ? (
                     <>
-                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
-                      <Input id={fieldId} value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
+                      <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
                     </>
                   ) : field === "status" ? (
                     <>
@@ -289,19 +289,19 @@ const AdminContentEditor = () => {
                     <TextListEditor label={label} helpText={getAdminFieldHelp(field)} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
                   ) : field.includes("content") || field.includes("description") || longTextFields.has(field) ? (
                     <>
-                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
-                      <Textarea id={fieldId} rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
+                      <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                     </>
                   ) : jsonFields.has(field) ? (
                     <>
-                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
-                      <Textarea id={fieldId} rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
+                      <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                     </>
                   ) : imageFields.has(field) ? (
                     <>
-                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <div className="space-y-3">
-                        <Input id={fieldId} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                        <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                         <AdminImageUpload
                           value={toTextValue(record[field])}
                           folder={`${type}/${toRecordId(record.id) || "draft"}`}
@@ -314,8 +314,8 @@ const AdminContentEditor = () => {
                     </>
                   ) : (
                     <>
-                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
-                      <Input id={fieldId} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
+                      <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                     </>
                   )}
                 </div>

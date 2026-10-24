@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AdminContentEditor from "./AdminContentEditor";
+import { ensureAdminFormAccessibility } from "@/lib/adminLayoutConfig";
 import { copy } from "@/lib/adminContentEditorUtils";
 import { translateFieldLabel, translateStatusLabel } from "@/i18n/displayLabels";
 
@@ -27,6 +28,7 @@ describe("generic content status and field labels", () => {
       fixtures.save.mockReset().mockImplementation(async ({ payload }) => ({ ...payload, id: "synthetic-new-record" }));
       node = document.createElement("div"); document.body.append(node); root = createRoot(node); client = new QueryClient();
       await act(async () => root!.render(<QueryClientProvider client={client}><MemoryRouter initialEntries={[`/admin/content/${table}`]}><TooltipProvider><Routes><Route path="/admin/content/:type" element={<AdminContentEditor />} /></Routes></TooltipProvider></MemoryRouter></QueryClientProvider>));
+      ensureAdminFormAccessibility(node);
       const label = Array.from(node.querySelectorAll("label")).find(label => label.textContent?.trim() === translateFieldLabel("status", fixtures.lang))!;
       expect(label.control).toBeInstanceOf(HTMLSelectElement);
       const select = label.control as HTMLSelectElement;
