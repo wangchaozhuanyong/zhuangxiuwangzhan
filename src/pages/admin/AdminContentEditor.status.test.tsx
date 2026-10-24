@@ -30,6 +30,10 @@ describe("generic content status and field labels", () => {
       const label = Array.from(node.querySelectorAll("label")).find(label => label.textContent?.trim() === translateFieldLabel("status", fixtures.lang))!;
       expect(label.control).toBeInstanceOf(HTMLSelectElement);
       const select = label.control as HTMLSelectElement;
+      if (table === "landing_pages") {
+        const imageLabel = Array.from(node.querySelectorAll("label")).find(label => label.textContent?.trim() === translateFieldLabel("hero_image_url", fixtures.lang))!;
+        expect(imageLabel.control).toBeInstanceOf(HTMLInputElement);
+      }
       expect(Array.from(select.options).map(option => option.value)).toEqual(["draft", "published", "archived"]);
       expect(select.options[1].textContent).toBe(translateStatusLabel(table, "published", fixtures.lang));
       await act(async () => { select.value = "published"; select.dispatchEvent(new Event("change", { bubbles: true })); });

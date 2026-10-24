@@ -299,9 +299,9 @@ const AdminContentEditor = () => {
                     </>
                   ) : imageFields.has(field) ? (
                     <>
-                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
+                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
                       <div className="space-y-3">
-                        <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                        <Input id={fieldId} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                         <AdminImageUpload
                           value={toTextValue(record[field])}
                           folder={`${type}/${toRecordId(record.id) || "draft"}`}

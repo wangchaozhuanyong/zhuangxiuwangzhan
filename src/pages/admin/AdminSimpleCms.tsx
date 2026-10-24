@@ -2,7 +2,7 @@ import AdminMalayFields from "@/components/admin/AdminMalayFields";
 import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminSimpleCmsRows } from "@/lib/adminCmsQueries";
@@ -131,6 +131,7 @@ const formatAdminError = (module: ModuleKey, error: unknown, language: "en" | "z
 };
 
 const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
+  const formId = useId();
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const t = adminSimpleCmsText[language];
@@ -259,6 +260,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   });
 
   const renderField = (field: Field) => {
+    const fieldId = `${formId}-${field.key}`;
     const rawValue = record[field.key];
     const value = String(rawValue || "");
     if (field.type === "textList") {
@@ -284,12 +286,12 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 
     return (
       <div key={field.key} className={field.type === "textarea" || field.type === "image" ? "md:col-span-2" : ""}>
-        <AdminFieldLabel label={fieldLabel(field.key)} help={getAdminFieldHelp(field.key)} />
+        <AdminFieldLabel htmlFor={field.type === "image" ? fieldId : undefined} label={fieldLabel(field.key)} help={getAdminFieldHelp(field.key)} />
         {field.type === "textarea" ? (
           <Textarea rows={4} value={value} onChange={(event) => update(field.key, event.target.value)} />
         ) : field.type === "image" ? (
           <div className="space-y-3">
-            <Input value={value} onChange={(event) => update(field.key, event.target.value)} />
+            <Input id={fieldId} value={value} onChange={(event) => update(field.key, event.target.value)} />
             <AdminImageUpload
               folder={config.table}
               value={value}
