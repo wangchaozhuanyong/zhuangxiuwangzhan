@@ -34,6 +34,7 @@ const emptySettings: NotificationSettings = {
 const copy = {
   en: {
     notifications: "Notifications",
+    pageDescription: "Configure Telegram notifications, maintenance reminders, and test requests.",
     leadAlerts: "Telegram Lead Alerts",
     leadDesc: "Configure Telegram Bot API alerts for contact leads and quote requests. The bot token is stored server-side and only a masked value is shown after saving.",
     savedToken: "Saved token",
@@ -62,12 +63,12 @@ const copy = {
     friday: "Friday",
     saturday: "Saturday",
     sunday: "Sunday",
-    dayLabel: "发送日期",
-    timeLabel: "发送时间",
-    timezoneLabel: "时区",
-    includeMonthly: "包含月度任务",
-    saveTip: "开关和输入项改完后，需要点击“保存设置”才会写入数据库。",
-    monthlyTip: "“包含月度任务”只用于发送测试提醒，不会保存到数据库。",
+    dayLabel: "Reminder day",
+    timeLabel: "Reminder time",
+    timezoneLabel: "Timezone",
+    includeMonthly: "Include monthly tasks",
+    saveTip: "After changing settings, select Save Settings to save them.",
+    monthlyTip: "Include monthly tasks applies only to this test reminder and is not saved.",
     cronNotice: "This page saves the preferred reminder day, time, and timezone. Automatic delivery still needs an external scheduler such as GitHub Actions, Cloudflare Cron, or a Supabase scheduled caller.",
     missingTelegramConfig: "Add a Telegram Bot Token and Chat ID before enabling Telegram notifications.",
     invalidMaintenanceTime: "Use a valid reminder time in HH:mm format, for example 09:00.",
@@ -76,13 +77,14 @@ const copy = {
     testFailed: "Test failed",
     saveFailed: "Failed to save Telegram settings",
     loadFailed: "Failed to load notification settings",
-    testSent: "Telegram test message sent",
+    testSent: "Test request accepted. Confirm receipt in Telegram.",
     saved: "Telegram settings saved",
     maintenanceTestFailed: "Maintenance reminder test failed",
-    maintenanceSent: "Maintenance reminder sent",
+    maintenanceSent: "Reminder request accepted. Confirm receipt in Telegram.",
   },
   zh: {
     notifications: "通知",
+    pageDescription: "设置 Telegram 通知、维护提醒和测试消息。",
     leadAlerts: "Telegram 咨询提醒",
     leadDesc: "配置 Telegram Bot API，用来接收客户咨询和报价请求提醒。机器人令牌会保存在服务端，保存后后台只显示部分遮罩内容。",
     savedToken: "已保存令牌",
@@ -125,10 +127,10 @@ const copy = {
     testFailed: "测试失败",
     saveFailed: "保存 Telegram 设置失败",
     loadFailed: "加载通知设置失败",
-    testSent: "Telegram 测试消息已发送",
+    testSent: "测试通知请求已接受，请到 Telegram 确认接收。",
     saved: "Telegram 设置已保存",
     maintenanceTestFailed: "维护提醒测试失败",
-    maintenanceSent: "维护提醒已发送",
+    maintenanceSent: "维护提醒请求已接受，请到 Telegram 确认接收。",
   },
 };
 
@@ -264,7 +266,7 @@ const AdminNotificationSettings = () => {
     <div className="grid gap-6">
       <AdminPageHeader
         title={t.notifications}
-        description="设置 Telegram 通知、维护提醒和测试消息。"
+        description={t.pageDescription}
         helpText="这里控制哪些后台事件会发到 Telegram，比如新咨询、报价请求和每周维护提醒。"
       />
 

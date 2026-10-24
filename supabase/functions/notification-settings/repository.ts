@@ -1,7 +1,5 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import type { TelegramSettings } from "./types.ts";
-
-type SupabaseClient = ReturnType<typeof createClient>;
 
 const SETTINGS_SELECT =
   "telegram_enabled,telegram_bot_token,telegram_chat_id,maintenance_reminders_enabled,maintenance_reminder_day,maintenance_reminder_time,maintenance_timezone,maintenance_last_sent_at";
