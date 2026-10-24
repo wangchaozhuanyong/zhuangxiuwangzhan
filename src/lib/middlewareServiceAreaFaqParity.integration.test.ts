@@ -55,8 +55,9 @@ describe("service-area visible FAQ / original Edge schema parity", () => {
     expect(result.faq).toHaveLength(1);
     expect(result.faq[0].mainEntity).toEqual([{
       "@type": "Question",
-      name: language === "zh" ? "Can an F&B or 零售装修施工 in 孟沙 be discussed?" : "Can an F&B or retail fit-out in Bangsar be discussed?",
-      acceptedAnswer: { "@type": "Answer", text: language === "zh" ? "零售装修施工" : "Retail fit-out" },
+      // Unknown prose stays whole; a reviewed exact short label still localizes.
+      name: "Can an F&B or retail fit-out in Bangsar be discussed?",
+      acceptedAnswer: { "@type": "Answer", text: language === "zh" ? "零售空间装修" : "Retail fit-out" },
     }]);
   });
 

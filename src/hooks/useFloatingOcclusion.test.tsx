@@ -12,14 +12,19 @@ let boxes: WeakMap<HTMLElement, DOMRect>;
 const rect = (top = 700, left = 283, width = 76, height = 76): DOMRect => ({
   x: left, y: top, left, right: left + width, top, bottom: top + height, width, height, toJSON: () => ({}),
 });
-function Entry({ route }: { route: string }) {
+function Entry({ route, reposition = true }: { route: string; reposition?: boolean }) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const hidden = useFloatingOcclusion(ref, route);
+  const hidden = useFloatingOcclusion(ref, route, reposition);
   return <a ref={ref} className="entry" href="/shop" data-obstructed={hidden || undefined}>Shop</a>;
 }
 async function settle() { await act(async () => { await new Promise(resolve => setTimeout(resolve, 20)); }); }
 const entry = () => container.querySelector<HTMLAnchorElement>("a")!;
 const expectObstructed = (expected: boolean) => expect(entry().hasAttribute("data-obstructed")).toBe(expected);
+const expectAvoids = (action: HTMLElement) => {
+  expectObstructed(false);
+  const a = entry().getBoundingClientRect(), b = action.getBoundingClientRect();
+  expect(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom).toBe(true);
+};
 const mount = () => act(() => root.render(<Entry route="/zh/projects" />));
 beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -27,13 +32,23 @@ beforeEach(() => {
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => window.setTimeout(() => callback(performance.now()), 0));
   vi.stubGlobal("cancelAnimationFrame", (id: number) => window.clearTimeout(id));
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
-    return boxes.get(this) ?? rect(this.classList.contains("entry") ? 686 : 700);
+    const box = boxes.get(this) ?? rect(this.classList.contains("entry") ? 686 : 700);
+    const lift = parseFloat(this.style.getPropertyValue("--fc-contact-lift")) || 0;
+    return rect(box.top - lift, box.left, box.width, box.height);
   });
   container = document.createElement("div"); document.body.append(container); root = createRoot(container);
   content = document.createElement("div"); content.className = "scheme-a-public-shell"; document.body.append(content);
 });
 afterEach(() => { act(() => root.unmount()); container.remove(); content.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe("floating promotion stays available while reading", () => {
+  it("keeps shared bottom docks yielding unless repositioning is explicitly enabled", async () => {
+    content.innerHTML = '<button type="submit">Submit</button>';
+    act(() => root.render(<Entry route="/zh/quote" reposition={false} />));
+    await settle();
+    expectObstructed(true);
+    expect(entry().style.getPropertyValue("--fc-contact-lift")).toBe("");
+    expect(entry().hasAttribute("data-compact")).toBe(false);
+  });
   it.each([
     [`#${QUOTE_FORM_ID}`, `<div id="${QUOTE_FORM_ID}"><button type="submit">Submit</button></div>`, "button"],
     [".fc-route-contact-form form", '<div class="fc-route-contact-form"><form><button type="submit">Send</button></form></div>', "button"],
@@ -46,12 +61,12 @@ describe("floating promotion stays available while reading", () => {
   });
 
   it.each(["fc-furniture-card__actions", "fc-furniture-pagination", "scheme-a-footer__invitation-actions"])(
-    "protects overlapping %s links and restores entries outside the corner",
+    "moves around overlapping %s links while keeping entries available",
     async (className) => {
       content.innerHTML = `<div class="${className}"><a href="/shop">Buy</a></div>`;
       const action = content.querySelector<HTMLElement>("a")!;
       mount(); await settle();
-      expectObstructed(true);
+      expectAvoids(action);
       boxes.set(action, rect(300));
       window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
     },
@@ -60,7 +75,7 @@ describe("floating promotion stays available while reading", () => {
     "protects the shared %s primary action outside a furniture page",
     async (className) => {
       content.innerHTML = `<main><a class="${className}" href="/quote">Request quote</a></main>`;
-      mount(); await settle(); expectObstructed(true);
+      mount(); await settle(); expectAvoids(content.querySelector("a")!);
       content.querySelector("a")!.setAttribute("aria-disabled", "true");
       await settle(); expectObstructed(false);
     },
@@ -73,9 +88,9 @@ describe("floating promotion stays available while reading", () => {
   ])("protects enabled primary controls without relying on a page-specific class: %s", async (html) => {
     content.innerHTML = `<main>${html}</main>`;
     const action = content.querySelector<HTMLElement>("main > *")!;
-    mount(); await settle(); expectObstructed(true);
+    mount(); await settle(); expectAvoids(action);
     action.hidden = true; await settle(); expectObstructed(false);
-    action.hidden = false; await settle(); expectObstructed(true);
+    action.hidden = false; await settle(); expectAvoids(action);
     boxes.set(action, rect(-100));
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
   });
@@ -86,7 +101,7 @@ describe("floating promotion stays available while reading", () => {
   ])("protects shared footer controls outside main content: %s", async (html) => {
     content.innerHTML = `<footer>${html}</footer>`;
     const action = content.querySelector<HTMLElement>("footer > *")!;
-    mount(); await settle(); expectObstructed(true);
+    mount(); await settle(); expectAvoids(action);
     boxes.set(action, rect(300));
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
   });
@@ -97,12 +112,12 @@ describe("floating promotion stays available while reading", () => {
   ])("protects visible closed triggers without exposing a closed parent panel: %s", async (html) => {
     content.innerHTML = `<main><div data-state="open">${html}</div></main>`;
     const panel = content.querySelector<HTMLElement>("main > div")!;
-    mount(); await settle(); expectObstructed(true);
+    mount(); await settle(); expectAvoids(panel.querySelector<HTMLElement>("button,a")!);
     panel.setAttribute("data-state", "closed"); await settle(); expectObstructed(false);
-    panel.setAttribute("data-state", "open"); await settle(); expectObstructed(true);
+    panel.setAttribute("data-state", "open"); await settle(); expectAvoids(panel.querySelector<HTMLElement>("button,a")!);
     panel.style.visibility = "hidden"; await settle(); expectObstructed(false);
   });
-  it("yields while furniture purchase actions are visible and restores when they leave the viewport", async () => {
+  it("keeps entries available when furniture purchase actions are visible without overlap", async () => {
     content.innerHTML = '<div class="fc-furniture-detail__actions"><a href="/shop">Buy now</a><a href="/contact">WhatsApp</a></div>';
     const actions = content.querySelector<HTMLElement>(".fc-furniture-detail__actions")!;
     const moveActions = (top: number) => {
@@ -110,12 +125,31 @@ describe("floating promotion stays available while reading", () => {
       actions.querySelectorAll<HTMLElement>("a").forEach((action) => boxes.set(action, rect(top, 600, 140, 50)));
     };
     moveActions(600);
-    mount(); expectObstructed(true);
+    mount(); expectObstructed(false);
     moveActions(-100);
     window.dispatchEvent(new Event("scroll")); await settle(); expectObstructed(false);
     moveActions(400);
-    window.dispatchEvent(new Event("resize")); await settle(); expectObstructed(true);
+    window.dispatchEvent(new Event("resize")); await settle(); expectObstructed(false);
+    expect(entry().style.getPropertyValue("--fc-contact-lift")).toBe("");
     actions.remove(); await settle(); expectObstructed(false);
+  });
+
+  it("avoids purchase controls, resists edge jitter and clears placement on navigation", async () => {
+    vi.stubGlobal("innerHeight", 900);
+    content.innerHTML = '<div class="fc-furniture-detail__actions"><a href="/shop">Buy</a></div>';
+    const action = content.querySelector<HTMLElement>("a")!;
+    mount(); await settle(); expectAvoids(action);
+    const lifted = entry().style.getPropertyValue("--fc-contact-lift");
+    expect(parseFloat(lifted)).toBeGreaterThan(0);
+    boxes.set(action, rect(772)); window.dispatchEvent(new Event("scroll")); await settle();
+    expect(entry().style.getPropertyValue("--fc-contact-lift")).toBe(lifted);
+    boxes.set(action, rect(780)); window.dispatchEvent(new Event("scroll")); await settle();
+    expect(entry().style.getPropertyValue("--fc-contact-lift")).toBe("0px");
+    boxes.set(action, rect()); window.dispatchEvent(new Event("scroll")); await settle(); expectAvoids(action);
+    action.remove();
+    act(() => root.render(<Entry route="/en/furniture/bedroom" />));
+    expect(entry().style.getPropertyValue("--fc-contact-lift")).toBe("");
+    expectObstructed(false);
   });
   it("ignores overlapping text, cards, links and idle form controls across scrolling and routes", async () => {
     content.innerHTML = '<main id="main-content"><h1>Heading</h1><p>Paragraph</p><a href="/article"><h2>Whole card</h2><p>Card text</p></a><label>Form label<input /></label></main>';
@@ -225,6 +259,14 @@ describe("floating promotion stays available while reading", () => {
     parent.style.opacity = "0"; await settle(); expectObstructed(false);
     parent.style.opacity = "1"; await settle(); expectObstructed(true);
     parent.remove(); await settle(); expectObstructed(false);
+  });
+
+  it("also protects a recovery message at the entry's lifted position", async () => {
+    content.innerHTML = '<button>Buy</button><aside data-interaction-feedback="public">Retry</aside>';
+    const feedback = content.querySelector("aside")!;
+    boxes.set(feedback, rect(620, 283, 76, 30));
+    mount(); await settle(); expectObstructed(true);
+    feedback.remove(); await settle(); expectAvoids(content.querySelector("button")!);
   });
 
   it.each([

@@ -13,9 +13,27 @@ const primaryActions = '.scheme-a-public-shell :is(button,[role="button"],[data-
   + 'a[href^="tel:"],a[href*="/quote"],a[href="#landing-quote"]),'
   + ':is(.scheme-a-actions,.actions,[class*="__actions"],[class*="-actions"],.fc-route-action-panel,.fc-furniture-pagination) a[href]';
 
-const intersects = (left: DOMRect, right: DOMRect) => left.width > 0 && left.height > 0
+type Bounds = Pick<DOMRect, "left" | "right" | "top" | "bottom" | "width" | "height">;
+const unshifted = (box: Bounds, lift: number): Bounds => ({
+  left: box.left, right: box.right, top: box.top + lift, bottom: box.bottom + lift,
+  width: box.width, height: box.height,
+});
+const intersects = (left: Bounds, right: Bounds) => left.width > 0 && left.height > 0
   && right.width > 0 && right.height > 0 && left.left < right.right && left.right > right.left
   && left.top < right.bottom && left.bottom > right.top;
+
+/** Find the nearest free position above the corner, with extra room before returning. */
+const findLift = (box: Bounds, actions: Bounds[], current: number, top: number) => {
+  const clear = (lift: number, gap = 8) => actions.every((action) =>
+    box.right + gap <= action.left || box.left - gap >= action.right
+    || box.bottom - lift + gap <= action.top || box.top - lift - gap >= action.bottom);
+  const maximum = Math.max(0, box.top - top);
+  if (clear(0, current ? 16 : 8)) return 0;
+  if (current > 0 && current <= maximum && clear(current)) return current;
+  return [0, ...actions.map((action) => box.bottom - action.top + 8)]
+    .filter((lift) => lift >= 0 && lift <= maximum).sort((a, b) => a - b)
+    .find((lift) => clear(lift));
+};
 
 const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, boolean>) => {
   if (!element.isConnected || element.closest(`[aria-hidden="true"],[hidden],[inert],${closedPanel},dialog:not([open])`)) return false;
@@ -37,28 +55,52 @@ const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, bool
   return true;
 };
 
-/** Keep the promotion stable during reading. Active dialogs, recovery actions,
- * focused inputs and overlapping primary controls take priority over this entry. */
-export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string) {
+/** Ordinary actions move the entries instead of removing them. Dialogs, recovery
+ * actions and active input retain priority over the public contact entries. */
+export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string, reposition = false) {
   const [obstructed, setObstructed] = useState(false);
   useLayoutEffect(() => {
     const entry = ref.current;
     if (!entry) return;
     let frame = 0;
     let disposed = false;
+    let lift = 0;
+    let needsCompact = false;
     const check = () => {
       frame = 0;
       if (disposed) return;
-      const box = entry.getBoundingClientRect();
+      const compact = reposition && (needsCompact || entry.childElementCount > 1 && window.matchMedia("(max-width: 767px)").matches);
+      if (entry.hasAttribute("data-compact") !== compact) entry.toggleAttribute("data-compact", compact);
+      let box = entry.getBoundingClientRect();
       const cache = new WeakMap<HTMLElement, boolean>();
       const isVisible = (element: HTMLElement) => isVisibleElement(element, cache);
 
-      const purchaseActionsVisible = Array.from(
-        document.querySelectorAll<HTMLElement>(".fc-furniture-detail__actions"),
-      ).some(isVisible);
-      const actionObstructed = Array.from(document.querySelectorAll<HTMLElement>(primaryActions))
-        .some((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
-          && !element.matches(":disabled") && intersects(box, element.getBoundingClientRect()) && isVisible(element));
+      const actions = Array.from(document.querySelectorAll<HTMLElement>(primaryActions))
+        .filter((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
+          && !element.matches(":disabled") && isVisible(element))
+        .map((element) => element.getBoundingClientRect());
+      const header = document.querySelector<HTMLElement>(".scheme-a-chrome");
+      const top = Math.max(16, (header?.getBoundingClientRect().bottom ?? 0) + 12);
+      let baseline = unshifted(box, lift);
+      let nextLift = reposition ? findLift(baseline, actions, lift, top) : 0;
+      // Very short viewports use the same compact row as mobile, for this route.
+      if (reposition && nextLift === undefined && !entry.hasAttribute("data-compact")) {
+        needsCompact = true;
+        entry.setAttribute("data-compact", "");
+        box = entry.getBoundingClientRect();
+        baseline = unshifted(box, lift);
+        nextLift = findLift(baseline, actions, lift, top);
+      }
+      const next = nextLift ?? Math.max(0, box.top + lift - top);
+      if (next !== lift) {
+        entry.style.setProperty("--fc-contact-lift", `${next}px`);
+        lift = next;
+      }
+      const placed = unshifted(baseline, -lift);
+      // Full-width bottom docks keep their existing yield behavior; only the
+      // floating contact stack opts into placement handled by contact-entry.css.
+      const actionObstructed = !reposition && actions.some((bounds) => intersects(box, bounds));
+      const priorityOverlap = (bounds: DOMRect) => intersects(baseline, bounds) || intersects(placed, bounds);
       const modalOpen = Array.from(document.querySelectorAll<HTMLElement>(modalContent)).some(isVisible);
 
       // Radix can remove the panel a frame before its decorative overlay.
@@ -72,23 +114,23 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
         });
 
       const recoveryObstructed = Array.from(document.querySelectorAll<HTMLElement>(recoveryContent))
-        .some((element) => intersects(box, element.getBoundingClientRect()) && isVisible(element));
+        .some((element) => priorityOverlap(element.getBoundingClientRect()) && isVisible(element));
 
       const active = document.activeElement;
       const inputObstructed = active instanceof HTMLElement && !entry.contains(active)
         && active.matches(focusedInput)
-        && (window.matchMedia("(max-width: 767px)").matches || intersects(box, active.getBoundingClientRect()))
+        && (window.matchMedia("(max-width: 767px)").matches || priorityOverlap(active.getBoundingClientRect()))
         && isVisible(active);
 
       const formContainers = document.querySelectorAll<HTMLElement>(formContainersSelector);
       const formObstructed = Array.from(formContainers)
-        .filter((form) => intersects(box, form.getBoundingClientRect()))
+        .filter((form) => priorityOverlap(form.getBoundingClientRect()))
         .flatMap((form) => Array.from(form.querySelectorAll<HTMLElement>(formControls)))
         .some((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
-          && !element.matches(":disabled") && intersects(box, element.getBoundingClientRect()) && isVisible(element));
+          && !element.matches(":disabled") && priorityOverlap(element.getBoundingClientRect()) && isVisible(element));
 
       const keyboardOpen = window.visualViewport && window.visualViewport.height < window.innerHeight - 120;
-      setObstructed(purchaseActionsVisible || actionObstructed || modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
+      setObstructed(actionObstructed || modalOpen || overlayBlocking || recoveryObstructed || inputObstructed || formObstructed || Boolean(keyboardOpen));
     };
     const schedule = () => { if (!frame && !disposed) frame = requestAnimationFrame(check); };
     check();
@@ -111,6 +153,8 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
     document.fonts?.ready.then(schedule);
     return () => {
       disposed = true;
+      entry.style.removeProperty("--fc-contact-lift");
+      entry.removeAttribute("data-compact");
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", schedule, true);
       window.removeEventListener("resize", schedule);
@@ -124,6 +168,6 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       resize?.disconnect();
       changes.disconnect();
     };
-  }, [ref, routeKey]);
+  }, [ref, routeKey, reposition]);
   return obstructed;
 }
