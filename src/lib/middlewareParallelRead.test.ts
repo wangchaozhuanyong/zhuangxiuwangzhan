@@ -150,6 +150,7 @@ describe("public HTML dependency ordering", () => {
     expect(requests.some(url => url.pathname.endsWith("/materials") && url.searchParams.get("category") === "eq.furniture")).toBe(true);
     expect(requests.some(url => url.pathname.endsWith("/blog_posts") && url.searchParams.get("limit") === "3")).toBe(true);
     expect(requests.some(url => url.pathname.endsWith("/service_areas") && url.searchParams.get("limit") === "8")).toBe(true);
+    expect(requests.some(url => url.pathname.endsWith("/cta_blocks") && url.searchParams.get("block_key") === "eq.home_final")).toBe(true);
     finishBundle(json({ site_pages: [{ page_key: "home", path: "/", title_en: "Current homepage", title_zh: "当前首页", status: "published" }] }));
     const response = await pending;
     const document = new DOMParser().parseFromString(await response.text(), "text/html");

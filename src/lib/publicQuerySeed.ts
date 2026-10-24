@@ -62,7 +62,7 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "home_bundle": return payload.homeContentBundle ? createRemoteContent(mapRemoteHomeContentBundle(payload.homeContentBundle, language)) : undefined;
     case "process_steps": return payload.processSteps ? mapRemoteHomeContentBundle({ process_steps: payload.processSteps }, language).processSteps : undefined;
     case "site_page": { const bundle = payload.sitePages?.[String(parameters.pageKey)]; return bundle ? mapSitePageRows(bundle, language) : undefined; }
-    case "cta": { const row = payload.ctaBlocks?.[String(parameters.blockKey)]; return row ? mapPublishedCtaBlockRow(row, language) : undefined; }
+    case "cta": { const row = payload.ctaBlocks?.[String(parameters.blockKey)]; return row === null ? null : row ? mapPublishedCtaBlockRow(row, language) : undefined; }
     default: return undefined;
   }
 }
