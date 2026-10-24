@@ -54,6 +54,20 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => root.unmount()); client.clear(); container.remove(); vi.unstubAllGlobals(); });
 
 describe("admin editors wait for a confirmed initial read", () => {
+  it("allows a confirmed empty about section to start as a draft and exposes its CTA editor", async () => {
+    readAbout.mockResolvedValue({ sections: {}, ctaBlock: null });
+    await render(AdminAboutEditor);
+    const inputs = container.querySelectorAll<HTMLInputElement>('[role="tabpanel"] input');
+    expect(inputs.length).toBeGreaterThan(1);
+    expect(container.querySelector('option[value="cta"]')).not.toBeNull();
+    expect(Array.from(container.querySelectorAll('[role="tab"]')).some(tab => tab.textContent === "关于我们行动引导区")).toBe(true);
+    const title = inputs[1]!;
+    act(() => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(title, "新建合成标题"); title.dispatchEvent(new Event("input", { bubbles: true })); });
+    save.mockResolvedValue({ id: "new-about-hero", section_key: "hero", title_zh: "新建合成标题", status: "draft" });
+    await act(async () => button("保存此分区").click()); await settle();
+    expect(save).toHaveBeenCalledOnce();
+    expect(save.mock.calls[0][0]).toMatchObject({ table: "about_sections", id: undefined, payload: { section_key: "hero", title_zh: "新建合成标题", status: "draft" } });
+  });
   it.each([
     ["home", AdminHomeEditor, readHome, homeData],
     ["about", AdminAboutEditor, readAbout, aboutData],
