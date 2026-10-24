@@ -355,11 +355,17 @@ const PUBLIC_DRAFT_MARKER_REPLACEMENTS: [RegExp, string][] = [
   [/第一眼/g, "入口观感"],
 ];
 
+// Most projected strings are URLs or already reviewed copy. Avoid running the
+// full replacement list for every field in a public catalog on every request.
+const PUBLIC_DRAFT_MARKER_PATTERN = new RegExp(
+  PUBLIC_DRAFT_MARKER_REPLACEMENTS.map(([pattern]) => `(?:${pattern.source})`).join("|"), "i",
+);
+
 const sanitizePublicDraftMarkers = (value: string) =>
-  PUBLIC_DRAFT_MARKER_REPLACEMENTS.reduce(
+  PUBLIC_DRAFT_MARKER_PATTERN.test(value) ? PUBLIC_DRAFT_MARKER_REPLACEMENTS.reduce(
     (current, [pattern, replacement]) => current.replace(pattern, replacement),
     value,
-  );
+  ) : value;
 
 const sanitizePublicDataDraftMarkers = (value: unknown): unknown => {
   if (typeof value === "string") return sanitizePublicDraftMarkers(value);
@@ -1265,12 +1271,13 @@ const fetchDynamicRouteState = async (
   key: string,
   fallback?: SeoEntry,
   onUnpublishedBlog?: () => void,
+  furnitureSetting?: Promise<PublicDataRow | null>,
 ): Promise<DynamicRouteState | null> => {
   const match = key.match(/^\/(en|zh|ms)(\/.*)?$/);
   if (!match) return null;
   const path = match[2] || "/";
   if (/^\/furniture\/product\/[^/]+$/.test(path)) {
-    const setting = await fetchFurnitureCatalogSetting(env);
+    const setting = await (furnitureSetting || fetchFurnitureCatalogSetting(env));
     const slug = normalizeFurnitureSlug(path.split("/").at(-1));
     if (!slug) return null;
     const saved = readFurnitureCatalogOverrides(setting?.items_zh).reverse().find((item) => normalizeFurnitureSlug(item.slug) === slug);
@@ -1861,7 +1868,7 @@ const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefin
   return result.rows[0] || null;
 };
 
-const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefined>, detailSlug?: string) => {
+const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefined>, detailSlug?: string, furnitureSetting?: Promise<PublicDataRow | null>) => {
   const decodedDetailSlug = normalizeFurnitureSlug(detailSlug);
   if (detailSlug !== undefined && decodedDetailSlug === undefined) return null;
   try {
@@ -1873,10 +1880,15 @@ const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefin
       if (detailSlug) { url.searchParams.set("slug", `eq.${decodedDetailSlug}`); url.searchParams.set("material_images.is_active", "eq.true"); }
       // Match the client catalog order so equal-priority cards do not swap on refresh.
       url.searchParams.set("order", "sort_order.asc,created_at.desc");
-    }), fetchFurnitureCatalogSetting(env),
+    }), furnitureSetting || fetchFurnitureCatalogSetting(env),
   ]);
   // Failed reads must not seed a successful empty catalog.
-  return materials ? { materials, setting, ...(detailSlug ? { detailSlug } : {}) } : null;
+  // A detail page hydrates one product. Sending every unrelated override makes
+  // large catalogs exceed the injection budget and repeats their sanitization.
+  // Preserve the existing normalized-slug, last-valid-save-wins semantics.
+  const detailSetting = setting && detailSlug ? { ...setting, items_zh: readFurnitureCatalogOverrides(setting.items_zh)
+    .filter(item => normalizeFurnitureSlug(item.slug) === decodedDetailSlug).slice(-1) } : setting;
+  return materials ? { materials, setting: detailSetting, ...(detailSlug ? { detailSlug } : {}) } : null;
   } catch { return null; }
 };
 
@@ -2126,6 +2138,8 @@ export const onRequest: PagesFunction = async (context) => {
     appShellUrl.pathname = "/";
     appShellUrl.search = "";
     const earlyHome = Boolean(staticMeta && isHomePageKey(key));
+    const earlyFurnitureDetailSlug = key.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
+    const earlyFurnitureSetting = earlyFurnitureDetailSlug ? fetchFurnitureCatalogSetting(env as Record<string, string | undefined>) : undefined;
     const earlyPageKey = staticMeta ? getTopLevelPublicPageKey(key) : null;
     const footerCtaBlockKey = getPathWithoutLanguage(key) === "/about" ? "about_final" : "home_final";
     // These independent projections are still included in the same document;
@@ -2137,7 +2151,7 @@ export const onRequest: PagesFunction = async (context) => {
     const earlyFooterCtaBlock = staticMeta && shouldPreloadFooterCtaBlock(key)
       ? fetchPublicCtaBlock(env as Record<string, string | undefined>, footerCtaBlockKey) : null;
     const [dynamicRouteState, response] = await Promise.all([
-      fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta, () => { unpublishedBlog = true; }),
+      fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta, () => { unpublishedBlog = true; }, earlyFurnitureSetting),
       env.ASSETS ? env.ASSETS.fetch(new Request(appShellUrl.toString(), request)) : next("/"),
     ]);
     const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
@@ -2228,7 +2242,7 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectServiceAreas ? fetchPublicServiceAreas(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectGlobalCtaBlock ? earlyFooterCtaBlock || fetchPublicCtaBlock(env as Record<string, string | undefined>, footerCtaBlockKey) : Promise.resolve(undefined),
-    shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug) : Promise.resolve(null),
+    shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug, earlyFurnitureSetting) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeFurniture || fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeJournal || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
     shouldInjectHomeBundle ? earlyHomeAreas || fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),
