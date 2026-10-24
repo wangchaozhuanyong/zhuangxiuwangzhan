@@ -77,6 +77,9 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
 
       const actions = Array.from(document.querySelectorAll<HTMLElement>(primaryActions))
         .filter((element) => !entry.contains(element) && !element.closest('[aria-disabled="true"]')
+          // The contact stack moves down when the dock yields. Treating that
+          // companion as a page action would keep the dock hidden forever.
+          && (reposition || !element.closest(".fc-contact-stack"))
           && !element.matches(":disabled") && isVisible(element))
         .map((element) => element.getBoundingClientRect());
       const header = document.querySelector<HTMLElement>(".scheme-a-chrome");

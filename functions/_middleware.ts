@@ -1834,7 +1834,7 @@ const isAssetPath = (pathname: string) =>
 const fetchLiveSitemapXml = async (env: PagesEnv) => {
   if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) throw new Error("Public discovery source access missing");
   const sources = Object.entries(sourceKinds) as [PublicSourceTable, PublicContentKind][];
-  const rowsBySource = await Promise.all(sources.map(async ([table, kind]) => {
+  const readSource = async ([table, kind]: [PublicSourceTable, PublicContentKind]) => {
     const rows: PublicDataRow[] = [];
     let cursor: string | undefined;
     while (true) {
@@ -1859,7 +1859,13 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
         rows.push(row);
       }
     }
-  }));
+  };
+  // Four sources plus the visibility setting and static asset fit the runtime's
+  // six waiting-header slots. Queue here, before starting each read's deadline.
+  const rowsBySource: PublicDataRow[][] = [];
+  for (let offset = 0; offset < sources.length; offset += 4) {
+    rowsBySource.push(...await Promise.all(sources.slice(offset, offset + 4).map(readSource)));
+  }
   // Dedicated published sources precede legacy and generic page sources.
   const current = pickPublicSourceOwners(Object.fromEntries(sources.map(([table], index) => [table, rowsBySource[index]])));
   const blocks: string[] = [];

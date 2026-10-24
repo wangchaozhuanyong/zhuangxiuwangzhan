@@ -41,6 +41,20 @@ beforeEach(() => {
 });
 afterEach(() => { act(() => root.unmount()); container.remove(); content.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe("floating promotion stays available while reading", () => {
+  it("restores the bottom dock after a content action leaves, without yielding to its companion contact entry", async () => {
+    content.innerHTML = '<div class="fc-contact-stack"><button class="fc-contact-entry">Contact us</button></div><main><button>Request quote</button></main>';
+    const action = content.querySelector<HTMLElement>("main button")!;
+    act(() => root.render(<Entry route="/ms" reposition={false} />));
+    await settle();
+    expectObstructed(true);
+    boxes.set(action, rect(300));
+    window.dispatchEvent(new Event("scroll"));
+    await settle();
+    // CSS lowers the companion when the dock hides. It must not keep the
+    // dock hidden once the actual page action no longer intersects it.
+    expectObstructed(false);
+  });
+
   it("keeps shared bottom docks yielding unless repositioning is explicitly enabled", async () => {
     content.innerHTML = '<button type="submit">Submit</button>';
     act(() => root.render(<Entry route="/zh/quote" reposition={false} />));
