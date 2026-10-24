@@ -7,7 +7,7 @@ import { AdminActionButton } from "@/components/admin/AdminPermission";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import { adminMalayText } from "@/i18n/adminMalayText";
 import { useAdminLang } from "@/lib/adminPreferences";
-import { generateAdminEnglishContent, translationEnabledTables } from "@/lib/adminTranslation";
+import { generateAdminEnglishContent, translationDeliveryNotice, translationEnabledTables } from "@/lib/adminTranslation";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -68,7 +68,7 @@ export default function AdminMalayFields({ record, onChange, table, dirty = fals
     try {
       const result = await generateAdminEnglishContent({ table, id: data.id, targetLanguage: "ms", force: false });
       await invalidateAdminResource(queryClient, table);
-      setMessage(result.publicSyncPending ? text.pending : text.completed);
+      setMessage([text.completed, translationDeliveryNotice(result, language)].filter(Boolean).join(" "));
     } catch (error) {
       setMessage(`${text.failed}: ${formatUserFacingError(error, language)}`);
     } finally { setBusy(false); }

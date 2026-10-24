@@ -588,15 +588,61 @@ test('translation deployment uses its own exact function scope and complete sour
 
 test('each existing function retains its deployed JWT gateway policy', async () => {
   const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /jwt_args=\(\)\n\s+if \[ "\$EDGE_FUNCTION" = content-publish \]; then jwt_args\+=\(--no-verify-jwt\); fi/);
+  assert.match(workflow, /jwt_args=\(\)\n\s+if \[ "\$EDGE_FUNCTION" = content-publish \] \|\| \[ "\$EDGE_FUNCTION" = submit-lead \]; then jwt_args\+=\(--no-verify-jwt\); fi/);
   assert.match(workflow, /supabase functions deploy "\$EDGE_FUNCTION"[^\n]*"\$\{jwt_args\[@\]\}"/);
   const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
   const code = `import { functionVersion } from ${JSON.stringify(new URL('./supabase-content-publish-release.mjs', import.meta.url).href)}; functionVersion(JSON.stringify([{slug:process.env.EDGE_FUNCTION,status:'ACTIVE',version:10,verify_jwt:process.env.CHECK_JWT==='true'}]));`;
-  for (const fn of ['content-publish','generate-english-content']) {
+  for (const fn of ['content-publish','generate-english-content','submit-lead']) {
     for (const jwt of [true,false]) {
       const result=spawnSync(process.execPath,['--input-type=module','-e',code],{encoding:'utf8',env:{...process.env,EDGE_FUNCTION:fn,CHECK_JWT:String(jwt)}});
       assert.equal(result.status===0,jwt===(fn==='generate-english-content'),result.stderr);
     }
   }
   assert.ok(helper);
+});
+
+test('submit-lead release requires its exact scope and the complete reviewed source closure', async () => {
+  verifyEdgeScope('flashcast.com.my:edge/submit-lead:full-functional-audit', 'submit-lead');
+  for (const scope of [undefined, 'flashcast.com.my:edge/generate-english-content:other', 'flashcast.com.my:edge/submit-lead-other:other']) {
+    assert.throws(() => verifyEdgeScope(scope, 'submit-lead'), /exact function scope/);
+  }
+  const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
+  const root = dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
+  const run = (args, target = 'submit-lead') => spawnSync(process.execPath, [helper, ...args], {
+    cwd: root, encoding: 'utf8', env: {...process.env, EDGE_FUNCTION: target},
+  });
+  const result = run(['source-expected', 'supabase/functions']);
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(result.stdout);
+  assert.equal(manifest.entrypoint, 'submit-lead/index.ts');
+  for (const dependency of ['submit-lead/service.ts', 'submit-lead/repository.ts', '_shared/turnstile.ts', '_shared/lead-test-contract.ts']) {
+    assert.ok(manifest.files.some(file => file.path === dependency), dependency);
+  }
+  assert.ok(manifest.files.every(file => /^(submit-lead|_shared)\//.test(file.path)));
+  const downloadedRoot = run(['source-expected', 'supabase/functions/submit-lead']);
+  assert.equal(downloadedRoot.status, 0, downloadedRoot.stderr);
+  assert.deepEqual(JSON.parse(downloadedRoot.stdout), manifest);
+  const captured = await mkdtemp(join(tmpdir(), 'flashcast-submit-lead-source-'));
+  try {
+    for (const file of [...manifest.files, ...manifest.typeOnlyFileRecovery]) {
+      const destination = join(captured, file.path);
+      await mkdir(dirname(destination), { recursive: true });
+      await writeFile(destination, await readFile(join(root, 'supabase/functions', file.path)));
+    }
+    const deployed = run(['source-deployed', 'supabase/functions', captured]);
+    assert.equal(deployed.status, 0, deployed.stderr);
+    assert.match(deployed.stdout.trim(), /^[0-9a-f]{64}$/);
+    const verifier = join(captured, '_shared/turnstile.ts');
+    await writeFile(verifier, (await readFile(verifier, 'utf8')) + '\n// unexpected deployed drift\n');
+    const drift = run(['source-deployed', 'supabase/functions', captured]);
+    assert.notEqual(drift.status, 0);
+    assert.match(drift.stderr, /differs from the reviewed checkout/);
+  } finally {
+    await rm(captured, { recursive: true, force: true });
+  }
+  const rejected = run(['source-expected', 'supabase/functions'], 'unregistered-function');
+  assert.notEqual(rejected.status, 0);
+  assert.match(rejected.stderr, /Unsupported Edge release target/);
+  const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /options: \[content-publish, generate-english-content, submit-lead\]/);
 });

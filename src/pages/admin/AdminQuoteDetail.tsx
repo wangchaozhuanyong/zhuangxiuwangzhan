@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAdminQuote } from "@/lib/adminLeadQueries";
 import { formatAdminMutationError } from "@/lib/adminMutation";
+import { fromAdminDateTimeInput, toAdminDateTimeInput } from "@/lib/adminDateTime";
 import { addAdminQuoteFollowup, updateAdminQuote } from "@/backend/modules/quotes/service/quoteService";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { adminMobileSaveText } from "@/i18n/adminMobileSaveText";
@@ -63,7 +64,7 @@ const AdminQuoteDetail = () => {
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
   const [savingFollowup, setSavingFollowup] = useState(false);
-  const [pendingSync, setPendingSync] = useState<{ recordId: string; nextFollowUpAt: string; expectedUpdatedAt: string | null } | null>(null);
+  const [pendingSync, setPendingSync] = useState<{ recordId: string; nextFollowUpAt: string | null; expectedUpdatedAt: string | null } | null>(null);
   const [savingField, setSavingField] = useState<string | null>(null);
   const leadWritePermission = useAdminPermission("lead.write");
   const canWriteLead = leadWritePermission.allowed;
@@ -112,6 +113,7 @@ const AdminQuoteDetail = () => {
     }
     const submittedRecord = getCurrent();
     const expectedUpdatedAt = typeof submittedRecord?.updated_at === "string" ? submittedRecord.updated_at : null;
+    const followupInstant = fromAdminDateTimeInput(nextFollowUpAt);
     setSavingFollowup(true);
     setMessage("");
     try {
@@ -119,13 +121,13 @@ const AdminQuoteDetail = () => {
         quoteRequestId: id,
         followupType,
         content,
-        nextFollowUpAt,
+        nextFollowUpAt: followupInstant,
         expectedUpdatedAt,
       });
       setContent((current) => current === content ? "" : current);
       setNextFollowUpAt((current) => current === nextFollowUpAt ? "" : current);
       if (result.syncError) {
-        setPendingSync({ recordId: id, nextFollowUpAt, expectedUpdatedAt });
+        setPendingSync({ recordId: id, nextFollowUpAt: followupInstant, expectedUpdatedAt });
         await refresh();
         setMessage(formatA("followupSavedSyncFailed", { reason: formatAdminMutationError(result.syncError, lang) }));
         return;
@@ -224,7 +226,7 @@ const AdminQuoteDetail = () => {
                   </div>
                   <div>
                     <label htmlFor="quote-nextFollowUp" className="mb-1 block text-sm font-medium">{A("nextFollowUp")}</label>
-                    <Input id="quote-nextFollowUp" type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null }, A("nextFollowUp"))} disabled={!canWriteLead || savingField === A("nextFollowUp")} />
+                    <Input id="quote-nextFollowUp" type="datetime-local" value={toAdminDateTimeInput(quote.next_follow_up_at)} onChange={(event) => setQuote({ ...quote, next_follow_up_at: fromAdminDateTimeInput(event.target.value) })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null }, A("nextFollowUp"))} disabled={!canWriteLead || savingField === A("nextFollowUp")} />
                   </div>
                   <div className="md:col-span-2">
                     <label htmlFor="quote-notes" className="mb-1 block text-sm font-medium">{A("notes")}</label>

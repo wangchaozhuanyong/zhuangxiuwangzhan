@@ -136,4 +136,27 @@ describe("MobileBottomDock focus recovery", () => {
     expect(dock()).toHaveAttribute("data-mode", "hidden");
     expect(container.querySelectorAll('[data-active="false"]')).toHaveLength(2);
   });
+
+  it("does not reveal the dock over a submit button when the last field loses focus", async () => {
+    let overlap = true;
+    const bounds = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      const top = this.classList.contains("scheme-a-mobile-switcher") ? 700
+        : this.tagName === "BUTTON" ? overlap ? 710 : 400 : 300;
+      return { x: 0, y: top, left: 0, top, right: 390, bottom: top + 60, width: 390, height: 60, toJSON: () => ({}) };
+    });
+    render();
+    const fixture = document.createElement("div");
+    fixture.className = "scheme-a-public-shell";
+    fixture.innerHTML = '<form><input aria-label="Last field" /><button type="submit">Submit</button></form>';
+    container.appendChild(fixture);
+    try {
+      await act(async () => { fixture.querySelector("input")!.focus(); await Promise.resolve(); vi.runAllTimers(); });
+      expect(dock()).toHaveAttribute("data-mode", "hidden");
+      await act(async () => { fixture.querySelector("button")!.focus(); await Promise.resolve(); vi.runAllTimers(); });
+      expect(dock()).toHaveAttribute("data-mode", "hidden");
+      overlap = false;
+      await act(async () => { fixture.querySelector("button")!.blur(); window.dispatchEvent(new Event("scroll")); vi.runAllTimers(); });
+      expect(dock()).toHaveAttribute("data-mode", "navigation");
+    } finally { fixture.remove(); bounds.mockRestore(); }
+  });
 });

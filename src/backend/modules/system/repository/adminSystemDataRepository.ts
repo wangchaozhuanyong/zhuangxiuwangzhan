@@ -14,7 +14,7 @@ export async function fetchTranslationJobRows(limit: number, signal?: AbortSigna
   const supabase = requireSupabase();
   const { data, error } = await withReadSignal(supabase
     .from("translation_jobs")
-    .select("id, table_name, record_id, status, error_message, regenerated_at, created_at, updated_at")
+    .select("id, table_name, record_id, target_language, status, error_message, regenerated_at, created_at, updated_at")
     .order("created_at", { ascending: false })
     .limit(limit), signal);
   if (error) throw error;

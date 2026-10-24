@@ -34,7 +34,7 @@ function BeforeAfterComparison({
       <header className="scheme-a-transformation__copy">
         <div>
           <h2>{title}</h2>
-          <p className="scheme-a-transformation__description">{t.itemDescription}</p>
+          <p className="scheme-a-transformation__description">{reviewedCopy ? t.itemDescription : item.description?.trim() || t.itemDescription}</p>
         </div>
       </header>
 

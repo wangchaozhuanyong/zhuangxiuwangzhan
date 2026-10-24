@@ -8,6 +8,8 @@ import { hasProtectedChanges, navigateAfterSave } from "@/lib/navigationProtecti
 
 vi.mock("@/pages/admin/AdminAuthProvider", () => ({ useAdminAuth: () => ({ role: "content_editor" }) }));
 vi.mock("@/lib/adminPreferences", () => ({ useAdminLang: () => "zh" }));
+const generate = vi.hoisted(() => vi.fn());
+vi.mock("@/backend/modules/system", () => ({ generateAdminEnglishContent: generate, requestPublicContentInvalidation: vi.fn() }));
 let root: Root | undefined;
 let node: HTMLDivElement;
 let client: QueryClient;
@@ -17,6 +19,18 @@ afterEach(async () => {
 });
 
 describe("Malay editor preserves the existing form contract", () => {
+  it("displays a saved translation's unconfirmed job receipt without repeating generation", async () => {
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+    generate.mockResolvedValue({ ok: true, warnings: ["Translation job status could not be confirmed."] });
+    client = new QueryClient(); node = document.createElement("div"); document.body.append(node); root = createRoot(node);
+    await act(async () => root!.render(<QueryClientProvider client={client}><AdminMalayFields
+      record={{ id: "synthetic-service", title_en: "Existing English", title_ms: null }} table="services" onChange={vi.fn()} />
+    </QueryClientProvider>));
+    const button = Array.from(node.querySelectorAll("button")).find(button => button.textContent?.includes("补齐马来语翻译"))!;
+    await act(async () => button.click());
+    expect(node.querySelector('[role="status"]')).toHaveTextContent("勿重复翻译");
+    expect(generate).toHaveBeenCalledExactlyOnceWith({ table: "services", id: "synthetic-service", targetLanguage: "ms", force: false });
+  });
   it("edits only Malay content and uses the parent form's existing navigation protection", async () => {
     vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
     const observed = vi.fn();

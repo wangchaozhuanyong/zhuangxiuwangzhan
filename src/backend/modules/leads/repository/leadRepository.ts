@@ -27,7 +27,7 @@ export type SubmitLeadReceipt = { ok: true; id: string; deduplicated?: boolean; 
 
 export async function invokeSubmitLeadFunction(body: Record<string, unknown>) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.functions.invoke("submit-lead", { body });
+  const { data, error } = await supabase.functions.invoke("submit-lead", { body, timeout: 30_000 });
   if (error) throw error;
   if (data && typeof data === "object" && "error" in data && data.error) {
     throw new Error(String(data.error));

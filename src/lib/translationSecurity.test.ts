@@ -12,7 +12,20 @@ vi.mock("../../supabase/functions/_shared/public-content-sync.ts", () => ({ sync
 
 function fixture(role = "content_editor", active = true, aal = "aal2", row: Record<string, unknown> = {}) {
   const record: Record<string, unknown> = { id: "fixture-id", status: "draft", updated_at: "2026-10-08T00:00:00Z", title_zh: "测试", title_en: "", ...row };
-  const insert = vi.fn().mockResolvedValue({ error: null });
+  const jobs: Array<Record<string, unknown>> = [];
+  const jobCreateResult = vi.fn(() => ({ data: { id: jobs.at(-1)?.id }, error: null }));
+  const jobFinishResult = vi.fn((id: string) => ({ data: jobs.find(job => job.id === id) || null, error: null }));
+  const insert = vi.fn((value: Record<string, unknown>) => {
+    jobs.push({ ...value, id: `job-${jobs.length + 1}` });
+    return { select: () => ({ single: jobCreateResult }) };
+  });
+  const jobUpdate = vi.fn((value: Record<string, unknown>) => ({ eq: (_key: string, id: string) => ({
+    select: () => ({ maybeSingle: async () => {
+      const result = jobFinishResult(id);
+      if (!result.error && result.data) Object.assign(result.data, value);
+      return result;
+    } }),
+  }) }));
   const writeFilters: unknown[][] = [];
   const query = {
     eq: vi.fn((...args: unknown[]) => { writeFilters.push(args); return query; }),
@@ -24,15 +37,49 @@ function fixture(role = "content_editor", active = true, aal = "aal2", row: Reco
     auth: { getUser: async () => ({ data: { user: { id: "fixture-user" } }, error: null }) },
     from: vi.fn((table: string) => table === "admin_users"
       ? { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role, active }, error: null }) }) }) }
-      : table === "translation_jobs" ? { insert }
+      : table === "translation_jobs" ? { insert, update: jobUpdate }
       : { select: () => ({ eq: () => ({ single: async () => ({ data: record, error: null }) }) }), update }),
   } as unknown as GenerateEnglishClient;
   const req = new Request("https://fixture.invalid", { headers: { Authorization: `Bearer fixture.${btoa(JSON.stringify({ aal }))}.fixture` } });
-  return { req, client, insert, update, query, writeFilters, record };
+  return { req, client, insert, update, query, writeFilters, record, jobs, jobUpdate, jobCreateResult, jobFinishResult };
 }
 afterEach(() => { vi.unstubAllGlobals(); sync.mockClear(); });
 
 describe("translation authorization and protected content", () => {
+  it.each([false, true])("finishes the same job when existing translation skip=%s", async (skip) => {
+    const f = fixture("content_editor", true, "aal2", { title_en: skip ? "Existing English" : "" });
+    const result = await generateEnglishContent(f.req, { table: "services", id: "fixture-id" }, f.client);
+    expect(result.body.ok).toBe(true);
+    expect(f.jobs).toEqual([expect.objectContaining({ id: "job-1", status: "completed", error_message: null, regenerated_at: expect.any(String) })]);
+    expect(f.insert).toHaveBeenCalledOnce();
+  });
+  it("finishes a failed request without leaving a second processing row", async () => {
+    const f = fixture("content_editor", true, "aal2", { title_zh: null });
+    expect((await generateEnglishContent(f.req, { table: "services", id: "fixture-id" }, f.client)).status).toBe(400);
+    expect(f.jobs).toEqual([expect.objectContaining({ id: "job-1", status: "failed", error_message: expect.stringContaining("No Chinese fields") })]);
+    expect(f.update).not.toHaveBeenCalled();
+  });
+  it("does not translate or write content when the initial job cannot be confirmed", async () => {
+    const f = fixture();
+    f.jobCreateResult.mockReturnValue({ data: null, error: { message: "database unavailable" } } as never);
+    const result = await generateEnglishContent(f.req, { table: "services", id: "fixture-id" }, f.client);
+    expect(result.status).toBe(500); expect(result.body.ok).toBeUndefined();
+    expect(f.update).not.toHaveBeenCalled();
+  });
+  it("acknowledges saved content but warns when its job receipt fails", async () => {
+    const f = fixture();
+    f.jobFinishResult.mockReturnValue({ data: null, error: { message: "private database error" } } as never);
+    const result = await generateEnglishContent(f.req, { table: "services", id: "fixture-id" }, f.client);
+    expect(result.body).toMatchObject({ ok: true, translated: { title_en: "Translated fixture" }, warnings: ["Translation job status could not be confirmed."] });
+    expect(f.update).toHaveBeenCalledOnce();
+    expect(JSON.stringify(result)).not.toContain("private database");
+  });
+  it("keeps separate attempts scoped to their own job ids", async () => {
+    const f = fixture();
+    for (let attempt = 0; attempt < 2; attempt++) await generateEnglishContent(f.req, { table: "services", id: "fixture-id" }, f.client);
+    expect(f.jobs).toEqual([expect.objectContaining({ id: "job-1", status: "completed" }), expect.objectContaining({ id: "job-2", status: "completed" })]);
+    expect(f.jobFinishResult.mock.calls.map(([id]) => id)).toEqual(["job-1", "job-2"]);
+  });
   it("writes only missing Malay fields, preserving English and existing Malay content", async () => {
     const f = fixture("content_editor", true, "aal2", {
       title_en: "Existing English", title_ms: "Tajuk sedia ada",

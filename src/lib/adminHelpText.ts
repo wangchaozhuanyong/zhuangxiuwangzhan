@@ -70,7 +70,7 @@ const tableHelp: Record<string, string> = {
   faqs: "管理常见问题。页面标识为 home 的内容显示在首页，页面标识为 general 的内容显示在常见问题页面。",
   before_after_items: "管理首页改造前后对比图片。",
   brand_partners: "管理首页品牌图标区域。",
-  hero_slides: "管理首页首屏按钮文案和链接。首页首屏媒体固定播放视频，不再读取这里的图片，避免后台图片覆盖视频。",
+  hero_slides: "当前首页读取排序第一条已发布记录的图片和替代文字。首屏按钮固定使用 WhatsApp、案例和家具入口；旧按钮文案和链接仍会保存给其他模板。",
   services: "管理服务列表和服务详情页内容。",
   projects: "管理案例列表和案例详情页内容，案例图片在下方项目图片区域管理。",
   materials: "管理材料库列表、材料分类和材料详情页内容。",

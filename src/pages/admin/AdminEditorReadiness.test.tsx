@@ -7,8 +7,9 @@ import AdminHomeEditor from "./AdminHomeEditor";
 import AdminAboutEditor from "./AdminAboutEditor";
 import type { AdminAboutEditorData, AdminHomeEditorData } from "@/lib/adminEditorData";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { getAdminTableHelp } from "@/lib/adminHelpText";
 
-const { readHome, readAbout, save, warn } = vi.hoisted(() => ({ readHome: vi.fn(), readAbout: vi.fn(), save: vi.fn(), warn: vi.fn() }));
+const { readHome, readAbout, save, warn, malayFields } = vi.hoisted(() => ({ readHome: vi.fn(), readAbout: vi.fn(), save: vi.fn(), warn: vi.fn(), malayFields: vi.fn() }));
 vi.mock("@/lib/adminEditorData", async (original) => ({
   ...await original<typeof import("@/lib/adminEditorData")>(),
   fetchAdminHomeEditorData: readHome,
@@ -19,7 +20,7 @@ vi.mock("@/lib/adminMutation", () => ({ saveAdminRecord: save, archiveOrDeleteAd
 vi.mock("@/hooks/useUnsavedChangesWarning", () => ({ useUnsavedChangesWarning: warn }));
 vi.mock("@/components/admin/AdminPageHeader", () => ({ default: () => null }));
 vi.mock("@/components/admin/AdminHomeSectionVisibility", () => ({ default: () => null }));
-vi.mock("@/components/admin/AdminMalayFields", () => ({ default: () => null }));
+vi.mock("@/components/admin/AdminMalayFields", () => ({ default: (props: object) => { malayFields(props); return null; } }));
 vi.mock("@/components/admin/ImageField", () => ({ default: () => null }));
 vi.mock("@/lib/adminLocale", async (original) => ({ ...await original<typeof import("@/lib/adminLocale")>(), getAdminLang: () => "zh" }));
 
@@ -47,13 +48,39 @@ function selectHomeStats() {
 }
 beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
-  readHome.mockReset(); readAbout.mockReset(); save.mockReset(); warn.mockReset();
+  readHome.mockReset(); readAbout.mockReset(); save.mockReset(); warn.mockReset(); malayFields.mockReset();
   client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   container = document.createElement("div"); document.body.append(container); root = createRoot(container);
 });
 afterEach(async () => { await act(async () => root.unmount()); client.clear(); container.remove(); vi.unstubAllGlobals(); });
 
 describe("admin editors wait for a confirmed initial read", () => {
+  it("exposes the home invitation editor through desktop tabs and the mobile picker", async () => {
+    readHome.mockResolvedValue(homeData); await render(AdminHomeEditor);
+    expect(container.querySelector('option[value="cta"]')).not.toBeNull();
+    expect(Array.from(container.querySelectorAll('[role="tab"]')).some(tab => tab.textContent === "首页行动引导")).toBe(true);
+  });
+  it("explains that homepage hero media is editable while approved conversion buttons stay fixed", async () => {
+    readHome.mockResolvedValue(homeData); await render(AdminHomeEditor);
+    expect(container.textContent).toContain('首屏按钮固定使用 WhatsApp、案例和家具入口');
+    expect(container.querySelector('a[href="/admin/content/hero_slides"]')).toHaveTextContent('管理首屏图片');
+    expect(getAdminTableHelp('hero_slides')).toContain('第一条已发布记录的图片和替代文字');
+    expect(getAdminTableHelp('hero_slides')).not.toContain('固定播放视频');
+  });
+  it("allows a confirmed empty about section to start as a draft and exposes its CTA editor", async () => {
+    readAbout.mockResolvedValue({ sections: {}, ctaBlock: null });
+    await render(AdminAboutEditor);
+    const inputs = container.querySelectorAll<HTMLInputElement>('[role="tabpanel"] input');
+    expect(inputs.length).toBeGreaterThan(1);
+    expect(container.querySelector('option[value="cta"]')).not.toBeNull();
+    expect(Array.from(container.querySelectorAll('[role="tab"]')).some(tab => tab.textContent === "关于我们行动引导区")).toBe(true);
+    const title = inputs[1]!;
+    act(() => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(title, "新建合成标题"); title.dispatchEvent(new Event("input", { bubbles: true })); });
+    save.mockResolvedValue({ id: "new-about-hero", section_key: "hero", title_zh: "新建合成标题", status: "draft" });
+    await act(async () => button("保存此分区").click()); await settle();
+    expect(save).toHaveBeenCalledOnce();
+    expect(save.mock.calls[0][0]).toMatchObject({ table: "about_sections", id: undefined, payload: { section_key: "hero", title_zh: "新建合成标题", status: "draft" } });
+  });
   it.each([
     ["home", AdminHomeEditor, readHome, homeData],
     ["about", AdminAboutEditor, readAbout, aboutData],
@@ -92,11 +119,37 @@ describe("admin editors wait for a confirmed initial read", () => {
     expect(save.mock.calls[0][0]).toMatchObject({ id: "confirmed-stats", expectedUpdatedAt: homeData.stats!.updated_at, payload: { items_zh: [{ value: "9" }] } });
   });
 
-  it("keeps successful missing home rows distinct from an initial read failure", async () => {
+  it("creates a draft for a confirmed missing home statistics row", async () => {
     readHome.mockResolvedValue({ ...homeData, stats: null }); await render(AdminHomeEditor); selectHomeStats(); await settle();
     expect(container.querySelector('[role="alert"]')).toBeNull();
-    await act(async () => button("保存此分区").click());
-    expect(save).not.toHaveBeenCalled();
+    expect(container.querySelector<HTMLSelectElement>('#home-stats-status')?.value).toBe('draft');
+    save.mockResolvedValue({ id: 'new-stats', section_key: 'stats', status: 'draft', items_zh: [], items_en: [] });
+    await act(async () => button("保存此分区").click()); await settle();
+    expect(save).toHaveBeenCalledOnce();
+    expect(save.mock.calls[0][0]).toMatchObject({ table: 'home_sections', id: undefined, expectedUpdatedAt: null, payload: { section_key: 'stats', status: 'draft' } });
+  });
+
+  it("publishes only the explicitly selected statistics status with its existing version", async () => {
+    readHome.mockResolvedValue({ ...homeData, stats: { ...homeData.stats!, status: 'draft' } });
+    save.mockResolvedValue({ ...homeData.stats!, status: 'published' });
+    await render(AdminHomeEditor); selectHomeStats(); await settle();
+    const picker = container.querySelector<HTMLSelectElement>('#home-stats-status')!;
+    expect(picker).not.toBeNull();
+    act(() => { picker.value = 'published'; picker.dispatchEvent(new Event('change', { bubbles: true })); });
+    await act(async () => button("保存此分区").click()); await settle();
+    expect(save.mock.calls[0][0]).toMatchObject({ id: 'confirmed-stats', expectedUpdatedAt: homeData.stats!.updated_at, payload: { section_key: 'stats', status: 'published' } });
+  });
+
+  it("offers Malay statistics fields using the shared item keys consumed by the public renderer", async () => {
+    const item = { value: '987', label_zh: '中文指标', label_en: 'English metric', desc_zh: '中文说明', desc_en: 'English detail', icon: 'star' };
+    readHome.mockResolvedValue({ ...homeData, stats: { ...homeData.stats!, items_zh: [item], items_en: [item] } });
+    await render(AdminHomeEditor); selectHomeStats(); await settle();
+    const props = malayFields.mock.calls.at(-1)![0];
+    expect(props.record.items_en).toEqual([{ value: '987', label: 'English metric', desc: 'English detail', icon: 'star' }]);
+    act(() => props.onChange({ items_ms: [{ value: '987', label: 'Metrik ujian', desc: 'Penerangan' }] }));
+    save.mockResolvedValue({ ...homeData.stats!, items_ms: [{ value: '987', label: 'Metrik ujian', desc: 'Penerangan' }] });
+    await act(async () => button('保存此分区').click()); await settle();
+    expect(save.mock.calls[0][0].payload).toMatchObject({ items_ms: [{ value: '987', label: 'Metrik ujian', desc: 'Penerangan' }], items_en: [item], items_zh: [item] });
   });
 
   it("uses the confirmed about record for editing and preserves input after failed refresh", async () => {

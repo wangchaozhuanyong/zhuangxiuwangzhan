@@ -32,6 +32,12 @@ const L = (field: string) => translateFieldLabel(field, getAdminLang());
 const sectionKeys = aboutSectionKeys;
 type SectionKey = AboutSectionKey;
 
+const emptyAboutSection = (key: SectionKey): AboutSectionRow => ({
+  section_key: key,
+  title_zh: "", title_en: "", subtitle_zh: "", subtitle_en: "", content_zh: "", content_en: "",
+  image_url: "", items_zh: [], items_en: [], status: "draft", sort_order: 0,
+});
+
 type AdminAboutEditorTextKey = keyof typeof adminAboutEditorText;
 const A = (key: AdminAboutEditorTextKey) => adminAboutEditorText[key][getAdminLang()];
 const sectionTabLabel = (key: SectionKey) => adminAboutEditorSectionTabLabels[key][getAdminLang()];
@@ -125,7 +131,8 @@ export default function AdminAboutEditor() {
       itemsZh[key] = asArray(bundle?.sections[key]?.items_zh).map(toItem);
       itemsEn[key] = asArray(bundle?.sections[key]?.items_en).map(toItem);
     });
-    return { sections: bundle?.sections ?? {} as Record<string, AboutSectionRow | null>, itemsZh, itemsEn, ctaBlock: bundle?.ctaBlock ?? null, editingCta: null as CtaRow | null };
+    const sections = Object.fromEntries(sectionKeys.map(key => [key, bundle?.sections[key] ?? emptyAboutSection(key)])) as Record<string, AboutSectionRow>;
+    return { sections, itemsZh, itemsEn, ctaBlock: bundle?.ctaBlock ?? null, editingCta: null as CtaRow | null };
   }, [bundle]);
   const { state: form, field, dirty: formDirty, applyPatchRemote } = useAdminFormState(bundle ? remoteForm : undefined, { initial: remoteForm });
   useEffect(() => {
@@ -288,6 +295,7 @@ export default function AdminAboutEditor() {
           <span>{mobileText.currentSection}</span>
           <select value={activeTab} onChange={(event) => setActiveTab(toTabValue(event.target.value))} className="h-11 w-full min-w-0 rounded-md border border-input bg-background px-3">
             {sectionKeys.map((key) => <option key={key} value={key}>{sectionTabLabel(key)}</option>)}
+            <option value="cta">{A("ctaSectionTitle")}</option>
           </select>
         </label>
         <div className="mb-4 hidden overflow-auto sm:block">
@@ -297,6 +305,7 @@ export default function AdminAboutEditor() {
                 {sectionTabLabel(key)}
               </TabsTrigger>
             ))}
+            <TabsTrigger value="cta">{A("ctaSectionTitle")}</TabsTrigger>
           </TabsList>
         </div>
 

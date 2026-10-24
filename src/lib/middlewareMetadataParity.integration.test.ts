@@ -2,6 +2,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
 import { notFoundPageText } from "../i18n/notFoundPageText";
 
+vi.mock("../../functions/seo-manifest.json", async (importOriginal) => {
+  const snapshot = await importOriginal<{ default: Record<string, Record<string, unknown>> }>();
+  return { default: {
+    ...snapshot.default,
+    "/en/contact": { ...snapshot.default["/en/contact"], ogImage: "https://flashcast.com.my/stale-build-contact.webp" },
+  } };
+});
+
 const shell = '<!doctype html><html lang="en"><head><title>App</title><link rel="canonical" href="https://flashcast.com.my/en"><link rel="alternate" hreflang="en" href="https://flashcast.com.my/en"></head><body><div id="root"></div></body></html>';
 let fixtureId = 0;
 async function render(path: string, page: Record<string, unknown> | null, failReads = false) {

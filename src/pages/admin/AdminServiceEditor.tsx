@@ -1,5 +1,5 @@
 import AdminMalayFields from "@/components/admin/AdminMalayFields";
-import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
+import { completeAdminTranslationDelivery, translationDeliveryNotice } from "@/lib/adminTranslation";
 import { navigateAfterSave } from "@/lib/navigationProtection";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
@@ -263,7 +263,7 @@ export default function AdminServiceEditor() {
       try {
         const translation = await completeAdminTranslationDelivery({ table: "services", id: savedId, force: Boolean(forceEnglish) },
           () => generateAdminServiceEnglish(savedId, Boolean(forceEnglish)));
-        toast({ title: A("savedGenerateSuccess"), description: translation?.publicSyncPending ? interactionText[language].savedSyncPending : undefined });
+        toast({ title: A("savedGenerateSuccess"), description: translationDeliveryNotice(translation, language) });
         void invalidateAdminContentDetail(queryClient, "services", savedId);
       } catch (translationError) {
         const description = formatUserFacingError(translationError, language);

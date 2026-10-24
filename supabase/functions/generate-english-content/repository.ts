@@ -33,18 +33,32 @@ export async function createTranslationJob(
   client: GenerateEnglishClient,
   table: string,
   id: string,
-  status: TranslationJobStatus,
-  errorMessage?: string,
   targetLanguage: "en" | "ms" = "en",
 ) {
-  return client.from("translation_jobs").insert({
+  const { data, error } = await client.from("translation_jobs").insert({
     table_name: table,
     record_id: id,
+    status: "processing",
+    error_message: null,
+    ...(targetLanguage === "ms" ? { target_language: targetLanguage } : {}),
+    regenerated_at: null,
+  }).select("id").single();
+  if (error || !data?.id) throw new Error("Translation job could not be started. No content was saved.");
+  return String(data.id);
+}
+
+export async function finishTranslationJob(
+  client: GenerateEnglishClient,
+  jobId: string,
+  status: Exclude<TranslationJobStatus, "processing">,
+  errorMessage?: string,
+) {
+  const { data, error } = await client.from("translation_jobs").update({
     status,
     error_message: errorMessage ?? null,
-    ...(targetLanguage === "ms" ? { target_language: targetLanguage } : {}),
     regenerated_at: status === "completed" ? new Date().toISOString() : null,
-  });
+  }).eq("id", jobId).select("id").maybeSingle();
+  if (error || !data) throw new Error("Translation job status could not be confirmed.");
 }
 
 export async function requireAdmin(req: Request, client: GenerateEnglishClient): Promise<AdminCheckResult> {

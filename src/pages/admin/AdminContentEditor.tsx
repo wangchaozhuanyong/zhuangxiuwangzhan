@@ -1,5 +1,5 @@
 import AdminMalayFields from "@/components/admin/AdminMalayFields";
-import { completeAdminTranslationDelivery } from "@/lib/adminTranslation";
+import { completeAdminTranslationDelivery, translationDeliveryNotice } from "@/lib/adminTranslation";
 import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
 import { interactionText } from "@/i18n/interactionText";
@@ -7,7 +7,7 @@ import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { confirmProtectedNavigation, navigateAfterSave } from "@/lib/navigationProtection";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useAdminContentRecord, useAdminEditorRows } from "@/lib/adminCmsQueries";
@@ -38,6 +38,7 @@ const toOptionalString = (value: unknown): string | null =>
 const toTextValue = (value: unknown): string => (typeof value === "string" ? value : "");
 
 const AdminContentEditor = () => {
+  const formId = useId();
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
   const queryClient = useQueryClient();
@@ -118,7 +119,7 @@ const AdminContentEditor = () => {
       if (translation?.record) {
         applyRemote(translation.record, savedRecord);
       }
-      setStatus(translation?.publicSyncPending ? `${t.generated} ${interactionText[lang].savedSyncPending}` : t.generated);
+      setStatus([t.generated, translationDeliveryNotice(translation, lang)].filter(Boolean).join(" "));
       await invalidateAdminResource(queryClient, type);
       return;
     }
@@ -146,7 +147,7 @@ const AdminContentEditor = () => {
     if (translation?.record) {
       applyRemote(translation.record, record);
     }
-    setStatus(translation?.publicSyncPending ? `${t.regenerated} ${interactionText[lang].savedSyncPending}` : t.regenerated);
+    setStatus([t.regenerated, translationDeliveryNotice(translation, lang)].filter(Boolean).join(" "));
     await invalidateAdminResource(queryClient, type);
   });
 
@@ -224,11 +225,11 @@ const AdminContentEditor = () => {
               <p className="text-sm text-muted-foreground">{t.bilingualDesc}</p>
             </div>
             <div data-admin-mobile-actions className="flex flex-col gap-2 sm:flex-row">
-              <Button variant="outline" onClick={regenerateEnglish} disabled={!isSupabaseConfigured || !record.id}>
+              <Button variant="outline" onClick={regenerateEnglish} disabled={isSubmitting || !isSupabaseConfigured || !record.id}>
                 {t.regenerate}
               </Button>
-              <Button onClick={save} disabled={!isSupabaseConfigured || readOnlyTables.has(type)}>
-                {t.save}
+              <Button onClick={save} disabled={isSubmitting || !isSupabaseConfigured || readOnlyTables.has(type)} aria-busy={isSubmitting}>
+                {isSubmitting ? t.saving : t.save}
               </Button>
             </div>
           </div>
@@ -239,6 +240,7 @@ const AdminContentEditor = () => {
           {type === "testimonials" && <AdminHomeSectionVisibility sectionKey="testimonials" />}
           <div className="grid min-w-0 gap-4 md:grid-cols-2">
             {visibleFields.map((field) => {
+              const fieldId = `${formId}-${field}`;
               const label = translateFieldLabel(field, lang);
               const isWide =
                 field.includes("content") ||
@@ -253,6 +255,13 @@ const AdminContentEditor = () => {
                     <>
                       <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
+                    </>
+                  ) : field === "status" ? (
+                    <>
+                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
+                      <select id={fieldId} value={String(record.status || "draft")} onChange={event => setRecordField({ status: event.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                        {statusOptionLabels.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+                      </select>
                     </>
                   ) : field === "faqs_zh" || field === "faqs_en" ? (
                     <FaqListEditor label={label} helpText={getAdminFieldHelp(field)} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
@@ -290,9 +299,9 @@ const AdminContentEditor = () => {
                     </>
                   ) : imageFields.has(field) ? (
                     <>
-                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
+                      <AdminFieldLabel htmlFor={fieldId} label={label} help={getAdminFieldHelp(field)} />
                       <div className="space-y-3">
-                        <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                        <Input id={fieldId} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                         <AdminImageUpload
                           value={toTextValue(record[field])}
                           folder={`${type}/${toRecordId(record.id) || "draft"}`}

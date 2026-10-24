@@ -143,6 +143,19 @@ export async function tryUploadMediaStorageObject(
   }
 }
 
+export async function mediaStorageObjectExists(bucket: string, objectPath: string) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  const { data, error } = await supabase.storage.from(bucket).exists(objectPath);
+  if (error && error.status !== 400 && error.status !== 404) throw error;
+  return data;
+}
+
+export async function removeMediaStorageObject(bucket: string, objectPath: string) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  const { error } = await supabase.storage.from(bucket).remove([objectPath]);
+  if (error) throw error;
+}
+
 export async function downloadMediaStorageWebp(
   bucket: string,
   objectPath: string,

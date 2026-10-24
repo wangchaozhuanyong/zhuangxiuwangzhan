@@ -16,7 +16,7 @@ import { interactionText } from "@/i18n/interactionText";
 import { getAdminHealthFieldLabel, useAdminContentHealth } from "@/lib/adminContentHealth";
 import { getAdminLang } from "@/lib/adminLocale";
 import { useAdminTranslationJobs } from "@/lib/adminSystemQueries";
-import { friendlyTranslationError, translationEnabledTables } from "@/lib/adminTranslation";
+import { friendlyTranslationError, translationDeliveryNotice, translationEnabledTables } from "@/lib/adminTranslation";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { generateAdminEnglishContent } from "@/lib/adminTranslation";
 
@@ -92,7 +92,7 @@ export default function AdminEnglishCenter() {
     try {
       const translation = await generateAdminEnglishContent({ table, id, force });
       setBusyId(null);
-      toast({ title: force ? A("forcedRegenerated") : A("generationStarted"), description: translation?.publicSyncPending ? readText.savedSyncPending : undefined });
+      toast({ title: force ? A("forcedRegenerated") : A("generationStarted"), description: translationDeliveryNotice(translation, getAdminLang()) });
       await refreshTranslationData();
       return true;
     } catch (error) {
@@ -111,6 +111,7 @@ export default function AdminEnglishCenter() {
     let successCount = 0;
     let failedCount = 0;
     let publicSyncPending = false;
+    const warnings: string[] = [];
 
     for (const item of targets) {
       setBatchProgress((current) => current ? { ...current, currentTitle: item.title } : current);
@@ -118,6 +119,7 @@ export default function AdminEnglishCenter() {
       try {
         const translation = await generateAdminEnglishContent({ table: item.table, id: item.id, force: false });
         publicSyncPending ||= Boolean(translation?.publicSyncPending);
+        warnings.push(...(translation?.warnings || []));
         successCount += 1;
       } catch (error) {
         failedCount += 1;
@@ -136,7 +138,7 @@ export default function AdminEnglishCenter() {
       });
     }
     setBatchBusy(false);
-    toast({ title: formatA("batchCompleted", { success: String(successCount), failed: String(failedCount) }), description: publicSyncPending ? readText.savedSyncPending : undefined });
+    toast({ title: formatA("batchCompleted", { success: String(successCount), failed: String(failedCount) }), description: translationDeliveryNotice({ publicSyncPending, warnings }, getAdminLang()) });
     await refreshTranslationData();
   });
 

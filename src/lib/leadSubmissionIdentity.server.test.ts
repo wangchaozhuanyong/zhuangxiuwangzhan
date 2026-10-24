@@ -75,6 +75,15 @@ beforeEach(() => {
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
 describe.each(["contact", "quote"] as const)("%s stable logical submission", type => {
+  it.each(["zh", "en", "ms"])("deduplicates %s form retries without repeating notification", async language => {
+    const state = memory();
+    const body = { ...payload(type), sourcePath: `/${language}/${type}` };
+    const first = await submitLead(request(), body, state.client);
+    expect(first.body).toEqual({ ok: true, id: expect.any(String) });
+    expect((await submitLead(request(), body, state.client)).body).toEqual({ ok: true, id: first.body.id, deduplicated: true });
+    expect(state.calls).toMatchObject({ limits: 1, inserts: 1, notifications: 1 });
+  });
+
   it("acknowledges retry/reload/response loss without another limiter call, insertion or notification", async () => {
     const state = memory();
     const first = await submitLead(request(), payload(type), state.client);

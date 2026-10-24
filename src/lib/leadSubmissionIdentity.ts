@@ -9,7 +9,11 @@ const storageKey = (type: LeadType) => `flashcast:lead-submission:${type}`;
 
 // Only opaque identity, a payload digest and time are persisted, never form values.
 export async function getLeadSubmissionId(type: LeadType, sourcePath: string, fields: Record<string, string | undefined>) {
-  if (typeof window === "undefined" || sourcePath.split("?")[0] !== `/en/${type}` || isLeadTestPage(sourcePath)) return undefined;
+  if (typeof window === "undefined" || isLeadTestPage(sourcePath)) return undefined;
+  const pathname = sourcePath.split("?")[0] ?? "";
+  const directForm = /^\/(en|zh|ms)\/(quote|contact)\/?$/.exec(pathname);
+  const landingQuote = type === "quote" && /^\/(en|zh|ms)\/landing\/[^/]+\/?$/.test(pathname);
+  if (directForm?.[2] !== type && !landingQuote) return undefined;
   const canonical = JSON.stringify([type, sourcePath, Object.keys(fields).sort().map((key) => [key, fields[key] || ""])]);
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
   const fingerprint = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");

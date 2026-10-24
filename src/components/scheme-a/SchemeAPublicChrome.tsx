@@ -37,6 +37,7 @@ import {
 import { furnitureText } from "@/i18n/furnitureText";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
+import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
@@ -48,6 +49,7 @@ import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
 import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
+import { isSafeContentUrl } from "@/lib/sanitizeHtml";
 import { addCacheBuster, type SiteSettings } from "@/lib/siteSettingsApi";
 import { safeSocialProfileUrl } from "@/config/site";
 import logoFallback from "@/assets/logo-flashcast.webp";
@@ -588,9 +590,25 @@ export const SchemeAFooterPrelude = () => {
   const t = schemeAChromeText[language];
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHome = publicPath === "/";
+  const hasManagedInvitation = isHome || publicPath === "/about";
+  const publishedInvitation = usePublishedCtaBlock(language, isHome ? "home_final" : "about_final", {
+    enabled: hasManagedInvitation && !hasPageConsultation,
+  });
+  // A disabled query may retain another page's cached data. Only these two
+  // routes own the corresponding CMS invitation; every other page keeps its copy.
+  const invitation = hasManagedInvitation ? publishedInvitation.data : null;
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
     ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
     : undefined;
+  const title = invitation?.title || t.footerTitle;
+  const primaryUrl = invitation?.primary_url && isSafeContentUrl(invitation.primary_url) ? invitation.primary_url : QUOTE_FORM_PATH;
+  const hasSecondaryUrl = Boolean(invitation?.secondary_url && isSafeContentUrl(invitation.secondary_url));
+  const secondaryUrl = hasSecondaryUrl ? invitation!.secondary_url : settings.whatsapp_url(furnitureMessage);
+  const secondaryExternal = /^(?:https?:\/\/|mailto:|tel:|\/\/)/i.test(secondaryUrl);
+  const primaryName = /\/quote(?:[?#]|$)/.test(primaryUrl) ? "quote" : "cta";
+  const secondaryName = /(?:wa\.me|whatsapp\.com)/i.test(secondaryUrl) ? "whatsapp" : "cta";
+  const image = invitation?.image_url && isSafeContentUrl(invitation.image_url, true)
+    ? invitation.image_url : "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp";
 
   if (hasPageConsultation) return null;
 
@@ -598,15 +616,15 @@ export const SchemeAFooterPrelude = () => {
     <section className="scheme-a-footer-prelude" data-home-section={isHome ? "cta" : undefined} data-cinematic-section>
       <div className="scheme-a-footer-prelude__frame scheme-a-frame">
         <div className="scheme-a-footer__panorama">
-          <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="(max-width: 767px) max(100vw, 783px), (min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw" candidateWidths={[560, 720, 960, 1200, 1600, 2560]} quality={88} />
+          <SmartImage src={image} alt={title} width={2560} height={1440} sizes="(max-width: 767px) max(100vw, 783px), (min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw" candidateWidths={[560, 720, 960, 1200, 1600, 2560]} quality={88} />
           <div className="scheme-a-footer__invitation scheme-a-frame">
             <div className="scheme-a-footer__invitation-copy">
               <p className="scheme-a-footer__kicker"><span>{t.footerKicker}</span></p>
-              <h2>{t.footerTitle}</h2>
-              <span>{t.footerBody}</span>
+              <h2>{title}</h2>
+              <span>{invitation?.description || t.footerBody}</span>
               <div className="scheme-a-footer__invitation-actions">
-                <LocalizedLink to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: QUOTE_FORM_PATH })}>{t.quote}<ArrowUpRight /></LocalizedLink>
-                <a href={settings.whatsapp_url(furnitureMessage)} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+                <LocalizedLink to={primaryUrl} onClick={() => trackCtaClick(primaryName, "scheme_a_footer_prelude", { destination: primaryUrl })}>{invitation?.primary_label || t.quote}<ArrowUpRight /></LocalizedLink>
+                <LocalizedLink to={secondaryUrl} target={secondaryExternal ? "_blank" : undefined} rel="noopener noreferrer" onClick={() => trackCtaClick(secondaryName, "scheme_a_footer_prelude", { destination: hasSecondaryUrl ? secondaryUrl : "whatsapp" })}>{secondaryName === "whatsapp" ? <WhatsAppIcon /> : <ArrowUpRight />}{invitation?.secondary_label || (hasSecondaryUrl ? getNavigationLabel("nav.contact", language) : t.whatsapp)}</LocalizedLink>
               </div>
             </div>
           </div>

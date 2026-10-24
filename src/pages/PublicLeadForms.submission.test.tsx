@@ -7,7 +7,7 @@ import Contact from "./Contact";
 import { quotePageText } from "@/i18n/quotePageText";
 import { contactPageText } from "@/i18n/contactPageText";
 
-const state = vi.hoisted(() => ({ language: "en" as "en" | "zh", quote: vi.fn(), contact: vi.fn() }));
+const state = vi.hoisted(() => ({ language: "en" as "en" | "zh" | "ms", quote: vi.fn(), contact: vi.fn() }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: state.language }) }));
 vi.mock("@/hooks/usePublishedContent", () => ({ usePublishedSitePage: () => ({ data: undefined, isLoading: false }) }));
 vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettings: () => ({
@@ -50,7 +50,7 @@ async function input(id: string, value: string) {
   });
 }
 
-for (const page of ["quote", "contact"] as const) for (const language of ["en", "zh"] as const) {
+for (const page of ["quote", "contact"] as const) for (const language of ["en", "zh", "ms"] as const) {
   describe(`${language} ${page} safe submission`, () => {
     const submit = () => page === "quote" ? state.quote : state.contact;
     async function render() {
