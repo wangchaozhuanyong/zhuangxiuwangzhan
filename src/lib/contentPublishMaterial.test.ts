@@ -68,6 +68,25 @@ const createReadOnlyClient = () => ({
 });
 
 describe("content-publish material contract", () => {
+  it.each(["category", "subcategory", "material_type", "color", "texture"])("rejects unreviewed %s before accessing the database", async field => {
+    const from = () => { throw new Error("Database access must not occur for invalid terminology"); };
+    const result = await publishContent(
+      { contentType: "material", mode: "dry-run", nextStatus: "published", record: { ...completeMaterial, [field]: "New unreviewed specification" } },
+      { from } as unknown as ContentPublishClient,
+      { role: "content_editor", authMode: "admin" },
+    );
+    expect(result.status).toBe(400);
+    expect(result.body.error).toContain("reviewed Chinese and Malay terms");
+  });
+
+  it("allows unreviewed specifications to remain in a draft", async () => {
+    const result = await publishContent(
+      { contentType: "material", mode: "dry-run", nextStatus: "draft", record: { ...completeMaterial, texture: "New unreviewed specification" } },
+      createReadOnlyClient() as unknown as ContentPublishClient,
+      { role: "content_editor", authMode: "admin" },
+    );
+    expect(result.body.ok).toBe(true);
+  });
   it("returns a dry-run preview with structured price and ten gallery images", async () => {
     const result = await publishContent(
       { contentType: "material", mode: "dry-run", nextStatus: "published", record: completeMaterial },

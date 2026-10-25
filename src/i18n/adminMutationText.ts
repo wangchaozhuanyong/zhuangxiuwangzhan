@@ -1,5 +1,6 @@
 export const adminMutationText = {
   zh: {
+    materialTerms: "无法发布：以下材料规格缺少审核过的中文或马来语术语，请先补齐术语表。可先保存为草稿。{fields}",
     missingSave: "保存失败：这条数据已经不存在，请刷新列表。",
     missingRemove: "删除失败：这条数据已经不存在，请刷新列表。",
     staleSave: "保存失败：这条内容已经被别人修改，请先刷新页面再保存。",
@@ -12,6 +13,7 @@ export const adminMutationText = {
     invalidStatus: "保存失败：状态值不合法，请选择后台提供的状态。",
   },
   en: {
+    materialTerms: "Cannot publish: these material specifications need reviewed Chinese and Malay terms. Update the terminology list or save a draft. {fields}",
     missingSave: "Save failed: this record no longer exists. Refresh the list.",
     missingRemove: "Delete failed: this record no longer exists. Refresh the list.",
     staleSave: "Save failed: someone changed this content. Refresh the page before saving.",

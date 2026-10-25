@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadEnv } from "vite";
 import { archiveMaterialSlugs, materialCatalogRecords } from "./material-catalog-data.mjs";
+import { assertMaterialTerminology } from "../supabase/functions/_shared/material-terminology.mjs";
 
 const args = process.argv.slice(2);
 const validateOnly = args.includes("--validate");
@@ -25,6 +26,7 @@ const validateCatalog = () => {
   if (archiveMaterialSlugs.some((slug) => slugs.includes(slug))) fail("A slug cannot be active and archived at the same time.");
 
   for (const { record, research_sources: researchSources } of materialCatalogRecords) {
+    assertMaterialTerminology(record);
     if (record.gallery.length !== 10) fail(`${record.slug} must have exactly 10 gallery images.`);
     if (new Set(record.gallery.map((image) => image.image_url)).size !== record.gallery.length) {
       fail(`${record.slug} contains duplicate gallery image URLs.`);
