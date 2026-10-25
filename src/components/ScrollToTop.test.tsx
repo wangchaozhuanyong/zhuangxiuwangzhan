@@ -51,6 +51,16 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.useRealTimers(); });
 
 describe("single public scroll owner", () => {
+  it("captures a focus-induced position before fast keyboard navigation and a delayed scroll event", async () => {
+    await mount("/en/blog?filter=budget");
+    // WebKit can move focus synchronously but dispatch its scroll event later,
+    // after Enter has already committed a cached route and removed the listener.
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 770 });
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await go("/en/blog/article");
+    await go(-1);
+    expect(window.scrollY).toBe(770);
+  });
   it("temporarily suppresses browser anchoring until the target language paints, then restores the original policy", async () => {
     const style = document.documentElement.style;
     // JSDOM does not implement this CSS property. Exercise lifecycle ownership

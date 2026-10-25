@@ -139,7 +139,9 @@ const ScrollToTop = () => {
       else rootStyle.removeProperty("overflow-anchor");
     };
     const record = () => { lastScroll = window.scrollY; };
-    const interrupt = () => { interrupted = true; cancelRestoration(); releaseAnchoring(); };
+    // Focus may scroll before the browser delivers its scroll event. Capture
+    // that position before a fast key/pointer activation commits a cached route.
+    const interrupt = () => { record(); interrupted = true; cancelRestoration(); releaseAnchoring(); };
     const restore = (smooth = false) => {
       if (interrupted || preserveAdminPosition || preserveLanguagePosition) return;
       cancelRestoration();
