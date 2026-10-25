@@ -45,10 +45,11 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "project": { const row = payload.projectDetails?.[String(parameters.slug)]; return row ? mapPublishedProjectDetail(row, language) : undefined; }
     case "materials": return payload.materials ? mapPublishedMaterialRows(payload.materials.filter((row) => String(row.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY), language) : undefined;
     case "material": {
-      const row = payload.materials?.find((item) => item.slug === parameters.slug);
+      const rows = payload.materialDetailContext?.slug === parameters.slug ? payload.materialDetailContext.rows : payload.materials;
+      const row = rows?.find((item) => item.slug === parameters.slug);
       // Summary body fallback alone does not prove that detail fields were projected.
       if (!row || !("material_images" in row || "suitable_spaces_en" in row || "seo_title_en" in row)) return undefined;
-      const categories = mapPublishedMaterialRows(payload.materials!.filter((item) => String(item.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY), language);
+      const categories = mapPublishedMaterialRows(rows!.filter((item) => String(item.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY), language);
       const category = categories.find((item) => item.items.some((material) => material.slug === parameters.slug));
       return category ? { material: category.items.find((item) => item.slug === parameters.slug), category } : undefined;
     }

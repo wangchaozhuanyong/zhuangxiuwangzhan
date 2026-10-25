@@ -13,6 +13,7 @@ export type PublicDataPayload = {
   services?: UnknownRecord[];
   serviceDetails?: Record<string, UnknownRecord>;
   materials?: UnknownRecord[];
+  materialDetailContext?: { slug: string; rows: UnknownRecord[] };
   productHighlights?: UnknownRecord[];
   serviceAreas?: UnknownRecord[];
   blogPosts?: UnknownRecord[];

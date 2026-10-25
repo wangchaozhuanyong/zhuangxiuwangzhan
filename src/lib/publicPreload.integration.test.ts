@@ -32,6 +32,13 @@ afterEach(() => {
 });
 
 describe("public preload data", () => {
+  it("does not treat a single-category material detail context as the full directory", async () => {
+    setPreloadedPublicData({ materialDetailContext: { slug: "oak", rows: [{ id: "oak", slug: "oak", category: "Flooring", title_en: "Oak", content_en: "Full body", seo_title_en: "Oak", material_images: [] }] } });
+    const { getPublicQuerySeed } = await import("./publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "material", "oak", "en"])).toMatchObject({ material: { name: "Oak", description: "Full body" } });
+    expect(getPublicQuerySeed(["published", "materials", "en"])).toBeUndefined();
+    expect(getPublicQuerySeed(["published", "material", "unread", "en"])).toBeUndefined();
+  });
   it("hydrates current full service/blog details without seeding an incomplete list", async () => {
     setPreloadedPublicData({
       serviceDetails: { repair: { preload_language: "en", id: "service", slug: "repair", title_en: "Repair", content_en: "Full service body", suitable_for_en: ["Homes"], faqs_en: [{ q: "Q", a: "A" }] } },

@@ -152,7 +152,7 @@ const projectMaterialListRow = (row: PublicProjectionRecord) =>
 const projectMaterialDetailRow = (row: PublicProjectionRecord) => {
   const projected = pickFields(row, MATERIAL_DETAIL_FIELDS);
   const images = toRows(row.material_images).map((image) => pickFields(image, MATERIAL_IMAGE_FIELDS));
-  if (images.length) projected.material_images = images;
+  if (Array.isArray(row.material_images)) projected.material_images = images;
   return projected;
 };
 

@@ -1423,14 +1423,15 @@ const fetchPublicServices = async (env: Record<string, string | undefined>, fres
   return fresh ? fetchFreshPublicRows(env, "services", configure) : fetchPublicRows(env, "services", "services", configure);
 };
 
-const fetchPublicMaterials = async (env: Record<string, string | undefined>, fresh = false) => {
+const fetchPublicMaterials = async (env: Record<string, string | undefined>, fresh = false, category?: string) => {
   const configure = (url: URL) => {
     url.searchParams.set("select", "*");
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("or", "(category.is.null,category.neq.furniture)");
+    if (category) url.searchParams.set("category", `eq.${category}`);
     url.searchParams.set("order", "sort_order.asc");
   };
-  return fresh ? fetchFreshPublicRows(env, "materials", configure) : fetchPublicRows(env, "materials", "materials", configure);
+  return fresh ? fetchFreshPublicRows(env, "materials", configure) : fetchPublicRows(env, category ? `materials:category:${encodeURIComponent(category)}` : "materials", "materials", configure);
 };
 
 const fetchPublicMaterialDetail = async (
@@ -2216,6 +2217,7 @@ export const onRequest: PagesFunction = async (context) => {
     ? getPublicHtmlFreshnessRequest(publicHtmlCacheRequest)
     : null;
 
+  let currentDynamicRoute: DynamicRouteState | null = null;
   const generatePublicHtml = async (existingLastModified?: string | null) => {
     let unpublishedBlog = false;
     const appShellUrl = new URL(request.url);
@@ -2238,6 +2240,7 @@ export const onRequest: PagesFunction = async (context) => {
       fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta, () => { unpublishedBlog = true; }, earlyFurnitureSetting),
       env.ASSETS ? env.ASSETS.fetch(new Request(appShellUrl.toString(), request)) : next("/"),
     ]);
+    currentDynamicRoute = dynamicRouteState;
     const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
     // Match the page's published FAQ projection; use its reviewed locale fallback
     // only when the public service record is unavailable, not for an empty locale.
@@ -2277,6 +2280,8 @@ export const onRequest: PagesFunction = async (context) => {
   const shouldInjectServices = topLevelPublicPageKey === "services";
   const reviewedMaterialBody = isReviewedMaterialBodyPath(key);
   const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug) || reviewedMaterialBody || /^\/(en|zh|ms)\/materials\/category\//.test(key);
+  const materialCategory = productDetailSlug && dynamicRouteState?.kind === "material"
+    ? readString(dynamicRouteState.row, "category") : "";
   const shouldInjectServiceAreas = topLevelPublicPageKey === "locations";
   const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
   const furniturePath = key.replace(/^\/(?:en|zh|ms)/, "");
@@ -2315,7 +2320,7 @@ export const onRequest: PagesFunction = async (context) => {
       ? earlyPageBundle || fetchPublicSitePageBundle(env as Record<string, string | undefined>, topLevelPublicPageKey)
       : Promise.resolve(null),
     shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>, key === "/en/services") : Promise.resolve(null),
-    shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>, reviewedMaterialBody) : Promise.resolve(null),
+    shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>, reviewedMaterialBody, materialCategory || undefined) : Promise.resolve(null),
     productDetailSlug
       ? fetchPublicMaterialDetail(
           env as Record<string, string | undefined>,
@@ -2398,7 +2403,9 @@ export const onRequest: PagesFunction = async (context) => {
       if (existingIndex >= 0) materialRows[existingIndex] = materialDetail;
       else materialRows.push(materialDetail);
     }
-    publicDataPayload.materials = projectMaterialsForPreload(materialRows, productDetailSlug);
+    const projected = projectMaterialsForPreload(materialRows, productDetailSlug);
+    if (productDetailSlug) publicDataPayload.materialDetailContext = { slug: productDetailSlug, rows: projected };
+    else publicDataPayload.materials = projected;
   }
   if (serviceAreas?.length) {
     publicDataPayload.serviceAreas = projectServiceAreaSummariesForPreload(serviceAreas);
@@ -2491,6 +2498,17 @@ export const onRequest: PagesFunction = async (context) => {
       let transformed = fallbackMeta
         ? injectSeo(html, fallbackMeta, prefetchedSiteSettings)
         : injectNoIndexNotFound(html, prefetchedSiteSettings, key);
+      // Keep the existing metadata/readable fallback unchanged, but do not
+      // discard an already successful current-record read when an optional
+      // HTML transformation fails (including incomplete Malay no-script labels).
+      const fallbackLanguage = key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en";
+      const current = currentDynamicRoute;
+      if (fallbackMeta && current && !current.hidden && (current.kind === "service" || current.kind === "blog")) {
+        const detail = current.kind === "service"
+          ? { serviceDetails: { [String(current.row.slug)]: projectServiceDetailForPreload(current.row, fallbackLanguage) } }
+          : { blogPostDetails: { [String(current.row.slug)]: projectBlogDetailForPreload(current.row, fallbackLanguage) } };
+        transformed = injectPublicData(transformed, detail).html;
+      }
       transformed = injectPerformanceHints(transformed, env as Record<string, string | undefined>);
       const headers = new Headers(appShellResponse.headers);
       if (staticMeta) {

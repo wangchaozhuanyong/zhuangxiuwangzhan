@@ -90,7 +90,6 @@ const pages = [
     name: "product-detail",
     path: productDetailPath,
     requireSiteSettingsPreload: true,
-    requireMaterialsPreload: true,
     requireMaterialDetailPreload: productDetailPath.split("/").filter(Boolean).at(-1),
     requireCtaBlockPreload: "home_final",
     maxPreloadBytes: 80_000,
@@ -191,8 +190,8 @@ const collectPageMetrics = async (page, lateThreshold) =>
       sitePageKeys: preload?.sitePages ? Object.keys(preload.sitePages).sort() : [],
       services: Array.isArray(preload?.services) ? preload.services.length : 0,
       materials: Array.isArray(preload?.materials) ? preload.materials.length : 0,
-      materialDetailSlugs: Array.isArray(preload?.materials)
-        ? preload.materials
+      materialDetailSlugs: Array.isArray(preload?.materialDetailContext?.rows || preload?.materials)
+        ? (preload.materialDetailContext?.rows || preload.materials)
             .filter((row) => row && typeof row === "object" && Array.isArray(row.material_images))
             .map((row) => String(row.slug || ""))
             .filter(Boolean)
