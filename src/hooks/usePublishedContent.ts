@@ -179,14 +179,7 @@ export function usePublishedProcessSteps(language: "en" | "zh" | "ms", options?:
   });
 }
 
-export function usePublishedCtaBlock(language: "en" | "zh" | "ms", blockKey: string, options?: PublicQueryOptions) {
-  return useQuery({
-    ...publicContentQueries.ctaBlock(language, blockKey),
-    enabled: isSupabaseQueryEnabled(options),
-    retry: false,
-    ...queryDefaults,
-  });
-}
+export { usePublishedCtaBlock } from "./usePublishedCtaBlock";
 
 export function usePublishedAboutSection(language: "en" | "zh" | "ms", sectionKey: string, options?: PublicQueryOptions) {
   return useQuery({

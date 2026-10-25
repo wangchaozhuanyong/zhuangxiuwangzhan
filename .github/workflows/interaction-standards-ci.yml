@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci --no-audit --no-fund
+      - run: node --test scripts/performance-delivery.test.mjs
       - run: npm run verify:interaction-quality
       - run: npm run build:dev
       - run: npx vite build --mode production --outDir tmp/interaction-ci-dist

@@ -10,7 +10,7 @@ const fixture = vi.hoisted(() => ({ language: "en" as "zh" | "en" | "ms", consul
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: fixture.language }) }));
 vi.mock("@/contexts/PublicChromeContext", () => ({ usePublicChrome: () => ({ hasPageConsultation: fixture.consultation }) }));
 vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettings: () => ({ whatsapp_url: () => "https://wa.me/60123456789" }) }));
-vi.mock("@/hooks/usePublishedContent", () => ({ usePublishedCtaBlock: (...args: unknown[]) => { fixture.read(...args); return { data: fixture.cta }; } }));
+vi.mock("@/hooks/usePublishedCtaBlock", () => ({ usePublishedCtaBlock: (...args: unknown[]) => { fixture.read(...args); return { data: fixture.cta }; } }));
 vi.mock("@/components/SmartImage", () => ({ default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} /> }));
 let root: Root; let node: HTMLDivElement;
 beforeEach(() => {

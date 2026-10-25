@@ -18,7 +18,7 @@ const slugs = [
   ["kitchen-cabinet", "kitchen"], ["flooring", "flooring"],
 ];
 describe("migrated landing URLs", () => {
-  for (const language of ["zh", "en"]) {
+  for (const language of ["zh", "en", "ms"]) {
     it.each(slugs)(`${language}: preserves campaign parameters and fragment from %s to %s`, async (landing, service) => {
       await act(async () => root.render(<MemoryRouter initialEntries={[`/${language}/landing/${landing}?utm_source=fixture&utm_campaign=renovation#main-content`]}><LocationProbe /><Suspense fallback={null}><Routes>{publicRoutes}</Routes></Suspense></MemoryRouter>));
       await vi.waitFor(async () => {

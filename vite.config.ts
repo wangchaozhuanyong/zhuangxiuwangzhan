@@ -5,6 +5,7 @@ import { preferWebpAssets } from "./scripts/vite-prefer-webp.mjs";
 import { pruneDuplicatePublicMedia } from "./scripts/vite-prune-public-media.mjs";
 import { buildLocalSiteCspPolicy } from "./scripts/site-csp.mjs";
 import { publicBootHtml } from "./scripts/vite-public-boot.mjs";
+import { resolvePublicModulePreloadDependencies } from "./scripts/vite-module-preload.mjs";
 
 const securityHeaders = (mode: string) => ({
   "Content-Security-Policy": buildLocalSiteCspPolicy(loadEnv(mode, process.cwd(), "VITE_").VITE_SUPABASE_URL),
@@ -35,17 +36,17 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     // WebKit can retain failed modulepreload scripts across a native reload.
-    // Load lazy route scripts through import(); keep entry and CSS preloads.
+    // Load lazy route scripts through import(); preload the full static entry
+    // graph so shared chunks do not wait for serial JavaScript discovery.
     modulePreload: {
-      resolveDependencies: (_filename, dependencies, { hostType }) =>
-        hostType === "js"
-          ? dependencies.filter((dependency) => dependency.endsWith(".css"))
-          : dependencies.filter((dependency) => dependency.endsWith(".css") || dependency.includes("vendor") || dependency.includes("runtime")),
+      resolveDependencies: resolvePublicModulePreloadDependencies,
     },
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
+            // Co-locate already-required shell helpers with React to reduce repeated chunk overhead.
+            if (/[\\/]node_modules[\\/](clsx|tailwind-merge|react-helmet-async|react-fast-compare|shallowequal|invariant)[\\/]/.test(id)) return "vendor";
             if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|@remix-run[\\/]router)[\\/]/.test(id)) return "vendor";
             return;
           }
@@ -56,6 +57,6 @@ export default defineConfig(({ mode }) => ({
       },
     },
     target: "esnext",
-    minify: "esbuild",
+    minify: "oxc",
   },
 }));

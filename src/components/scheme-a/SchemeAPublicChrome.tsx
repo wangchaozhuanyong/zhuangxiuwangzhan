@@ -38,22 +38,22 @@ import {
   type PublicNavGroupKey,
   type PublicNavItem,
 } from "@/config/publicNavigation";
-import { furnitureText } from "@/i18n/furnitureText";
+import { furnitureShopText } from "@/i18n/furnitureShopText";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
-import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
+import { usePublishedCtaBlock } from "@/hooks/usePublishedCtaBlock";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
-import { schemeAChromeText } from "@/i18n/schemeAText";
+import { schemeAChromeText } from "@/i18n/schemeAChromeText";
 import { getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } from "@/i18n/brandIdentity";
 import { stripLanguagePrefix, type Language } from "@/i18n/routes";
 import { languageTag } from "@/i18n/languageDetection";
 import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
-import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
-import { isSafeContentUrl } from "@/lib/sanitizeHtml";
+import { QUOTE_FORM_PATH } from "@/lib/quoteFormTarget";
+import { isSafeContentUrl } from "@/lib/safeContentUrl";
 import { addCacheBuster, type SiteSettings } from "@/lib/siteSettingsApi";
 import { safeSocialProfileUrl } from "@/config/site";
 import logoFallback from "@/assets/logo-flashcast.webp";
@@ -201,7 +201,7 @@ export const SchemeANavbar = () => {
     : null;
   const publicPath = stripLanguagePrefix(location.pathname);
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
-    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    ? pageWhatsAppMessage || furnitureShopText[language].generalEnquiryMessage
     : undefined;
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
 
@@ -656,7 +656,7 @@ export const SchemeAFooterPrelude = () => {
   // routes own the corresponding CMS invitation; every other page keeps its copy.
   const invitation = hasManagedInvitation ? publishedInvitation.data : null;
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
-    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    ? pageWhatsAppMessage || furnitureShopText[language].generalEnquiryMessage
     : undefined;
   const title = invitation?.title || t.footerTitle;
   const primaryUrl = invitation?.primary_url && isSafeContentUrl(invitation.primary_url) ? invitation.primary_url : QUOTE_FORM_PATH;
