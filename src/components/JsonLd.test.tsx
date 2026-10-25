@@ -249,7 +249,8 @@ describe("JsonLdLocalBusiness", () => {
         expect(link.hasAttribute("aria-current")).toBe(false);
       }
     }
-    expect(document.querySelector(".scheme-a-directory__body > .scheme-a-directory__social-group")).not.toBeNull();
+    expect(document.querySelector(".scheme-a-directory__body .scheme-a-directory__social-group")).toBeNull();
+    expect(document.querySelector(".scheme-a-directory__bottom > .scheme-a-directory__social-group")).not.toBeNull();
     expect(document.querySelector(".scheme-a-directory__foot .scheme-a-directory__social-group")).toBeNull();
     for (const [label, url] of [["Facebook", profiles.facebook_url], ["Instagram", profiles.instagram_url], ["TikTok", profiles.tiktok_url], ["REDnote (Xiaohongshu)", profiles.xiaohongshu_url]]) {
       expect(html).toContain(`href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${label}"`);
