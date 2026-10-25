@@ -13,7 +13,7 @@ import { servicesData } from "@/data/services";
 import { usePublishedServiceBySlug, usePublishedServices } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
+import { getServiceProjectGuidance, serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
@@ -87,6 +87,7 @@ export default function ServiceDetail() {
     };
   });
   const contextLinks = getServiceContextLinks(service.slug, language);
+  const projectGuidance = getServiceProjectGuidance(service.slug, language);
   const quotePath = buildQuotePath({
     source: "service",
     title,
@@ -125,6 +126,7 @@ export default function ServiceDetail() {
       </SchemeASection>
       {commonProjects.length ? <SchemeASection title={copy.commonProjects}><SchemeAFeatureList items={commonProjects} /></SchemeASection> : null}
       {process.length ? <SchemeASection title={copy.process} description={copy.processDescription}><SchemeANumberList items={process} /></SchemeASection> : null}
+      {projectGuidance.map((block) => <SchemeASection key={block.id} title={block.heading} description={block.body} className="fc-service-project-guidance whitespace-pre-line">{null}</SchemeASection>)}
       {contextLinks.length ? <SchemeASection title={copy.resourceTitle(title)} description={copy.resourceDescription}><SchemeALinkGrid items={contextLinks} actionLabel={copy.resourceAction} /></SchemeASection> : null}
       {faqs.length ? <SchemeASection title={copy.faq}><SchemeAFaqList items={faqs} /></SchemeASection> : null}
       <SchemeASection title={copy.relatedServices}><SchemeAListingGrid items={relatedItems} actionLabel={copy.viewService} /></SchemeASection>
