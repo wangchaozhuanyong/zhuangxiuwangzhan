@@ -1,9 +1,11 @@
-import { useLayoutEffect } from "react";
+import { lazy, useLayoutEffect, type PropsWithChildren } from "react";
 import { Navigate, useLocation, useParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getDefaultLanguage, getLanguageFromPath, isLanguage, stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 
-export const LanguageRouteSync = () => {
+const MalayContentReady = lazy(() => import("@/i18n/malayContent"));
+
+export const LanguageRouteSync = ({ children }: PropsWithChildren) => {
   const { language, setLanguage } = useLanguage();
   const { lang } = useParams<{ lang?: string }>();
 
@@ -13,7 +15,7 @@ export const LanguageRouteSync = () => {
     }
   }, [lang, language, setLanguage]);
 
-  return null;
+  return lang === "ms" ? <MalayContentReady>{children}</MalayContentReady> : children;
 };
 
 export const RootLanguageRedirect = () => {

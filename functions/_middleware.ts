@@ -1,3 +1,4 @@
+import "../src/i18n/malayContent";
 import { hasMalayContent } from "../src/i18n/localizedContent";
 import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
 import { getFurnitureListingPage, getFurnitureListingRoute, furnitureListingPagePath, mapFurnitureCatalogSeed, normalizeFurnitureListingPage, type FurnitureMaterialRow } from "../src/lib/furnitureCatalogPresentation";

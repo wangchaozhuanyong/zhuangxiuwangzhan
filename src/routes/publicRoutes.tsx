@@ -34,10 +34,7 @@ const OldHouseRenovation = lazy(publicPageModules.OldHouseRenovation);
 const NotFound = lazy(publicPageModules.NotFound);
 
 const withLanguageSync = (page: JSX.Element) => (
-  <>
-    <LanguageRouteSync />
-    {page}
-  </>
+  <LanguageRouteSync>{page}</LanguageRouteSync>
 );
 
 const LandingPageRoute = () => {

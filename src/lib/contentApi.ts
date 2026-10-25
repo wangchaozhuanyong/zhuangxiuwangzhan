@@ -1,4 +1,4 @@
-import { localizeMalayContent } from "@/i18n/malayContent";
+import { localizeMalayContent, loadMalayContent } from "@/i18n/malayContentRuntime";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, wardrobeCover } from "@/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "@/lib/projectPublicMetadata.mjs";
 import {
@@ -107,6 +107,7 @@ const normalizeProjectType = (value: string) => {
 };
 
 export const getFallbackProjects = async (language: Language = "en") => {
+  if (language === "ms") await loadMalayContent();
   const { projectsData } = await import("@/data/projects");
   const addImageAltFields = (project: (typeof projectsData)[number]) => ({
     ...project,
@@ -130,6 +131,7 @@ export const getFallbackProjects = async (language: Language = "en") => {
   }));
 };
 const getFallbackMaterials = async (language: Language = "en"): Promise<MaterialCatalogCategory[]> => {
+  if (language === "ms") await loadMalayContent();
   const materials = (await import("@/data/materials")).materialsData as MaterialCatalogCategory[];
   return language === "ms" ? localizeMalayContent(materials) : materials;
 };
@@ -144,6 +146,7 @@ export const translateBlogContent = (value: string, language: Language) => {
 };
 
 const getFallbackBlogPosts = async (language: Language = "en") => {
+  if (language === "ms") await loadMalayContent();
   const { blogPosts } = await import("@/data/blog");
   if (language === "ms") return localizeMalayContent(blogPosts);
   if (language !== "zh") return blogPosts;
@@ -160,6 +163,7 @@ const getFallbackBlogPosts = async (language: Language = "en") => {
   }));
 };
 const getFallbackLocations = async (language: Language = "en") => {
+  if (language === "ms") await loadMalayContent();
   const { locationsData } = await import("@/data/locations");
   if (language === "ms") return localizeMalayContent(locationsData);
   if (language !== "zh") return locationsData;
@@ -185,6 +189,7 @@ const getFallbackLocations = async (language: Language = "en") => {
   );
 };
 export const getFallbackServices = async (language: Language = "en") => {
+  if (language === "ms") await loadMalayContent();
   const { servicesData } = await import("@/data/services");
   if (language === "ms") return localizeMalayContent(servicesData);
   if (language !== "zh") return servicesData;
