@@ -210,8 +210,11 @@ export const SHOP_OFFICE_SIX_FIELD_FORWARD_INPUTS: readonly ManagedTarget[] = [
   }
 ];
 
+// Domain-bound permit scope; the original business-scope input above remains unchanged.
+export const SHOP_OFFICE_SIX_FIELD_EXECUTION_SCOPE = "flashcast.com.my:shop-office:existing-six-fields-and-five-blocks:20261025:v1";
+
 // Recovery extension for these two rows only. The original forward input above remains unchanged.
 // Each restore requires a distinct permit tied to the completed publish run and its saved CAS.
 export const SHOP_OFFICE_SIX_FIELD_TARGETS: readonly ManagedTarget[] = SHOP_OFFICE_SIX_FIELD_FORWARD_INPUTS.map(target => ({
-  ...target, rollbackAllowed: true, requiresParentRun: true,
+  ...target, scope: SHOP_OFFICE_SIX_FIELD_EXECUTION_SCOPE, rollbackAllowed: true, requiresParentRun: true,
 }));

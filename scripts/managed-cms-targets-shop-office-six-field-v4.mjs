@@ -5,6 +5,8 @@ import { resolve } from "node:path";
 
 const sourcePath = "drafts/publishing/fc-20261025-shop-office-existing-six-and-five-implementation-release-v1/frozen-two-row-candidates.json";
 const sourceSha256 = "b4d30f0ec821b3e8a8f7643de6820e2a7c1c66927474f81c3e7ef6cd1b0649bc";
+// Keep the packaged business scope intact and bind only these two permit targets to the site.
+const executionScope = "flashcast.com.my:shop-office:existing-six-fields-and-five-blocks:20261025:v1";
 const bytes = readFileSync(resolve(process.cwd(), sourcePath));
 if (createHash("sha256").update(bytes).digest("hex") !== sourceSha256) throw new Error("Shop/office frozen input differs.");
 const stable = value => Array.isArray(value) ? value.map(stable)
@@ -28,7 +30,7 @@ export const lockedShopOfficeSixFieldCandidates = freeze(Object.fromEntries(sour
     throw new Error("Shop/office identity, complete baseline, retained fields or exact delta differs.");
   }
   return [target.candidateVersion, {
-    ...target, recordId: target.id, actionClass: "cms_write", keyField: "id", status: "published",
+    ...target, scope: executionScope, recordId: target.id, actionClass: "cms_write", keyField: "id", status: "published",
     // Explicit recovery extension; the packaged original forward tuple remains intact.
     rollbackAllowed: true, requiresParentRun: true,
     exactPatchOnly: true, desiredFields: entry.desired, sourceCandidatePath: sourcePath,
