@@ -2,12 +2,14 @@ import { useLayoutEffect, type PropsWithChildren } from "react";
 import { Navigate, useLocation, useParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getDefaultLanguage, getLanguageFromPath, isLanguage, stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
+import { loadMalayContent } from "@/i18n/malayContentRuntime";
 
 let malayReady = false;
 let malayError: unknown;
 let malayLoad: Promise<unknown> | undefined;
-export const prepareMalayContent = () => malayLoad ??= import("@/i18n/malayContent")
-  .then(() => { malayReady = true; }, (error: unknown) => { malayError = error; throw error; });
+let navigationLoad: Promise<unknown> | undefined;
+export const prepareMalayContent = () => malayLoad ??= loadMalayContent()
+  .then(() => { malayReady = true; }, (error: unknown) => { malayLoad = undefined; throw error; });
 
 export const LanguageRouteSync = ({ children }: PropsWithChildren) => {
   const { language, setLanguage } = useLanguage();
@@ -23,7 +25,9 @@ export const LanguageRouteSync = ({ children }: PropsWithChildren) => {
   // and focus are not remounted by adding/removing a locale-only wrapper.
   if (lang === "ms" && !malayReady) {
     if (malayError) throw malayError;
-    throw prepareMalayContent();
+    // Speculation may fail before the user navigates. Give the real navigation
+    // its own attempt; only a failure of that attempt reaches route recovery.
+    throw navigationLoad ??= prepareMalayContent().catch((error: unknown) => { malayError = error; throw error; });
   }
   return children;
 };
