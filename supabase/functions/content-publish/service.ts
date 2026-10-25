@@ -1,3 +1,4 @@
+import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "../_shared/shop-office-six-field-targets.ts";
 import { CONTENT_LINK_REPAIR_TARGETS, CONTENT_LINK_REPAIR_APPROVAL_ID } from "../_shared/content-link-repair-targets.ts";
 import { publishMediaContent } from "./mediaPublishing.ts";
 import { cleanText, errorResult } from "./publishValues.ts";
@@ -1798,19 +1799,26 @@ async function publishOrg020ExactPatch(
   mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
 ): Promise<ContentPublishResult> {
   const record = input.record!;
-  if ((input.managedPermit || input.managedCandidate)?.operation !== "publish"
+  const operation = (input.managedPermit || input.managedCandidate)?.operation;
+  const shopOfficeRestore = SHOP_OFFICE_SIX_FIELD_TARGETS.includes(target)
+    && target.rollbackAllowed === true && operation === "rollback";
+  if ((operation !== "publish" && !shopOfficeRestore)
       || nextStatus !== "published" || (ORG020_V7_TARGETS.includes(target) && target.rollbackAllowed !== false)) {
     return errorResult("This exact candidate only permits a reviewed forward publish.", 403);
   }
   const existing = await fetchRecordByField(client, target.table!, "id", target.id);
   if (!existing) return errorResult("The exact existing CMS row was not found.", 404);
   const expected = String(input.expectedUpdatedAt || "");
-  if (!expected || !samePgTimestamp(expected, target.expectedUpdatedAt)
+  if (!expected || (!shopOfficeRestore && !samePgTimestamp(expected, target.expectedUpdatedAt))
       || !samePgTimestamp(existing.updated_at, expected)) {
     return errorResult("This exact row version differs from the frozen candidate. Refresh and obtain new QA.", 409);
   }
   const baseline = Object.fromEntries(target.baselineProjectionFields!.map((field) => [field, existing[field] ?? null]));
-  if (existing.status !== "published" || await sha256(baseline) !== target.baselineFieldsSha256) {
+  const retained = Object.fromEntries((target.retainedProjectionFields || []).map(field => [field, existing[field] ?? null]));
+  const currentPatch = Object.fromEntries(target.changedFields!.map(field => [field, existing[field]]));
+  if (existing.status !== "published" || (shopOfficeRestore
+      ? await sha256(retained) !== target.retainedFieldsSha256 || await sha256(currentPatch) !== target.desiredFieldsSha256
+      : await sha256(baseline) !== target.baselineFieldsSha256)) {
     return errorResult("The existing CMS row differs from its frozen baseline.", 409);
   }
   const fields = new Set(target.changedFields);
@@ -1824,7 +1832,7 @@ async function publishOrg020ExactPatch(
   // Only the already-approved projection may supply omitted published fields.
   // A narrow projection still fails the ordinary required-field checks; do not
   // validate from additional columns or send the merged row to the writer.
-  const validationRecord = isSparseNativeBodyPatch(target, record, "publish")
+  const validationRecord = SHOP_OFFICE_SIX_FIELD_TARGETS.includes(target) || isSparseNativeBodyPatch(target, record, "publish")
     ? { ...Object.fromEntries(target.baselineProjectionFields!.map((field) => [field, existing[field] ?? null])), ...record }
     : record;
   try {
@@ -1838,7 +1846,7 @@ async function publishOrg020ExactPatch(
   }
   const patch = Object.fromEntries(target.changedFields!.map((field) => [field, cleaned[field]]));
   if (Object.values(patch).some((value) => value === undefined || value === null)
-      || await sha256(patch) !== target.desiredFieldsSha256) {
+      || await sha256(patch) !== (shopOfficeRestore ? target.rollbackFieldsSha256 : target.desiredFieldsSha256)) {
     return errorResult("The cleaned patch differs from the frozen desired fields hash.", 403);
   }
   const common = { ok: true, dry_run: mode === "dry-run", content_type: target.contentType,
@@ -2078,7 +2086,7 @@ export async function publishContent(
     return publishMalayTranslationPatch(input, client, context, mode,
       exact?.contentType === "translation_patch" ? exact : undefined);
   }
-  if (exact && (ORG020_V7_TARGETS.includes(exact)
+  if (exact && (ORG020_V7_TARGETS.includes(exact) || SHOP_OFFICE_SIX_FIELD_TARGETS.includes(exact)
       || isSparseNativeBodyPatch(exact, input.record, selection?.operation))) {
     return publishOrg020ExactPatch(input, client, context, mode, nextStatus, exact);
   }

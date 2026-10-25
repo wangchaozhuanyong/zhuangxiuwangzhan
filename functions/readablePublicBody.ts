@@ -1,5 +1,6 @@
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
+import { getServiceProjectGuidance } from "../src/i18n/serviceDetailPageText";
 import { getMaterialSubcategoryGuidance } from "../src/i18n/materialSubcategoryGuidance";
 import { servicesPageText } from "../src/i18n/servicesPageText";
 import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
@@ -151,6 +152,9 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
     body += list(labels.suitable, field("suitable_for")) + list(labels.scope, field("scope_items")) + list(labels.common, field("common_projects"));
     const steps = field("process_steps");
     if (Array.isArray(steps) && steps.length) body += `<section><h2>${labels.process}</h2><ol>${steps.filter(x => x && typeof x === "object").map(x => `<li><h3>${escape(plain(x.title))}</h3><p>${escape(plain(x.desc))}</p></li>`).join("")}</ol></section>`;
+    if (reviewedOffice) body += getServiceProjectGuidance(text(row.slug), lang).map((block) =>
+      `<section><h2>${escape(block.heading)}</h2>${block.body.split("\n").map((line) => `<p>${escape(line)}</p>`).join("")}</section>`
+    ).join("");
     const faqs = field("faqs");
     if (Array.isArray(faqs) && faqs.length) body += `<section><h2>${labels.faq}</h2>${faqs.filter(x => x && typeof x === "object").map(x => `<h3>${escape(plain(x.q || x.question))}</h3><p>${escape(plain(x.a || x.answer))}</p>`).join("")}</section>`;
   } else if (path.startsWith("/projects/")) {

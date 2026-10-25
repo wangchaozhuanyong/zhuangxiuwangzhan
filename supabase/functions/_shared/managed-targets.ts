@@ -5,6 +5,7 @@ import { OWNER_PUBLISHER_THREE_TARGETS } from "./owner-publisher-three-targets.t
 import { UNIFIED_CONTENT_TARGETS } from "./unified-content-targets.ts";
 import { BUILTIN_WARDROBE_TARGETS } from "./builtin-wardrobe-targets.ts";
 import { MALAY_TRANSLATION_TARGETS } from "./malay-translation-targets.ts";
+import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.ts";
 export { ORG020_V7_TARGETS };
 
 export type ManagedTarget = {
@@ -41,6 +42,7 @@ const PAID_THREE_PAGE_NATIVE_FIELDS = [
 
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
+  ...SHOP_OFFICE_SIX_FIELD_TARGETS,
   ...BUILTIN_WARDROBE_TARGETS,
   ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),

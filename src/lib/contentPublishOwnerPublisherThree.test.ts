@@ -24,7 +24,7 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
     expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
-    expect(historicalTargets).toHaveLength(73);
+    expect(historicalTargets).toHaveLength(75); // Includes the two exact shop/office candidates.
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

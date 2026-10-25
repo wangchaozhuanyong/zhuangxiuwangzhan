@@ -39,6 +39,13 @@ on:
       - scripts/managed-cms-targets-owner-publisher-three-v1.mjs
       - scripts/managed-cms-targets-unified-content-v1.mjs
       - scripts/managed-cms-targets-builtin-wardrobe-v1.mjs
+      - scripts/managed-cms-targets-shop-office-six-field-v4.mjs
+      - drafts/publishing/fc-20261025-shop-office-existing-six-and-five-implementation-release-v1/frozen-two-row-candidates.json
+      - src/i18n/serviceDetailPageText.ts
+      - src/pages/ServiceDetail.guidance.test.tsx
+      - src/lib/shopOfficeGuidanceReadable.test.ts
+      - src/lib/contentPublishShopOfficeSixFields.test.ts
+      - supabase/functions/_shared/shop-office-six-field-targets.ts
       - drafts/publishing/fc-20261014-builtin-wardrobe-layout-cms-publication-v1/**
       - src/lib/contentPublishBuiltinWardrobe.test.ts
       - supabase/functions/_shared/builtin-wardrobe-targets.ts
@@ -169,6 +176,7 @@ jobs:
       - name: Run focused managed CMS tests
         run: |
           npm test -- \
+            src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \
             src/lib/contentPublishOrg020V7.test.ts \
             src/lib/contentPublishNativeBody.test.ts \
@@ -208,7 +216,7 @@ jobs:
 
       - name: Check repair UI and protected publish guards
         run: |
-          npm test -- src/components/services/SurfaceRepairContent.test.tsx src/components/services/DesignServiceContent.cms.test.tsx src/data/services.seo.test.ts src/styles/publicDesignBoundary.test.ts
+          npm test -- src/pages/ServiceDetail.guidance.test.tsx src/lib/shopOfficeGuidanceReadable.test.ts src/components/services/SurfaceRepairContent.test.tsx src/components/services/DesignServiceContent.cms.test.tsx src/data/services.seo.test.ts src/styles/publicDesignBoundary.test.ts
           node --test scripts/publish-surface-repair.test.mjs
 
       - name: Parse the frozen Malay batch publisher
