@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 const fixtures = JSON.parse(readFileSync("drafts/publishing/fc-20261025-shop-office-existing-six-and-five-implementation-release-v1/frozen-two-row-candidates.json", "utf8")).entries as Array<{ target: string; before: Row; desired: Row }>;
 import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
-import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "../../supabase/functions/_shared/shop-office-six-field-targets.ts";
+import { SHOP_OFFICE_SIX_FIELD_FORWARD_INPUTS, SHOP_OFFICE_SIX_FIELD_TARGETS } from "../../supabase/functions/_shared/shop-office-six-field-targets.ts";
 import { managedAction } from "../../supabase/functions/content-publish/managed-targets.ts";
 import { issueManagedPermit, type ManagedPermitIssue } from "../../supabase/functions/content-publish/permit-issuer.ts";
 import { targetConfigs, buildLockedDryRunRequest } from "../../scripts/publish-content-trust-fixes.mjs";
@@ -54,6 +54,38 @@ function request(index: number, mode: "dry-run" | "publish" = "dry-run"): Conten
 }
 
 describe("two exact shop/office three-field targets", () => {
+  it.each([0, 1])("%s admits forward issuance through the unchanged database scope constraint", async (index) => {
+    const migration = readFileSync("supabase/migrations/20260921194000_managed_cms_release_permits.sql", "utf8");
+    const prefix = migration.match(/scope\s+text\s+not\s+null\s+check\s*\(scope\s+like\s+'([^']+)%'\)/i)?.[1];
+    expect(prefix).toBe("flashcast.com.my:");
+    const target = SHOP_OFFICE_SIX_FIELD_TARGETS[index]; const now = Date.now();
+    const inserted: Row[] = [];
+    const database = { from(table: string) {
+      expect(table).toBe("managed_cms_release_permits");
+      return { insert(row: Row) {
+        inserted.push(row);
+        const accepted = typeof row.scope === "string" && row.scope.startsWith(prefix!);
+        return { select() { return { single: async () => ({ data: accepted ? row : null,
+          error: accepted ? null : { message: "violates managed_cms_release_permits_scope_check" } }) }; } };
+      } };
+    } } as unknown as ContentPublishClient;
+    const input: ManagedPermitIssue = { ...managedAction(target, "publish"), operation: "publish", actionClass: "cms_write",
+      permitId: "11111111-1111-4111-8111-111111111111", recordId: target.id, slug: target.slug,
+      expectedUpdatedAt: target.expectedUpdatedAt!, payloadSha256: target.desiredFieldsSha256!,
+      rollbackPayloadSha256: target.rollbackFieldsSha256, githubActorId: 98765, githubWorkflowSha: "a".repeat(40),
+      qaReceiptId: "synthetic-local-contract-qa", operationsDecisionId: "synthetic-local-contract-owner",
+      policyDecisionId: "synthetic-local-contract-policy", issuerEvidenceSha256: "b".repeat(64),
+      expiresAt: new Date(now + 60_000).toISOString() };
+    await expect(issueManagedPermit(database, input, now)).resolves.toMatchObject({ operation: "publish", status: "issued" });
+    expect(inserted).toHaveLength(1);
+    expect(targetConfigs[target.candidateVersion].lockedCandidate.scope).toBe(target.scope);
+    expect(managedAction(target, "rollback").scope).toBe(target.scope);
+    expect(SHOP_OFFICE_SIX_FIELD_FORWARD_INPUTS[index].scope).toBe("project:flashcast:shop-office:existing-six-fields-and-five-blocks:20261025:v1");
+    inserted.length = 0;
+    await expect(issueManagedPermit(database, { ...input, scope: SHOP_OFFICE_SIX_FIELD_FORWARD_INPUTS[index].scope }, now)).rejects.toThrow();
+    expect(inserted).toEqual([]);
+  });
+
   it.each([0, 1])("%s previews the actual sparse request without claiming a permit or writing", async (index) => {
     const fake = clientFor(fixtures[index].before);
     const result = await publishContent(request(index), fake.client, context);
