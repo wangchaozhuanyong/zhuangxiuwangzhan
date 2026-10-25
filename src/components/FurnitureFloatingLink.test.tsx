@@ -148,7 +148,9 @@ for (const language of ["zh", "en", "ms"] as const) {
         expect(trigger.textContent).toBe(contactEntryText[language].trigger);
         expect(document.querySelector('[role="dialog"]')).toBeNull();
         expect(document.querySelector(".fc-furniture-floating")).toBeNull();
-        await act(async () => { trigger.click(); await vi.dynamicImportSettled(); });
+        act(() => trigger.click());
+        expect(trigger).not.toBeDisabled();
+        expect(trigger).not.toHaveAttribute("aria-busy", "true");
         const dialog = document.querySelector('[role="dialog"]')!;
         expect(dialog).toHaveTextContent(contactEntryText[language].title);
         const whatsapp = dialog.querySelector<HTMLAnchorElement>('a[href^="https://wa.me/"]')!;
