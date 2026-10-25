@@ -1,5 +1,6 @@
 export const materialDetailPageText = {
   en: {
+    specificationPending: "Contact us to confirm this specification",
     sampleImagePending: "The sample image is being updated. Contact us to confirm the finish and request a matching sample.",
     notFound: "Material Not Found",
     loadingTitle: "Loading material",
@@ -25,6 +26,7 @@ export const materialDetailPageText = {
     view: "View",
   },
   zh: {
+    specificationPending: "请联系我们确认此规格",
     sampleImagePending: "样板图片更新中，可联系我们确认花色并查看对应样板。",
     notFound: "材料不存在",
     loadingTitle: "正在准备材料内容",
@@ -51,6 +53,7 @@ export const materialDetailPageText = {
   },
 
   ms: {
+    specificationPending: "Hubungi kami untuk mengesahkan spesifikasi ini",
     sampleImagePending: "Imej sampel sedang dikemas kini. Hubungi kami untuk mengesahkan kemasan dan meminta sampel yang sepadan.",
     notFound: "Bahan Tidak Ditemui",
     loadingTitle: "Memuatkan bahan",
@@ -61,10 +64,10 @@ export const materialDetailPageText = {
     metaTitle: "{name} | Bahan Ubahsuai di Kuala Lumpur",
     metaDescription: "{description} Sesuai untuk: {spaces}. Boleh didapati di FLASH CAST, Kuala Lumpur.",
     metaKeywords: "{name}, {category} KL, bahan pengubahsuaian Malaysia",
-    type: "Type",
-    color: "warna",
+    type: "Jenis",
+    color: "Warna",
     texture: "Tekstur",
-    category: "kategori",
+    category: "Kategori",
     suitableSpaces: "Ruang yang Sesuai",
     recommendedPairing: "Disyorkan Berpasangan",
     pros: "Kelebihan",

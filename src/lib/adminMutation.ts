@@ -14,6 +14,8 @@ import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { getPublicSyncIssues, registerPublicSyncIssue, resolvePublicSyncIssue, type PublicSyncIssue } from "@/lib/publicSyncRecovery";
 import { formatUserFacingError } from "@/lib/userFacingText";
+import { MaterialTerminologyError } from "../../supabase/functions/_shared/material-terminology.mjs";
+import { translateFieldLabel } from "@/i18n/displayLabels";
 
 export { AdminMutationError, requestPublicContentInvalidation };
 
@@ -25,6 +27,10 @@ type DeleteAdminRecordOptions = PersistAdminRecordRemovalOptions & { queryClient
 
 export const formatAdminMutationError = (error: unknown, language: Language = "zh"): string => {
   const text = adminMutationText[language];
+  if (error instanceof MaterialTerminologyError) {
+    const fields = error.issues.map(issue => `${translateFieldLabel(issue.field, language)}: ${issue.value}`).join("; ");
+    return text.materialTerms.replace("{fields}", fields);
+  }
   if (error instanceof AdminMutationError) {
     const { reason, operation, sourceError, details } = error.context;
     if (reason === "missing") return operation === "remove" ? text.missingRemove : text.missingSave;

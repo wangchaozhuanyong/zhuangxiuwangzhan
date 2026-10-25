@@ -9,12 +9,13 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeAContentState, SchemeAFacts, SchemeAGallery, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedMaterialBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { translateDisplayText, translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
+import { translateDisplayText, translateMaterialCategory, translateMaterialType, translateMaterialColor, translateMaterialTexture, translateSpaceLabel } from "@/i18n/displayLabels";
 import { materialDetailPageText } from "@/i18n/materialDetailPageText";
 import { schemeARouteText } from "@/i18n/schemeAText";
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
 import { isHtmlText, plainTextParagraphs, stripHtml } from "@/lib/text";
 import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
+import { materialTerminologyIssues } from "../../supabase/functions/_shared/material-terminology.mjs";
 
 const format = (text: string, values: Record<string, string | number>) => Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
 
@@ -34,6 +35,7 @@ export default function MaterialDetail() {
 
   const name = translateDisplayText(material.name, language);
   const categoryName = translateMaterialCategory(category.name, language);
+  const terminologyReady = materialTerminologyIssues({ category: category.name, subcategory: material.subcategory, material_type: material.type, color: material.color, texture: material.texture }).length === 0;
   const rawDescription = material.description || "";
   const description = stripHtml(translateDisplayText(material.excerpt || category.description || "", language));
   const body = stripHtml(rawDescription) === description ? "" : rawDescription;
@@ -53,14 +55,14 @@ export default function MaterialDetail() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta malayReady={isMalayContentReady(material)} title={material.seoTitle || format(copy.metaTitle, { name })} description={material.seoDescription || format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} ogImage={material.image || undefined} />
+      <PageMeta malayReady={isMalayContentReady(material) && terminologyReady} title={material.seoTitle || format(copy.metaTitle, { name })} description={material.seoDescription || format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} ogImage={material.image || undefined} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name: categoryName, url: `/materials/category/${category.slug}` }, { name, url: `/materials/${material.slug}` }]} />
       <SchemeARouteHero kind="detail" image={material.image} mediaDisclosure={isReviewedMaterialConceptImage(material.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={material.alt || name} label={categoryName} title={name} description={description} />
       {!material.image ? <SchemeAContentState action={<Link to="/contact">{copy.enquire}</Link>}>{copy.sampleImagePending}</SchemeAContentState> : null}
       <SchemeAFacts items={[
         { label: copy.type, value: translateMaterialType(material.type || "", language) || "-" },
-        { label: copy.color, value: translateDisplayText(material.color || "-", language) },
-        { label: copy.texture, value: translateDisplayText(material.texture || "-", language) },
+        { label: copy.color, value: material.color ? translateMaterialColor(material.color, language) : "-" },
+        { label: copy.texture, value: material.texture ? translateMaterialTexture(material.texture, language) : "-" },
         { label: copy.category, value: categoryName },
       ]} />
       <SchemeASection title={routeText.materialConsiderations}>

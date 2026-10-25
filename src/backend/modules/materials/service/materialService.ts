@@ -3,6 +3,7 @@ import { completePublicSync } from "@/lib/publicSyncRecovery";
 import type { QueryClient } from "@tanstack/react-query";
 import { requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { assertMaterialTerminology } from "../../../../../supabase/functions/_shared/material-terminology.mjs";
 import {
   fetchAdminMaterialDetail,
   fetchAdminMaterialList,
@@ -132,6 +133,7 @@ export function buildAdminMaterialPayload(record: AdminMaterialRecord, nextStatu
 
 export async function saveAdminMaterial(input: SaveAdminMaterialInput) {
   const { slug, payload } = buildAdminMaterialPayload(input.record, input.nextStatus);
+  if (payload.status === "published") assertMaterialTerminology(payload);
   const saved = await saveAdminRecord({
     table: "materials",
     payload,

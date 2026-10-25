@@ -8,6 +8,7 @@ import { chromium } from "@playwright/test";
 import { transform } from "esbuild";
 import ts from "typescript";
 import { loadProjectEnv } from "./lib/project-env.mjs";
+import { checkMaterialTerminology } from "./check-material-terminology.mjs";
 
 const rootDir = process.cwd();
 const configPath = path.join(rootDir, "i18n-locale-rules.json");
@@ -1091,6 +1092,7 @@ const runCheck = async (name) => {
 const run = async () => {
   const checks = command === "all" ? ["keys", "resources", "hardcoded", "runtime"] : [command];
   const issues = [];
+  if (command === "all" || command === "resources") issues.push(...await checkMaterialTerminology(rootDir));
 
   for (const checkName of checks) {
     const checkIssues = await runCheck(checkName);

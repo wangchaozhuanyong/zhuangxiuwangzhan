@@ -23,6 +23,7 @@ import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 import { pendingContentPaths, validateContentLinks } from "../_shared/content-links.mjs";
+import { assertMaterialTerminology } from "../_shared/material-terminology.mjs";
 
 const CONTENT_WRITE_ROLES = new Set(["super_admin", "content_editor"]);
 // Managed rows cannot be written through the legacy cron/admin path.
@@ -903,6 +904,7 @@ function cleanMaterialPayload(record: Record<string, unknown>, nextStatus?: Cont
     }
     const missing = requiredFields.filter((field) => !payload[field] || (Array.isArray(payload[field]) && payload[field].length === 0));
     if (missing.length) throw new Error(`Published material requires bilingual content, pricing context, SEO, and accessibility fields: ${missing.join(", ")}.`);
+    assertMaterialTerminology(payload);
 
     if (requiresMaterialSchema) {
       const priceMode = String(payload.price_mode);
