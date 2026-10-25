@@ -202,11 +202,12 @@ describe("topic-cluster Blog publish records", () => {
     const unifiedTargets = ["design-body-faq-unified-20261009-v1", "bathroom-body-step-unified-20261009-v1"];
     const paidThreeTargets = ["paid-three-page-builtin-exact-fields-v1", "paid-three-page-kitchen-exact-fields-v1", "paid-three-page-renovation-exact-fields-v1"];
     const wardrobeTarget = "builtin-wardrobe-layout-content-zh-20261014-v1";
-    const publishTargets = [wardrobeTarget, ...paidThreeTargets, ...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
+    const shopOfficeTargets = ["shop-office-shop-six-v4-ba79401d2ed2-20261025-v1", "shop-office-office-six-v4-eb6eef35d390-20261025-v1"];
+    const publishTargets = [...shopOfficeTargets, wardrobeTarget, ...paidThreeTargets, ...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
     expect(cases).toHaveLength(2);
-    expect(cases[0]).toEqual([...paidThreeTargets, ...rollbackTargets]);
+    expect(cases[0]).toEqual([...shopOfficeTargets, ...paidThreeTargets, ...rollbackTargets]);
     expect(cases[1]).toEqual(publishTargets);
     expect(cases[1]).not.toContain("malay-cms-continuation-20261019");
     expect(cases[0]).not.toContain("content-link-repair-20261024");
