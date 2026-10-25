@@ -59,8 +59,8 @@ describe("current public metadata contract", () => {
     expect(document.querySelector('meta[property="og:image"]')?.getAttribute("content")).toBe("https://flashcast.com.my/current-share.webp");
   });
   it.each([
-    ["/ms/materials/category/countertops-stone-surfaces", "Countertop & Permukaan Batu", "Pilihan kuarza, batu tersinter, bahan permukaan pejal dan papak porselin"],
-    ["/ms/materials/category/countertops-stone-surfaces/porcelain-slab", "Papak Porcelain", "Papak porselin nipis untuk kaunter tumpuan, pelindung percikan dan kemasan dinding."],
+    ["/ms/materials/category/countertops-stone-surfaces", "Permukaan Kaunter dan Batu", "Pilihan kuarza, batu tersinter, bahan permukaan pejal dan papak porselin"],
+    ["/ms/materials/category/countertops-stone-surfaces/porcelain-slab", "Papak Porselin", "Papak porselin nipis untuk kaunter tumpuan, pelindung percikan dan kemasan dinding."],
   ])("localizes reviewed material fallback metadata before hydration: %s", async (path, title, description) => {
     const { response, document } = await render(path, null);
     expect(response.status).toBe(200);
