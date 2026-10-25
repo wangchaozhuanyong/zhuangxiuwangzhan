@@ -6,6 +6,7 @@ import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
 
 type MobileDockMode = "navigation" | "actions" | "hidden";
+const mobileDockMedia = "(max-width: 767px)";
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (target instanceof HTMLInputElement) {
@@ -22,8 +23,17 @@ const isEditableTarget = (target: EventTarget | null) => {
 const MobileBottomDock = () => {
   const { key: routeKey } = useLocation();
   const { menuOpen, hasOpenDialog, showMobileActionBar } = usePublicChrome();
+  const [mobileViewport, setMobileViewport] = useState(() => window.matchMedia(mobileDockMedia).matches);
+  useLayoutEffect(() => {
+    // Match the existing CSS visibility boundary without unmounting either panel.
+    const media = window.matchMedia(mobileDockMedia);
+    const syncViewport = () => setMobileViewport(media.matches);
+    media.addEventListener("change", syncViewport);
+    syncViewport();
+    return () => media.removeEventListener("change", syncViewport);
+  }, []);
   const dockRef = useRef<HTMLDivElement>(null);
-  const obstructed = useFloatingOcclusion(dockRef, routeKey, "fixed");
+  const obstructed = useFloatingOcclusion(dockRef, routeKey, "fixed", mobileViewport);
   const [formControlFocused, setFormControlFocused] = useState(false);
   const mode: MobileDockMode = menuOpen || hasOpenDialog || formControlFocused || obstructed
     ? "hidden"

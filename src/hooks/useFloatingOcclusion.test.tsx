@@ -12,9 +12,9 @@ let boxes: WeakMap<HTMLElement, DOMRect>;
 const rect = (top = 700, left = 283, width = 76, height = 76): DOMRect => ({
   x: left, y: top, left, right: left + width, top, bottom: top + height, width, height, toJSON: () => ({}),
 });
-function Entry({ route, reposition = true }: { route: string; reposition?: boolean | "fixed" }) {
+function Entry({ route, reposition = true, enabled }: { route: string; reposition?: boolean | "fixed"; enabled?: boolean }) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const hidden = useFloatingOcclusion(ref, route, reposition);
+  const hidden = useFloatingOcclusion(ref, route, reposition, enabled);
   return <a ref={ref} className="entry" href="/shop" data-obstructed={hidden || undefined}>Shop</a>;
 }
 async function settle() { await act(async () => { await new Promise(resolve => setTimeout(resolve, 20)); }); }
@@ -41,6 +41,98 @@ beforeEach(() => {
 });
 afterEach(() => { act(() => root.unmount()); container.remove(); content.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe("floating promotion stays available while reading", () => {
+  it("does not measure or subscribe while disabled, including after navigation", async () => {
+    const mutations = vi.spyOn(MutationObserver.prototype, "observe");
+    const resize = vi.fn();
+    vi.stubGlobal("ResizeObserver", class { constructor() { resize(); } });
+    const windowEvents = vi.spyOn(window, "addEventListener");
+    const measurements = vi.mocked(HTMLElement.prototype.getBoundingClientRect);
+    act(() => root.render(<Entry route="/zh" reposition="fixed" enabled={false} />));
+    act(() => root.render(<Entry route="/en/projects" reposition="fixed" enabled={false} />));
+    content.innerHTML = '<div role="dialog" aria-modal="true">Contact panel</div>';
+    window.dispatchEvent(new Event("scroll"));
+    window.dispatchEvent(new Event("resize"));
+    await settle();
+    expectObstructed(false);
+    expect(measurements).not.toHaveBeenCalled();
+    expect(mutations).not.toHaveBeenCalled();
+    expect(resize).not.toHaveBeenCalled();
+    expect(windowEvents.mock.calls.filter(([name]) => name === "scroll" || name === "resize")).toHaveLength(0);
+  });
+
+  it("disconnects disabled and unmounted entries and cancels their queued scans", async () => {
+    const frames = new Map<number, FrameRequestCallback>();
+    let nextFrame = 0;
+    const requestFrame = vi.fn((callback: FrameRequestCallback) => {
+      const id = ++nextFrame;
+      frames.set(id, callback);
+      return id;
+    });
+    const cancelFrame = vi.fn((id: number) => { frames.delete(id); });
+    vi.stubGlobal("requestAnimationFrame", requestFrame);
+    vi.stubGlobal("cancelAnimationFrame", cancelFrame);
+    const mutationDisconnect = vi.spyOn(MutationObserver.prototype, "disconnect");
+    const resizeDisconnect = vi.fn();
+    const resizeCallbacks: (() => void)[] = [];
+    vi.stubGlobal("ResizeObserver", class {
+      constructor(callback: () => void) { resizeCallbacks.push(callback); }
+      observe() {}
+      disconnect() { resizeDisconnect(); }
+    });
+    const measurements = vi.mocked(HTMLElement.prototype.getBoundingClientRect);
+    content.innerHTML = '<div role="dialog" aria-modal="true">Contact panel</div>';
+    act(() => root.render(<Entry route="/zh" reposition="fixed" />));
+    expectObstructed(true);
+    window.dispatchEvent(new Event("scroll"));
+    expect(frames.size).toBe(1);
+    const [frameId, staleFrame] = [...frames][0];
+    act(() => root.render(<Entry route="/zh" reposition="fixed" enabled={false} />));
+    expectObstructed(false);
+    expect(cancelFrame).toHaveBeenCalledWith(frameId);
+    expect(frames.size).toBe(0);
+    expect(mutationDisconnect).toHaveBeenCalledTimes(1);
+    expect(resizeDisconnect).toHaveBeenCalledTimes(1);
+
+    measurements.mockClear();
+    requestFrame.mockClear();
+    staleFrame(performance.now());
+    resizeCallbacks[0]();
+    content.innerHTML = "";
+    window.dispatchEvent(new Event("scroll"));
+    window.dispatchEvent(new Event("resize"));
+    document.dispatchEvent(new Event("load"));
+    await Promise.resolve();
+    expect(measurements).not.toHaveBeenCalled();
+    expect(requestFrame).not.toHaveBeenCalled();
+
+    act(() => root.render(<Entry route="/en/projects" reposition="fixed" />));
+    expectObstructed(false);
+    expect(measurements).toHaveBeenCalled();
+    content.innerHTML = '<div role="dialog" aria-modal="true">New dialog</div>';
+    // Re-enabling and a route change both check current content synchronously.
+    act(() => root.render(<Entry route="/en/contact" reposition="fixed" />));
+    expectObstructed(true);
+    window.dispatchEvent(new Event("scroll"));
+    expect(frames.size).toBe(1);
+    const [unmountFrameId, unmountedFrame] = [...frames][0];
+    act(() => root.render(null));
+    expect(cancelFrame).toHaveBeenCalledWith(unmountFrameId);
+    expect(frames.size).toBe(0);
+    expect(mutationDisconnect).toHaveBeenCalledTimes(3);
+    expect(resizeDisconnect).toHaveBeenCalledTimes(3);
+    measurements.mockClear();
+    requestFrame.mockClear();
+    unmountedFrame(performance.now());
+    resizeCallbacks.forEach((callback) => callback());
+    window.dispatchEvent(new Event("scroll"));
+    window.dispatchEvent(new Event("resize"));
+    document.dispatchEvent(new Event("transitionend"));
+    content.innerHTML = "";
+    await Promise.resolve();
+    expect(measurements).not.toHaveBeenCalled();
+    expect(requestFrame).not.toHaveBeenCalled();
+  });
+
   it.each(["fc-furniture-card__actions", "fc-route-contact-form", "scheme-a-actions"])(
     "keeps fixed chrome stable while unfocused %s controls pass underneath", async (className) => {
       content.innerHTML = `<div class="${className}"><form><input /><button>Continue</button></form></div>`;

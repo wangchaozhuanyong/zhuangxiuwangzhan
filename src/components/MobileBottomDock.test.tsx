@@ -14,6 +14,13 @@ describe("MobileBottomDock focus recovery", () => {
   let container: HTMLDivElement;
   let root: Root;
   let navigate: NavigateFunction;
+  let mobileViewport: boolean;
+  let mobileMedia: MediaQueryList;
+
+  const changeViewport = (mobile: boolean) => act(() => {
+    mobileViewport = mobile;
+    mobileMedia.dispatchEvent(new Event("change"));
+  });
 
   const Fixture = () => {
     const location = useLocation();
@@ -29,6 +36,13 @@ describe("MobileBottomDock focus recovery", () => {
   ));
 
   beforeEach(() => {
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+    mobileViewport = true;
+    mobileMedia = Object.defineProperties(new EventTarget(), {
+      matches: { get: () => mobileViewport },
+      media: { value: "(max-width: 767px)" },
+    }) as MediaQueryList;
+    vi.stubGlobal("matchMedia", vi.fn(() => mobileMedia));
     chrome.menuOpen = false;
     chrome.hasOpenDialog = false;
     chrome.showMobileActionBar = false;
@@ -41,6 +55,86 @@ describe("MobileBottomDock focus recovery", () => {
     act(() => root.unmount());
     container.remove();
     vi.useRealTimers();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("keeps the desktop dock mounted without observing or measuring page changes", async () => {
+    mobileViewport = false;
+    const observe = vi.spyOn(MutationObserver.prototype, "observe");
+    const disconnect = vi.spyOn(MutationObserver.prototype, "disconnect");
+    const measurements = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect");
+    const windowEvents = vi.spyOn(window, "addEventListener");
+    render();
+    const originalDock = dock();
+    const panels = Array.from(originalDock!.children);
+    expect(panels).toHaveLength(2);
+    act(() => { navigate("/projects?view=all"); });
+    container.appendChild(document.createElement("aside"));
+    await act(async () => {
+      window.dispatchEvent(new Event("scroll"));
+      window.dispatchEvent(new Event("resize"));
+      await Promise.resolve();
+      vi.runAllTimers();
+    });
+    expect(observe).not.toHaveBeenCalled();
+    expect(measurements).not.toHaveBeenCalled();
+    expect(windowEvents.mock.calls.filter(([name]) => name === "scroll" || name === "resize")).toHaveLength(0);
+
+    changeViewport(true);
+    expect(window.matchMedia).toHaveBeenCalledWith("(max-width: 767px)");
+    expect(observe).toHaveBeenCalledTimes(1);
+    expect(measurements).toHaveBeenCalled();
+    expect(dock()).toBe(originalDock);
+    expect(Array.from(dock()!.children)).toEqual(panels);
+
+    changeViewport(false);
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    measurements.mockClear();
+    await act(async () => {
+      window.dispatchEvent(new Event("scroll"));
+      container.appendChild(document.createElement("aside"));
+      await Promise.resolve();
+      vi.runAllTimers();
+    });
+    expect(measurements).not.toHaveBeenCalled();
+    expect(dock()).toBe(originalDock);
+  });
+
+  it("checks current modal protection when the mobile breakpoint activates and removes its media listener on unmount", async () => {
+    mobileViewport = false;
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      x: 0, y: 100, left: 0, top: 100, right: 390, bottom: 160, width: 390, height: 60, toJSON: () => ({}),
+    });
+    const mediaListener = vi.spyOn(mobileMedia, "addEventListener");
+    const removeMediaListener = vi.spyOn(mobileMedia, "removeEventListener");
+    const observe = vi.spyOn(MutationObserver.prototype, "observe");
+    render();
+    const modal = document.createElement("div");
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    container.append(modal);
+    changeViewport(true);
+    expect(dock()).toHaveAttribute("data-mode", "hidden");
+
+    changeViewport(false);
+    modal.remove();
+    changeViewport(true);
+    expect(dock()).toHaveAttribute("data-mode", "navigation");
+    await act(async () => {
+      container.append(modal);
+      await Promise.resolve();
+      vi.runAllTimers();
+    });
+    expect(dock()).toHaveAttribute("data-mode", "hidden");
+
+    const listener = mediaListener.mock.calls.find(([name]) => name === "change")![1];
+    act(() => root.render(null));
+    expect(removeMediaListener).toHaveBeenCalledWith("change", listener);
+    observe.mockClear();
+    changeViewport(false);
+    changeViewport(true);
+    expect(observe).not.toHaveBeenCalled();
   });
 
   it.each(["text", "search", "email", "tel", "url", "password", "number", "textarea", "contenteditable"])(

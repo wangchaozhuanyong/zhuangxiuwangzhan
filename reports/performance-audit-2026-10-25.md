@@ -8,7 +8,7 @@
 
 ## 结论与交付状态
 
-已确认三项可以在保留现有布局和内容的前提下修复的资源调度问题，并完成对应代码与回归检查：首文档遗漏必要模块预加载、站内意图预取没有覆盖页面程序、普通延迟图片被自动提升为高优先级。另修正性能预算脚本漏算静态依赖的问题。
+已确认四项可以在保留现有布局和内容的前提下修复的问题，并完成对应代码及回归检查：首文档遗漏必要模块预加载、站内意图预取没有覆盖页面程序、普通延迟图片被自动提升为高优先级，以及桌面上隐藏的手机底栏仍执行遮挡检查。另修正性能预算脚本漏算静态依赖的问题。
 
 这是一份待审查的性能修复，尚未合并或部署。真实首屏静态脚本预算仍超过原定的 180 KiB gzip，因此不能宣称全部性能问题已经解决，也不建议把本次 draft 直接作为性能验收完成。没有为通过检查而提高预算或取消既有加载保护。
 
@@ -61,6 +61,16 @@
 
 涉及：`src/components/DeferredSmartImage.tsx`。
 
+### P2：桌面隐藏的手机底栏仍监听和扫描页面
+
+`.scheme-a-mobile-switcher` 仅在 `max-width: 767px` 时显示，但原 `MobileBottomDock` 在桌面也持续启用 `useFloatingOcclusion`，订阅整页 DOM 变化、滚动、尺寸、图片 load、焦点和动画事件，并安排遮挡检查。这些计算无法改变一个已经由 CSS 隐藏的底栏。
+
+修复按原有媒体断点启停这一个底栏的遮挡检查：桌面不安装该组观察器和事件监听；切回手机宽度时重新读取实际遮挡；离开手机断点或卸载时取消已排队检查。共享 hook 的其他调用默认继续启用。底栏 DOM、CSS、断点、按钮、焦点和弹窗优先级规则保持不变。
+
+这项修改移除了可证明不必要的工作，但没有取得线上 CPU 时间或掉帧率，不能宣称具体帧率提升。
+
+涉及：`src/components/MobileBottomDock.tsx`、`src/hooks/useFloatingOcclusion.ts`。
+
 ### P1：原性能预算漏算静态依赖
 
 原脚本仅统计 HTML 中显式引用的 JS，没有追踪其静态 import。在原预加载配置下，实际必需模块的大部分没有被计入预算。
@@ -88,14 +98,14 @@ VITE_APP_VERSION=interaction-ci
 | 指标 | 基线 | 修复后 |
 | --- | ---: | ---: |
 | 初始静态 JS 完整依赖 gzip | 351.7 KiB | 352.6 KiB |
-| 精确 gzip 字节数 | 360122 | 361036 |
+| 精确 gzip 字节数 | 360122 | 361103 |
 | 初始静态模块数 | 43 | 43 |
 | HTML modulepreload 数 | 2 | 42 |
 | HTML 中 JS 引用数 | 3 | 43 |
 | 初始依赖图中的页面模块 | 0 | 0 |
 | HTML gzip 字节数 | 6377 | 7078 |
 
-新增调度和首屏保护增加 914 字节 gzip，约 0.89 KiB。本次收益是加载发现顺序与资源优先级，不能写成“首包变小”。
+新增调度、首屏保护和断点控制合计增加 981 字节 gzip，约 0.96 KiB。本次收益是加载发现顺序、资源优先级与减少隐藏组件计算，不能写成“首包变小”。
 
 性能门禁结果：
 
@@ -105,7 +115,7 @@ VITE_APP_VERSION=interaction-ci
 | 基线 + 修正门禁 | 351.7 KiB，超过 180 KiB，退出码 1 |
 | 修复后 + 修正门禁 | 352.6 KiB，超过 180 KiB，退出码 1 |
 
-这已在本地复现仓库 CI 的编译和预算步骤。远端 Actions 状态需以实际运行结果为准。
+这已在本地复现仓库 CI 的编译和预算步骤。首提交 `be2cb6d` 的远端 Interaction standards 也在此预算步骤失败，前面的完整交互质量检查和两种构建均通过；这不是新增功能测试失败。
 
 ### 布局和内容保持检查
 
@@ -160,22 +170,33 @@ VITE_APP_VERSION=interaction-ci
 - 交互标准静态检查：98 条登记路由；该检查不是全站浏览器验收。
 - 联合回归：15 个测试文件、271 项通过。
 - 最后追加的首屏预取保护：组件 10 项测试、全项目类型检查与局部 lint 通过（与联合回归部分重叠，不累计为独立测试总数）。
+- 隐藏手机底栏优化：`MobileBottomDock`、`useFloatingOcclusion`、`FurnitureFloatingLink` 三文件 138 项回归、全应用类型检查、四个修改文件 lint 及架构检查通过；与此前联合测试存在重叠，不累计独立总数。
 - 构建/预算工具：5 项 Node 回归通过。
 - 最终 production fixture 编译、静态产物一致性比较和 diff 格式检查通过。
 
 明确未通过：修正后的 `verify:performance-budget`，真实脚本量超过原定 180 KiB。
 
+首提交 `be2cb6d` 的 GitHub Actions 结果：
+
+| 工作流 | 结果 |
+| --- | --- |
+| [Furniture page PR checks](https://github.com/wangchaozhuanyong/zhuangxiuwangzhan/actions/runs/40209415996) | 通过 |
+| [R3 managed CMS PR checks](https://github.com/wangchaozhuanyong/zhuangxiuwangzhan/actions/runs/40209416053) | 通过，包括严格发布构建与产物校验；没有部署 |
+| [Interaction standards](https://github.com/wangchaozhuanyong/zhuangxiuwangzhan/actions/runs/40209416014) | 完整交互质量检查、development/production 构建通过，最终性能预算失败 |
+
+上述远端运行针对首提交。随后补充的底栏优化有上述本地回归和最终构建证据；其远端状态以 PR 最新提交的 Checks 为准。
+
 明确未验证：
 
 - `npm run verify:public-performance`。该脚本启动独立 Playwright；本次 Browser 技能要求只使用连接浏览器，不能另启独立浏览器绕过，因此用实际点测覆盖可做部分并记录缺口。
 - 补丁部署后 LCP/INP/CLS、弱网长任务、连续导航逐帧画面、iOS Safari 真机与马来西亚网络验收。
-- 生产 prebuild、后台登录、数据库写入、表单成功提交及所有 98 条路由的全量浏览器验收。
+- 本地没有运行生产 prebuild；远端首提交的 R3 工作流已执行严格构建。后台登录、数据库写入、表单成功提交及所有 98 条路由的全量浏览器验收仍未进行。
 
 ## 尚待解决的性能来源
 
 1. **首包仍偏重。** 公共页脚从通用内容 hook 引入 CTA，间接带入所有内容 mapper 和语言回退字典。`malayContent` 构建 chunk 约 107.5 KiB gzip，`displayLabels` 约 22.6 KiB gzip；英文和中文入口也在此静态链中。
 2. **仅拆页脚不能代表首页减重。** 首页 Index 本身还使用同套内容 hook。只把依赖挪到懒加载入口可能使统计好看，却增加首屏后续等待；需要同时量化公共入口与各首路由完整依赖。
-3. **材料详情串行读取。** 当前先读材料目录，再读目标条目及图库；后续优化必须保留分类推荐、完整详情和原兜底语义。
+3. **材料详情串行读取。** 当前先读材料目录，再按条件读目标条目及图库。是否需要详情，要等目录中的匹配项与 gallery 状态才能确定；直接并行会在原本不需要的分支增加请求，简单 `Promise.all` 还会改变错误处理，因此本轮保留原语义。另发现 `MaterialDetail` 从返回的 `category.items` 选材料，没有消费单独合并详情后的 `published.material`，部分额外读取可能未用于展示。改用完整对象可能改变正文和图库，超出本轮不改内容的约束，仅记录问题。
 4. **博客列表载荷偏大。** 当前列表读取完整记录，并参与详情预取；精简正文前需保持阅读时间、相关文章和详情缓存的准确性。
 
 这些是下一阶段明确的性能工作，不是要求更换设计或页面内容。没有在缺乏真实长任务证据时，把 MutationObserver、动画或路由门整体重写当成已证实解决方案。
@@ -184,12 +205,12 @@ VITE_APP_VERSION=interaction-ci
 
 保持此变更为 draft。下一步应在相同布局/内容下安全拆分语言与内容依赖，修复真实预算超标，再在可用预览环境检查首次进入、刷新、缓存返回、连续导航、慢资源和恢复路径。真实页面数据、CSS、图片候选与解码状态仍按现有规则验收。
 
-本次没有数据库迁移、内容更新、权限变更或线上缓存操作；如需回退，整体撤销本次性能提交即可。不得把静态检查通过当成可以跳过性能验收的理由。
+本次没有数据库迁移、内容更新、权限变更或线上缓存操作；如需回退，整体撤销本 PR 的性能提交即可。不得把静态检查通过当成可以跳过性能验收的理由。
 
 ## Architecture Compliance Report
 
 1. Target module：system 公共运行支持、media 图片展示。
-2. Target layer：前端公共组件、lib 加载封装、routes 绑定、工程构建/验证脚本。
+2. Target layer：前端公共组件及 hooks、lib 加载封装、routes 绑定、工程构建/验证脚本。
 3. Edited files：上述性能实现、对应回归测试及本报告。
 4. Forbidden files touched：no；未改页面 JSX 布局、CSS、内容、素材、数据库或权限。
 5. API paths changed：no。
