@@ -45,7 +45,8 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "project": { const row = payload.projectDetails?.[String(parameters.slug)]; return row ? mapPublishedProjectDetail(row, language) : undefined; }
     case "materials": return payload.materials ? mapPublishedMaterialRows(payload.materials.filter((row) => String(row.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY), language) : undefined;
     case "material": {
-      const rows = payload.materialDetailContext?.slug === parameters.slug ? payload.materialDetailContext.rows : payload.materials;
+      const context = payload.materialDetailContext;
+      const rows = context && context.slug === parameters.slug ? context.rows : payload.materials;
       const row = rows?.find((item) => item.slug === parameters.slug);
       // Summary body fallback alone does not prove that detail fields were projected.
       if (!row || !("material_images" in row || "suitable_spaces_en" in row || "seo_title_en" in row)) return undefined;
