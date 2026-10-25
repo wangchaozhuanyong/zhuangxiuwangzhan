@@ -34,7 +34,9 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "service_summaries": return payload.services ? limit(payload.services, parameters.limit).map((row) => mapPublishedService(row, language)) : undefined;
     case "service": {
       const row = payload.serviceDetails?.[String(parameters.slug)] || payload.services?.find((item) => item.slug === parameters.slug);
-      return row && (row[`content_${language}`] || row.content_en || row.content_zh) && ("suitable_for_en" in row || "faqs_en" in row) ? mapPublishedService(row, language) : undefined;
+      return row && (!row.preload_language || row.preload_language === language)
+        && (row[`content_${language}`] || row.content_en || row.content_zh)
+        && (`suitable_for_${language}` in row || `faqs_${language}` in row || "suitable_for_en" in row || "faqs_en" in row) ? mapPublishedService(row, language) : undefined;
     }
     case "project_summaries": {
       const rows = payload.projectSummaries ? limit(payload.projectSummaries, parameters.limit) : undefined;
@@ -59,7 +61,7 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "blog": return payload.blogPosts ? mapPublishedBlogPostRows(payload.blogPosts, language) : undefined;
     case "blog_post": {
       const row = payload.blogPostDetails?.[String(parameters.slug)];
-      const rows = row ? [row] : payload.blogPosts;
+      const rows = row && (!row.preload_language || row.preload_language === language) ? [row] : payload.blogPosts;
       return rows ? mapPublishedBlogPostRows(rows, language).find((post) => post.slug === parameters.slug && Boolean(post.content?.trim())) : undefined;
     }
     case "service_areas": return payload.serviceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));

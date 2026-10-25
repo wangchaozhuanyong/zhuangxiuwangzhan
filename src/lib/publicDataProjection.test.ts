@@ -7,10 +7,25 @@ import {
   projectProjectSummariesForPreload,
   projectServiceAreaSummariesForPreload,
   projectServiceSummariesForPreload,
+  projectServiceDetailForPreload,
+  projectBlogDetailForPreload,
   projectSitePageBundleForPreload,
 } from "../../functions/publicDataProjection";
 
 describe("public HTML data projection", () => {
+  it.each(["en", "zh", "ms"] as const)("keeps only required detail locale fields while preserving the %s render", async language => {
+    const { mapPublishedService, mapPublishedBlogPost } = await import("./contentApi");
+    const row = { id: "detail", slug: "detail", title_en: "English", title_zh: "中文", title_ms: "Melayu", content_en: "English body", content_zh: "中文正文", content_ms: "Kandungan", suitable_for_en: ["Homes"], suitable_for_zh: ["住宅"], suitable_for_ms: ["Rumah"], faqs_en: [{ q: "English Q", a: "English A" }], faqs_zh: [{ q: "中文问", a: "中文答" }], faqs_ms: [{ q: "Soalan", a: "Jawapan" }] };
+    const service = projectServiceDetailForPreload(row, language), blog = projectBlogDetailForPreload(row, language);
+    expect(mapPublishedService(service, language)).toEqual(mapPublishedService(row, language));
+    expect(mapPublishedBlogPost(blog, language)).toEqual(mapPublishedBlogPost(row, language));
+    expect(service.preload_language).toBe(language);
+    expect(blog.preload_language).toBe(language);
+    for (const other of ["en", "zh", "ms"].filter(value => value !== language)) {
+      expect(service).not.toHaveProperty(`content_${other}`);
+      expect(blog).not.toHaveProperty(`content_${other}`);
+    }
+  });
   it.each(["en", "zh", "ms"] as const)("omits unused CMS home sections without changing the %s render", (language) => {
     const published = {
       id: "published-home", page_key: "home", path: "/",

@@ -144,9 +144,9 @@ export async function fetchPublishedServiceRows(signal?: AbortSignal) {
     .from("services")
     .select(PUBLIC_SERVICE_FIELDS.join(","))
     .eq("status", "published")
-    .order("sort_order", { ascending: true }).returns<UnknownRecord[]>(), signal);
+    .order("sort_order", { ascending: true }), signal);
   if (error) throw error;
-  return data || [];
+  return (data || []) as unknown as UnknownRecord[];
 }
 
 export async function fetchPublishedServiceRowBySlug(slug: string, signal?: AbortSignal) {
@@ -245,9 +245,9 @@ export async function fetchPublishedMaterialRowBySlug(slug: string, signal?: Abo
 export async function fetchPublishedBlogPostRows(signal?: AbortSignal) {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
-  const { data, error } = await withReadSignal(supabase.from("blog_posts").select(PUBLIC_BLOG_FIELDS.join(",")).eq("status", "published").order("published_at", byCreatedAtDesc).returns<UnknownRecord[]>(), signal);
+  const { data, error } = await withReadSignal(supabase.from("blog_posts").select(PUBLIC_BLOG_FIELDS.join(",")).eq("status", "published").order("published_at", byCreatedAtDesc), signal);
   if (error) throw error;
-  return data || [];
+  return (data || []) as unknown as UnknownRecord[];
 }
 
 export async function fetchPublishedHomeJournalRows(signal?: AbortSignal) {

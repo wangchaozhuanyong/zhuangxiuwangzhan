@@ -20,16 +20,18 @@ export function withPublicDetailReuse<T>(client: QueryClient, definition: Defini
   const language = parameters?.language as Language;
   const slug = parameters?.slug;
   const allowed = () => !client.getQueryState(definition.queryKey)?.isInvalidated;
-  const article = () => {
+  const article = (displayOnly = false) => {
     if (!allowed() || parameters?.resource !== "blog_post") return undefined;
-    const state = freshPublicData<Awaited<ReturnType<typeof getPublishedBlogPosts>>>(client, keys.blogPosts.key(language));
+    const key = keys.blogPosts.key(language);
+    const state = displayOnly ? client.getQueryState<Awaited<ReturnType<typeof getPublishedBlogPosts>>>(key) : freshPublicData<Awaited<ReturnType<typeof getPublishedBlogPosts>>>(client, key);
+    if (state?.isInvalidated || state?.status !== "success") return undefined;
     const post = state?.data?.find(item => item.slug === slug && Boolean(item.content?.trim()));
     return post ? { post, updatedAt: state!.dataUpdatedAt } : undefined;
   };
   return {
     ...definition,
-    initialData: () => article()?.post as T | undefined ?? claimPublicQuerySeed(client, definition.queryKey) as T | undefined,
-    initialDataUpdatedAt: () => article()?.updatedAt ?? documentSeedTime,
+    initialData: () => article(true)?.post as T | undefined ?? claimPublicQuerySeed(client, definition.queryKey) as T | undefined,
+    initialDataUpdatedAt: () => article(true)?.updatedAt ?? documentSeedTime,
     queryFn: async (context: { signal: AbortSignal }): Promise<T> => {
       const cached = article();
       if (cached) return cached.post as T;

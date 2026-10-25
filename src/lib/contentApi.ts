@@ -341,7 +341,7 @@ export const getPublishedServices = async (language: Language = "en", signal?: A
 };
 
 export const mapPublishedService = (item: UnknownRecord, language: Language): PublishedServiceSummary & UnknownRecord => ({
-    translationComplete: hasMalayContent(item),
+    translationComplete: typeof item.preload_malay_ready === "boolean" ? item.preload_malay_ready : hasMalayContent(item),
     id: readText(item, "id"),
     status: readText(item, "status"),
     title: pickLocalizedText(item, "title", language),
@@ -502,7 +502,7 @@ export const mapPublishedMaterialRows = (rows: UnknownRecord[], language: Langua
       referencePrice,
       priceScope: pickLocalizedText(item, "price_scope", language),
       priceNote: pickLocalizedText(item, "price_note", language),
-      translationComplete: hasMalayContent(item),
+      translationComplete: typeof item.preload_malay_ready === "boolean" ? item.preload_malay_ready : hasMalayContent(item),
       seoTitle: pickLocalizedText(item, "seo_title", language),
       seoDescription: pickLocalizedText(item, "seo_description", language),
       image: readText(item, "image_url"),
@@ -590,7 +590,7 @@ export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "
     : estimateBlogReadMinutes(content, language);
 
   return {
-    translationComplete: hasMalayContent(item),
+    translationComplete: typeof item.preload_malay_ready === "boolean" ? item.preload_malay_ready : hasMalayContent(item),
     id: readText(item, "id"),
     slug: readText(item, "slug"),
     title,

@@ -30,7 +30,8 @@ describe("complete public detail reuse", () => {
     if (reason === "invalidated-detail") { cache.setQueryData(detailKey, null); await cache.invalidateQueries({ queryKey: detailKey }); }
     const read = vi.fn(async () => ({ slug: "article", content: "Actual detail" }));
     const options = withPublicDetailReuse(cache, { queryKey: detailKey, queryFn: read });
-    expect(options.initialData()).toBeUndefined();
+    if (reason === "expired") expect(options.initialData()).toMatchObject({ content: "Full body" });
+    else expect(options.initialData()).toBeUndefined();
     await options.queryFn({ signal: new AbortController().signal });
     expect(read).toHaveBeenCalledOnce();
   });

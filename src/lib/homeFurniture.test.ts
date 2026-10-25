@@ -1,3 +1,5 @@
+// Standalone rendering bypasses the production language route resource gate.
+import "@/i18n/malayContent";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   fetchPublishedHomeSectionRow,

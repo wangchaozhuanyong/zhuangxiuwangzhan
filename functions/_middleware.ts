@@ -2386,7 +2386,7 @@ export const onRequest: PagesFunction = async (context) => {
     };
   }
   if (dynamicRouteState?.kind === "service") {
-    publicDataPayload.serviceDetails = { [String(dynamicRouteState.row.slug)]: projectServiceDetailForPreload(dynamicRouteState.row) };
+    publicDataPayload.serviceDetails = { [String(dynamicRouteState.row.slug)]: projectServiceDetailForPreload(dynamicRouteState.row, key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en") };
   }
   if (services?.length) {
     publicDataPayload.services = projectServiceSummariesForPreload(services);
@@ -2404,7 +2404,7 @@ export const onRequest: PagesFunction = async (context) => {
     publicDataPayload.serviceAreas = projectServiceAreaSummariesForPreload(serviceAreas);
   }
   if (dynamicRouteState?.kind === "blog") {
-    publicDataPayload.blogPostDetails = { [String(dynamicRouteState.row.slug)]: projectBlogDetailForPreload(dynamicRouteState.row) };
+    publicDataPayload.blogPostDetails = { [String(dynamicRouteState.row.slug)]: projectBlogDetailForPreload(dynamicRouteState.row, key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en") };
   }
   if (blogPosts?.length) {
     publicDataPayload.blogPosts = projectBlogPostSummariesForPreload(blogPosts);
