@@ -1,7 +1,8 @@
+import { blogLoadingText } from "./blogLoadingText";
 export const blogDetailPageText = {
   en: {
     notFound: "Article Not Found",
-    loadingTitle: "Loading article",
+    loadingTitle: blogLoadingText.en,
     loadingDescription: "Article content is loading.",
     errorTitle: "Article temporarily unavailable",
     errorDescription: "The content service did not respond. You can retry, return to the blog, or contact us.",
@@ -32,7 +33,7 @@ export const blogDetailPageText = {
   },
   zh: {
     notFound: "文章不存在",
-    loadingTitle: "正在准备文章内容",
+    loadingTitle: blogLoadingText.zh,
     loadingDescription: "文章内容正在载入，马上就好。",
     errorTitle: "文章暂时无法载入",
     errorDescription: "内容服务暂时没有正确响应，可以重试、返回博客或联系我们。",
@@ -64,7 +65,7 @@ export const blogDetailPageText = {
 
   ms: {
     notFound: "Artikel Tidak Ditemui",
-    loadingTitle: "Memuatkan artikel",
+    loadingTitle: blogLoadingText.ms,
     loadingDescription: "Kandungan artikel sedang dimuatkan.",
     errorTitle: "Artikel tidak tersedia buat sementara waktu",
     errorDescription: "Perkhidmatan kandungan tidak bertindak balas. Anda boleh mencuba semula, kembali ke blog atau menghubungi kami.",

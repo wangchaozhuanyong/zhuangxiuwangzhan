@@ -1,9 +1,22 @@
+import type { Language } from "@/i18n/routes";
+import { mapPublishedCtaBlockRow, type PublishedCtaBlock } from "./publicCta";
+import { publicContentQueryKeys } from "./publicContentQueryKeys";
 import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
 type SeedResolver = (key: QueryKey) => unknown;
 let resolveContentSeed: SeedResolver | undefined;
 const resourceResolvers = new Map<string, SeedResolver>();
+export function getPublicCtaSeed(key: QueryKey): PublishedCtaBlock | null | undefined {
+  const parameters = publicContentQueryKeys.ctaBlock.read(key);
+  if (!parameters) return undefined;
+  const row = readPreloadedPublicData()?.ctaBlocks?.[String(parameters.blockKey)];
+  if (row === null) return null;
+  return row ? mapPublishedCtaBlockRow(row, parameters.language as Language) : undefined;
+}
+
+
+resourceResolvers.set("cta", getPublicCtaSeed);
 export function registerPublicQuerySeedResolver(resolver: SeedResolver, resource?: string) {
   if (resource) resourceResolvers.set(resource, resolver);
   else resolveContentSeed = resolver;

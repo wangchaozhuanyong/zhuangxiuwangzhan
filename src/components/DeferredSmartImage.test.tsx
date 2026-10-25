@@ -77,18 +77,72 @@ describe("DeferredSmartImage", () => {
 
     await act(async () => root.render(<DeferredSmartImage src="/below.webp" alt="Below" loading="lazy" rootMargin="1000px 0px" />));
     const image = container.querySelector<HTMLImageElement>("img");
+    const source = image?.getAttribute("src");
     expect(image).not.toBeNull();
     expect(image?.getAttribute("loading")).toBe("lazy");
+    expect(image).toHaveAttribute("fetchpriority", "auto");
     expect(image?.hasAttribute("rootmargin")).toBe(false);
     expect(constructorOptions[0]?.rootMargin).toBe("1000px 0px");
     expect(observed).toHaveBeenCalledOnce();
 
     await act(async () => notify?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver));
-    expect(container.querySelector<HTMLImageElement>("img")?.getAttribute("loading")).toBe("eager");
+    expect(container.querySelector("img")).toBe(image);
+    expect(image).toHaveAttribute("src", source);
+    expect(image).toHaveAttribute("loading", "eager");
+    expect(image).toHaveAttribute("fetchpriority", "auto");
     expect(disconnect).toHaveBeenCalled();
 
     await act(async () => root.unmount());
     container.remove();
     vi.unstubAllGlobals();
+  });
+
+  it.each([
+    { name: "explicit high priority", props: { fetchPriority: "high" }, before: "high", after: "high" },
+    { name: "explicit low priority", props: { fetchPriority: "low" }, before: "low", after: "low" },
+    { name: "explicit auto priority on eager media", props: { loading: "eager", fetchPriority: "auto" }, before: "auto", after: "auto" },
+    { name: "intentionally eager media", props: { loading: "eager" }, before: "high", after: "high" },
+    { name: "critical media", props: { critical: true }, before: "auto", after: "high" },
+  ] as const)("preserves $name when entering the loading range", async ({ props, before, after }) => {
+    let notify: IntersectionObserverCallback | undefined;
+    class FakeObserver {
+      constructor(callback: IntersectionObserverCallback) { notify = callback; }
+      observe = vi.fn();
+      disconnect = vi.fn();
+    }
+    vi.stubGlobal("IntersectionObserver", FakeObserver);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<DeferredSmartImage src="/priority-card.webp" alt="Priority card" {...props} />));
+      const image = container.querySelector("img");
+      const source = image?.getAttribute("src");
+      expect(image).toHaveAttribute("fetchpriority", before);
+
+      await act(async () => notify?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver));
+      expect(container.querySelector("img")).toBe(image);
+      expect(image).toHaveAttribute("src", source);
+      expect(image).toHaveAttribute("loading", "eager");
+      expect(image).toHaveAttribute("fetchpriority", after);
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("keeps automatically admitted media at normal priority without IntersectionObserver", async () => {
+    vi.stubGlobal("IntersectionObserver", undefined);
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<DeferredSmartImage src="/fallback-card.webp" alt="Fallback card" />));
+      expect(container.querySelector("img")).toHaveAttribute("loading", "eager");
+      expect(container.querySelector("img")).toHaveAttribute("fetchpriority", "auto");
+    } finally {
+      await act(async () => root.unmount());
+      vi.unstubAllGlobals();
+    }
   });
 });

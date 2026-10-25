@@ -1,3 +1,5 @@
+import { mapPublishedCtaBlockRow, type PublishedCtaBlock } from "@/lib/publicCta";
+export { getPublishedCtaBlock, mapPublishedCtaBlockRow, type PublishedCtaBlock } from "@/lib/publicCta";
 import { isOptionalHomeSectionEnabled, type OptionalHomeSection } from "@/lib/homeOptionalSections";
 import {
   fetchPublicHomeBundleData,
@@ -6,7 +8,6 @@ import {
   fetchPublishedBrandPartnerRows,
   fetchPublishedCmsPageByPageKey,
   fetchPublishedCmsPageByPath,
-  fetchPublishedCtaBlockRow,
   fetchPublishedFaqRows,
   fetchPublishedHomeSectionRow,
   fetchPublishedLegacySitePageRow,
@@ -82,17 +83,6 @@ export type PublishedProcessStep = {
   icon_key?: string | null;
 };
 
-export type PublishedCtaBlock = {
-  id: string;
-  block_key: string;
-  title: string;
-  description: string;
-  primary_label: string;
-  primary_url: string;
-  secondary_label: string;
-  secondary_url: string;
-  image_url?: string | null;
-};
 
 export type PublishedAboutSection = {
   id: string;
@@ -308,17 +298,6 @@ const mapPublishedProcessStep = (row: UnknownRecord, language: Language): Publis
   icon_key: readText(row, "icon_key") || null,
 });
 
-export const mapPublishedCtaBlockRow = (row: UnknownRecord, language: Language): PublishedCtaBlock => ({
-  id: readText(row, "id"),
-  block_key: readText(row, "block_key"),
-  title: pickLocalizedText(row, "title", language),
-  description: pickLocalizedText(row, "description", language),
-  primary_label: pickLocalizedText(row, "primary_label", language),
-  primary_url: readText(row, "primary_url", "/quote"),
-  secondary_label: pickLocalizedText(row, "secondary_label", language),
-  secondary_url: readText(row, "secondary_url"),
-  image_url: readText(row, "image_url") || null,
-});
 
 const emptyHomeContentBundle = (): PublishedHomeContentBundle => ({
   pageContent: null,
@@ -494,13 +473,6 @@ export const getPublishedProcessSteps = async (language: Language, signal?: Abor
   return ((data || []) as unknown as UnknownRecord[]).map((row) => mapPublishedProcessStep(row, language));
 };
 
-export const getPublishedCtaBlock = async (language: Language, blockKey: string, signal?: AbortSignal): Promise<PublishedCtaBlock | null> => {
-
-  if (!hasPublicContentDatabaseClient()) return null;
-  const row = toRecord(await fetchPublishedCtaBlockRow(blockKey, signal));
-  if (!Object.keys(row).length) return null;
-  return mapPublishedCtaBlockRow(row, language);
-};
 
 export const getPublishedAboutSection = async (
   language: Language,

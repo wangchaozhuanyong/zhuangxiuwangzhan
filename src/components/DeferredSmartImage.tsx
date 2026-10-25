@@ -36,6 +36,11 @@ export function DeferredSmartImage({
     return () => observer.disconnect();
   }, [nearViewport, rootMargin]);
 
+  // Entering the preload range starts a request without making ordinary media
+  // compete with critical images. Keep explicit priority and eager/critical defaults.
+  const fetchPriority = imageProps.fetchPriority ??
+    (imageProps.loading === "eager" || imageProps.critical ? undefined : "auto");
+
   return (
     <span
       ref={wrapperRef}
@@ -46,6 +51,7 @@ export function DeferredSmartImage({
       <SmartImage
         {...imageProps}
         loading={nearViewport || imageProps.loading === "eager" ? "eager" : "lazy"}
+        fetchPriority={fetchPriority}
         loadAdmitted={nearViewport || imageProps.loading === "eager"}
         revealOnLoad={imageProps.revealOnLoad ?? false}
         showFailureFallback

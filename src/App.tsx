@@ -22,7 +22,7 @@ import { publicRoutes } from "@/routes/publicRoutes";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
 import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
-import PublicRoutePrefetch from "@/components/PublicRoutePrefetch";
+import PublicRoutePrefetchGate from "@/components/PublicRoutePrefetchGate";
 import { publicMotionStyle } from "@/lib/publicMotion";
 import ScrollToTop from "./components/ScrollToTop";
 import NavigationProtectionProvider from "@/components/NavigationProtectionProvider";
@@ -34,61 +34,8 @@ import { StructuredDataProvider } from "@/contexts/StructuredDataContext";
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
 const AdminUiProviders = lazy(() => import("@/components/admin/AdminUiProviders"));
-const PublicCinematicMotion = lazy(() => import("@/components/PublicCinematicMotion"));
 const PublicUpdateNotice = lazy(() => import("@/components/PublicUpdateNotice"));
 
-const PublicCinematicMotionGate = () => {
-  const [shouldLoadMotion, setShouldLoadMotion] = useState(false);
-
-  useEffect(() => {
-    const desktopMotion = window.matchMedia("(min-width: 768px) and (hover: hover) and (pointer: fine)");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let idleCallbackId: number | null = null;
-    let fallbackTimer = 0;
-
-    const cancelScheduledLoad = () => {
-      if (idleCallbackId !== null && typeof window.cancelIdleCallback === "function") {
-        window.cancelIdleCallback(idleCallbackId);
-      }
-      window.clearTimeout(fallbackTimer);
-      idleCallbackId = null;
-      fallbackTimer = 0;
-    };
-
-    const syncMotionPreference = () => {
-      cancelScheduledLoad();
-      if (!desktopMotion.matches || reducedMotion.matches) {
-        setShouldLoadMotion(false);
-        return;
-      }
-
-      const enableMotion = () => setShouldLoadMotion(true);
-      if (typeof window.requestIdleCallback === "function") {
-        idleCallbackId = window.requestIdleCallback(enableMotion, { timeout: 800 });
-      } else {
-        fallbackTimer = window.setTimeout(enableMotion, 120);
-      }
-    };
-
-    desktopMotion.addEventListener("change", syncMotionPreference);
-    reducedMotion.addEventListener("change", syncMotionPreference);
-    syncMotionPreference();
-
-    return () => {
-      cancelScheduledLoad();
-      desktopMotion.removeEventListener("change", syncMotionPreference);
-      reducedMotion.removeEventListener("change", syncMotionPreference);
-    };
-  }, []);
-
-  if (!shouldLoadMotion) return null;
-
-  return (
-    <Suspense fallback={null}>
-      <PublicCinematicMotion />
-    </Suspense>
-  );
-};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -263,8 +210,7 @@ const AppShell = () => {
       ) : (
         <StructuredDataProvider><PublicSiteShell surface={publicSurface} productDetail={isProductDetailRoute}>
           <SchemeANavbar />
-          <PublicRoutePrefetch />
-          <PublicCinematicMotionGate />
+          <PublicRoutePrefetchGate />
           <PublicPageFrame isAdminRoute={false}>
             <PublicRouteImageGate routeKey={`${location.pathname}${location.search}`} onCancel={(route) => navigate(route, { replace: true, state: { scrollIntent: BOTTOM_NAV_SCROLL_INTENT } })}>
               <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>

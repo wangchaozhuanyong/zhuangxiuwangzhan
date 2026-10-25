@@ -1,0 +1,54 @@
+import { act } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import PublicRoutePrefetchGate from "./PublicRoutePrefetchGate";
+
+const renderPrefetch = vi.fn();
+let root: Root;
+let container: HTMLDivElement;
+beforeEach(() => {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  renderPrefetch.mockClear();
+  vi.doMock("./PublicRouteEnhancements", () => ({ default: () => { renderPrefetch(); return null; } }));
+  container = document.createElement("div"); document.body.append(container); root = createRoot(container);
+});
+afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.doUnmock("./PublicRouteEnhancements"); vi.unstubAllGlobals(); });
+const announce = (degraded: boolean) => window.dispatchEvent(new CustomEvent("public-route-ready", { detail: { degraded } }));
+
+describe("optional prefetch startup", () => {
+  it("loads no optional component before real readiness or after a degraded timeout", async () => {
+    await act(async () => root.render(<PublicRoutePrefetchGate />));
+    expect(renderPrefetch).not.toHaveBeenCalled();
+    await act(async () => { announce(true); });
+    expect(renderPrefetch).not.toHaveBeenCalled();
+    await act(async () => { announce(false); });
+    await vi.waitFor(() => expect(renderPrefetch).toHaveBeenCalledOnce());
+  });
+  it("supports mounting after the successful ready event", async () => {
+    container.innerHTML = '<div class="public-route-content" data-route-visual-state="ready"></div>';
+    // The actual ready content belongs to the route, outside this optional root.
+    const readyContent = container.firstElementChild!;
+    document.body.append(readyContent);
+    try {
+      await act(async () => root.render(<PublicRoutePrefetchGate />));
+      await vi.waitFor(() => expect(renderPrefetch).toHaveBeenCalledOnce());
+    } finally { readyContent.remove(); }
+  });
+  it("contains optional transfer failures without blocking subsequent route readiness", async () => {
+    const failedImport = vi.fn(() => { throw new Error("Optional transfer unavailable"); });
+    const unhandled = vi.fn();
+    vi.doMock("./PublicRouteEnhancements", failedImport);
+    window.addEventListener("unhandledrejection", unhandled);
+    try {
+      await act(async () => root.render(<PublicRoutePrefetchGate />));
+      await act(async () => { announce(false); });
+      await vi.waitFor(() => expect(failedImport).toHaveBeenCalledOnce());
+      expect(renderPrefetch).not.toHaveBeenCalled();
+      // Browsers can cache failed ESM URLs. Core navigation must remain usable
+      // even when a later optional attempt fails in that same document.
+      await act(async () => { expect(announce(false)).toBe(true); });
+      expect(container).toBeEmptyDOMElement();
+      expect(unhandled).not.toHaveBeenCalled();
+    } finally { window.removeEventListener("unhandledrejection", unhandled); }
+  });
+});
