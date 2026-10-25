@@ -56,7 +56,7 @@ describe("two exact combined native CMS targets", () => {
   it("registers two additional selectors while preserving historical bindings", () => {
     expect(Object.keys(lockedUnifiedContentCandidates)).toEqual(names);
     const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
-    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(historicalTargets).toHaveLength(75);
+    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(historicalTargets).toHaveLength(76);
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

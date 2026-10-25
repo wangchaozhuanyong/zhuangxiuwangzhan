@@ -176,6 +176,7 @@ jobs:
       - name: Run focused managed CMS tests
         run: |
           npm test -- \
+            src/lib/contentPublishSeoCabinetTwoAnchors.test.ts \
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \
             src/lib/contentPublishOrg020V7.test.ts \

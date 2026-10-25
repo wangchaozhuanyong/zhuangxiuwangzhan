@@ -1,0 +1,121 @@
+{
+  "schema": "seo-cabinet-two-anchor-frozen-source/v1",
+  "task_id": "fc-20261025-seo-index-evidence-and-release-followthrough-v1",
+  "business_scope": "project:flashcast:seo-index-evidence-release:20261025:v1",
+  "owner_source": {
+    "path": "drafts/seo/fc-20261025-seo-index-evidence-and-release-followthrough-v1/content-organic-website/SYS-readonly-return-and-exact-CMS-binding-20261026-v1/C1-EXACT-CMS-ACTION-AND-ORIGINAL-PUB-EXECUTION-SOURCE-v1.json",
+    "sha256": "f8dde7e1ab85696aee43b24290667241e4e5ba314a39157133601ca9c372ec72",
+    "size": 22697
+  },
+  "source_registration": {
+    "path": "logs/handoffs/2026-10-25-system-final-continuation-and-main-sync-v1/system-development-professional-cms-source-v1/EXACT-OWNER-CMS-SOURCE-REGISTRATION.json",
+    "sha256": "beba119378c4e01b7e9888f20b3ddc9bc4e0b1263968c60c9f3aa7afc476509b"
+  },
+  "original_PUB_proposal": {
+    "path": "drafts/publishing/fc-20261025-seo-index-evidence-and-release-followthrough-v1/four-blog-readonly-binding-v1/cabinet-two-field-minimal-link-difference-PREPARED-NOT-SAVEABLE.json",
+    "sha256": "3ead1cb16c3b58237e5f673a15d45d7af6d08fa41d91d7b774ffa1c73c51eef1",
+    "size": 14566
+  },
+  "baseline_source": {
+    "path": "drafts/publishing/fc-20261025-seo-index-evidence-and-release-followthrough-v1/four-blog-readonly-binding-v1/cabinet-complete-row.json",
+    "sha256": "8d5038a667f232ecb3e18e512a05630272cb9252619a3ee673c98b20e0fbdb58",
+    "size": 11198
+  },
+  "baseline_is_current_CAS": false,
+  "before": {
+    "id": "73142986-7a86-453e-8843-75d1239879ad",
+    "slug": "built-in-cabinet-cost-malaysia",
+    "title_zh": "马来西亚定制内嵌柜价格指南",
+    "title_en": "Built-In Cabinet Cost in Malaysia",
+    "excerpt_zh": "按实测尺寸、结构、饰面、五金、配件、关联工程和不包含项目比较定制柜报价，而不是只看一个通用单价。",
+    "excerpt_en": "Compare built-in cabinet quotations by measured dimensions, construction, finish, hardware, accessories, connected work and exclusions—not one generic rate.",
+    "content_zh": "<p><strong>直接答案：</strong>定制柜只有在尺寸和规格一致时才能公平比较。偏低的表面单价可能没有包含高柜、收口板、抽屉、升级五金、电器接口、运输或相关水电工程。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>测量不只看墙长</h2><p>记录高度、深度、转角、天花线、踢脚、补板、收口、门扇、水电点和电器间隙。只有尺长不能完整描述柜体。</p><h2>写清柜体结构</h2><p>标明柜身和门板材料、厚度、背板、层板承托、封边、饰面、外露侧板和防潮限制。只有材料名称还不够。</p><h2>五金按功能逐项列出</h2><p>计算铰链、导轨、上翻、拉手、拉篮、抽拉、镜子、灯光和内部收纳，并在重要位置确认负载和具体型号。</p><h2>包含接口和修补责任</h2><p>台面、水槽、炉灶、插座、水路、墙面、拆除、清运和最终修补可能不属于木工，必须书面分配责任。</p><h2>比较同一交付结果</h2><p>接受总价前一起审核图纸、数量、材料样板、五金表、不包含项目、付款节点、变更和售后条款。</p><h2>开工或签约前检查清单</h2><ul><li>最终实测图</li><li>柜身、门板与封边规格</li><li>五金与配件表</li><li>电器和水电接口</li><li>拆除、保护与修补</li><li>不包含项目与变更规则</li></ul><h2>常见问题</h2><h3>同样长度的两个报价为什么差很多？</h3><p>高度、内部布局、饰面、五金、出入条件和关联工程都可能不同。</p><h3>要先选好电器吗？</h3><p>生产前至少要确认尺寸、散热、水电和开门要求。</p><h3>图纸是否属于报价的一部分？</h3><p>应在报价中引用，才能识别计价的布局和规格。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 业主装修报价指南</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 建筑合同指南</a></li></ul><p>资料核对日期：2026 年 8 月 22 日。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p>",
+    "content_en": "<p><strong>Direct answer：</strong>Built-in cabinet cost cannot be compared fairly until dimensions and specifications match. A low headline rate may exclude tall units, end panels, drawers, premium hardware, appliance interfaces, delivery or connected electrical and plumbing work.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Measure more than wall length</h2><p>Record height, depth, corners, ceiling lines, skirting, fillers, scribes, door swings, service points and appliance clearances. Running feet alone do not describe the cabinet.</p><h2>Write the cabinet construction</h2><p>State carcass and door material, thickness, backing, shelf support, edge treatment, finish, exposed ends and moisture limitations. Product names without construction details are insufficient.</p><h2>List hardware by function</h2><p>Count hinges, runners, lift systems, handles, baskets, pull-outs, mirrors, lighting and internal organisers. Confirm load expectations and the exact model where it matters.</p><h2>Include interfaces and making good</h2><p>Countertops, sinks, hobs, sockets, plumbing, wall finishes, removal, disposal and final touch-up may sit outside carpentry. Allocate each responsibility in writing.</p><h2>Compare the same deliverable</h2><p>Review drawings, quantities, material samples, hardware schedule, exclusions, payment stages, variation rules and after-sales terms together before accepting a total.</p><h2>Checklist before approval or start</h2><ul><li>Final measured drawing</li><li>Carcass, door and edge specification</li><li>Hardware and accessory schedule</li><li>Appliance and service interfaces</li><li>Removal, protection and touch-up</li><li>Exclusions and variation rules</li></ul><h2>Frequently asked questions</h2><h3>Can two quotations with the same length differ greatly?</h3><p>Yes. Height, internal layout, finish, hardware, access and connected work can be different.</p><h3>Should appliances be selected first?</h3><p>At minimum confirm dimensions, ventilation, services and opening requirements before production.</p><h3>Are drawings part of the quotation?</h3><p>They should be referenced so the priced layout and specification can be identified.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on quotations</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on construction contracts</a></li></ul><p>Sources checked on 22 August 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p>",
+    "category": "kitchen-cabinetry",
+    "tags": [
+      "built-in cabinet",
+      "cost",
+      "malaysia",
+      "wardrobe",
+      "kitchen cabinet"
+    ],
+    "cover_image_url": "/images/services/kitchen-renovation.webp",
+    "alt_zh": "厨房装修与柜体规划",
+    "alt_en": "Kitchen renovation and cabinetry planning",
+    "seo_title_zh": "马来西亚定制内嵌柜价格指南",
+    "seo_title_en": "Built-In Cabinet Cost in Malaysia",
+    "seo_description_zh": "按实测尺寸、结构、饰面、五金、配件、关联工程和不包含项目比较定制柜报价，而不是只看一个通用单价。",
+    "seo_description_en": "Compare built-in cabinet quotations by measured dimensions, construction, finish, hardware, accessories, connected work and exclusions—not one generic rate.",
+    "status": "published",
+    "published_at": "2026-02-20T00:00:00+00:00",
+    "created_at": "2026-05-29T10:15:46.655104+00:00",
+    "updated_at": "2026-10-18T15:10:14.544707+00:00",
+    "sort_order": 120,
+    "version": 1,
+    "title_ms": "Panduan Kos Kabinet Terbina Dalam di Malaysia",
+    "excerpt_ms": "Bandingkan sebut harga kabinet tempahan berdasarkan ukuran sebenar, binaan, kemasan, perkakasan, aksesori, kerja berkaitan dan pengecualian, bukan harga seunit umum sahaja.",
+    "content_ms": "<p><strong>Jawapan ringkas:</strong> Kabinet tempahan hanya boleh dibandingkan dengan adil apabila ukuran dan spesifikasinya sepadan. Harga permukaan yang rendah mungkin tidak merangkumi kabinet tinggi, panel penutup, laci, perkakasan naik taraf, sambungan peralatan elektrik, pengangkutan atau kerja air dan elektrik berkaitan.</p><p>Cara menggunakan panduan ini: gantikan setiap perkara di bawah dengan ukuran sebenar projek, pihak yang bertanggungjawab, lukisan yang telah diluluskan dan rekod bertulis sebelum menggunakannya untuk sebut harga, kelulusan atau keputusan pembinaan.</p><h2>Ukuran bukan sekadar panjang dinding</h2><p>Rekodkan ketinggian, kedalaman, sudut, garisan siling, plint, panel pengisi, kemasan tepi, daun pintu, titik air dan elektrik serta ruang kelegaan peralatan. Ukuran panjang sahaja tidak menerangkan keseluruhan kabinet.</p><h2>Nyatakan binaan kabinet dengan jelas</h2><p>Senaraikan bahan dan ketebalan badan kabinet serta pintu, panel belakang, sokongan rak, jalur tepi, kemasan, panel sisi terdedah dan had ketahanan lembapan. Nama bahan sahaja tidak mencukupi.</p><h2>Senaraikan perkakasan mengikut fungsi</h2><p>Kira engsel, rel laci, sistem pintu angkat, pemegang, bakul tarik keluar, aksesori tarik keluar, cermin, lampu dan penyimpanan dalaman. Sahkan kapasiti beban dan model khusus pada bahagian penting.</p><h2>Masukkan sambungan dan tanggungjawab pembaikan</h2><p>Meja kaunter, sinki, dapur memasak, soket, paip air, dinding, kerja membuka, pelupusan dan pembaikan akhir mungkin tidak termasuk dalam kerja kabinet. Tetapkan tanggungjawab setiap pihak secara bertulis.</p><h2>Bandingkan hasil serahan yang sama</h2><p>Sebelum menerima jumlah harga, semak bersama lukisan, kuantiti, sampel bahan, senarai perkakasan, pengecualian, peringkat bayaran, perubahan dan syarat selepas jualan.</p><h2>Senarai semak sebelum kerja bermula atau kontrak ditandatangani</h2><ul><li>Lukisan akhir berdasarkan ukuran tapak</li><li>Spesifikasi badan kabinet, pintu dan jalur tepi</li><li>Senarai perkakasan dan aksesori</li><li>Sambungan peralatan serta air dan elektrik</li><li>Kerja membuka, perlindungan dan pembaikan</li><li>Pengecualian dan peraturan perubahan</li></ul><h2>Soalan lazim</h2><h3>Mengapa dua sebut harga untuk panjang kabinet yang sama boleh berbeza jauh?</h3><p>Ketinggian, susun atur dalaman, kemasan, perkakasan, keadaan akses dan kerja berkaitan mungkin berbeza.</p><h3>Perlukah peralatan dipilih lebih awal?</h3><p>Sebelum pengeluaran, sekurang-kurangnya sahkan ukuran, keperluan pengudaraan, sambungan air dan elektrik serta arah bukaan pintu.</p><h3>Adakah lukisan sebahagian daripada sebut harga?</h3><p>Sebut harga perlu merujuk lukisan supaya susun atur dan spesifikasi yang dikira dapat dikenal pasti.</p><h2>Sumber dan batas penggunaan</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">Panduan sebut harga pengubahsuaian CIDB untuk pemilik rumah</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">Panduan kontrak pembinaan CIDB</a></li></ul><p>Tarikh semakan sumber: 22 Ogos 2026. Keperluan jabatan berkaitan, pihak pengurusan bangunan, perunding dan pengeluar produk boleh berubah. Sebelum membuat keputusan rasmi, rujuk maklumat bertulis terkini bagi lokasi projek, skop khusus dan produk yang dipilih.</p>",
+    "alt_ms": "Panduan semak kos kabinet terbina dalam dan kabinet tempahan",
+    "seo_title_ms": "Panduan Kos Kabinet Terbina Dalam di Malaysia | FLASH CAST",
+    "seo_description_ms": "Semak ukuran, binaan, kemasan, perkakasan, sambungan, kerja berkaitan dan pengecualian sebelum membandingkan kos kabinet tempahan."
+  },
+  "desired": {
+    "content_zh": "<p><strong>直接答案：</strong>定制柜只有在尺寸和规格一致时才能公平比较。偏低的表面单价可能没有包含高柜、收口板、抽屉、升级五金、电器接口、运输或相关水电工程。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>测量不只看墙长</h2><p>记录高度、深度、转角、天花线、踢脚、补板、收口、门扇、水电点和电器间隙。只有尺长不能完整描述柜体。</p><h2>写清柜体结构</h2><p>标明柜身和门板材料、厚度、背板、层板承托、封边、饰面、外露侧板和防潮限制。只有材料名称还不够。</p><h2>五金按功能逐项列出</h2><p>计算铰链、导轨、上翻、拉手、拉篮、抽拉、镜子、灯光和内部收纳，并在重要位置确认负载和具体型号。</p><h2>包含接口和修补责任</h2><p>台面、水槽、炉灶、插座、水路、墙面、拆除、清运和最终修补可能不属于木工，必须书面分配责任。</p><h2>比较同一交付结果</h2><p>接受总价前一起审核图纸、数量、材料样板、五金表、不包含项目、付款节点、变更和售后条款。</p><p>相关服务：<a href=\"/zh/services/builtin\">全屋定制与定制柜服务</a></p><h2>开工或签约前检查清单</h2><ul><li>最终实测图</li><li>柜身、门板与封边规格</li><li>五金与配件表</li><li>电器和水电接口</li><li>拆除、保护与修补</li><li>不包含项目与变更规则</li></ul><h2>常见问题</h2><h3>同样长度的两个报价为什么差很多？</h3><p>高度、内部布局、饰面、五金、出入条件和关联工程都可能不同。</p><h3>要先选好电器吗？</h3><p>生产前至少要确认尺寸、散热、水电和开门要求。</p><h3>图纸是否属于报价的一部分？</h3><p>应在报价中引用，才能识别计价的布局和规格。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 业主装修报价指南</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 建筑合同指南</a></li></ul><p>资料核对日期：2026 年 8 月 22 日。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p>",
+    "content_en": "<p><strong>Direct answer：</strong>Built-in cabinet cost cannot be compared fairly until dimensions and specifications match. A low headline rate may exclude tall units, end panels, drawers, premium hardware, appliance interfaces, delivery or connected electrical and plumbing work.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Measure more than wall length</h2><p>Record height, depth, corners, ceiling lines, skirting, fillers, scribes, door swings, service points and appliance clearances. Running feet alone do not describe the cabinet.</p><h2>Write the cabinet construction</h2><p>State carcass and door material, thickness, backing, shelf support, edge treatment, finish, exposed ends and moisture limitations. Product names without construction details are insufficient.</p><h2>List hardware by function</h2><p>Count hinges, runners, lift systems, handles, baskets, pull-outs, mirrors, lighting and internal organisers. Confirm load expectations and the exact model where it matters.</p><h2>Include interfaces and making good</h2><p>Countertops, sinks, hobs, sockets, plumbing, wall finishes, removal, disposal and final touch-up may sit outside carpentry. Allocate each responsibility in writing.</p><h2>Compare the same deliverable</h2><p>Review drawings, quantities, material samples, hardware schedule, exclusions, payment stages, variation rules and after-sales terms together before accepting a total.</p><p>Related service: <a href=\"/en/services/builtin\">built-in furniture and storage services</a></p><h2>Checklist before approval or start</h2><ul><li>Final measured drawing</li><li>Carcass, door and edge specification</li><li>Hardware and accessory schedule</li><li>Appliance and service interfaces</li><li>Removal, protection and touch-up</li><li>Exclusions and variation rules</li></ul><h2>Frequently asked questions</h2><h3>Can two quotations with the same length differ greatly?</h3><p>Yes. Height, internal layout, finish, hardware, access and connected work can be different.</p><h3>Should appliances be selected first?</h3><p>At minimum confirm dimensions, ventilation, services and opening requirements before production.</p><h3>Are drawings part of the quotation?</h3><p>They should be referenced so the priced layout and specification can be identified.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on quotations</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on construction contracts</a></li></ul><p>Sources checked on 22 August 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p>"
+  },
+  "insertions": [
+    {
+      "field": "content_zh",
+      "before_unique_heading": "<h2>开工或签约前检查清单</h2>",
+      "preceding_existing_paragraph": "<p>接受总价前一起审核图纸、数量、材料样板、五金表、不包含项目、付款节点、变更和售后条款。</p>",
+      "inserted_HTML_exactly_from_original_C1_input": "<p>相关服务：<a href=\"/zh/services/builtin\">全屋定制与定制柜服务</a></p>",
+      "remove_only_this_inserted_HTML_restores_before_byte_for_byte": true
+    },
+    {
+      "field": "content_en",
+      "before_unique_heading": "<h2>Checklist before approval or start</h2>",
+      "preceding_existing_paragraph": "<p>Review drawings, quantities, material samples, hardware schedule, exclusions, payment stages, variation rules and after-sales terms together before accepting a total.</p>",
+      "inserted_HTML_exactly_from_original_C1_input": "<p>Related service: <a href=\"/en/services/builtin\">built-in furniture and storage services</a></p>",
+      "remove_only_this_inserted_HTML_restores_before_byte_for_byte": true
+    }
+  ],
+  "forward_tuple": {
+    "task_id": "fc-20261025-seo-index-evidence-and-release-followthrough-v1",
+    "candidate_version": "seo-cabinet-two-anchors-8520112a-v1",
+    "action_id": "publish-seo-cabinet-two-anchors-8520112a-v1",
+    "action_class": "cms_write",
+    "scope": "flashcast.com.my:blog_posts:73142986-7a86-453e-8843-75d1239879ad:content_en,content_zh",
+    "business_policy_scope": "project:flashcast:seo-index-evidence-release:20261025:v1",
+    "table": "blog_posts",
+    "record_id": "73142986-7a86-453e-8843-75d1239879ad",
+    "slug": "built-in-cabinet-cost-malaysia",
+    "content_type": "blog",
+    "changed_fields": [
+      "content_en",
+      "content_zh"
+    ],
+    "original_professional_owner": "content-organic-website",
+    "execution_department": "publishing",
+    "business_scope": "project:flashcast:seo-index-evidence-release:20261025:v1",
+    "physical_target_scope": "flashcast.com.my:blog_posts:73142986-7a86-453e-8843-75d1239879ad:content_en,content_zh",
+    "schema_or_database_changes": false
+  },
+  "conditional_inverse": {
+    "action_id": "rollback-seo-cabinet-two-anchors-8520112a-v1",
+    "candidate_version": "seo-cabinet-two-anchors-8520112a-v1-rollback-v1",
+    "scope": "flashcast.com.my:blog_posts:73142986-7a86-453e-8843-75d1239879ad:content_en,content_zh",
+    "rollbackAllowed": true,
+    "requiresParentRun": true,
+    "changed_fields": [
+      "content_en",
+      "content_zh"
+    ],
+    "parentPermitId": null,
+    "parentRunId": null,
+    "saved_updated_at": null,
+    "current_post_Save_complete_row": null,
+    "requires": "Only after actual completed original publish permit/run and authentic post-Save full29 row/CAS with current two fields equal exact forward desired; stable25/MS6 retained; own new short-lived single-use inverse permit; unknown effects fail closed."
+  },
+  "production_loaded": false,
+  "permit_or_Save_authorized_by_source_alone": false
+}
