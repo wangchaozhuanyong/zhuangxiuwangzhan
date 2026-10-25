@@ -620,7 +620,7 @@
   }
 
   .scheme-a-chrome :is(.scheme-a-chrome__quote, .scheme-a-chrome__menu):active,
-  .scheme-a-directory__foot a:active {
+  .scheme-a-directory__foot :is(a, button):active {
     transform: translateY(1px);
   }
 
@@ -798,14 +798,14 @@
 
   .scheme-a-directory__foot {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: stretch;
     gap: 12px;
     padding: 12px 24px;
     border-top: 1px solid var(--public-border);
   }
 
-  .scheme-a-directory__foot a {
+  .scheme-a-directory__foot :is(a, button) {
     display: flex;
     min-height: 44px;
     align-items: center;
@@ -823,8 +823,10 @@
     transition: background var(--motion-control) var(--motion-ease);
   }
 
-  .scheme-a-directory__foot a:hover { background: hsl(var(--secondary)); }
-  .scheme-a-directory__foot a svg { width: 16px; height: 16px; flex: 0 0 auto; }
+  .scheme-a-directory__foot :is(a, button):hover { background: hsl(var(--secondary)); }
+  .scheme-a-directory__foot :is(a, button) svg { width: 16px; height: 16px; flex: 0 0 auto; }
+  .scheme-a-directory__foot button:disabled { cursor: progress; opacity: 0.7; }
+  .scheme-a-directory__foot .is-wechat > svg { color: #07a855; }
   .scheme-a-directory__foot .is-whatsapp { background: hsl(var(--secondary)); }
 
   @media (min-width: 768px) and (max-width: 1023px) {
@@ -1153,19 +1155,24 @@
     flex: 0 0 auto;
   }
 
-  .scheme-a-directory__social-group {
-    margin-top: 20px;
+  /* This final grid row stays visible while only directory links scroll. */
+  .scheme-a-directory__bottom {
+    min-width: 0;
+    border-top: 1px solid var(--public-border);
+    background: var(--public-surface-card);
   }
+
+  .scheme-a-directory__social-group { margin: 0; padding: 12px 24px; border-top: 0; }
 
   .scheme-a-directory__social-heading {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
-  .scheme-a-directory__social-heading h3 { margin: 0; }
+  .scheme-a-directory__social-heading h3 { margin: 0; font-size: 12px; }
 
   .scheme-a-directory__social-heading > span {
     color: var(--public-text-secondary);
@@ -1173,11 +1180,36 @@
     line-height: 1.5;
   }
 
-  @media (min-width: 1024px) {
-    .scheme-a-directory__socials {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
+  .scheme-a-directory__socials {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
   }
+
+  .scheme-a-directory__socials a {
+    min-height: 44px;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .scheme-a-directory__socials .scheme-a-social-icon {
+    display: grid;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 7px;
+    color: #fff;
+  }
+  .scheme-a-directory__socials .scheme-a-social-icon svg { width: 19px; height: 19px; }
+  .scheme-a-directory__socials [data-brand="facebook"] .scheme-a-social-icon { background: #1877f2; }
+  .scheme-a-directory__socials [data-brand="instagram"] .scheme-a-social-icon { background: linear-gradient(35deg, #f9a43e, #d42d78 50%, #7851bc); }
+  .scheme-a-directory__socials [data-brand="tiktok"] .scheme-a-social-icon { background: #171717; }
+  .scheme-a-directory__socials [data-brand="rednote"] .scheme-a-social-icon { background: #ff2442; }
+  .scheme-a-directory__socials [data-brand="rednote"] svg { width: 24px; height: 24px; }
 
   @container (max-width: 279px) {
     .scheme-a-footer__socials {
@@ -1515,15 +1547,19 @@
     .scheme-a-directory {
       top: 64px;
       width: calc(100% - 24px);
-      max-height: min(640px, calc(100dvh - 160px));
+      max-height: min(720px, calc(100dvh - 88px - env(safe-area-inset-bottom, 0px)));
     }
     .scheme-a-directory__head { min-height: 52px; padding: 4px 12px; }
     .scheme-a-directory__body { padding: 12px; }
     .scheme-a-directory__groups { grid-template-columns: 1fr; gap: 8px; }
     .scheme-a-directory__groups ul { padding: 6px 0; }
     .scheme-a-directory__groups a { padding-inline: 12px; }
-    .scheme-a-directory__foot { padding: 10px 12px; gap: 6px; }
-    .scheme-a-directory__foot a { gap: 4px; padding: 8px 4px; font-size: 11px; }
+    .scheme-a-directory__social-group { padding: 10px 12px; }
+    .scheme-a-directory__social-heading > span { display: none; }
+    .scheme-a-directory__socials { gap: 6px; }
+    .scheme-a-directory__socials a { flex-direction: column; gap: 5px; padding: 7px 2px; font-size: 11px; }
+    .scheme-a-directory__foot { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px 12px; gap: 6px; }
+    .scheme-a-directory__foot :is(a, button) { gap: 6px; padding: 8px 6px; font-size: 12px; }
 
     .scheme-a-footer__panorama,
     .scheme-a-footer__invitation {
@@ -1872,6 +1908,10 @@
       min-width: 70px;
     }
 
+  }
+
+  @media (max-height: 480px) {
+    .scheme-a-directory { top: 12px; max-height: calc(100dvh - 24px - env(safe-area-inset-bottom, 0px)); }
   }
 
   @media (prefers-reduced-motion: reduce) {

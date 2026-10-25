@@ -1,7 +1,7 @@
 import { scrollWindowToSmoothly } from "@/lib/instantScroll";
 import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ComponentType } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowUp,
   ArrowUpRight,
@@ -28,6 +28,10 @@ import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import TikTokIcon from "@/components/TikTokIcon";
 import RednoteIcon from "@/components/RednoteIcon";
+import WeChatIcon from "@/components/WeChatIcon";
+import type { ContactEntryPanelProps } from "@/components/ContactEntryPanel";
+import { contactEntryText } from "@/i18n/contactEntryText";
+import { wechatContactText } from "@/i18n/wechatContactText";
 import {
   primaryPublicNavigationItems,
   publicNavigationGroups,
@@ -127,10 +131,10 @@ const SchemeASocialLinks = ({ settings, placement }: {
   const { language } = useLanguage();
   const t = schemeAChromeText[language];
   const profiles = [
-    { url: safeSocialProfileUrl(settings.facebook_url, "facebook"), label: "Facebook", accessibleLabel: "Facebook", Icon: Facebook },
-    { url: safeSocialProfileUrl(settings.instagram_url, "instagram"), label: "Instagram", accessibleLabel: "Instagram", Icon: Instagram },
-    { url: safeSocialProfileUrl(settings.tiktok_url, "tiktok"), label: "TikTok", accessibleLabel: "TikTok", Icon: TikTokIcon },
-    { url: safeSocialProfileUrl(settings.xiaohongshu_url, "xiaohongshu"), label: t.xiaohongshuShort, accessibleLabel: t.xiaohongshu, Icon: RednoteIcon },
+    { brand: "facebook", url: safeSocialProfileUrl(settings.facebook_url, "facebook"), label: "Facebook", accessibleLabel: "Facebook", Icon: Facebook },
+    { brand: "instagram", url: safeSocialProfileUrl(settings.instagram_url, "instagram"), label: "Instagram", accessibleLabel: "Instagram", Icon: Instagram },
+    { brand: "tiktok", url: safeSocialProfileUrl(settings.tiktok_url, "tiktok"), label: "TikTok", accessibleLabel: "TikTok", Icon: TikTokIcon },
+    { brand: "rednote", url: safeSocialProfileUrl(settings.xiaohongshu_url, "xiaohongshu"), label: t.xiaohongshuShort, accessibleLabel: t.xiaohongshu, Icon: RednoteIcon },
   ].filter(({ url }) => url);
   if (profiles.length === 0) return null;
   const classes = placement === "directory"
@@ -144,9 +148,9 @@ const SchemeASocialLinks = ({ settings, placement }: {
         {placement === "directory" ? <span>{t.socialProfiles}</span> : null}
       </div>
       <div className={classes.links}>
-        {profiles.map(({ url, label, accessibleLabel, Icon }) => (
-          <a key={url} href={url} target="_blank" rel="noopener noreferrer" aria-label={accessibleLabel}>
-            <Icon aria-hidden="true" />
+        {profiles.map(({ brand, url, label, accessibleLabel, Icon }) => (
+          <a key={brand} data-brand={brand} href={url} target="_blank" rel="noopener noreferrer" aria-label={accessibleLabel}>
+            <span className="scheme-a-social-icon" aria-hidden="true"><Icon /></span>
             <span>{label}</span>
           </a>
         ))}
@@ -157,10 +161,21 @@ const SchemeASocialLinks = ({ settings, placement }: {
 
 export const SchemeANavbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { language } = useLanguage();
   const translate = (key: string) => getNavigationLabel(key, language);
   const t = schemeAChromeText[language];
   const navText = navbarText[language];
+  const contactText = contactEntryText[language];
+  const wechatText = wechatContactText[language];
+  const [ContactPanel, setContactPanel] = useState<ComponentType<ContactEntryPanelProps> | null>(null);
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactLoadError, setContactLoadError] = useState(false);
+  const [contactOwner] = useState(() => crypto.randomUUID());
+  const contactOpening = useRef(false);
+  const contactClosing = useRef(false);
+  const contactOpen = (location.state as { contactEntry?: string } | null)?.contactEntry === contactOwner;
+  useEffect(() => { if (!contactOpen) contactClosing.current = false; }, [contactOpen]);
   const settings = useSiteSettings();
   const settingsPending = useSiteSettingsReadiness();
   const { hasImmersiveHero, menuOpen, setMenuOpen, pageWhatsAppMessage } = usePublicChrome();
@@ -334,6 +349,29 @@ export const SchemeANavbar = () => {
     };
     closeTimer.current = window.setTimeout(finish, prefersReducedMotion() ? 0 : PUBLIC_MOTION.menuClose);
   }, [setMenuOpen]);
+
+  const openWechatContact = async () => {
+    if (contactOpening.current) return;
+    contactOpening.current = true;
+    setContactLoading(true);
+    setContactLoadError(false);
+    try {
+      const { default: Panel } = await import("@/components/ContactEntryPanel");
+      // The visitor may have closed the directory while the shared panel loaded.
+      if (menuRef.current?.dataset.state !== "open") return;
+      setContactPanel(() => Panel);
+      closeDirectory();
+      void navigate(`${location.pathname}${location.search}${location.hash}`, {
+        state: { ...location.state, contactEntry: contactOwner }, preventScrollReset: true,
+      });
+      trackCtaClick("wechat_open", "scheme_a_menu");
+    } catch {
+      setContactLoadError(true);
+    } finally {
+      contactOpening.current = false;
+      setContactLoading(false);
+    }
+  };
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
@@ -569,14 +607,34 @@ export const SchemeANavbar = () => {
               );
             })}
           </nav>
-          <SchemeASocialLinks settings={settings} placement="directory" />
         </div>
-        <div className="scheme-a-directory__foot">
+        <div className="scheme-a-directory__bottom">
+          <SchemeASocialLinks settings={settings} placement="directory" />
+          <div className="scheme-a-directory__foot">
           <a href={settings.phone_href} onClick={() => trackCtaClick("phone", "scheme_a_menu", { destination: "phone" })}><Phone aria-hidden="true" />{t.call}</a>
           <a className="is-whatsapp" href={settings.whatsapp_url(furnitureMessage)} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_menu", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+          <button type="button" className="is-wechat" aria-haspopup="dialog" aria-busy={contactLoading || undefined} disabled={contactLoading} onClick={() => void openWechatContact()}>
+            <WeChatIcon /><span aria-live="polite">{contactLoading ? contactText.loading : contactLoadError ? contactText.loadError : wechatText.wechat}</span>
+          </button>
           <LocalizedLink className="is-quote" to={QUOTE_FORM_PATH}>{t.quote}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+          </div>
         </div>
       </div>
+
+      {contactOpen && !menuOpen && ContactPanel && <ContactPanel
+        initialContact="wechat"
+        message={pageWhatsAppMessage || contactText.message(contactText.genericService)}
+        onClose={() => {
+          if (contactClosing.current) return;
+          contactClosing.current = true;
+          void navigate(-1);
+        }}
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          [desktopTriggerRef.current, compactTriggerRef.current]
+            .find((trigger) => trigger && trigger.getClientRects().length > 0)?.focus({ preventScroll: true });
+        }}
+      />}
 
     </>
   );

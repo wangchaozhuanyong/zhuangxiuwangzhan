@@ -15,16 +15,19 @@ export type ContactEntryPanelProps = {
   message: string;
   onClose: () => void;
   onCloseAutoFocus: (event: Event) => void;
+  initialContact?: "wechat";
 };
 
 /** Loaded after the visitor requests contact options. */
-export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus }: ContactEntryPanelProps) {
+export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus, initialContact }: ContactEntryPanelProps) {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const text = { ...contactEntryText[language], ...wechatContactText[language] };
   const wechatId = siteConfig.wechatId.trim();
   const [copyStatus, setCopyStatus] = useState<"idle" | "copying" | "copied" | "failed">("idle");
   const copying = useRef(false);
+  const copyButtonRef = useRef<HTMLButtonElement>(null);
+  const [qrOpen, setQrOpen] = useState(initialContact === "wechat");
   const [shareFile, setShareFile] = useState<File | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "sharing" | "failed">("idle");
   const saving = useRef(false);
@@ -81,7 +84,10 @@ export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus }
   };
   return <Dialog open onOpenChange={(next) => { if (!next) onClose(); }}>
     <DialogContent className="fc-contact-panel" overlayClassName="fc-contact-overlay" closeLabel={text.close}
-      onCloseAutoFocus={onCloseAutoFocus}>
+      onCloseAutoFocus={onCloseAutoFocus}
+      onOpenAutoFocus={event => {
+        if (initialContact === "wechat") { event.preventDefault(); copyButtonRef.current?.focus(); }
+      }}>
       <div className="fc-contact-panel__header">
         <DialogTitle className="fc-contact-panel__title">{text.title}</DialogTitle>
         <DialogDescription className="fc-contact-panel__description">{text.description}</DialogDescription>
@@ -95,7 +101,7 @@ export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus }
           <div className="fc-contact-panel__wechat">
             <MessagesSquare aria-hidden="true" />
             <span className="fc-contact-panel__label">{text.wechat}<small className="fc-contact-panel__wechat-id">{wechatId}</small></span>
-            <button type="button" className="fc-contact-panel__copy" aria-label={copyStatus === "copied" ? text.copied : text.copyWechat} aria-live="polite"
+            <button ref={copyButtonRef} type="button" className="fc-contact-panel__copy" aria-label={copyStatus === "copied" ? text.copied : text.copyWechat} aria-live="polite"
               disabled={copyStatus === "copying"} aria-busy={copyStatus === "copying" || undefined}
               onClick={() => void copyWechat()}>
               {copyStatus === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -105,7 +111,7 @@ export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus }
           <p className="fc-contact-panel__note fc-contact-panel__copy-status" role="status" aria-live="polite">
             {copyStatus === "failed" ? text.wechatCopyFailed : ""}
           </p>
-          <details className="fc-contact-panel__qr">
+          <details className="fc-contact-panel__qr" open={qrOpen} onToggle={event => setQrOpen(event.currentTarget.open)}>
             <summary>{text.showWechatQr}<ChevronDown aria-hidden="true" /></summary>
             <figure>
               <SmartImage src={siteConfig.wechatQrUrl} alt={text.wechatQrAlt} width={668} height={668}
