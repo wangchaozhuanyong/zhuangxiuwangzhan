@@ -33,8 +33,11 @@ function verify(extraPath, { contentMatch = false, incorrectField, customBrand =
     const expected = manifest[url.pathname];
     let title = expected.title, description = expected.description;
     if (url.pathname === '/zh' && !customBrand) {
-      title = '闪铸装饰 | ' + title;
-      description += ' 闪铸装饰、闪铸设计和闪铸装修是 FLASH CAST 的中文品牌名称。';
+      title = '闪铸装饰 FLASH CAST | 吉隆坡装修、室内设计与定制柜';
+      description = '闪铸装饰亦称“闪铸设计”，为吉隆坡、雪兰莪与巴生谷提供住宅及商业装修、室内设计、定制柜体与项目协调。按现场情况和确认范围准备报价。';
+    }
+    if (url.pathname === '/zh/contact' && !customBrand) {
+      title = '联系闪铸装饰 FLASH CAST | 吉隆坡装修咨询';
     }
     const home = url.pathname === '/zh';
     const ogDescription = home && incorrectField === 'ogDescription' ? 'Unexpected sharing description' : description;

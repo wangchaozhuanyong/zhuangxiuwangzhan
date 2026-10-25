@@ -42,7 +42,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
 import { schemeAChromeText } from "@/i18n/schemeAText";
-import { CHINESE_BRAND_NAMES, getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } from "@/i18n/brandIdentity";
+import { getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } from "@/i18n/brandIdentity";
 import { stripLanguagePrefix, type Language } from "@/i18n/routes";
 import { languageTag } from "@/i18n/languageDetection";
 import { trackCtaClick } from "@/lib/analytics";
@@ -94,7 +94,7 @@ const BrandMark = ({ logo, name, displayName, language }: { logo: string; name: 
     || /^(?:https?:\/\/[^/]+)?\/logo-flashcast(?:-20260605)?\.(?:png|webp)(?:[?#].*)?$/i.test(displayedLogo);
   const showLocalizedName = Boolean(displayName && builtInLogo);
   return (
-    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={showLocalizedName && displayName ? displayName : name}>
+    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={showLocalizedName && displayName ? language === "zh" ? `${displayName} ${getPublicSiteName({ company_name: name })}` : displayName : name}>
       <span className={`scheme-a-chrome__wordmark${showLocalizedName ? " scheme-a-chrome__wordmark--localized" : ""}`} data-builtin-logo={builtInLogo || undefined}>
         <span className={showLocalizedName ? "scheme-a-chrome__symbol" : undefined} aria-hidden="true">
           <SmartImage
@@ -106,7 +106,7 @@ const BrandMark = ({ logo, name, displayName, language }: { logo: string; name: 
             onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
           />
         </span>
-        {showLocalizedName && <span className="scheme-a-chrome__wordmark-name" lang={languageTag(language)}>{displayName}</span>}
+        {showLocalizedName && <span className="scheme-a-chrome__wordmark-copy"><span className="scheme-a-chrome__wordmark-name" lang={languageTag(language)}>{displayName}</span>{language === "zh" && <span className="scheme-a-chrome__wordmark-english" lang="en">{getPublicSiteName({ company_name: name })}</span>}</span>}
       </span>
       {!showLocalizedName && <span className="sr-only">{name}</span>}
     </LocalizedLink>
@@ -182,7 +182,7 @@ export const SchemeANavbar = () => {
   const logo = settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
   const companyName = settings.company_name || "FLASH CAST SDN. BHD.";
   const headerBrandName = getHeaderChineseBrandName(settings)
-    ? language === "zh" ? CHINESE_BRAND_NAMES[0] : getPublicSiteName(settings)
+    ? language === "zh" ? getHeaderChineseBrandName(settings) : getPublicSiteName(settings)
     : null;
   const publicPath = stripLanguagePrefix(location.pathname);
   const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")

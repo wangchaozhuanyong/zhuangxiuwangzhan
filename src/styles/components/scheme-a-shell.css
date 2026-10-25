@@ -347,6 +347,9 @@
     max-width: none;
   }
 
+  .scheme-a-chrome__wordmark-copy { display: grid; gap: 4px; }
+  .scheme-a-chrome__wordmark-english { font: 600 10px/1 "Inter Tight Local", var(--font-body); letter-spacing: 0.08em; white-space: nowrap; }
+
   .scheme-a-chrome__wordmark-name {
     font-family: var(--font-display);
     font-size: 24px;

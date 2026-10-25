@@ -12,8 +12,9 @@ type SourceFixture = {
 };
 
 const fixtures: SourceFixture[] = [
+  { path: "/contact", brand: "联系闪铸装饰 FLASH CAST | 吉隆坡装修咨询", table: "site_pages", row: { id: "published-contact", page_key: "contact", path: "/contact", status: "published", title_zh: "联系我们", title_en: "Contact", seo_title_zh: "联系 FLASH CAST", seo_title_en: "Contact FLASH CAST", seo_description_zh: "原有联系说明。", seo_description_en: "Existing contact scope." } },
   {
-    path: "", brand: "闪铸装饰", table: "site_pages",
+    path: "", brand: "闪铸装饰 FLASH CAST | 吉隆坡装修、室内设计与定制柜", table: "site_pages",
     row: {
       id: "published-home", page_key: "home", path: "/", status: "published",
       title_zh: "首页", title_en: "Home",
@@ -24,7 +25,7 @@ const fixtures: SourceFixture[] = [
     },
   },
   {
-    path: "/about", brand: "闪铸装饰", table: "site_pages",
+    path: "/about", brand: "关于闪铸装饰 FLASH CAST | 装修规划与项目协调", table: "site_pages",
     row: {
       id: "published-about", page_key: "about", path: "/about", status: "published",
       title_zh: "关于我们", title_en: "About Us",
@@ -121,6 +122,9 @@ const expectBrandIdentity = (document: Document, node: (type: string) => Record<
   expect(node("WebSite")?.name).toBe("FLASH CAST");
   expect(node("HomeAndConstructionBusiness")?.name).toBe("FLASH CAST SDN. BHD.");
   expect(node("WebSite")?.alternateName).toEqual(expect.arrayContaining(aliases));
+  expect((node("WebSite")?.alternateName as string[])[0]).toBe("闪铸装饰");
+  expect(node("WebSite")?.["@id"]).toBe("https://flashcast.com.my/#website");
+  expect(node("HomeAndConstructionBusiness")?.["@id"]).toBe("https://flashcast.com.my/#localbusiness");
   expect(node("HomeAndConstructionBusiness")?.alternateName).toEqual(expect.arrayContaining(aliases));
 };
 
@@ -130,13 +134,11 @@ describe("Edge Chinese brand identity from current published sources", () => {
   it.each(fixtures)("adds the route brand while preserving current CMS metadata on /zh$path", async fixture => {
     const { response, document, node, path } = await render("zh", fixture);
     expect(response.status).toBe(200);
-    expect(document.title).toBe(`${fixture.brand} | ${fixture.row.seo_title_zh}`);
-    expect(document.title.split(fixture.brand)).toHaveLength(2);
+    expect(document.title).toBe(fixture.table === "site_pages" ? fixture.brand : `${fixture.brand} | ${fixture.row.seo_title_zh}`);
     const description = metadata(document, 'meta[name="description"]');
-    expect(description?.startsWith(String(fixture.row.seo_description_zh))).toBe(true);
-    for (const alias of aliases) expect(description).toContain(alias);
-    expect(description).toContain("FLASH CAST");
-    expect(document.querySelector("noscript[data-flashcast-geo-summary]")?.textContent).toContain("中文品牌：闪铸装饰 · 闪铸设计 · 闪铸装修");
+    if (fixture.path === "") expect(description).toBe("闪铸装饰亦称“闪铸设计”，为吉隆坡、雪兰莪与巴生谷提供住宅及商业装修、室内设计、定制柜体与项目协调。按现场情况和确认范围准备报价。");
+    else expect(description?.startsWith(String(fixture.row.seo_description_zh))).toBe(true);
+    expect(document.querySelector("noscript[data-flashcast-geo-summary]")?.textContent).toContain("闪铸装饰 FLASH CAST · FLASH CAST SDN. BHD.");
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://flashcast.com.my${path}`);
     expect(document.querySelector('link[hreflang="en"]')?.getAttribute("href")).toBe(`https://flashcast.com.my/en${fixture.path}`);
     expectMetadataParity(document, node);
@@ -155,7 +157,7 @@ describe("Edge Chinese brand identity from current published sources", () => {
   });
 
   it("does not repeat an already saved route brand", async () => {
-    const original = fixtures[2];
+    const original = fixtures.find(fixture => fixture.path === "/services/design")!;
     const fixture = { ...original, row: { ...original.row, seo_title_zh: `闪铸设计 | ${original.row.seo_title_zh}` } };
     const { document } = await render("zh", fixture);
     expect(document.title).toBe(fixture.row.seo_title_zh);
@@ -163,12 +165,12 @@ describe("Edge Chinese brand identity from current published sources", () => {
   });
 
   it.each(["en", "zh"] as const)("reads a newer CMS title and description rather than the build snapshot in %s", async language => {
-    const original = fixtures[1];
+    const original = fixtures.find(fixture => fixture.path === "/about")!;
     const title = language === "zh" ? "当前后台更新的公司介绍 | FLASH CAST" : "Current Admin Company Introduction | FLASH CAST";
     const description = language === "zh" ? "当前后台更新的介绍摘要。" : "Current company summary updated in Admin.";
     const fixture = { ...original, row: { ...original.row, [`seo_title_${language}`]: title, [`seo_description_${language}`]: description } };
     const { document, node } = await render(language, fixture);
-    expect(document.title).toBe(language === "zh" ? `闪铸装饰 | ${title}` : title);
+    expect(document.title).toBe(language === "zh" ? original.brand : title);
     expect(metadata(document, 'meta[name="description"]')?.startsWith(description)).toBe(true);
     expectMetadataParity(document, node);
   });
@@ -188,7 +190,7 @@ describe("Edge Chinese brand identity from current published sources", () => {
   it("keeps the confirmed brand in built-in fallback HTML without backend access", async () => {
     const { response, document, node } = await render("zh", fixtures[0], settings, false);
     expect(response.status).toBe(200);
-    expect(document.title).toBe(`闪铸装饰 | ${fixtures[0].row.seo_title_zh}`);
+    expect(document.title).toBe(fixtures[0].brand);
     expectMetadataParity(document, node);
     expectBrandIdentity(document, node);
   });

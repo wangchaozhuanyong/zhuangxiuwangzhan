@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SchemeAHome from "@/components/scheme-a/SchemeAHome";
 import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
+import { homeFurnitureText } from "@/i18n/homeFurnitureText";
 
 const state = vi.hoisted(() => ({
   language: "en" as "en" | "zh",
@@ -101,6 +102,13 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(heroLinks[2]).toHaveAttribute("href", `https://shop.flashcast.com.my/${language}/`);
     expect(heroLinks[2]).toHaveAttribute("target", "_blank");
     expect(heroLinks[2]).toHaveAttribute("rel", "noopener noreferrer");
+    expect(heroLinks[2]).toHaveAttribute("aria-label", homeFurnitureText[language].heroShopLabel);
+    expect(heroLinks[2].querySelector(".scheme-a-home-furniture-entry__title")).toHaveTextContent(homeFurnitureText[language].heroShopTitle);
+    const categories = homeFurnitureText[language].heroShopDescription.split(" · ");
+    const chips = heroLinks[2].querySelectorAll(".scheme-a-chip");
+    expect(chips).toHaveLength(categories.length);
+    categories.forEach((category, index) => expect(chips[index]).toHaveTextContent(category));
+    expect(heroLinks[2].querySelector(".scheme-a-home-furniture-entry__badge")).toHaveTextContent(homeFurnitureText[language].heroShopBadge);
     expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();
     for (const slug of originalServiceSlugs) {
       expect(container.querySelector(`[data-home-section="services"] a[href="/${language}/services/${slug}"]`)).not.toBeNull();
@@ -118,6 +126,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     render(bundle());
     const hero = container.querySelector('[data-home-section="hero"]');
     expect(hero!.querySelectorAll("a")).toHaveLength(3);
+    expect(hero!.querySelector(".scheme-a-hero__brand")?.textContent ?? null).toBe(language === "zh" ? "闪铸装饰 FLASH CAST" : null);
     expect(hero!.querySelector('a[target="_blank"]')).toHaveAttribute("href", state.whatsappHref);
     expect(hero!.querySelector(`a[href="/${language}/projects"]`)).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
     expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();
