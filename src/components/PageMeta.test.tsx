@@ -58,8 +58,9 @@ describe("public page metadata", () => {
   });
 
   it.each([
-    ["/", "闪铸装饰"],
-    ["/about", "闪铸装饰"],
+    ["/", "闪铸装饰 FLASH CAST | 吉隆坡装修、室内设计与定制柜"],
+    ["/about", "关于闪铸装饰 FLASH CAST | 装修规划与项目协调"],
+    ["/contact", "联系闪铸装饰 FLASH CAST | 吉隆坡装修咨询"],
     ["/services/design", "闪铸设计"],
     ["/services/renovation", "闪铸装修"],
   ])("associates the confirmed Chinese brand with CMS metadata for %s", async (path, brand) => {
@@ -67,10 +68,10 @@ describe("public page metadata", () => {
     const description = "保留后台确认的服务范围、地点与咨询说明。";
     act(() => root.render(<HelmetProvider><PageMeta title={title} description={description} canonicalPath={path} /></HelmetProvider>));
     await vi.waitFor(() => {
-      expect(document.title).toBe(`${brand} | ${title} | FLASH CAST SDN. BHD.`);
+      expect(document.title).toBe(path.startsWith("/services/") ? `${brand} | ${title} | FLASH CAST SDN. BHD.` : brand);
       const actualDescription = document.querySelector('meta[name="description"]')?.getAttribute("content") || "";
-      expect(actualDescription.startsWith(description)).toBe(true);
-      for (const alias of ["闪铸装饰", "闪铸设计", "闪铸装修", "FLASH CAST"]) expect(actualDescription).toContain(alias);
+      if (path === "/") expect(actualDescription).toBe("闪铸装饰亦称“闪铸设计”，为吉隆坡、雪兰莪与巴生谷提供住宅及商业装修、室内设计、定制柜体与项目协调。按现场情况和确认范围准备报价。");
+      else expect(actualDescription.startsWith(description)).toBe(true);
       expect(document.querySelector('meta[property="og:title"]')).toHaveAttribute("content", document.title);
       expect(document.querySelector('meta[name="twitter:title"]')).toHaveAttribute("content", document.title);
       expect(document.querySelector('meta[property="og:description"]')).toHaveAttribute("content", actualDescription);
@@ -89,7 +90,7 @@ describe("public page metadata", () => {
     });
   });
 
-  it.each(["/", "/about", "/services/design", "/services/renovation"])("keeps English CMS metadata free of the Chinese brand line for %s", async (path) => {
+  it.each(["/", "/about", "/contact", "/services/design", "/services/renovation"])("keeps English CMS metadata free of the Chinese brand line for %s", async (path) => {
     state.language = "en";
     const description = "The published English consultation scope remains intact.";
     act(() => root.render(<HelmetProvider><PageMeta title="Published English scope" description={description} canonicalPath={path} /></HelmetProvider>));
@@ -104,7 +105,7 @@ describe("public page metadata", () => {
   });
 
   it("keeps an unrelated Chinese route and a different company outside the brand association", async () => {
-    act(() => root.render(<HelmetProvider><PageMeta title="联系页面" description="原始联系说明。" canonicalPath="/contact" /></HelmetProvider>));
+    act(() => root.render(<HelmetProvider><PageMeta title="联系页面" description="原始联系说明。" canonicalPath="/faqs" /></HelmetProvider>));
     await vi.waitFor(() => {
       expect(document.title).toBe("联系页面 | FLASH CAST SDN. BHD.");
       expect(document.querySelector('meta[name="description"]')).toHaveAttribute("content", "原始联系说明。");

@@ -40,6 +40,13 @@ it("replaces initial server page data in production, follows language/history an
     expect(document.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(1);
     expect(graph().filter(node => node["@type"] === "WebPage")).toEqual([expect.objectContaining({ url: `https://flashcast.com.my${path}`, inLanguage: state.language === "zh" ? "zh-CN" : "en" })]);
     expect(JSON.stringify(graph())).not.toContain("OLD FAQ");
+    const websites = graph().filter(node => node["@type"] === "WebSite");
+    const businesses = graph().filter(node => node["@type"] === "HomeAndConstructionBusiness");
+    expect(websites).toHaveLength(1); expect(businesses).toHaveLength(1);
+    expect(websites[0]).toMatchObject({ "@id": "https://flashcast.com.my/#website", name: "FLASH CAST" });
+    expect((websites[0].alternateName as string[])[0]).toBe("闪铸装饰");
+    expect((businesses[0].alternateName as string[])[0]).toBe("闪铸装饰");
+    expect(graph().some(node => node["@type"] === "Organization")).toBe(false);
     const breadcrumb = graph().find(node => node["@type"] === "BreadcrumbList");
     expect(JSON.stringify(breadcrumb)).toContain(`https://flashcast.com.my/${state.language}`);
   };

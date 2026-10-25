@@ -8,6 +8,7 @@ import { SchemeAFooter, SchemeANavbar } from "@/components/scheme-a/SchemeAPubli
 import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
 import { contactPageText } from "@/i18n/contactPageText";
 import { footerCopy } from "@/i18n/footerText";
+import { getChineseBrandAssociation, getPublicBrandAliases, getPublicSiteName, withChineseBrandMetadata } from "@/i18n/brandIdentity";
 
 vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); });
 const languageState = vi.hoisted(() => ({ language: "en" as "en" | "zh" }));
@@ -15,6 +16,18 @@ vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: langu
 beforeEach(() => { languageState.language = "en"; });
 
 describe("public header brand", () => {
+  it("preserves the main Chinese name and one associated identity without changing English or Malay metadata", () => {
+    expect(getPublicSiteName(fallbackSiteSettings)).toBe("FLASH CAST");
+    expect(getPublicBrandAliases(fallbackSiteSettings)[0]).toBe("闪铸装饰");
+    expect(getPublicBrandAliases(fallbackSiteSettings)).toContain("闪铸设计");
+    expect(getChineseBrandAssociation(fallbackSiteSettings, "zh")).toBe("闪铸装饰（FLASH CAST SDN. BHD.）亦称“闪铸设计”，两个名称均指同一家公司。");
+    for (const language of ["en", "ms"]) {
+      const metadata = { title: "Published scope", description: "Published description." };
+      expect(withChineseBrandMetadata(metadata, language, "/", fallbackSiteSettings)).toBe(metadata);
+      expect(getChineseBrandAssociation(fallbackSiteSettings, language)).toBeNull();
+    }
+  });
+
   const renderHeader = (language: "zh" | "en", settings = fallbackSiteSettings) => {
     languageState.language = language;
     const route = `/${language}/`;
@@ -34,9 +47,9 @@ describe("public header brand", () => {
     const wordmark = brand.querySelector(".scheme-a-chrome__wordmark-name")!;
     expect(wordmark.textContent).toBe(name);
     expect(wordmark.getAttribute("lang")).toBe(lang);
-    expect(brand.getAttribute("aria-label")).toBe(name);
+    expect(brand.getAttribute("aria-label")).toBe(language === "zh" ? `${name} FLASH CAST` : name);
     expect(brand.getAttribute("href")).toBe(`/${language}`);
-    expect(brand.textContent).toBe(name);
+    expect(brand.textContent).toBe(language === "zh" ? `${name}FLASH CAST` : name);
     expect(brand.querySelectorAll(".scheme-a-chrome__wordmark-name")).toHaveLength(1);
     expect(brand.querySelector(".scheme-a-chrome__symbol img")).not.toBeNull();
   });
@@ -136,7 +149,7 @@ describe("JsonLdLocalBusiness", () => {
     </QueryClientProvider></MemoryRouter>);
     const document = new DOMParser().parseFromString(html, "text/html");
     const footer = document.querySelector(".scheme-a-footer__studio")!;
-    const line = "中文品牌：闪铸装饰 · 闪铸设计 · 闪铸装修";
+    const line = "闪铸装饰 FLASH CAST · FLASH CAST SDN. BHD.";
     expect(footer).not.toBeNull();
     if (language === "zh") {
       const brandText = Array.from(footer.querySelectorAll("*")).find((element) => element.textContent === line);
@@ -236,7 +249,8 @@ describe("JsonLdLocalBusiness", () => {
         expect(link.hasAttribute("aria-current")).toBe(false);
       }
     }
-    expect(document.querySelector(".scheme-a-directory__body > .scheme-a-directory__social-group")).not.toBeNull();
+    expect(document.querySelector(".scheme-a-directory__body .scheme-a-directory__social-group")).toBeNull();
+    expect(document.querySelector(".scheme-a-directory__bottom > .scheme-a-directory__social-group")).not.toBeNull();
     expect(document.querySelector(".scheme-a-directory__foot .scheme-a-directory__social-group")).toBeNull();
     for (const [label, url] of [["Facebook", profiles.facebook_url], ["Instagram", profiles.instagram_url], ["TikTok", profiles.tiktok_url], ["REDnote (Xiaohongshu)", profiles.xiaohongshu_url]]) {
       expect(html).toContain(`href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${label}"`);

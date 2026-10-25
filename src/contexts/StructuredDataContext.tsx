@@ -61,14 +61,15 @@ export function StructuredDataProvider({ children }: { children: ReactNode }) {
     {
       ...initialGlobals.find(node => node["@type"] === "HomeAndConstructionBusiness"),
       "@type": "HomeAndConstructionBusiness", "@id": businessId,
-      name: settings.company_name, alternateName: getPublicBrandAliases(settings),
+      name: settings.company_name, alternateName: getPublicBrandAliases(settings).filter(name => name !== settings.company_name),
       url: siteConfig.url, telephone: settings.phone_e164, email: settings.email,
       logo: absoluteLogo(settings.logo_url),
       address: { "@type": "PostalAddress", streetAddress: settings.address_en || settings.address_zh || siteConfig.address, addressLocality: "Kuala Lumpur", postalCode: "58200", addressCountry: "MY" },
       sameAs: getSocialProfileUrls(settings),
     },
     { ...initialGlobals.find(node => node["@type"] === "WebSite"), "@type": "WebSite", "@id": websiteId,
-      url: siteConfig.url, name: getPublicSiteName(settings), inLanguage: ["en", "zh-CN"], publisher: { "@id": businessId } },
+      url: siteConfig.url, name: getPublicSiteName(settings),
+      alternateName: getPublicBrandAliases(settings).filter(name => name !== getPublicSiteName(settings)), inLanguage: ["en", "zh-CN"], publisher: { "@id": businessId } },
   ];
   if (page) {
     const pageNodes = nodes.filter(node => !globalTypes.has(String(node["@type"])) && node["@type"] !== "WebPage");

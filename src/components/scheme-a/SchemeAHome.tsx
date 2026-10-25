@@ -7,6 +7,8 @@ import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { getChineseBrandDisplayName } from "@/i18n/brandIdentity";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { isRenderingConceptProject } from "@/lib/projectContentClassification";
@@ -72,6 +74,7 @@ function ColorfulLivingRoomIcon() {
 
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
+  const brandName = getChineseBrandDisplayName(useSiteSettings(), language);
   const copy = schemeAHomeText[language];
   const editorial = homeEditorialText[language];
   const mediaCopy = mediaLabels[language];
@@ -154,6 +157,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
           </figure>
           <div className="scheme-a-hero__copy">
             <div className="scheme-a-hero__intro">
+              {brandName && <p className="scheme-a-hero__brand">{brandName}</p>}
               <h1 id="scheme-a-home-title">
                 <span>{copy.heroTitle}</span>
                 {" "}

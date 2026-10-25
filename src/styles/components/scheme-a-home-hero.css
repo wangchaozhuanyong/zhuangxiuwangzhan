@@ -54,6 +54,7 @@
   }
 
   .scheme-a-hero__intro {
+    position: relative;
     display: block;
     text-align: left;
   }
@@ -74,6 +75,16 @@
   }
 
   .scheme-a-hero h1 span { display: block; }
+
+  .scheme-a-hero__brand {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0.03em;
+  }
 
   .scheme-a-hero__service {
     padding-top: 24px;

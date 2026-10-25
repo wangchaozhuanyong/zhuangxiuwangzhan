@@ -48,7 +48,7 @@ describe("current public metadata contract", () => {
       seo_title_zh: "", seo_description_zh: "", content_zh: "", image_url: "/current-contact.webp",
     });
     expect(response.status).toBe(200);
-    expect(document.title).toBe("当前联系标题 | FLASH CAST SDN. BHD.");
+    expect(document.title).toBe("联系闪铸装饰 FLASH CAST | 吉隆坡装修咨询");
     expect(document.querySelector('meta[name="description"]')?.getAttribute("content")).toBe("当前 CMS 描述");
     expect(document.querySelector('meta[property="og:image"]')?.getAttribute("content")).toBe("https://flashcast.com.my/current-contact.webp");
   });
