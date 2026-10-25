@@ -1452,7 +1452,7 @@ const fetchPublicMaterialDetail = async (
     url.searchParams.set("is_active", "eq.true");
     url.searchParams.set("order", "sort_order.asc");
   });
-  return gallery === null ? material : { ...material, material_images: gallery };
+  return gallery === null ? null : { ...material, material_images: gallery };
 };
 
 const fetchPublicServiceAreas = async (env: Record<string, string | undefined>) =>
@@ -2391,7 +2391,7 @@ export const onRequest: PagesFunction = async (context) => {
   if (services?.length) {
     publicDataPayload.services = projectServiceSummariesForPreload(services);
   }
-  if (materials?.length || materialDetail) {
+  if ((materials?.length || materialDetail) && (!productDetailSlug || materialDetail)) {
     const materialRows = materials?.length ? [...materials] : [];
     if (materialDetail) {
       const existingIndex = materialRows.findIndex((row) => String(row.slug || "") === productDetailSlug);
