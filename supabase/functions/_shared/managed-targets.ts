@@ -6,6 +6,7 @@ import { UNIFIED_CONTENT_TARGETS } from "./unified-content-targets.ts";
 import { BUILTIN_WARDROBE_TARGETS } from "./builtin-wardrobe-targets.ts";
 import { MALAY_TRANSLATION_TARGETS } from "./malay-translation-targets.ts";
 import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.ts";
+import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
 export { ORG020_V7_TARGETS };
 
 export type ManagedTarget = {
@@ -122,6 +123,7 @@ export const MANAGED_AREAS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_BLOGS: readonly ManagedTarget[] = [
+  ...SEO_CABINET_TWO_ANCHOR_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "blog"),
   ...NATIVE_BODY_TARGETS.filter((target) => target.contentType === "blog"),
   { id: "3fa4ff63-1ee6-4b7c-8f32-792c948c8545", slug: "kitchen-cabinet-price-malaysia", contentType: "blog", taskId: "fc-20260925-organic-query-page-completion-v1", actionId: "update-kitchen-cabinet-cost-existing-blog-v1", candidateVersion: "kitchen-cabinet-cost-r1-v1", scope: "flashcast.com.my:blog_posts/3fa4ff63-1ee6-4b7c-8f32-792c948c8545", changedFields: ["content_en", "content_zh", "seo_description_zh"], baselineFieldsSha256: "50b0c1510443cb59996e12117ad374ede0f279b4d1658cacb74d43d014f47704", desiredFieldsSha256: "4bca36e72073660d3328e6241cb3128c97b2c4a0230a17d2a5a2645726cf755f" },

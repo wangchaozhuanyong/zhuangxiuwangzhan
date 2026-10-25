@@ -18,6 +18,7 @@ on:
         default: all-20260906
         type: choice
         options:
+          - seo-cabinet-two-anchors-8520112a-v1
           - surface-repair-20260927
           - clinic-zh-copy-20261003
           - all-20260906
