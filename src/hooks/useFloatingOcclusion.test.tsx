@@ -85,7 +85,9 @@ describe("floating promotion stays available while reading", () => {
     expectObstructed(true);
     window.dispatchEvent(new Event("scroll"));
     expect(frames.size).toBe(1);
-    const [frameId, staleFrame] = [...frames][0];
+    const pendingFrame = [...frames][0];
+    if (!pendingFrame) throw new Error("Expected an animation frame before disabling occlusion");
+    const [frameId, staleFrame] = pendingFrame;
     act(() => root.render(<Entry route="/zh" reposition="fixed" enabled={false} />));
     expectObstructed(false);
     expect(cancelFrame).toHaveBeenCalledWith(frameId);
@@ -96,7 +98,9 @@ describe("floating promotion stays available while reading", () => {
     measurements.mockClear();
     requestFrame.mockClear();
     staleFrame(performance.now());
-    resizeCallbacks[0]();
+    const staleResize = resizeCallbacks[0];
+    if (!staleResize) throw new Error("Expected a resize observer before disabling occlusion");
+    staleResize();
     content.innerHTML = "";
     window.dispatchEvent(new Event("scroll"));
     window.dispatchEvent(new Event("resize"));
@@ -114,7 +118,9 @@ describe("floating promotion stays available while reading", () => {
     expectObstructed(true);
     window.dispatchEvent(new Event("scroll"));
     expect(frames.size).toBe(1);
-    const [unmountFrameId, unmountedFrame] = [...frames][0];
+    const pendingUnmountFrame = [...frames][0];
+    if (!pendingUnmountFrame) throw new Error("Expected an animation frame before unmounting occlusion");
+    const [unmountFrameId, unmountedFrame] = pendingUnmountFrame;
     act(() => root.render(null));
     expect(cancelFrame).toHaveBeenCalledWith(unmountFrameId);
     expect(frames.size).toBe(0);

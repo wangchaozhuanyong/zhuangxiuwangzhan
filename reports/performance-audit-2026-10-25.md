@@ -170,7 +170,7 @@ VITE_APP_VERSION=interaction-ci
 - 交互标准静态检查：98 条登记路由；该检查不是全站浏览器验收。
 - 联合回归：15 个测试文件、271 项通过。
 - 最后追加的首屏预取保护：组件 10 项测试、全项目类型检查与局部 lint 通过（与联合回归部分重叠，不累计为独立测试总数）。
-- 隐藏手机底栏优化：`MobileBottomDock`、`useFloatingOcclusion`、`FurnitureFloatingLink` 三文件 138 项回归、全应用类型检查、四个修改文件 lint 及架构检查通过；与此前联合测试存在重叠，不累计独立总数。
+- 隐藏手机底栏优化：`MobileBottomDock`、`useFloatingOcclusion`、`FurnitureFloatingLink` 三文件 138 项回归、全应用及严格核心类型检查、局部 lint 及架构检查通过；与此前联合测试存在重叠，不累计独立总数。新增测试曾在远端严格索引检查中失败，已通过显式检查帧记录和回调是否存在修复，并重新通过严格检查及 138 项回归，未改动生产代码或构建数据。
 - 构建/预算工具：5 项 Node 回归通过。
 - 最终 production fixture 编译、静态产物一致性比较和 diff 格式检查通过。
 
