@@ -18,7 +18,7 @@ export type ContactEntryPanelProps = {
   initialContact?: "wechat";
 };
 
-/** Loaded after the visitor requests contact options. */
+/** Bundled with the public contact entry; shown only when requested. */
 export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus, initialContact }: ContactEntryPanelProps) {
   const { language } = useLanguage();
   const settings = useSiteSettings();
