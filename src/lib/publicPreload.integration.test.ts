@@ -32,6 +32,17 @@ afterEach(() => {
 });
 
 describe("public preload data", () => {
+  it("hydrates current full service/blog details without seeding an incomplete list", async () => {
+    setPreloadedPublicData({
+      serviceDetails: { repair: { id: "service", slug: "repair", title_en: "Repair", content_en: "Full service body", suitable_for_en: ["Homes"], faqs_en: [{ q: "Q", a: "A" }] } },
+      blogPostDetails: { article: { id: "blog", slug: "article", title_en: "Article", content_en: "Full article body" } },
+    });
+    const { getPublicQuerySeed } = await import("./publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "service", "repair", "en"])).toMatchObject({ description: "Full service body", suitableFor: ["Homes"] });
+    expect(getPublicQuerySeed(["published", "blog_post", "article", "en"])).toMatchObject({ content: "Full article body" });
+    expect(getPublicQuerySeed(["published", "services", "en"])).toBeUndefined();
+    expect(getPublicQuerySeed(["published", "blog", "en"])).toBeUndefined();
+  });
   it("does not hydrate detail fields from a projected summary body fallback", async () => {
     setPreloadedPublicData({ services: [{ slug: "fixture", content_en: "Summary fallback" }], materials: [{ slug: "fixture", category: "Flooring", content_en: "Summary fallback" }] });
     const { getPublicQuerySeed } = await import("@/lib/publicQuerySeed");

@@ -1,4 +1,5 @@
 import { estimateBlogReadMinutes } from "../src/lib/blogMeta";
+import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
 
 export type PublicProjectionRecord = Record<string, unknown>;
 
@@ -86,6 +87,9 @@ const projectServiceSummary = (row: PublicProjectionRecord) =>
 
 export const projectServiceSummariesForPreload = (rows: PublicProjectionRecord[]) =>
   rows.map(projectServiceSummary);
+
+export const projectServiceDetailForPreload = (row: PublicProjectionRecord) => pickFields(row, PUBLIC_SERVICE_FIELDS);
+export const projectBlogDetailForPreload = (row: PublicProjectionRecord) => pickFields(row, PUBLIC_BLOG_FIELDS);
 
 const MATERIAL_LIST_FIELDS = [
   "id",

@@ -1,3 +1,4 @@
+import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
 import "../src/i18n/malayContent";
 import { hasMalayContent } from "../src/i18n/localizedContent";
 import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
@@ -36,6 +37,8 @@ import {
 } from "../src/i18n/languageDetection";
 import {
   projectBlogPostSummariesForPreload,
+  projectBlogDetailForPreload,
+  projectServiceDetailForPreload,
   projectCtaBlockForPreload,
   projectHomeContentBundleForPreload,
   projectMaterialsForPreload,
@@ -1413,7 +1416,7 @@ const fetchDynamicRouteState = async (
 
 const fetchPublicServices = async (env: Record<string, string | undefined>, fresh = false) => {
   const configure = (url: URL) => {
-    url.searchParams.set("select", "*");
+    url.searchParams.set("select", PUBLIC_SERVICE_FIELDS.join(","));
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "sort_order.asc");
   };
@@ -1449,7 +1452,7 @@ const fetchPublicMaterialDetail = async (
     url.searchParams.set("is_active", "eq.true");
     url.searchParams.set("order", "sort_order.asc");
   });
-  return { ...material, material_images: gallery || [] };
+  return gallery === null ? material : { ...material, material_images: gallery };
 };
 
 const fetchPublicServiceAreas = async (env: Record<string, string | undefined>) =>
@@ -1461,7 +1464,7 @@ const fetchPublicServiceAreas = async (env: Record<string, string | undefined>) 
 
 const fetchPublicBlogPosts = async (env: Record<string, string | undefined>) =>
   fetchPublicRows(env, "blog_posts", "blog_posts", (url) => {
-    url.searchParams.set("select", "*");
+    url.searchParams.set("select", PUBLIC_BLOG_FIELDS.join(","));
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "published_at.desc");
   });
@@ -1519,7 +1522,9 @@ const fetchPublicSitePageBundle = async (env: Record<string, string | undefined>
   const bundle: PublicDataRow = {};
   if (legacyRows?.length) bundle.site_pages = legacyRows;
   if (cmsRows?.length) bundle.cms_pages = cmsRows;
-  return Object.keys(bundle).length ? bundle : null;
+  // Null reads are failures, not a successful empty page. Omit the HTML seed
+  // so the client can perform its normal recoverable read.
+  return legacyRows === null || cmsRows === null ? null : bundle;
 };
 
 const fetchPublicCtaBlock = async (env: Record<string, string | undefined>, blockKey: string) => {
@@ -1589,7 +1594,7 @@ const getTopLevelPublicPageKey = (key: string) => {
   const parts = key.split("/").filter(Boolean);
   if (parts.length !== 2) return null;
   const pageKey = parts[1];
-  return pageKey === "services" || pageKey === "materials" || pageKey === "products" || pageKey === "promotions" || pageKey === "locations" || pageKey === "blog" || pageKey === "projects" ? pageKey : null;
+  return pageKey === "services" || pageKey === "materials" || pageKey === "products" || pageKey === "promotions" || pageKey === "locations" || pageKey === "blog" || pageKey === "projects" || pageKey === "contact" ? pageKey : null;
 };
 
 const getPathWithoutLanguage = (key: string) => {
@@ -2267,7 +2272,7 @@ export const onRequest: PagesFunction = async (context) => {
   const productDetailSlug = getProductDetailSlugFromKey(key);
   const topLevelPublicPageKey = getTopLevelPublicPageKey(key);
   const shouldInjectHomeBundle = Boolean(meta && isHomePageKey(key));
-  const shouldInjectProjectSummaries = Boolean(meta && (key === "/en/projects" || key === "/zh/projects" || projectDetailSlug));
+  const shouldInjectProjectSummaries = Boolean(meta && (/^\/(en|zh|ms)\/projects$/.test(key) || projectDetailSlug));
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
   const reviewedMaterialBody = isReviewedMaterialBodyPath(key);
@@ -2375,10 +2380,13 @@ export const onRequest: PagesFunction = async (context) => {
       [projectDetailSlug]: projectDetail,
     };
   }
-  if (shouldInjectPublicPageBundle && topLevelPublicPageKey) {
+  if (shouldInjectPublicPageBundle && topLevelPublicPageKey && publicPageBundle !== null) {
     publicDataPayload.sitePages = {
       [topLevelPublicPageKey]: publicPageBundle ? projectSitePageBundleForPreload(publicPageBundle) : {},
     };
+  }
+  if (dynamicRouteState?.kind === "service") {
+    publicDataPayload.serviceDetails = { [String(dynamicRouteState.row.slug)]: projectServiceDetailForPreload(dynamicRouteState.row) };
   }
   if (services?.length) {
     publicDataPayload.services = projectServiceSummariesForPreload(services);
@@ -2394,6 +2402,9 @@ export const onRequest: PagesFunction = async (context) => {
   }
   if (serviceAreas?.length) {
     publicDataPayload.serviceAreas = projectServiceAreaSummariesForPreload(serviceAreas);
+  }
+  if (dynamicRouteState?.kind === "blog") {
+    publicDataPayload.blogPostDetails = { [String(dynamicRouteState.row.slug)]: projectBlogDetailForPreload(dynamicRouteState.row) };
   }
   if (blogPosts?.length) {
     publicDataPayload.blogPosts = projectBlogPostSummariesForPreload(blogPosts);

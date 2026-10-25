@@ -9,6 +9,7 @@ import {
   fetchPublishedHeroSlideRows,
   fetchPublishedLandingPageRowBySlug,
   fetchPublishedMaterialRows,
+  fetchPublishedMaterialRowsByCategory,
   fetchPublishedMaterialRowBySlug,
   fetchPublishedProjectRowBySlug,
   fetchPublishedProjectSummaryRows,
@@ -537,6 +538,22 @@ export const getPublishedProductHighlights = async (
 };
 
 export const getPublishedMaterialBySlug = async (slug: string, language: Language = "en", signal?: AbortSignal) => {
+  if (hasPublicContentDatabaseClient()) {
+    const row = await fetchPublishedMaterialRowBySlug(slug, signal);
+    const categoryName = row && readText(row, "category");
+    if (row && categoryName && categoryName.toLowerCase() !== FURNITURE_MATERIAL_CATEGORY) {
+      // Related cards and category metadata still use the exact full category
+      // records in the original list order; unrelated categories are not needed.
+      const rows = await fetchPublishedMaterialRowsByCategory(categoryName, signal, true);
+      const category = rows?.length ? mapPublishedMaterialRows(rows as UnknownRecord[], language)[0] : undefined;
+      if (category?.items.some(item => item.slug === slug)) {
+        const material = mapPublishedMaterialRows([row as UnknownRecord], language)[0]?.items[0];
+        // Keep the existing distinction between returned detail and displayed
+        // category item. Changing that content contract is a separate repair.
+        return { material, category };
+      }
+    }
+  }
   const categories = await getPublishedMaterials(language, signal);
   for (const category of categories) {
     const material = category.items.find((item) => item.slug === slug);

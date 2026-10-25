@@ -1,5 +1,12 @@
 import { withReadSignal } from "@/lib/readRequest";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
+import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "@/lib/publicContentFields";
+import type { UnknownRecord } from "@/lib/recordUtils";
+import type { Database } from "@/lib/database.types";
+
+type MaterialWithGallery = Database["public"]["Tables"]["materials"]["Row"] & {
+  material_images?: Pick<Database["public"]["Tables"]["material_images"]["Row"], "image_url" | "sort_order">[];
+};
 import {
   HOME_JOURNAL_LIMIT,
   HOME_JOURNAL_ORDER,
@@ -135,9 +142,9 @@ export async function fetchPublishedServiceRows(signal?: AbortSignal) {
   if (!supabase) return null;
   const { data, error } = await withReadSignal(supabase
     .from("services")
-    .select("*")
+    .select(PUBLIC_SERVICE_FIELDS.join(","))
     .eq("status", "published")
-    .order("sort_order", { ascending: true }), signal);
+    .order("sort_order", { ascending: true }).returns<UnknownRecord[]>(), signal);
   if (error) throw error;
   return data || [];
 }
@@ -174,21 +181,22 @@ export async function fetchPublishedMaterialRows(limit?: number, excludedCategor
   return data || [];
 }
 
-export async function fetchPublishedMaterialRowsByCategory(category: string, signal?: AbortSignal) {
+export async function fetchPublishedMaterialRowsByCategory(category: string, signal?: AbortSignal, listOrder = false) {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
-  const { data, error } = await withReadSignal(supabase
+  let query = supabase
     .from("materials")
     .select("*")
     .eq("status", "published")
     .eq("category", category)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false }), signal);
+    .order("sort_order", { ascending: true });
+  if (!listOrder) query = query.order("created_at", { ascending: false });
+  const { data, error } = await withReadSignal(query, signal);
   if (error) throw error;
   return data || [];
 }
 
-export async function fetchPublishedMaterialBySlugAndCategory(slug: string, category: string, signal?: AbortSignal) {
+export async function fetchPublishedMaterialBySlugAndCategory(slug: string, category: string, signal?: AbortSignal): Promise<MaterialWithGallery | null> {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await withReadSignal(supabase
@@ -207,7 +215,8 @@ export async function fetchPublishedMaterialBySlugAndCategory(slug: string, cate
     .eq("material_id", data.id)
     .eq("is_active", true)
     .order("sort_order", { ascending: true }), signal);
-  return galleryError ? data : { ...data, material_images: gallery || [] };
+  if (galleryError) throw galleryError;
+  return { ...data, material_images: gallery || [] };
 }
 
 export async function fetchPublishedMaterialRowBySlug(slug: string, signal?: AbortSignal) {
@@ -229,13 +238,14 @@ export async function fetchPublishedMaterialRowBySlug(slug: string, signal?: Abo
     .eq("is_active", true)
     .order("sort_order", { ascending: true }), signal);
 
-  return galleryError ? data : { ...data, material_images: gallery || [] };
+  if (galleryError) throw galleryError;
+  return { ...data, material_images: gallery || [] };
 }
 
 export async function fetchPublishedBlogPostRows(signal?: AbortSignal) {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
-  const { data, error } = await withReadSignal(supabase.from("blog_posts").select("*").eq("status", "published").order("published_at", byCreatedAtDesc), signal);
+  const { data, error } = await withReadSignal(supabase.from("blog_posts").select(PUBLIC_BLOG_FIELDS.join(",")).eq("status", "published").order("published_at", byCreatedAtDesc).returns<UnknownRecord[]>(), signal);
   if (error) throw error;
   return data || [];
 }

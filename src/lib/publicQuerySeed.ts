@@ -33,7 +33,7 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "services": return payload.services?.map((row) => mapPublishedService(row, language));
     case "service_summaries": return payload.services ? limit(payload.services, parameters.limit).map((row) => mapPublishedService(row, language)) : undefined;
     case "service": {
-      const row = payload.services?.find((item) => item.slug === parameters.slug);
+      const row = payload.serviceDetails?.[String(parameters.slug)] || payload.services?.find((item) => item.slug === parameters.slug);
       return row && (row[`content_${language}`] || row.content_en || row.content_zh) && ("suitable_for_en" in row || "faqs_en" in row) ? mapPublishedService(row, language) : undefined;
     }
     case "project_summaries": {
@@ -57,7 +57,11 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
       return items.length >= Number(parameters.limit) ? items.slice(0, Number(parameters.limit)) : undefined;
     }
     case "blog": return payload.blogPosts ? mapPublishedBlogPostRows(payload.blogPosts, language) : undefined;
-    case "blog_post": return payload.blogPosts ? mapPublishedBlogPostRows(payload.blogPosts, language).find((post) => post.slug === parameters.slug && Boolean(post.content?.trim())) : undefined;
+    case "blog_post": {
+      const row = payload.blogPostDetails?.[String(parameters.slug)];
+      const rows = row ? [row] : payload.blogPosts;
+      return rows ? mapPublishedBlogPostRows(rows, language).find((post) => post.slug === parameters.slug && Boolean(post.content?.trim())) : undefined;
+    }
     case "service_areas": return payload.serviceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));
     case "home_bundle": return payload.homeContentBundle ? createRemoteContent(mapRemoteHomeContentBundle(payload.homeContentBundle, language)) : undefined;
     case "process_steps": return payload.processSteps ? mapRemoteHomeContentBundle({ process_steps: payload.processSteps }, language).processSteps : undefined;
