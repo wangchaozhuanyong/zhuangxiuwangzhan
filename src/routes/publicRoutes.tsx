@@ -1,64 +1,37 @@
-import { lazy, Suspense, type ComponentType } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate, Route, useLocation, useParams } from "react-router-dom";
 import { LanguageRouteSync, LegacyLanguageRedirect, ProductsToMaterialsRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 import BlogArticleLoading from "@/components/blocks/BlogArticleLoading";
+import { landingToServiceSlugs, publicPageModules } from "@/lib/publicPageModules";
 
-type PageModule = { default: ComponentType };
-type StyleModule = typeof import("*.css");
-
-// Every public route loads the same canonical bundle. Keeping a single module
-// prevents route visit order from changing the CSS cascade in the SPA.
-const loadPublicPageStyles = () => import("@/styles/routes/public-pages.css");
-
-const lazyPublicPage = (
-  loader: () => Promise<PageModule>,
-) => lazy(async () => {
-  const [pageModule] = await Promise.all([
-    loader(),
-    loadPublicPageStyles() as Promise<StyleModule>,
-  ]);
-  return pageModule;
-});
-
-const Index = lazyPublicPage(() => import("@/pages/Index"));
-const About = lazyPublicPage(() => import("@/pages/About"));
-const Services = lazyPublicPage(() => import("@/pages/Services"));
-const ServiceDetail = lazyPublicPage(() => import("@/pages/ServiceDetail"));
-const Materials = lazyPublicPage(() => import("@/pages/Materials"));
-const FurnitureShowcase = lazyPublicPage(() => import("@/pages/FurnitureShowcase"));
-const FurnitureProductDetail = lazyPublicPage(() => import("@/pages/FurnitureProductDetail"));
-const Promotions = lazyPublicPage(() => import("@/pages/Promotions"));
-const Locations = lazyPublicPage(() => import("@/pages/Locations"));
-const MaterialCategoryPage = lazyPublicPage(() => import("@/pages/MaterialCategoryPage"));
-const MaterialSubcategoryPage = lazyPublicPage(() => import("@/pages/MaterialSubcategoryPage"));
-const MaterialDetail = lazyPublicPage(() => import("@/pages/MaterialDetail"));
-const Projects = lazyPublicPage(() => import("@/pages/Projects"));
-const ProjectDetail = lazyPublicPage(() => import("@/pages/ProjectDetail"));
-const BeforeAfter = lazyPublicPage(() => import("@/pages/BeforeAfter"));
-const Process = lazyPublicPage(() => import("@/pages/Process"));
-const FAQ = lazyPublicPage(() => import("@/pages/FAQ"));
-const Contact = lazyPublicPage(() => import("@/pages/Contact"));
-const Quote = lazyPublicPage(() => import("@/pages/Quote"));
-const Blog = lazyPublicPage(() => import("@/pages/Blog"));
-const BlogDetail = lazyPublicPage(() => import("@/pages/BlogDetail"));
-const LocationPage = lazyPublicPage(() => import("@/pages/LocationPage"));
-const LandingPage = lazyPublicPage(() => import("@/pages/LandingPage"));
-const CmsDynamicPage = lazyPublicPage(() => import("@/pages/CmsDynamicPage"));
-const Privacy = lazyPublicPage(() => import("@/pages/Privacy"));
-const Terms = lazyPublicPage(() => import("@/pages/Terms"));
-const OldHouseRenovation = lazyPublicPage(() => import("@/pages/OldHouseRenovation"));
-
-const landingToServiceSlugs: Record<string, string> = {
-  "office-renovation": "office-renovation",
-  "shop-renovation": "shop-renovation",
-  "bathroom-renovation": "bathroom",
-  "old-house-renovation": "old-house",
-  "custom-built-in": "builtin",
-  "warehouse-shelving": "warehouse",
-  "kitchen-cabinet": "kitchen",
-  "flooring": "flooring",
-};
-const NotFound = lazyPublicPage(() => import("@/pages/NotFound"));
+const Index = lazy(publicPageModules.Index);
+const About = lazy(publicPageModules.About);
+const Services = lazy(publicPageModules.Services);
+const ServiceDetail = lazy(publicPageModules.ServiceDetail);
+const Materials = lazy(publicPageModules.Materials);
+const FurnitureShowcase = lazy(publicPageModules.FurnitureShowcase);
+const FurnitureProductDetail = lazy(publicPageModules.FurnitureProductDetail);
+const Promotions = lazy(publicPageModules.Promotions);
+const Locations = lazy(publicPageModules.Locations);
+const MaterialCategoryPage = lazy(publicPageModules.MaterialCategoryPage);
+const MaterialSubcategoryPage = lazy(publicPageModules.MaterialSubcategoryPage);
+const MaterialDetail = lazy(publicPageModules.MaterialDetail);
+const Projects = lazy(publicPageModules.Projects);
+const ProjectDetail = lazy(publicPageModules.ProjectDetail);
+const BeforeAfter = lazy(publicPageModules.BeforeAfter);
+const Process = lazy(publicPageModules.Process);
+const FAQ = lazy(publicPageModules.FAQ);
+const Contact = lazy(publicPageModules.Contact);
+const Quote = lazy(publicPageModules.Quote);
+const Blog = lazy(publicPageModules.Blog);
+const BlogDetail = lazy(publicPageModules.BlogDetail);
+const LocationPage = lazy(publicPageModules.LocationPage);
+const LandingPage = lazy(publicPageModules.LandingPage);
+const CmsDynamicPage = lazy(publicPageModules.CmsDynamicPage);
+const Privacy = lazy(publicPageModules.Privacy);
+const Terms = lazy(publicPageModules.Terms);
+const OldHouseRenovation = lazy(publicPageModules.OldHouseRenovation);
+const NotFound = lazy(publicPageModules.NotFound);
 
 const withLanguageSync = (page: JSX.Element) => (
   <>

@@ -147,11 +147,14 @@ describe("public design boundary", () => {
 
   it("loads one canonical public stylesheet entry", () => {
     const publicRoutes = readFileSync(resolve(process.cwd(), "src/routes/publicRoutes.tsx"), "utf8");
+    const pageModules = readFileSync(resolve(process.cwd(), "src/lib/publicPageModules.ts"), "utf8");
     const publicStyles = readFileSync(resolve(process.cwd(), "src/styles/routes/public-pages.css"), "utf8");
     const sectionSpacing = readFileSync(resolve(process.cwd(), "src/styles/components/public-section-spacing.css"), "utf8");
 
-    expect(publicRoutes).toContain('import("@/styles/routes/public-pages.css")');
-    expect(publicRoutes).not.toMatch(/public-(?:home|forms)\.css|scheme-a-fidelity\.css/);
+    expect(publicRoutes).toContain('import { landingToServiceSlugs, publicPageModules } from "@/lib/publicPageModules"');
+    expect(publicRoutes).toContain("lazy(publicPageModules.Index)");
+    expect(`${publicRoutes}\n${pageModules}`.match(/import\("@\/styles\/routes\/public-pages\.css"\)/g)).toHaveLength(1);
+    expect(`${publicRoutes}\n${pageModules}`).not.toMatch(/public-(?:home|forms)\.css|scheme-a-fidelity\.css/);
     expect(publicStyles.trimEnd()).toMatch(/@import "\.\.\/components\/public-section-spacing\.css";\n@tailwind components;$/);
     expect(sectionSpacing).toContain("--public-section-space-end: 28px;");
   });
