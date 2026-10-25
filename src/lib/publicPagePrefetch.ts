@@ -1,5 +1,6 @@
 import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
 import { landingToServiceSlugs, publicPageModules } from "./publicPageModules";
+import { prepareMalayContent } from "@/components/LanguageRouteSync";
 
 type PublicPageName = keyof typeof publicPageModules;
 const directoryPages: Record<string, PublicPageName> = {
@@ -46,6 +47,6 @@ export function prefetchPublicPageModule(pathname: string): Promise<unknown> {
   const page = getPublicPageName(pathname);
   return page ? Promise.all([
     publicPageModules[page](),
-    pathname.startsWith("/ms/") || pathname === "/ms" ? import("@/i18n/malayContent") : undefined,
+    pathname.startsWith("/ms/") || pathname === "/ms" ? prepareMalayContent() : undefined,
   ]) : Promise.resolve();
 }

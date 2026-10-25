@@ -1,9 +1,13 @@
-import { lazy, useLayoutEffect, type PropsWithChildren } from "react";
+import { useLayoutEffect, type PropsWithChildren } from "react";
 import { Navigate, useLocation, useParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getDefaultLanguage, getLanguageFromPath, isLanguage, stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 
-const MalayContentReady = lazy(() => import("@/i18n/malayContent"));
+let malayReady = false;
+let malayError: unknown;
+let malayLoad: Promise<unknown> | undefined;
+export const prepareMalayContent = () => malayLoad ??= import("@/i18n/malayContent")
+  .then(() => { malayReady = true; }, (error: unknown) => { malayError = error; throw error; });
 
 export const LanguageRouteSync = ({ children }: PropsWithChildren) => {
   const { language, setLanguage } = useLanguage();
@@ -15,7 +19,13 @@ export const LanguageRouteSync = ({ children }: PropsWithChildren) => {
     }
   }, [lang, language, setLanguage]);
 
-  return lang === "ms" ? <MalayContentReady>{children}</MalayContentReady> : children;
+  // Keep exactly the same child tree across languages so inputs, gallery state
+  // and focus are not remounted by adding/removing a locale-only wrapper.
+  if (lang === "ms" && !malayReady) {
+    if (malayError) throw malayError;
+    throw prepareMalayContent();
+  }
+  return children;
 };
 
 export const RootLanguageRedirect = () => {

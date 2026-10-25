@@ -7,6 +7,9 @@ const renderPrefetch = vi.fn();
 let root: Root;
 let container: HTMLDivElement;
 beforeEach(() => {
+  // Each transfer scenario models a fresh document, with a fresh ESM result.
+  // Do not reuse the prior scenario's successfully cached mock import.
+  vi.resetModules();
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   renderPrefetch.mockClear();
   vi.doMock("./PublicRouteEnhancements", () => ({ default: () => { renderPrefetch(); return null; } }));

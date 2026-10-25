@@ -1,5 +1,4 @@
 import translations from "./malayFallbackText.json";
-import type { PropsWithChildren } from "react";
 import { registerMalayContent } from "./malayContentRuntime";
 import { reviewedMaterialMalayTerm, type MaterialTermField } from "../../supabase/functions/_shared/material-terminology.mjs";
 
@@ -20,4 +19,3 @@ export function localizeMalayContent<T>(value: T, field = ""): T {
 }
 
 registerMalayContent(localizeMalayContent);
-export default function MalayContentReady({ children }: PropsWithChildren) { return children; }

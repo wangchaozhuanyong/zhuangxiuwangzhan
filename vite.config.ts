@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => ({
         manualChunks(id) {
           if (id.includes("node_modules")) {
             // Co-locate already-required shell helpers with React to reduce repeated chunk overhead.
-            if (/[\\/]node_modules[\\/](clsx|tailwind-merge|react-helmet-async|react-fast-compare|shallowequal|invariant)[\\/]/.test(id)) return "vendor";
+            if (/[\\/]node_modules[\\/](clsx|tailwind-merge|react-helmet-async|react-fast-compare|shallowequal|invariant|tslib)[\\/]/.test(id)) return "vendor";
             if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|@remix-run[\\/]router)[\\/]/.test(id)) return "vendor";
             return;
           }
