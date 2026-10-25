@@ -1,10 +1,10 @@
 # Flashcast 性能检查与修复记录
 
-检查日期：2026-10-25（用户所在时区 Asia/Kuala_Lumpur）  
-网站：https://flashcast.com.my  
-仓库：https://github.com/wangchaozhuanyong/zhuangxiuwangzhan  
-基线提交：`1a3a4647cb36aa59f5da572df00fc3c7c065cafd`  
-修复分支：`codex/flashcast-performance-20261025`
+- 检查日期：2026-10-25
+- 网站：https://flashcast.com.my
+- 仓库：https://github.com/wangchaozhuanyong/zhuangxiuwangzhan
+- 基线提交：`1a3a4647cb36aa59f5da572df00fc3c7c065cafd`
+- 修复分支：`codex/flashcast-performance-20261025`
 
 ## 结论与交付状态
 
