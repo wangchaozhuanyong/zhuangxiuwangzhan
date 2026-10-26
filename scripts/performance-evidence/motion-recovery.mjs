@@ -7,6 +7,10 @@ const server = await start(profile), results = [];
 try {
   for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     const browser = await engine.launch();
+    console.log('[late-assets] ' + name);
+    const heldImages = [];
+    let releaseCritical;
+    const criticalHeld = new Promise(resolve => { releaseCritical = resolve; });
     try {
       const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
       const errors = [], writes = [];
@@ -17,8 +21,9 @@ try {
           writes.push(url.pathname); return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
         }
         if (/googletagmanager|google-analytics|doubleclick|googleadservices/.test(url.hostname)) return route.fulfill({ status: 200, contentType: 'text/javascript', body: '/* Collection disabled */' });
-        // Fault injection is confined to this test; product timeouts stay intact.
-        if (url.pathname.includes('home-daylight') && url.pathname.endsWith('.webp')) await new Promise(resolve => setTimeout(resolve, 6500));
+        // Hold the actual transfer until the existing gate really degrades.
+        // A fixed delay could finish before React mounts on a busy machine.
+        if (request.resourceType() === 'image') { heldImages.push(url.pathname); await criticalHeld; }
         return route.continue();
       });
       await page.addInitScript(() => {
@@ -32,7 +37,13 @@ try {
         });
       });
       await page.goto(server.url + '/en', { waitUntil: 'domcontentloaded' });
-      await expect.poll(() => page.locator('.public-route-content').getAttribute('data-route-visual-state'), { timeout: 20000 }).toBe('degraded');
+      try {
+        await expect.poll(() => page.locator('.public-route-content').getAttribute('data-route-visual-state'), { timeout: 20000 }).toBe('degraded');
+      } catch(error) {
+        const diagnostic=await page.evaluate(()=>({state:document.querySelector('.public-route-content')?.dataset,boot:{state:window.__flashcastPublicBoot?.state,deadline:window.__flashcastPublicBoot?.deadline},images:[...document.querySelectorAll('img[data-critical-image]')].map(image=>({src:image.currentSrc,state:image.dataset.imageState,complete:image.complete,width:image.naturalWidth,rect:{width:image.getBoundingClientRect().width,height:image.getBoundingClientRect().height}}))}));
+        console.log(JSON.stringify({heldImages,errors,diagnostic})); throw error;
+      }
+      releaseCritical();
       await expect.poll(() => page.locator('[data-cinematic-state]').count(), { timeout: 20000 }).toBeGreaterThan(0);
       const value = await page.evaluate(() => ({ events: window.__recoveryEvents, lateBrands: window.__lateBrands, state: document.querySelector('.public-route-content')?.dataset.routeVisualState, inert: document.querySelector('.public-route-content')?.hasAttribute('inert'), cinematicSections: document.querySelectorAll('[data-cinematic-state]').length, critical: [...document.querySelectorAll('img[data-critical-image="true"]')].map(image => ({ complete: image.complete, width: image.naturalWidth, loaded: image.dataset.imageState === 'loaded', selected: image.currentSrc, decoded: image.dataset.decodedSrc })) }));
       expect(value.events).toHaveLength(1);
@@ -44,7 +55,7 @@ try {
       expect(errors).toEqual([]);
       expect(writes).toEqual([]);
       results.push({ browser: name, version: browser.version(), status: 'passed', ...value });
-    } finally { await browser.close(); }
+    } finally { releaseCritical(); await browser.close(); }
   }
 } finally { await server.close(); fs.writeFileSync('tmp/performance-evidence/motion-recovery.json', JSON.stringify({ profile, results }, null, 2) + '\n'); }
 console.log(JSON.stringify(results));
