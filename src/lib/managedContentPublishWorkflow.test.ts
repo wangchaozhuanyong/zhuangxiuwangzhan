@@ -277,6 +277,7 @@ describe("three locked CMS targets in the existing protected workflow", () => {
     }
     expect(Object.keys(targetConfigs).filter((target) => targetConfigs[target].lockedCandidate).sort())
       .toEqual([...lockedTargets.map((item) => item.name), ...newTargets.map((item) => item.name),
+        "next12-warehouse-fbe13ee7-cms-v1", "next12-bathroom-fbe13ee7-cms-v1", "next12-flooring-fbe13ee7-cms-v1", "next12-artistic-coating-fbe13ee7-cms-v1", "next12-approval-fbe13ee7-cms-v1",
         "seo-cabinet-two-anchors-8520112a-v1",
         "shop-office-shop-six-v4-ba79401d2ed2-20261025-v1", "shop-office-office-six-v4-eb6eef35d390-20261025-v1",
         "paid-three-page-builtin-exact-fields-v1", "paid-three-page-kitchen-exact-fields-v1", "paid-three-page-renovation-exact-fields-v1",

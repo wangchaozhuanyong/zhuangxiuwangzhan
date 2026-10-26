@@ -18,6 +18,11 @@ on:
         default: all-20260906
         type: choice
         options:
+          - next12-warehouse-fbe13ee7-cms-v1
+          - next12-bathroom-fbe13ee7-cms-v1
+          - next12-flooring-fbe13ee7-cms-v1
+          - next12-artistic-coating-fbe13ee7-cms-v1
+          - next12-approval-fbe13ee7-cms-v1
           - seo-cabinet-two-anchors-8520112a-v1
           - surface-repair-20260927
           - clinic-zh-copy-20261003
