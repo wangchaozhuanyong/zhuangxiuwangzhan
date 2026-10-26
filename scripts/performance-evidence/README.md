@@ -71,3 +71,15 @@ node scripts/performance-evidence/summarize-continuation.mjs
 `motion-recovery.mjs` 对两种浏览器人为延迟实际首屏主图，验证原 degraded 状态保持不变、只发一次 degraded 事件、原品牌层不重现、输入释放，真实图片恢复后装饰效果才恢复。它不生成假的 ready，不替代真实网络计时。
 
 两种字体压缩原型及无损图库格式原型被否决，源码/原始资源/失败结果保存在所属项目忽略目录；没有进入最终产品或公开图片资源。汇总脚本仅读取冻结的试验摘要和像素对比结果，缺少原始实验目录时不会自行重建或伪造证据。完整复测结论与限制见 `CONTINUATION.md`。
+
+## 本次正式发布补充
+
+后续采用了静态字重不变的字体 CSS，并按当前文档关键图片真实完成信号安排字体，详见 `reports/performance-release-2026-10-26/REPORT.md`；前文两个被否决原型是历史记录。`node scripts/generate-noto-font-css.mjs --check` 只读验证源声明/顺序、内容 hash 资源与 HTML 引用，已接入原脚本 CI。
+
+本次 `release-control-evidence` 是旧最终 `910ac24a` 的冻结54条样本，`release-control` 为其对应比较产物；不要用新代码重建旧对照。最终运行代码 `13866a41` 的比较产物/测量名为 `release-final`，版本文字仍固定为 c502ed54，仅用于字节对照。执行 `summarize-release.mjs` 输出本次汇总和CSV。
+
+实际线上功能验证：`PERFORMANCE_ACCEPTANCE_TARGET_URL=https://flashcast.com.my PERFORMANCE_EXPECTED_SHA=<formal-main-sha> PERFORMANCE_REFERENCE_PROFILE=release-control node scripts/performance-evidence/acceptance.mjs release-online`。性能验证：`PERFORMANCE_TARGET_URL=https://flashcast.com.my PERFORMANCE_EXPECTED_SHA=<formal-main-sha> PERFORMANCE_SAMPLES=1 PERFORMANCE_LIMITED_WIDTHS=390,1440 PERFORMANCE_LIMITED_LANGUAGES=en,zh,ms PERFORMANCE_LIMITED_SAMPLES=1 node scripts/performance-evidence/measure.mjs release-online`。开始/结束都核对线上版本；JS/网络双层保护在关闭页面后仍阻断业务写入和采集。它是真实站点的桌面引擎实验，不是真机或用户p75。
+
+本地6项脚本/表单测试曾在并行负载下超时，未改断言/时限。Node22单worker复测以及本项目 `tmp/performance-evidence/node22-compile-cache` 内的运行时编译缓存复测覆盖失败断言；保留所有日志，不把Node24补充运行替代项目Node22检查。线上发布仍须等最新PR头的既有CI通过。
+
+正式合并后只使用现有production工作流；它在计划和部署前复核最新main，不另开重复部署。正式提交、运行ID、线上验收与临时资源清理收据保留原项目 `backups/performance-release-20261026/`。清理前归档本任务独有证据，并记录历史工作树路径的迁移，不清理其他任务。

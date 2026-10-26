@@ -1,0 +1,75 @@
+{
+  "phase": "Pre-merge local validation; production receipts are separate",
+  "runtimeCode": "13866a416bd7f210b2d8c0e8254679815ddf905a",
+  "toolingHead": "b072933b2c906a9933c4cf335d05b4e58ce9c21c",
+  "checks": [
+    {
+      "file": "tmp/performance-evidence/release-quality.log",
+      "sha256": "773534d7d3dc879b93465cc30873fb041065f008ce955d51cf1e78a96e5b68fc",
+      "result": "Types/strict/lint/architecture/i18n/UI pass; initial unit run 6 timeout failures retained"
+    },
+    {
+      "file": "tmp/performance-evidence/release-failed-tests-node22.log",
+      "sha256": "b56a54ea6f51daa2a31ba35ad70582db34835f06759ef92532b3b106f9b942d2",
+      "result": "Node22 retry: 5 files pass, 1 timeout retained"
+    },
+    {
+      "file": "tmp/performance-evidence/release-guard-node22-cached.log",
+      "sha256": "e62273383a14fb8f4f55affef5e9798e0f72b8434b2aa27420650ba080a9e2f2",
+      "result": "Last failed assertion passed under Node22 compile cache; other 145 assertions already covered"
+    },
+    {
+      "file": "tmp/performance-evidence/release-final-node-tests.log",
+      "sha256": "bcea7e04c641c9458d27188347cdca020b8675fdb4498f49e1d8c568dee4a4c0",
+      "result": "13 script checks PASS"
+    },
+    {
+      "file": "tmp/performance-evidence/release-strict-build.log",
+      "sha256": "49a89272c58301af04782092113eaabedba1b9fc361bca318a3d3d1579279a64",
+      "result": "Exact Git archive strict production build PASS"
+    },
+    {
+      "file": "tmp/performance-evidence/release-strict-budget.log",
+      "sha256": "0c02bd6e361eb91bd279e1439ec28f72b3c340e3d3b3f2e16b6c0e066288c6fa",
+      "result": "179.8KiB / 180KiB PASS"
+    },
+    {
+      "file": "tmp/performance-evidence/release-local-acceptance.log",
+      "sha256": "3e099c91311d0d5fa2df0f9116219ffdc665bd1d71109d693e62b84f052ad494",
+      "result": "29 scenarios PASS"
+    },
+    {
+      "file": "tmp/performance-evidence/release-local-failures.log",
+      "sha256": "2dd89b7af0272e5f7182d34f986840f172ee1ec58a42883ad0dafc45afbc3a4e",
+      "result": "3 recovery scenarios PASS"
+    },
+    {
+      "file": "tmp/performance-evidence/release-local-motion-all-images.log",
+      "sha256": "b87612799bfbad6822977e3d41795f6b3804f170413279824bf42637b2bcf81a",
+      "result": "2 real late-image recovery cases PASS"
+    },
+    {
+      "file": "tmp/performance-evidence/release-local-public-performance.log",
+      "sha256": "c8950c05776850c12f496a289422444051441b0b119d0df009cbd7dc2cd82d00",
+      "result": "warnings=[] failures=[]"
+    },
+    {
+      "file": "tmp/performance-evidence/release-final-measure.log",
+      "sha256": "3c5373a79178f2bf817b8f6e4fc6b1d8048487b4518d4e294220aae718297e5f",
+      "result": "54 samples + 5 journeys"
+    },
+    {
+      "file": "tmp/performance-evidence/release-font-pixels.log",
+      "sha256": "efe95c7fd2fca62fdc8c8c661c5b1494422992873e10e0ada53403e74ed9351d",
+      "result": "24 font pixel/width pairs equal"
+    }
+  ],
+  "strictBuild": {
+    "sha": "13866a416bd7f210b2d8c0e8254679815ddf905a",
+    "directory": "/Users/wangchao/Desktop/\u88c5\u4fee\u7f51\u7ad9/zhuangxiuwangzhan-main/.codex-worktrees/performance-release-20261026/tmp/performance-evidence/strict-13866a416bd7f210b2d8c0e8254679815ddf905a",
+    "exactGitArchive": true,
+    "exitCode": 0,
+    "completedAt": "2026-10-26T10:31:52.278Z"
+  },
+  "authorization": "Preserve material display; submit/push/merge main/deploy/read-only verification allowed; production rollback needs separate authorization."
+}
