@@ -26,7 +26,7 @@ let writes = 0, analytics = 0, collectionBlocked = 0;
 const blockedExternal=[];
 function allowedIsolatedRead(url,method){
   if(/collect|\/pagead\/|\/cdn-cgi\/rum/.test(url.pathname))return false;
-  const library=method==='GET'&&((url.hostname==='www.googletagmanager.com'&&/^\/gtag\/(js|destination)$/.test(url.pathname))||(url.hostname==='static.cloudflareinsights.com'&&/^\/beacon(?:\.min)?\.js$/.test(url.pathname)));
+  const library=method==='GET'&&((url.hostname==='www.googletagmanager.com'&&/^\/gtag\/(js|destination)$/.test(url.pathname))||(url.hostname==='static.cloudflareinsights.com'&&/^\/beacon(?:\.min)?\.js(?:\/v[a-f0-9]+)?$/.test(url.pathname)));
   const rpc=['POST','OPTIONS'].includes(method)&&url.hostname.endsWith('.supabase.co')&&url.pathname==='/rest/v1/rpc/get_public_home_bundle';
   const publicGet=['GET','HEAD','OPTIONS'].includes(method)&&((url.hostname.endsWith('.supabase.co')&&(url.pathname.startsWith('/rest/v1/')&&!url.pathname.startsWith('/rest/v1/rpc/')||url.pathname.startsWith('/storage/v1/')))||url.origin===browserUrl||['fonts.googleapis.com','fonts.gstatic.com'].includes(url.hostname));
   return library||rpc||publicGet;
