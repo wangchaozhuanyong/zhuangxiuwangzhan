@@ -13,6 +13,7 @@ import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { createPublicPageViewLifecycle } from "@/lib/analytics";
 import { createAnalyticsRouterWindow } from "@/lib/analyticsRouterWindow";
+import { captureInquirySources } from "@/lib/inquirySource";
 import { withSynchronousPublicHistory } from "@/lib/synchronousPublicHistory";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminPreferences";
@@ -92,6 +93,7 @@ const AnalyticsRouteTracker = () => {
   useEffect(() => tracker.start(), [tracker]);
 
   useEffect(() => {
+    captureInquirySources();
     tracker.updateRoute(`${location.pathname}${location.search}`, routeLanguage);
     return tracker.cancelPending;
   }, [tracker, routeLanguage, location.pathname, location.search]);

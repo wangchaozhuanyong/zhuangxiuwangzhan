@@ -11,6 +11,7 @@ import {
 import type { FormGuardFields } from "@/lib/formGuard";
 import { getTurnstileToken } from "@/lib/turnstile";
 import { getLeadSubmissionId } from "@/lib/leadSubmissionIdentity";
+import { buildInquirySourcePath } from "@/lib/inquirySource";
 
 export type AddAdminLeadFollowupInput = {
   leadId: string;
@@ -73,6 +74,7 @@ export function loadAdminLeadReportRows(startIso?: string | null, signal?: Abort
 export const submitContactLead = async (payload: ContactSubmission & FormGuardFields) => {
   const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
   const sourcePath = payload.sourcePath || currentPathWithSearch();
+  const attributedSourcePath = buildInquirySourcePath(sourcePath);
   const submissionId = await getLeadSubmissionId("contact", sourcePath, {
     name: payload.name, phone: payload.phone, email: payload.email,
     projectType: payload.projectType, location: payload.location, message: payload.message,
@@ -86,7 +88,7 @@ export const submitContactLead = async (payload: ContactSubmission & FormGuardFi
     projectType: payload.projectType,
     location: payload.location,
     message: payload.message,
-    sourcePath,
+    sourcePath: attributedSourcePath,
     submissionId,
     website: payload.website,
     startedAt: payload.startedAt,
@@ -99,6 +101,7 @@ export const submitContactLead = async (payload: ContactSubmission & FormGuardFi
 export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFields) => {
   const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
   const sourcePath = payload.sourcePath || currentPathWithSearch();
+  const attributedSourcePath = buildInquirySourcePath(sourcePath);
   const submissionId = await getLeadSubmissionId("quote", sourcePath, {
     name: payload.name, phone: payload.phone, email: payload.email,
     projectType: payload.projectType, location: payload.location,
@@ -115,7 +118,7 @@ export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFie
     propertySize: payload.propertySize,
     budget: payload.budget,
     details: payload.details,
-    sourcePath,
+    sourcePath: attributedSourcePath,
     submissionId,
     website: payload.website,
     startedAt: payload.startedAt,

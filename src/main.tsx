@@ -3,7 +3,9 @@ import App from "./App.tsx";
 import "./index.css";
 import { consumePendingChunkRecoveryLog, installChunkLoadRecovery } from "@/lib/chunkLoadRecovery";
 import { registerOfflineFallback } from "@/lib/offlineFallback";
+import { captureInquirySources } from "@/lib/inquirySource";
 
+captureInquirySources(true);
 installChunkLoadRecovery();
 registerOfflineFallback();
 const pendingChunkRecoveryLog = consumePendingChunkRecoveryLog();
