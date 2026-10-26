@@ -10,7 +10,7 @@ import MobileBottomDock from "@/components/MobileBottomDock";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { getInitialPublicTheme, PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
-import { adminRouteText } from "@/i18n/adminRouteText";
+import { adminLoadingText } from "@/i18n/adminLoadingText";
 import { createPublicPageViewLifecycle } from "@/lib/analytics";
 import { createAnalyticsRouterWindow } from "@/lib/analyticsRouterWindow";
 import { captureInquirySources } from "@/lib/inquirySource";
@@ -63,7 +63,7 @@ const PageLoader = () => {
 };
 
 const AdminPageLoader = () => {
-  const label = adminRouteText[getAdminLang()].checking;
+  const label = adminLoadingText[getAdminLang()];
 
   return (
     <main

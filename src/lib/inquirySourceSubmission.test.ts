@@ -1,3 +1,4 @@
+import { readInquirySources } from "./inquirySourcePath";
 import { webcrypto } from "node:crypto";
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 
@@ -29,7 +30,7 @@ describe("existing submit-lead offline wire compatibility", () => {
     const first = wire.invoke.mock.calls[0][0], second = wire.invoke.mock.calls[1][0];
     expect(first.type).toBe(type); expect(first.sourcePath.length).toBeLessThanOrEqual(300);
     expect(first.sourcePath).not.toMatch(/gclid|email|DO_NOT_SAVE/);
-    expect(source.readInquirySources(first.sourcePath).last).toBe("chatgpt_paid");
+    expect(readInquirySources(first.sourcePath).last).toBe("chatgpt_paid");
     expect(first.submissionId).toMatch(/^[a-f0-9-]{36}$/); expect(second.submissionId).toBe(first.submissionId);
     expect(first.website).toBe(""); expect(first.startedAt).toBe(payload.startedAt); expect(first.elapsedMs).toBeGreaterThanOrEqual(5000);
     expect(first.name).toBe(payload.name); expect(first.phone).toBe(payload.phone);
@@ -57,7 +58,7 @@ describe("existing submit-lead offline wire compatibility", () => {
     await vi.waitFor(() => expect(token.getTurnstileToken).toHaveBeenCalled());
     window.history.replaceState({}, "", "/en?utm_source=google&utm_medium=cpc"); source.captureInquirySources();
     finish(undefined); await pending;
-    expect(source.readInquirySources(wire.invoke.mock.calls[0][0].sourcePath).last).toBe("chatgpt_paid");
+    expect(readInquirySources(wire.invoke.mock.calls[0][0].sourcePath).last).toBe("chatgpt_paid");
     expect(source.currentInquirySources().last).toBe("google_paid");
   });
   it("still submits via the existing service when all browser storage is unavailable", async () => {
@@ -68,6 +69,6 @@ describe("existing submit-lead offline wire compatibility", () => {
     window.history.replaceState({},"","/en/contact");
     const service=await import("@/backend/modules/leads/service/leadService");
     await service.submitContactLead({name:"Offline Fixture",phone:"+60110000000",message:"Offline synthetic enquiry.",website:"",startedAt:Date.now()-5000});
-    expect(source.readInquirySources(wire.invoke.mock.calls[0][0].sourcePath).last).toBe("google_paid");
+    expect(readInquirySources(wire.invoke.mock.calls[0][0].sourcePath).last).toBe("google_paid");
   });
 });

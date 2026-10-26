@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { formatSourcePath, formatUserFacingError, isTechnicalFieldLeak } from "@/lib/userFacingText";
+import { formatUserFacingError, isTechnicalFieldLeak } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 describe("userFacingText", () => {
   it("does not expose technical database errors to Chinese admin UI", () => {

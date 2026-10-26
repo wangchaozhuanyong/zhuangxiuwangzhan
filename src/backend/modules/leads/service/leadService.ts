@@ -11,7 +11,7 @@ import {
 import type { FormGuardFields } from "@/lib/formGuard";
 import { getTurnstileToken } from "@/lib/turnstile";
 import { getLeadSubmissionId } from "@/lib/leadSubmissionIdentity";
-import { buildInquirySourcePath } from "@/lib/inquirySource";
+import { buildInquirySourcePath } from "@/lib/inquirySourcePath";
 
 export type AddAdminLeadFollowupInput = {
   leadId: string;

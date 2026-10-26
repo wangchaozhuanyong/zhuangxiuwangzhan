@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { classifyInquirySource, buildInquirySourcePath, readInquirySources, mergeInquirySources } from "./inquirySource";
+import { classifyInquirySource, mergeInquirySources } from "./inquirySource";
+import { buildInquirySourcePath, readInquirySources } from "./inquirySourcePath";
 import { readLeadTest, isEnglishAcceptancePage } from "../../supabase/functions/_shared/lead-test-contract";
-import { formatSourcePath } from "./userFacingText";
+import { formatSourcePath } from "./leadSourceText";
 import { buildAdminLeadReport } from "./adminLeadReports";
 import { resolveSiteSettings } from "./siteSettingsApi";
 import { withInquiryWhatsAppHref } from "./contactLinks";

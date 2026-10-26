@@ -15,7 +15,8 @@ import {
   type LeadProjectTypeSummary,
   type LeadSourceSummary,
 } from "@/lib/adminLeadReports";
-import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 const copy = adminLeadReportsText;
 

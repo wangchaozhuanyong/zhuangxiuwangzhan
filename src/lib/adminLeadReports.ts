@@ -1,7 +1,7 @@
 import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 import { translateProjectType } from "@/i18n/displayLabels";
 import { isStoredLeadTest } from "@/lib/leadTest";
-import { readInquirySources } from "@/lib/inquirySource";
+import { readInquirySources } from "@/lib/inquirySourcePath";
 import { formatInquirySources } from "@/i18n/inquirySourceText";
 
 export type AdminLeadReportPeriod = "30d" | "90d" | "all";
