@@ -70,10 +70,19 @@ export function initializePublicBoot(): PublicBoot | undefined {
   let progress: ReturnType<typeof startPublicLoadingProgress> | undefined;
   let revision = 0;
   const failedStyles = new WeakSet<HTMLLinkElement>();
+  const finishedImages = new WeakSet<HTMLLinkElement>();
+  const imagePreloads = 'link[rel="preload"][as="image"][fetchpriority="high"]';
   const stylesReady = () => Array.from(document.querySelectorAll<HTMLLinkElement>("link[data-public-style]"))
     .every((link) => !!link.sheet && !failedStyles.has(link));
   const applyStyles = () => {
+    // Fonts remain optional. Let the current document's explicit critical image
+    // transfers finish before their font subsets contend for the same bandwidth.
+    const imagesPending = !isAdmin && document.readyState !== "complete" &&
+      Array.from(document.querySelectorAll<HTMLLinkElement>(imagePreloads)).some(link =>
+        (!link.media || window.matchMedia(link.media).matches) && !finishedImages.has(link) &&
+        !performance.getEntriesByName(link.href).some(entry => entry.duration > 0));
     for (const link of document.querySelectorAll<HTMLLinkElement>("link[data-public-style],link[data-public-fonts]")) {
+      if (link.hasAttribute("data-public-fonts") && imagesPending) continue;
       if (link.sheet || isAdmin && link.hasAttribute("data-public-style")) link.media = "all";
     }
   };
@@ -227,12 +236,16 @@ export function initializePublicBoot(): PublicBoot | undefined {
   const asset = (event: Event) => {
     const link = event.target;
     if (!(link instanceof HTMLLinkElement)) return;
+    if (link.matches(imagePreloads)) finishedImages.add(link);
     if (event.type === "error" && link.hasAttribute("data-public-style")) failedStyles.add(link);
-    if (event.type === "load" && link.matches("[data-public-style],[data-public-fonts]")) link.media = "all";
+    applyStyles();
     window.dispatchEvent(new Event("public-assets-change"));
   };
   document.addEventListener("load", asset, true);
   document.addEventListener("error", asset, true);
+  // Also cover cached/unsupported preload hints whose load event preceded the
+  // controller. No timer or additional image request is introduced.
+  window.addEventListener("load", applyStyles, { once: true });
   render();
   // Parser insertions are observed before paint; the already-rendered brand
   // gets its copy and the application becomes inert without waiting for React.
