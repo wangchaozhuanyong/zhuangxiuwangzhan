@@ -6,7 +6,13 @@ import { start } from './server.mjs';
 const profile=process.argv[2]||'candidate',directory=path.resolve('tmp/performance-evidence',profile+'-acceptance');
 fs.mkdirSync(directory,{recursive:true});
 const referenceProfile=process.env.PERFORMANCE_REFERENCE_PROFILE||'baseline';
-const server=await start(profile),results=[],snapshots={},reference=JSON.parse(fs.readFileSync(`tmp/performance-evidence/${referenceProfile}-evidence/results.json`,'utf8'));
+const external=process.env.PERFORMANCE_ACCEPTANCE_TARGET_URL;
+if(external&&external!=='https://flashcast.com.my')throw new Error('Use the reviewed production origin.');
+const server=external?{url:external,reads:[],close:async()=>{}}:await start(profile),results=[],snapshots={},reference=JSON.parse(fs.readFileSync(`tmp/performance-evidence/${referenceProfile}-evidence/results.json`,'utf8'));
+if(external&&process.env.PERFORMANCE_EXPECTED_SHA){
+  const version=await fetch(external+'/__flashcast/version',{cache:'no-store'}).then(response=>response.json());
+  expect(version.deploymentVersion).toBe(process.env.PERFORMANCE_EXPECTED_SHA);
+}
 const selectedCase=process.env.PERFORMANCE_ACCEPTANCE_CASE,selectedTest=process.env.PERFORMANCE_ACCEPTANCE_TEST;
 if((selectedCase||selectedTest)&&fs.existsSync(path.join(directory,'results.json'))){
   const previous=JSON.parse(fs.readFileSync(path.join(directory,'results.json'),'utf8'));
@@ -21,6 +27,21 @@ const ready=async page=>{
 const summary=page=>page.evaluate(()=>({path:location.pathname+location.search,text:document.querySelector('#main-content')?.textContent?.replace(/\s+/g,' ').trim(),images:[...document.querySelectorAll('#main-content img')].map(image=>({src:image.getAttribute('src'),alt:image.alt})),overflow:document.documentElement.scrollWidth>innerWidth}));
 async function protect(context){
   let writes=0;
+  // Keep dismissal/keepalive writes blocked even after Playwright detaches the
+  // closing target's route handlers. Read-only home RPCs retain real responses.
+  await context.addInitScript(()=>{
+    Object.defineProperty(navigator,'sendBeacon',{configurable:true,value:()=>true});
+    const permitted=(input,options)=>{
+      const url=new URL(input instanceof Request?input.url:String(input),location.href);
+      const method=String(options?.method||(input instanceof Request?input.method:'GET')).toUpperCase();
+      return ['GET','HEAD','OPTIONS'].includes(method)||method==='POST'&&url.hostname.endsWith('.supabase.co')&&url.pathname==='/rest/v1/rpc/get_public_home_bundle';
+    };
+    const nativeFetch=window.fetch.bind(window);
+    window.fetch=(input,options)=>permitted(input,options)?nativeFetch(input,options):Promise.resolve(new Response('{}',{status:200,headers:{'Content-Type':'application/json'}}));
+    const open=XMLHttpRequest.prototype.open,send=XMLHttpRequest.prototype.send,blocked=new WeakSet();
+    XMLHttpRequest.prototype.open=function(method,url,...args){if(!permitted(url,{method}))blocked.add(this);else blocked.delete(this);return open.call(this,method,url,...args);};
+    XMLHttpRequest.prototype.send=function(...args){if(blocked.has(this)){this.abort();return;}return send.apply(this,args);};
+  });
   await context.route('**/*',route=>{
     const request=route.request(),url=new URL(request.url());
     if(/google-analytics|googletagmanager|doubleclick|googleadservices|connect\.facebook/.test(url.hostname))return route.fulfill({status:200,contentType:'application/javascript',body:'/* analytics disabled */'});
@@ -176,8 +197,12 @@ try{
       }
     },page);
   }finally{await browser.close();}
+  if(external&&process.env.PERFORMANCE_EXPECTED_SHA){
+    const version=await fetch(external+'/__flashcast/version',{cache:'no-store'}).then(response=>response.json());
+    expect(version.deploymentVersion).toBe(process.env.PERFORMANCE_EXPECTED_SHA);
+  }
 }finally{
-  await server.close();fs.writeFileSync(path.join(directory,'results.json'),JSON.stringify({profile,results,snapshots,limitation:'Local compiled production code with real anonymous reads. Interception disables HTTP cache in this interaction suite; cache measurements are separate. No physical or Malaysia-device claim.'},null,2)+'\n');
+  await server.close();fs.writeFileSync(path.join(directory,'results.json'),JSON.stringify({profile,external,expectedSha:process.env.PERFORMANCE_EXPECTED_SHA,results,snapshots,limitation:'Local compiled code or the explicit production target with real anonymous reads; JS and route guards block business writes. Interception disables HTTP cache; cache measurements are separate. No physical or Malaysia-device claim.'},null,2)+'\n');
 }
 console.log(JSON.stringify(results.map(({name,status,error})=>({name,status,error}))));
 if(results.some(result=>result.status==='failed'))process.exitCode=1;

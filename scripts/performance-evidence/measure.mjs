@@ -9,10 +9,14 @@ const sourceVersion=fs.existsSync(receiptPath)?JSON.parse(fs.readFileSync(receip
 const directory = path.resolve('tmp/performance-evidence', `${profile}-evidence`);
 fs.mkdirSync(directory, { recursive: true });
 const external=process.env.PERFORMANCE_TARGET_URL;
+if(external&&external!=='https://flashcast.com.my')throw new Error('Use the reviewed production origin.');
 const isolatedProductionHost=process.env.PERFORMANCE_PRODUCTION_HOST==='1'&&!external;
+const productionGuards=isolatedProductionHost||Boolean(external);
 const server = external ? {url:external.replace(/\/$/,''),reads:[],close:async()=>{}} : await start(buildProfile,{secure:isolatedProductionHost});
 const browserUrl=isolatedProductionHost?'https://flashcast.com.my':server.url;
 const externalVersion=external ? await fetch(server.url+'/__flashcast/version',{cache:'no-store'}).then(response=>response.json()) : undefined;
+if(externalVersion&&process.env.PERFORMANCE_EXPECTED_SHA)expect(externalVersion.deploymentVersion).toBe(process.env.PERFORMANCE_EXPECTED_SHA);
+let externalVersionAtEnd;
 const browser = await chromium.launch(isolatedProductionHost?{args:[`--host-resolver-rules=MAP flashcast.com.my 127.0.0.1:${new URL(server.url).port}`,'--no-proxy-server',`--ignore-certificate-errors-spki-list=${server.certificatePin}`]}:{});
 const replaceLanguage=process.env.PERFORMANCE_REPLACE_LANGUAGE;
 const priorPath=path.join(directory,'results.json');
@@ -45,7 +49,7 @@ async function context(width, network = 'unthrottled') {
   session.on('Network.loadingFailed', event => Object.assign(requests.get(event.requestId) || {}, { failed: event.errorText, canceled: event.canceled }));
   session.on('Fetch.requestPaused', async event => {
     const { request, requestId } = event, url = new URL(request.url);
-    if (isolatedProductionHost) {
+    if (productionGuards) {
       if(!allowedIsolatedRead(url,request.method)){
         collectionBlocked++;Object.assign(requests.get(event.networkId)||{},{blocked:true});
         blockedExternal.push({host:url.hostname,path:url.pathname,type:event.resourceType,method:request.method,collector:/collect|\/pagead\/|\/cdn-cgi\/rum|ga-audiences/.test(url.pathname)||/google-analytics|doubleclick/.test(url.hostname)});
@@ -109,7 +113,7 @@ async function context(width, network = 'unthrottled') {
       if (innerWidth >= 768 && this.matches('.scheme-a-mobile-switcher')) audit.hiddenDockReads++;
       return bounds.call(this);
     };
-  },isolatedProductionHost);
+  },productionGuards);
   if(process.env.PERFORMANCE_TRACE_READINESS==='1')await context.addInitScript(()=>{
     window.__gateTrace=[];
     new MutationObserver(records=>{
@@ -150,7 +154,7 @@ async function metrics(page, key, width, cache, sample, network) {
   await page.evaluate(() => document.fonts.ready);
   await painted(page);
   for(let frame=0;frame<2;frame++){
-    await expect.poll(()=>[...networkRecords.get(page).values()].filter(record=>record.type==='Script'&&record.wallStart>=gate.timeOrigin-2&&(!isolatedProductionHost||allowedIsolatedRead(new URL(record.url),record.method))).every(record=>record.finished||record.failed),{timeout:60000}).toBe(true);
+    await expect.poll(()=>[...networkRecords.get(page).values()].filter(record=>record.type==='Script'&&record.wallStart>=gate.timeOrigin-2&&(!productionGuards||allowedIsolatedRead(new URL(record.url),record.method))).every(record=>record.finished||record.failed),{timeout:60000}).toBe(true);
     await painted(page);
   }
   const value = await page.evaluate(({ readyAt: ready, visibleAt }) => {
@@ -159,7 +163,7 @@ async function metrics(page, key, width, cache, sample, network) {
     const usableResources = performance.getEntriesByType('resource').filter(entry=>entry.startTime<=visibleAt);
     return { ...audit, routeState: document.querySelector(".public-route-content")?.dataset.routeVisualState, readyAt: ready, fullyVisibleObservedAt: visibleAt, fontStableObservedAt: performance.now(), resources, bytesFetchedBeforeReady: resources.reduce((sum, entry) => sum + entry.transfer, 0), decodedBytesBeforeReady: resources.reduce((sum, entry) => sum + entry.decoded, 0), jsBytesBeforeReady: resources.filter(entry => entry.path.endsWith('.js')).reduce((sum, entry) => sum + entry.decoded, 0), jsBytesBeforeVisible:usableResources.filter(entry=>new URL(entry.name).pathname.endsWith('.js')).reduce((sum,entry)=>sum+entry.decodedBodySize,0), navigation: performance.getEntriesByType('navigation').map(entry => ({ ttfb: entry.responseStart, domContentLoaded: entry.domContentLoadedEventEnd })) };
   }, {...gate,visibleAt});
-  const requests = [...networkRecords.get(page).values()].filter(record => record.wallStart >= gate.timeOrigin - 2).map(({url,wallStart,...record}) => ({...record, blocked:record.blocked||isolatedProductionHost&&!allowedIsolatedRead(new URL(url),record.method), path:new URL(url).origin === browserUrl ? new URL(url).pathname : new URL(url).host + new URL(url).pathname, start:wallStart-gate.timeOrigin}));
+  const requests = [...networkRecords.get(page).values()].filter(record => record.wallStart >= gate.timeOrigin - 2).map(({url,wallStart,...record}) => ({...record, blocked:record.blocked||productionGuards&&!allowedIsolatedRead(new URL(url),record.method), path:new URL(url).origin === browserUrl ? new URL(url).pathname : new URL(url).host + new URL(url).pathname, start:wallStart-gate.timeOrigin}));
   if(isolatedProductionHost)expect(requests.some(record=>record.type==='Document'&&record.servedFromLoopback)).toBe(true);
   const initiated = requests.filter(record => record.start <= gate.readyAt);
   const transmitted=requests.filter(record=>!record.blocked);
@@ -215,8 +219,12 @@ try {
     await limited.context.close();
   }
   }
+  if(external){
+    externalVersionAtEnd=await fetch(server.url+'/__flashcast/version',{cache:'no-store'}).then(response=>response.json());
+    expect(externalVersionAtEnd.deploymentVersion).toBe(externalVersion.deploymentVersion);
+  }
 } finally {
-  fs.writeFileSync(path.join(directory, 'results.json'), JSON.stringify({ profile, testedAt: new Date().toISOString(), sourceVersion: externalVersion?.deploymentVersion || sourceVersion, browserVersion: browser.version(), isolatedProductionHost, analyticsLibraries:isolatedProductionHost?'Real gtag/destination scripts; browser-only DNS maps HTML/assets to loopback; all collectors and unknown third-party requests are blocked.':'Disabled by local hostname or replaced by inert scripts; not a complete production analytics profile.', environment: external ? 'Read-only live production reference; CDP write guard; headless desktop browser with configured viewport. No physical-device or field INP claim.' : 'Local Node adapter of Pages middleware with real anonymous public reads; CDP write guard preserves actual HTTP caching. No physical-device or field INP claim.', limitedNetwork: '1.6 Mbps down, 750 Kbps up, 150 ms latency, CPU 4x', writesBlocked: writes, analyticsStubbed: analytics, collectionBlocked, blockedExternal, results, journeys, snapshots, serverReads: server.reads }, null, 2));
+  fs.writeFileSync(path.join(directory, 'results.json'), JSON.stringify({ profile, testedAt: new Date().toISOString(), sourceVersion: externalVersion?.deploymentVersion || sourceVersion, browserVersion: browser.version(), isolatedProductionHost, productionGuards, externalVersionAtEnd:externalVersionAtEnd?.deploymentVersion, analyticsLibraries:productionGuards?'Real gtag/destination scripts; local profiles use browser-only loopback DNS; collectors and unknown writes are blocked in JS and CDP.':'Disabled by local hostname or replaced by inert scripts; not a complete production analytics profile.', environment: external ? 'Read-only live production reference; CDP write guard; headless desktop browser with configured viewport. No physical-device or field INP claim.' : 'Local Node adapter of Pages middleware with real anonymous public reads; CDP write guard preserves actual HTTP caching. No physical-device or field INP claim.', limitedNetwork: '1.6 Mbps down, 750 Kbps up, 150 ms latency, CPU 4x', writesBlocked: writes, analyticsStubbed: analytics, collectionBlocked, blockedExternal, results, journeys, snapshots, serverReads: server.reads }, null, 2));
   await browser.close(); await server.close();
 }
 console.log(JSON.stringify({ profile, samples: results.length, journeys: journeys.length }));
