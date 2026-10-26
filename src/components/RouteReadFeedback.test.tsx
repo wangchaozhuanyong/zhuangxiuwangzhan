@@ -1,4 +1,4 @@
-import { act } from "react";
+import { act, lazy, Suspense } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -53,6 +53,31 @@ afterEach(async () => {
 });
 
 describe("route read feedback cache subscription", () => {
+  it.each(["admin", "public"] as const)("retains a failure recorded before the lazy feedback mounts on %s", async (surface) => {
+    const prefix = surface === "admin" ? "admin" : "published";
+    read.mockRejectedValue(new Error("Synthetic read failed before feedback loaded"));
+    await act(async () => root.render(<QueryClientProvider client={client}>
+      <Reader prefix={prefix} />
+    </QueryClientProvider>));
+    await settle();
+    expect(client.getQueryState([prefix, "feedback-regression"])?.status).toBe("error");
+    const DeferredFeedback = lazy(() => import("./RouteReadFeedback"));
+    await act(async () => {
+      root.render(<QueryClientProvider client={client}>
+        <Suspense fallback={null}><DeferredFeedback surface={surface} /></Suspense>
+        <Reader prefix={prefix} />
+      </QueryClientProvider>);
+      await vi.dynamicImportSettled();
+    });
+    await settle();
+    expect(container.textContent).toContain("内容加载失败，请重试。");
+    read.mockResolvedValue("Recovered after deferred feedback");
+    await act(async () => container.querySelector<HTMLButtonElement>("button")!.click());
+    await settle();
+    expect(container.textContent).toContain("Recovered after deferred feedback");
+    expect(container.querySelector("aside")).toBeNull();
+  });
+
   it.each([
     ["published", undefined], ["published", "Previous content"],
     ["site-settings", undefined], ["site-settings", "Confirmed settings"],
