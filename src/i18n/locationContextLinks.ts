@@ -59,7 +59,7 @@ const locationContextLinks: Record<Language, LocationContextLinksBySlug> = {
         id: "kl-approval-guide",
         label: "Planning guide",
         title: "Condo renovation management approval guide",
-        description: "Prepare building deposit, contractor documents, work hours, and access clearance.",
+        description: "Check your building’s current guide for any applicable insurance documents, deposits, permitted work times, access and protection requirements; confirm the responsible parties before arranging the work.",
         href: "/blog/condo-renovation-management-approval-malaysia",
       },
       {
@@ -526,7 +526,7 @@ const locationContextLinks: Record<Language, LocationContextLinksBySlug> = {
         id: "kl-approval-guide",
         label: "规划指南",
         title: "公寓管理处装修申请指南",
-        description: "提前准备大楼装修押金、承包商保险、施工时段与电梯保护要求。",
+        description: "先按实际大楼及工程范围核对是否适用保险文件、装修押金、施工时段、进出与保护要求，并确认提交、付款及跟进责任。",
         href: "/blog/condo-renovation-management-approval-malaysia",
       },
       {
