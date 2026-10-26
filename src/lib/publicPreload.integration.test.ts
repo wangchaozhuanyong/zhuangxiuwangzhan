@@ -32,6 +32,45 @@ afterEach(() => {
 });
 
 describe("public preload data", () => {
+  it("seeds confirmed absent optional sections but leaves unknown visibility recoverable", async () => {
+    setPreloadedPublicData({ homeContentBundle: { home_sections: [], preload_optional_visibility: { brand_partners: false } } });
+    const { getPublicQuerySeed } = await import("./publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "home_optional_visibility", "brand_partners"])).toBe(false);
+    expect(getPublicQuerySeed(["published", "home_optional_visibility", "testimonials"])).toBeUndefined();
+  });
+  it("does not restore an old false visibility seed after cache removal", async () => {
+    setPreloadedPublicData({ homeContentBundle: { home_sections: [], preload_optional_visibility: { brand_partners: false } } });
+    await import("./publicQuerySeed");
+    const { QueryClient } = await import("@tanstack/react-query");
+    const { claimPublicQuerySeed } = await import("./publicQuerySeedCache");
+    const client = new QueryClient();
+    const key = ["published", "home_optional_visibility", "brand_partners"];
+    expect(claimPublicQuerySeed(client, key)).toBe(false);
+    client.setQueryData(key, false);
+    client.removeQueries({ queryKey: key });
+    expect(claimPublicQuerySeed(client, key)).toBeUndefined();
+    client.clear();
+  });
+  it("does not treat a single-category material detail context as the full directory", async () => {
+    setPreloadedPublicData({ materialDetailContext: { slug: "oak", rows: [{ id: "oak", slug: "oak", category: "Flooring", title_en: "Oak", content_en: "Full body", seo_title_en: "Oak", material_images: [] }] } });
+    const { getPublicQuerySeed } = await import("./publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "material", "oak", "en"])).toMatchObject({ material: { name: "Oak", description: "Full body" } });
+    expect(getPublicQuerySeed(["published", "materials", "en"])).toBeUndefined();
+    expect(getPublicQuerySeed(["published", "material", "unread", "en"])).toBeUndefined();
+  });
+  it("hydrates current full service/blog details without seeding an incomplete list", async () => {
+    setPreloadedPublicData({
+      serviceDetails: { repair: { preload_language: "en", id: "service", slug: "repair", title_en: "Repair", content_en: "Full service body", suitable_for_en: ["Homes"], faqs_en: [{ q: "Q", a: "A" }] } },
+      blogPostDetails: { article: { preload_language: "en", id: "blog", slug: "article", title_en: "Article", content_en: "Full article body" } },
+    });
+    const { getPublicQuerySeed } = await import("./publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "service", "repair", "en"])).toMatchObject({ description: "Full service body", suitableFor: ["Homes"] });
+    expect(getPublicQuerySeed(["published", "blog_post", "article", "en"])).toMatchObject({ content: "Full article body" });
+    expect(getPublicQuerySeed(["published", "services", "en"])).toBeUndefined();
+    expect(getPublicQuerySeed(["published", "blog", "en"])).toBeUndefined();
+    expect(getPublicQuerySeed(["published", "service", "repair", "zh"])).toBeUndefined();
+    expect(getPublicQuerySeed(["published", "blog_post", "article", "zh"])).toBeUndefined();
+  });
   it("does not hydrate detail fields from a projected summary body fallback", async () => {
     setPreloadedPublicData({ services: [{ slug: "fixture", content_en: "Summary fallback" }], materials: [{ slug: "fixture", category: "Flooring", content_en: "Summary fallback" }] });
     const { getPublicQuerySeed } = await import("@/lib/publicQuerySeed");

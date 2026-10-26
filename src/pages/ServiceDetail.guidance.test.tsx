@@ -1,3 +1,5 @@
+// Standalone rendering bypasses the production language route resource gate.
+import "@/i18n/malayContent";
 import { createHash } from "node:crypto";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";

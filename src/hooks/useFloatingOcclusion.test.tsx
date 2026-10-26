@@ -12,9 +12,9 @@ let boxes: WeakMap<HTMLElement, DOMRect>;
 const rect = (top = 700, left = 283, width = 76, height = 76): DOMRect => ({
   x: left, y: top, left, right: left + width, top, bottom: top + height, width, height, toJSON: () => ({}),
 });
-function Entry({ route, reposition = true }: { route: string; reposition?: boolean | "fixed" }) {
+function Entry({ route, reposition = true, enabled = true }: { route: string; reposition?: boolean | "fixed"; enabled?: boolean }) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const hidden = useFloatingOcclusion(ref, route, reposition);
+  const hidden = useFloatingOcclusion(ref, route, reposition, enabled);
   return <a ref={ref} className="entry" href="/shop" data-obstructed={hidden || undefined}>Shop</a>;
 }
 async function settle() { await act(async () => { await new Promise(resolve => setTimeout(resolve, 20)); }); }
@@ -41,6 +41,19 @@ beforeEach(() => {
 });
 afterEach(() => { act(() => root.unmount()); container.remove(); content.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe("floating promotion stays available while reading", () => {
+  it("does no geometry reads or subscriptions while disabled and resumes on enable", async () => {
+    const reads = vi.mocked(HTMLElement.prototype.getBoundingClientRect);
+    const listeners = vi.spyOn(window, "addEventListener");
+    act(() => root.render(<Entry route="/en" enabled={false} />));
+    expect(reads).not.toHaveBeenCalled();
+    expect(listeners.mock.calls.some(([name]) => name === "scroll" || name === "resize")).toBe(false);
+    act(() => root.render(<Entry route="/en" />));
+    expect(reads).toHaveBeenCalled();
+    act(() => root.render(<Entry route="/en" enabled={false} />));
+    reads.mockClear();
+    window.dispatchEvent(new Event("scroll")); await settle();
+    expect(reads).not.toHaveBeenCalled();
+  });
   it.each(["fc-furniture-card__actions", "fc-route-contact-form", "scheme-a-actions"])(
     "keeps fixed chrome stable while unfocused %s controls pass underneath", async (className) => {
       content.innerHTML = `<div class="${className}"><form><input /><button>Continue</button></form></div>`;

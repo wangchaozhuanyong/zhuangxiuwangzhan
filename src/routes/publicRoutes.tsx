@@ -33,11 +33,8 @@ const Terms = lazy(publicPageModules.Terms);
 const OldHouseRenovation = lazy(publicPageModules.OldHouseRenovation);
 const NotFound = lazy(publicPageModules.NotFound);
 
-const withLanguageSync = (page: JSX.Element) => (
-  <>
-    <LanguageRouteSync />
-    {page}
-  </>
+const withLanguageSync = (page: JSX.Element, preparePage?: () => Promise<unknown>) => (
+  <LanguageRouteSync preparePage={preparePage}>{page}</LanguageRouteSync>
 );
 
 const LandingPageRoute = () => {
@@ -53,7 +50,7 @@ const LandingPageRoute = () => {
 export const publicRoutes = (
   <>
     <Route path="/" element={<RootLanguageRedirect />} />
-    <Route path="/:lang" element={withLanguageSync(<Index />)} />
+    <Route path="/:lang" element={withLanguageSync(<Index />, publicPageModules.Index)} />
     <Route path="/:lang/about" element={withLanguageSync(<About />)} />
     <Route path="/:lang/services" element={withLanguageSync(<Services />)} />
     <Route path="/:lang/services/old-house" element={withLanguageSync(<OldHouseRenovation />)} />

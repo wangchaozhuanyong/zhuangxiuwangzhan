@@ -29,6 +29,7 @@ describe("MobileBottomDock focus recovery", () => {
   ));
 
   beforeEach(() => {
+    vi.spyOn(window, "matchMedia").mockImplementation(query => ({ matches: query === "(max-width: 767px)", media: query, addEventListener: vi.fn(), removeEventListener: vi.fn() }) as unknown as MediaQueryList);
     chrome.menuOpen = false;
     chrome.hasOpenDialog = false;
     chrome.showMobileActionBar = false;
@@ -41,6 +42,7 @@ describe("MobileBottomDock focus recovery", () => {
     act(() => root.unmount());
     container.remove();
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it.each(["text", "search", "email", "tel", "url", "password", "number", "textarea", "contenteditable"])(

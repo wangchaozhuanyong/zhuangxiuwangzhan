@@ -5,17 +5,20 @@ import { PUBLIC_NAVIGATION_EVENT } from "./publicNavigation";
 
 const markup = '<div id="flashcast-public-boot" data-route-loader="initial"><p data-boot-copy="loaderPending"></p><div data-boot-recovery hidden><button data-boot-action="retry" data-boot-copy="loaderRetry"></button><button data-boot-action="continue" hidden></button></div></div><div id="root"></div>';
 let listeners: ReturnType<typeof vi.spyOn>;
+let windowListeners: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   vi.useFakeTimers();
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })));
   window.history.replaceState(null, "", "/zh");
   document.body.innerHTML = markup;
   listeners = vi.spyOn(document, "addEventListener");
+  windowListeners = vi.spyOn(window, "addEventListener");
 });
 afterEach(() => {
   window.__flashcastPublicBoot?.dismiss();
   delete window.__flashcastPublicBoot;
   for (const [name, handler, options] of listeners.mock.calls) document.removeEventListener(name as string, handler as EventListener, options as boolean);
+  for (const [name, handler, options] of windowListeners.mock.calls) window.removeEventListener(name as string, handler as EventListener, options as boolean);
   document.body.replaceChildren();
   Reflect.deleteProperty(HTMLElement.prototype, "animate");
   vi.restoreAllMocks();
@@ -24,6 +27,33 @@ afterEach(() => {
 });
 
 describe("public document boot", () => {
+  it.each(["load", "error"])("keeps optional fonts behind a critical image until its real %s event", event => {
+    vi.spyOn(document, "readyState", "get").mockReturnValue("loading");
+    const preload = document.createElement("link");
+    preload.rel = "preload"; preload.setAttribute("as", "image"); preload.setAttribute("fetchpriority", "high"); preload.href = "/hero.webp";
+    const fonts = document.createElement("link"); fonts.setAttribute("data-public-fonts", ""); fonts.media = "print";
+    Object.defineProperty(fonts, "sheet", { value: {}, configurable: true });
+    document.head.append(preload, fonts);
+    try {
+      const boot = initializePublicBoot()!;
+      fonts.dispatchEvent(new Event("load"));
+      expect(fonts.media).toBe("print"); expect(boot.stylesReady).toBe(true);
+      expect(boot.state).toBe("waiting");
+      preload.dispatchEvent(new Event(event));
+      expect(fonts.media).toBe("all"); expect(boot.state).toBe("waiting");
+    } finally { preload.remove(); fonts.remove(); }
+  });
+  it("releases cached preload hints on document load", () => {
+    const ready = vi.spyOn(document, "readyState", "get").mockReturnValue("loading");
+    const preload = document.createElement("link"); preload.rel = "preload"; preload.setAttribute("as", "image"); preload.setAttribute("fetchpriority", "high"); preload.href = "/hero.webp";
+    const fonts = document.createElement("link"); fonts.setAttribute("data-public-fonts", ""); fonts.media = "print";
+    Object.defineProperty(fonts, "sheet", { value: {}, configurable: true }); document.head.append(preload, fonts);
+    try {
+      initializePublicBoot(); expect(fonts.media).toBe("print");
+      ready.mockReturnValue("complete"); window.dispatchEvent(new Event("load"));
+      expect(fonts.media).toBe("all");
+    } finally { preload.remove(); fonts.remove(); }
+  });
   it.each([[PUBLIC_NAVIGATION_EVENT, false], [PUBLIC_NAVIGATION_EVENT, true], ["popstate", false], ["popstate", true]] as const)("ends only the completed decorative fade on %s, preserving degraded=%s", async (event, degraded) => {
       vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
       const cancel = vi.fn();

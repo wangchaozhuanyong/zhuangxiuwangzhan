@@ -11,10 +11,13 @@ export type PublicDataPayload = {
   homeServiceAreas?: UnknownRecord[];
   sitePages?: Record<string, UnknownRecord>;
   services?: UnknownRecord[];
+  serviceDetails?: Record<string, UnknownRecord>;
   materials?: UnknownRecord[];
+  materialDetailContext?: { slug: string; rows: UnknownRecord[] };
   productHighlights?: UnknownRecord[];
   serviceAreas?: UnknownRecord[];
   blogPosts?: UnknownRecord[];
+  blogPostDetails?: Record<string, UnknownRecord>;
   processSteps?: UnknownRecord[];
   ctaBlocks?: Record<string, UnknownRecord | null>;
   furnitureCatalog?: { materials: UnknownRecord[]; setting: UnknownRecord | null; detailSlug?: string };

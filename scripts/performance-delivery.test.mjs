@@ -9,6 +9,15 @@ import { collectInitialJavaScriptAssets } from "./lib/performance-budget.mjs";
 import { resolvePublicModulePreloadDependencies } from "./vite-module-preload.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+test("committed font CSS retains the original matching order and content hash", () => {
+  const result = spawnSync(process.execPath, [path.join(root, "scripts/generate-noto-font-css.mjs"), "--check"], { cwd: root, encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const record = JSON.parse(result.stdout);
+  assert.equal(record.faceCount, 707);
+  assert.equal(record.matchingOrderPreserved, true);
+  assert.equal(record.inputSha256, "2cf5d5b258b289311fd39274f2b2f4b34d2353df5394a703a3b1b5aa2cb3de4c");
+  assert.ok(record.afterGzip < record.beforeGzip);
+});
 const fixture = (t, files) => {
   const fixtureRoot = path.join(root, "tmp");
   mkdirSync(fixtureRoot, { recursive: true });

@@ -65,9 +65,10 @@ const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, bool
 /** Fixed public chrome follows scroll direction, not passing page buttons.
  * Dialogs, recovery actions and active input still take priority. The legacy
  * avoid/reposition modes remain available for content-bound promotions. */
-export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string, placement: boolean | "fixed" = false) {
+export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: string, placement: boolean | "fixed" = false, enabled = true) {
   const [obstructed, setObstructed] = useState(false);
   useLayoutEffect(() => {
+    if (!enabled) return;
     const entry = ref.current;
     if (!entry) return;
     const reposition = placement === true;
@@ -181,6 +182,6 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       resize?.disconnect();
       changes.disconnect();
     };
-  }, [ref, routeKey, placement]);
-  return obstructed;
+  }, [ref, routeKey, placement, enabled]);
+  return enabled && obstructed;
 }

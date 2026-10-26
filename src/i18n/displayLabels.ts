@@ -1,5 +1,5 @@
 import type { Language } from "@/i18n/routes";
-import { localizeMalayContent } from "@/i18n/malayContent";
+import { localizeMalayContent } from "@/i18n/malayContentRuntime";
 import { translateMaterialCatalogDescription } from "@/i18n/materialCatalogText";
 import { reviewedMaterialMalayTerm, reviewedMaterialChineseTerm, type MaterialTermField } from "../../supabase/functions/_shared/material-terminology.mjs";
 import { materialDetailPageText } from "./materialDetailPageText";

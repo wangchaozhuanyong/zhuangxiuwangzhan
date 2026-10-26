@@ -118,6 +118,9 @@ jobs:
             functions/seo-manifest.json
             .release/pages-build.json
 
+      - name: Reject an outdated release before publishing
+        run: node scripts/pages-release.mjs verify-current-main
+
       - name: Deploy website
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

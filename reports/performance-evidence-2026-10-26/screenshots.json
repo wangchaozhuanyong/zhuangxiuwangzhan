@@ -1,0 +1,65 @@
+{
+  "homeComparison": [
+    {
+      "path": "en-390-home.png",
+      "baselineSha256": "54441d0c432db6f3c4b6c1f274fc2c5c82b52b5aedb8d7a9497a1c103f0e7e1e",
+      "candidateSha256": "54441d0c432db6f3c4b6c1f274fc2c5c82b52b5aedb8d7a9497a1c103f0e7e1e",
+      "bytesEqual": true,
+      "textEqual": true,
+      "imageUrlsAndOrderEqual": true,
+      "baselineOverflow": false,
+      "candidateOverflow": false
+    },
+    {
+      "path": "en-1440-home.png",
+      "baselineSha256": "f02ed2bd16763269fe7be498c4b1f6a5d5bf8fbca6e71160bee951520167c2e4",
+      "candidateSha256": "f02ed2bd16763269fe7be498c4b1f6a5d5bf8fbca6e71160bee951520167c2e4",
+      "bytesEqual": true,
+      "textEqual": true,
+      "imageUrlsAndOrderEqual": true,
+      "baselineOverflow": false,
+      "candidateOverflow": false
+    },
+    {
+      "path": "zh-390-home.png",
+      "baselineSha256": "c74a32d6216635c3fc26071fa5a4ea9ed5f5186ac87658688284a274bc0dd919",
+      "candidateSha256": "972d4df5e314d35a0230ff1807a944f4fbf2cdc0a6d8dc006e6e94990874bad8",
+      "bytesEqual": false,
+      "textEqual": true,
+      "imageUrlsAndOrderEqual": true,
+      "baselineOverflow": false,
+      "candidateOverflow": false
+    },
+    {
+      "path": "zh-1440-home.png",
+      "baselineSha256": "a0be522ceedf2dab66aa0080bd447d85f5a78b08f57daa2d771dd52adcc7c6cb",
+      "candidateSha256": "a0be522ceedf2dab66aa0080bd447d85f5a78b08f57daa2d771dd52adcc7c6cb",
+      "bytesEqual": true,
+      "textEqual": true,
+      "imageUrlsAndOrderEqual": true,
+      "baselineOverflow": false,
+      "candidateOverflow": false
+    },
+    {
+      "path": "ms-390-home.png",
+      "baselineSha256": "6dbd0324cd219d4edcb53fe54400b5c19136c8eff6696c63dd4824024a00df6c",
+      "candidateSha256": "6dbd0324cd219d4edcb53fe54400b5c19136c8eff6696c63dd4824024a00df6c",
+      "bytesEqual": true,
+      "textEqual": true,
+      "imageUrlsAndOrderEqual": true,
+      "baselineOverflow": false,
+      "candidateOverflow": false
+    },
+    {
+      "path": "ms-1440-home.png",
+      "baselineSha256": "50c6aa399ff04f5c0f974421503e8ad3d7c8e5f74dcea21ce39990e2c8180071",
+      "candidateSha256": "50c6aa399ff04f5c0f974421503e8ad3d7c8e5f74dcea21ce39990e2c8180071",
+      "bytesEqual": true,
+      "textEqual": true,
+      "imageUrlsAndOrderEqual": true,
+      "baselineOverflow": false,
+      "candidateOverflow": false
+    }
+  ],
+  "selectedFiles": "Original candidate PNGs; five of six home pairs are byte-identical. Chinese mobile pair is preserved for review, with equal text and ordered image URLs. Baseline detail originals remain in local evidence."
+}

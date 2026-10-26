@@ -97,4 +97,18 @@ test("real CLI records and verifies a complete artifact, fails after corruption,
   assert.notEqual(run("verify-build").status, 0);
   assert.equal(run("plan").status, 0);
   assert.match(readFileSync(env.GITHUB_OUTPUT, "utf8"), /deploy=false/u);
+  // Exercise the real pre-deploy command against a local Git origin. A new
+  // main commit while the old artifact is building must stop that old source.
+  const origin = join(fixture, "origin.git");
+  git("init", "--bare", "-q", origin);
+  git("branch", "-M", "main");
+  git("remote", "add", "origin", origin);
+  git("push", "-q", "origin", "main");
+  assert.equal(run("verify-current-main").status, 0);
+  git("-c", "user.name=Release test", "-c", "user.email=release-test@example.invalid", "-c", "commit.gpgsign=false", "commit", "--allow-empty", "-qm", "New main");
+  git("push", "-q", "origin", "main");
+  git("checkout", "-q", "--detach", "HEAD^");
+  const stale = run("verify-current-main");
+  assert.notEqual(stale.status, 0);
+  assert.match(stale.stderr, /older than the latest main/u);
 });
