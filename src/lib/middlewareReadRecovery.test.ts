@@ -33,7 +33,7 @@ describe("failed HTML reads retain client recovery", () => {
     expect(payload.materials).toBeUndefined();
     expect(payload.materialDetailContext).toBeUndefined();
   });
-  it("retains a successful Malay detail when the existing readable fallback is used", async () => {
+  it("retains a successful Malay detail during readable HTML generation", async () => {
     const payload = await seed("/ms/services/renovation", "malay-readable");
     expect(payload.serviceDetails?.renovation).toMatchObject({ content_ms: "Badan perkhidmatan asal", preload_language: "ms" });
     expect(payload.serviceDetails?.renovation).not.toHaveProperty("content_en");

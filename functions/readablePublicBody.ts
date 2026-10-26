@@ -1,6 +1,8 @@
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
-import { getServiceProjectGuidance } from "../src/i18n/serviceDetailPageText";
+import { getServiceProjectGuidance, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
+import { projectDetailPageText } from "../src/i18n/projectDetailPageText";
+import { mediaLabels } from "../src/i18n/mediaLabels";
 import { getMaterialSubcategoryGuidance } from "../src/i18n/materialSubcategoryGuidance";
 import { servicesPageText } from "../src/i18n/servicesPageText";
 import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
@@ -96,12 +98,17 @@ export function sanitizeReadableContent(value: string, lang: "en" | "zh" | "ms")
 const headings = {
   en: { suitable: "Suitable for", scope: "Scope", common: "Common projects", process: "Process", faq: "Frequently asked questions", highlights: "Design highlights", materials: "Material direction", label: "Design rendering" },
   zh: { suitable: "适用需求", scope: "范围", common: "常见项目", process: "流程", faq: "常见问题", highlights: "设计重点", materials: "材料方向", label: "设计效果图" },
+  ms: { suitable: serviceDetailPageText.ms.suitableFor, scope: serviceDetailPageText.ms.offer,
+    common: serviceDetailPageText.ms.commonProjects, process: serviceDetailPageText.ms.process,
+    faq: serviceDetailPageText.ms.faq, highlights: projectDetailPageText.ms.solution,
+    materials: projectDetailPageText.ms.materialDirection, label: mediaLabels.ms.renderingConcept },
 };
 
 type ReadableContactIdentity = { phone_e164?: unknown; email?: unknown };
 
 // Only the four reviewed routes receive a structural CTA. CMS sanitization stays unchanged.
 function buildReviewedCta(path: string, lang: "en" | "zh" | "ms", identity?: ReadableContactIdentity | null) {
+  if (lang === "ms") return ""; // The four reviewed CTA routes are English/Chinese only.
   if (path !== "/blog/renovation-materials-malaysia" && path !== "/projects/bangsar-walk-in-wardrobe-system") return "";
   const heading = lang === "zh"
     ? (path.startsWith("/blog/") ? "咨询装修材料需求" : "咨询类似衣帽间需求")
