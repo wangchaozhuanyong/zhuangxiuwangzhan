@@ -150,7 +150,7 @@ export const formatSourcePath = (value: string | null | undefined, language: Lan
   try {
     const url = new URL(raw, "https://flashcast.local");
     const pathParts = url.pathname.split("/").filter(Boolean);
-    const withoutLang = ["zh", "en", "ms"].includes(pathParts[0]) ? pathParts.slice(1) : pathParts;
+    const withoutLang = ["zh", "en", "ms"].includes(pathParts[0] ?? "") ? pathParts.slice(1) : pathParts;
     const first = withoutLang[0] || "home";
     const sourceParam = url.searchParams.get("source");
     const titleParam = url.searchParams.get("title");
