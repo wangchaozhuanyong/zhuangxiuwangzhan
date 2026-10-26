@@ -44,9 +44,15 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // These pure helpers are already in every document's static graph.
+          // Share their module wrapper/compression with the existing runtime.
+          if (/[\\/]src[\\/]lib[\\/](interactionPolicy|publicMotion|publicImageDecodeCache|recordUtils|utils)\.ts$/.test(id)) return "vendor";
           if (id.includes("node_modules")) {
             // Co-locate already-required shell helpers with React to reduce repeated chunk overhead.
-            if (/[\\/]node_modules[\\/](clsx|tailwind-merge|react-helmet-async|react-fast-compare|shallowequal|invariant)[\\/]/.test(id)) return "vendor";
+            if (/[\\/]node_modules[\\/](clsx|tailwind-merge|react-helmet-async|react-fast-compare|shallowequal|invariant|tslib)[\\/]/.test(id)) return "vendor";
+            // Only the icon factory is already required by the shell. Icon
+            // definitions stay in their existing entry/lazy page chunks.
+            if (/[\\/]node_modules[\\/]lucide-react[\\/]dist[\\/]esm[\\/](createLucideIcon|Icon|defaultAttributes|shared[\\/]src[\\/]utils)\.js$/.test(id)) return "vendor";
             if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|@remix-run[\\/]router)[\\/]/.test(id)) return "vendor";
             return;
           }

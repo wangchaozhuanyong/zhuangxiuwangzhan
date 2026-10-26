@@ -23,7 +23,15 @@ const MobileBottomDock = () => {
   const { key: routeKey } = useLocation();
   const { menuOpen, hasOpenDialog, showMobileActionBar } = usePublicChrome();
   const dockRef = useRef<HTMLDivElement>(null);
-  const obstructed = useFloatingOcclusion(dockRef, routeKey, "fixed");
+  const [mobile, setMobile] = useState(() => window.matchMedia("(max-width: 767px)").matches);
+  useLayoutEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const update = () => setMobile(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const obstructed = useFloatingOcclusion(dockRef, routeKey, "fixed", mobile);
   const [formControlFocused, setFormControlFocused] = useState(false);
   const mode: MobileDockMode = menuOpen || hasOpenDialog || formControlFocused || obstructed
     ? "hidden"
@@ -32,6 +40,7 @@ const MobileBottomDock = () => {
       : "navigation";
 
   useLayoutEffect(() => {
+    if (!mobile) return;
     let focusFrame = 0;
     const syncFocusedControl = () => {
       focusFrame = 0;
@@ -56,7 +65,7 @@ const MobileBottomDock = () => {
       document.removeEventListener("focusout", handleFocusOut);
       if (focusFrame) window.cancelAnimationFrame(focusFrame);
     };
-  }, [routeKey]);
+  }, [routeKey, mobile]);
 
   const navigationActive = mode === "navigation";
   const actionsActive = mode === "actions";

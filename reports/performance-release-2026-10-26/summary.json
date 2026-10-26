@@ -1,0 +1,3497 @@
+{
+  "profiles": {
+    "before": {
+      "profile": "release-control",
+      "build": "release-control",
+      "sourceVersion": "910ac24a051e86489c6011ab6421b91ad932ed8a",
+      "browserVersion": "147.0.7727.15",
+      "testedAt": "2026-10-26T08:58:21.332Z",
+      "samples": 54,
+      "staticJsGzip": 184085,
+      "staticModules": 19,
+      "cohorts": [
+        {
+          "language": "/en",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 173.09999999962747,
+            "min": 169,
+            "max": 374.79999999981374
+          },
+          "visibleMs": {
+            "median": 632.0999999996275,
+            "min": 617.0999999996275,
+            "max": 830.6999999992549
+          },
+          "fontStableMs": {
+            "median": 3183.2999999998137,
+            "min": 3111.7000000001863,
+            "max": 3249.2000000001863
+          },
+          "lcpMs": {
+            "median": 196,
+            "min": 196,
+            "max": 416
+          },
+          "cls": {
+            "median": 0.0011863813706869263,
+            "min": 0.0011863813706869263,
+            "max": 0.0012013164767331434
+          },
+          "totalWireBytes": {
+            "median": 1478807,
+            "min": 1474945,
+            "max": 1478823
+          },
+          "allScriptWireBytes": {
+            "median": 653388,
+            "min": 649508,
+            "max": 653388
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 131
+          },
+          "longTaskTotalMs": {
+            "median": 54,
+            "min": 0,
+            "max": 184
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 390,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 322.5,
+            "min": 136.70000000018626,
+            "max": 357.70000000018626
+          },
+          "visibleMs": {
+            "median": 778.0999999996275,
+            "min": 603.5,
+            "max": 785.5999999996275
+          },
+          "fontStableMs": {
+            "median": 870.0999999996275,
+            "min": 747.4000000003725,
+            "max": 888.7999999998137
+          },
+          "lcpMs": {
+            "median": 348,
+            "min": 148,
+            "max": 364
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 841143,
+            "min": 841141,
+            "max": 841472
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 179.40000000037253,
+            "min": 167.79999999981374,
+            "max": 206
+          },
+          "visibleMs": {
+            "median": 612.9000000003725,
+            "min": 611.8000000007451,
+            "max": 656.3000000007451
+          },
+          "fontStableMs": {
+            "median": 4636.200000000186,
+            "min": 4227.100000000559,
+            "max": 4828.100000000559
+          },
+          "lcpMs": {
+            "median": 196,
+            "min": 188,
+            "max": 224
+          },
+          "cls": {
+            "median": 0.0002915144230769231,
+            "min": 0.0002915144230769231,
+            "max": 0.0002915144230769231
+          },
+          "totalWireBytes": {
+            "median": 3701412,
+            "min": 3701399,
+            "max": 3701418
+          },
+          "allScriptWireBytes": {
+            "median": 649508,
+            "min": 649508,
+            "max": 649508
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 2389520,
+            "min": 2389511,
+            "max": 2389524
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 53,
+            "min": 0,
+            "max": 55
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 390,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 459,
+            "min": 433.09999999962747,
+            "max": 462.90000000037253
+          },
+          "visibleMs": {
+            "median": 903.9000000003725,
+            "min": 874.8999999994412,
+            "max": 911.8999999994412
+          },
+          "fontStableMs": {
+            "median": 1027.1000000005588,
+            "min": 969.2000000001863,
+            "max": 1040.3999999994412
+          },
+          "lcpMs": {
+            "median": 472,
+            "min": 448,
+            "max": 476
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 833426,
+            "min": 833100,
+            "max": 833428
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 173.70000000018626,
+            "min": 172.6000000005588,
+            "max": 753
+          },
+          "visibleMs": {
+            "median": 612.9000000003725,
+            "min": 599.8000000007451,
+            "max": 1191.9000000003725
+          },
+          "fontStableMs": {
+            "median": 3555.7999999998137,
+            "min": 3205.2000000001863,
+            "max": 3926.600000000559
+          },
+          "lcpMs": {
+            "median": 192,
+            "min": 192,
+            "max": 772
+          },
+          "cls": {
+            "median": 0.02450140491452991,
+            "min": 0.02450140491452991,
+            "max": 0.0245051745014245
+          },
+          "totalWireBytes": {
+            "median": 1570392,
+            "min": 1570384,
+            "max": 1570393
+          },
+          "allScriptWireBytes": {
+            "median": 756043,
+            "min": 756043,
+            "max": 756043
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 378862,
+            "min": 378862,
+            "max": 378862
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217115
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 50
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 390,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 120.59999999962747,
+            "min": 115.6000000005588,
+            "max": 575.7000000001863
+          },
+          "visibleMs": {
+            "median": 570.5999999996275,
+            "min": 553.5,
+            "max": 1041.2999999998137
+          },
+          "fontStableMs": {
+            "median": 690.3999999994412,
+            "min": 647.7000000001863,
+            "max": 1169.5
+          },
+          "lcpMs": {
+            "median": 136,
+            "min": 132,
+            "max": 588
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 851584,
+            "min": 851584,
+            "max": 851584
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 378862,
+            "min": 378862,
+            "max": 378862
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 180.1000000005588,
+            "min": 176.3999999994412,
+            "max": 554.7000000001863
+          },
+          "visibleMs": {
+            "median": 610.2999999998137,
+            "min": 609.2000000001863,
+            "max": 1001.1000000005588
+          },
+          "fontStableMs": {
+            "median": 3511.2000000001863,
+            "min": 3456.7999999998137,
+            "max": 3749.5
+          },
+          "lcpMs": {
+            "median": 196,
+            "min": 188,
+            "max": 588
+          },
+          "cls": {
+            "median": 0.00043808808084705073,
+            "min": 0.00043373574674211246,
+            "max": 0.00043808808084705073
+          },
+          "totalWireBytes": {
+            "median": 2110922,
+            "min": 2110912,
+            "max": 2114787
+          },
+          "allScriptWireBytes": {
+            "median": 650502,
+            "min": 650502,
+            "max": 654382
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 50,
+            "min": 0,
+            "max": 54
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 1440,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 165,
+            "min": 140.70000000018626,
+            "max": 515.8999999994412
+          },
+          "visibleMs": {
+            "median": 616.4000000003725,
+            "min": 610.9000000003725,
+            "max": 966.5
+          },
+          "fontStableMs": {
+            "median": 727.7999999998137,
+            "min": 707.2000000001863,
+            "max": 1083.5
+          },
+          "lcpMs": {
+            "median": 180,
+            "min": 172,
+            "max": 536
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 954104,
+            "min": 954104,
+            "max": 954431
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 188.19999999925494,
+            "min": 180.90000000037253,
+            "max": 233
+          },
+          "visibleMs": {
+            "median": 638.6999999992549,
+            "min": 607.7000000001863,
+            "max": 698.4000000003725
+          },
+          "fontStableMs": {
+            "median": 4710.0999999996275,
+            "min": 4568,
+            "max": 4722.0999999996275
+          },
+          "lcpMs": {
+            "median": 216,
+            "min": 192,
+            "max": 272
+          },
+          "cls": {
+            "median": 0.00006808057243441358,
+            "min": 0.00006808057243441358,
+            "max": 0.00006808057243441358
+          },
+          "totalWireBytes": {
+            "median": 4329358,
+            "min": 4329352,
+            "max": 4329392
+          },
+          "allScriptWireBytes": {
+            "median": 650502,
+            "min": 650502,
+            "max": 650502
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 2389522,
+            "min": 2389520,
+            "max": 2389527
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 51
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 1440,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 486.20000000018626,
+            "min": 463.59999999962747,
+            "max": 605.3999999994412
+          },
+          "visibleMs": {
+            "median": 947.8000000007451,
+            "min": 918.5,
+            "max": 1042.5999999996275
+          },
+          "fontStableMs": {
+            "median": 1057.2000000001863,
+            "min": 1011.0999999996275,
+            "max": 1145.2999999998137
+          },
+          "lcpMs": {
+            "median": 508,
+            "min": 488,
+            "max": 616
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 954104,
+            "min": 954103,
+            "max": 954430
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 185.40000000037253,
+            "min": 175,
+            "max": 449.19999999925494
+          },
+          "visibleMs": {
+            "median": 638.5,
+            "min": 620.6000000005588,
+            "max": 900
+          },
+          "fontStableMs": {
+            "median": 3544.100000000559,
+            "min": 3275.300000000745,
+            "max": 3648.399999999441
+          },
+          "lcpMs": {
+            "median": 220,
+            "min": 208,
+            "max": 484
+          },
+          "cls": {
+            "median": 0.01211213348765432,
+            "min": 0.01208041087962963,
+            "max": 0.01211213348765432
+          },
+          "totalWireBytes": {
+            "median": 2216815,
+            "min": 2216813,
+            "max": 2216817
+          },
+          "allScriptWireBytes": {
+            "median": 757037,
+            "min": 757037,
+            "max": 757037
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 379583,
+            "min": 379583,
+            "max": 379583
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 1440,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 187.79999999981374,
+            "min": 136.6000000005588,
+            "max": 579
+          },
+          "visibleMs": {
+            "median": 640.2999999998137,
+            "min": 593.9000000003725,
+            "max": 1055.699999999255
+          },
+          "fontStableMs": {
+            "median": 773.2000000001863,
+            "min": 715.2000000001863,
+            "max": 1176.3999999994412
+          },
+          "lcpMs": {
+            "median": 216,
+            "min": 156,
+            "max": 604
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 954430,
+            "min": 954102,
+            "max": 954432
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 379583,
+            "min": 379583,
+            "max": 379583
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 4557.799999999814,
+            "min": 4503.5,
+            "max": 4600.899999999441
+          },
+          "visibleMs": {
+            "median": 5127.5,
+            "min": 5122.5999999996275,
+            "max": 5201.299999999814
+          },
+          "fontStableMs": {
+            "median": 8874.799999999814,
+            "min": 8837.299999999814,
+            "max": 9452.299999999814
+          },
+          "lcpMs": {
+            "median": 4576,
+            "min": 4532,
+            "max": 4616
+          },
+          "cls": {
+            "median": 0.0012013164767331434,
+            "min": 0.0011863813706869263,
+            "max": 0.0012013164767331434
+          },
+          "totalWireBytes": {
+            "median": 1464800,
+            "min": 1464774,
+            "max": 1464806
+          },
+          "allScriptWireBytes": {
+            "median": 649508,
+            "min": 649494,
+            "max": 649508
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 336,
+            "min": 322,
+            "max": 440
+          },
+          "longTaskTotalMs": {
+            "median": 676,
+            "min": 663,
+            "max": 939
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 4611.399999999441,
+            "min": 4576.5999999996275,
+            "max": 4786.299999999814
+          },
+          "visibleMs": {
+            "median": 5188.700000000186,
+            "min": 5135,
+            "max": 5244
+          },
+          "fontStableMs": {
+            "median": 20389.89999999944,
+            "min": 20258.5,
+            "max": 20685.099999999627
+          },
+          "lcpMs": {
+            "median": 4628,
+            "min": 4596,
+            "max": 4824
+          },
+          "cls": {
+            "median": 0.0002915144230769231,
+            "min": 0.0002915144230769231,
+            "max": 0.0002915144230769231
+          },
+          "totalWireBytes": {
+            "median": 3687071,
+            "min": 3683736,
+            "max": 3687127
+          },
+          "allScriptWireBytes": {
+            "median": 653388,
+            "min": 649985,
+            "max": 653388
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 2389541,
+            "min": 2389504,
+            "max": 2389544
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 343,
+            "min": 334,
+            "max": 375
+          },
+          "longTaskTotalMs": {
+            "median": 899,
+            "min": 809,
+            "max": 1275
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 5113.299999999814,
+            "min": 5073.799999999814,
+            "max": 5324.700000000186
+          },
+          "visibleMs": {
+            "median": 6099.799999999814,
+            "min": 5911.699999999255,
+            "max": 6337.600000000559
+          },
+          "fontStableMs": {
+            "median": 10050.199999999255,
+            "min": 9507.899999999441,
+            "max": 10132.600000000559
+          },
+          "lcpMs": {
+            "median": 5132,
+            "min": 5092,
+            "max": 5344
+          },
+          "cls": {
+            "median": 0.0245051745014245,
+            "min": 0.02450140491452991,
+            "max": 0.0245051745014245
+          },
+          "totalWireBytes": {
+            "median": 1570718,
+            "min": 1570421,
+            "max": 1574555
+          },
+          "allScriptWireBytes": {
+            "median": 756043,
+            "min": 756043,
+            "max": 759923
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 378862,
+            "min": 378862,
+            "max": 378862
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 332,
+            "min": 302,
+            "max": 356
+          },
+          "longTaskTotalMs": {
+            "median": 707,
+            "min": 698,
+            "max": 779
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 5302.700000000186,
+            "min": 5262.299999999814,
+            "max": 5452.5
+          },
+          "visibleMs": {
+            "median": 6155,
+            "min": 5860.4000000003725,
+            "max": 6158.9000000003725
+          },
+          "fontStableMs": {
+            "median": 9649.400000000373,
+            "min": 9541.700000000186,
+            "max": 9953.5
+          },
+          "lcpMs": {
+            "median": 6248,
+            "min": 5952,
+            "max": 6388
+          },
+          "cls": {
+            "median": 0.014226969735939643,
+            "min": 0.00043373574674211246,
+            "max": 0.014231322070044582
+          },
+          "totalWireBytes": {
+            "median": 1688337,
+            "min": 1688147,
+            "max": 1688344
+          },
+          "allScriptWireBytes": {
+            "median": 651735,
+            "min": 651721,
+            "max": 651735
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272195,
+            "min": 272195,
+            "max": 272195
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 255,
+            "min": 252,
+            "max": 395
+          },
+          "longTaskTotalMs": {
+            "median": 753,
+            "min": 746,
+            "max": 858
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "degraded",
+            "degraded",
+            "degraded"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 5561.0999999996275,
+            "min": 5410.200000000186,
+            "max": 6055.5
+          },
+          "visibleMs": {
+            "median": 6246.899999999441,
+            "min": 6172.200000000186,
+            "max": 6539.799999999814
+          },
+          "fontStableMs": {
+            "median": 20832.700000000186,
+            "min": 20130.5,
+            "max": 21318.099999999627
+          },
+          "lcpMs": {
+            "median": 6236,
+            "min": 6208,
+            "max": 6316
+          },
+          "cls": {
+            "median": 0.013861314561631944,
+            "min": 0.013861314561631944,
+            "max": 0.013861314561631944
+          },
+          "totalWireBytes": {
+            "median": 3906592,
+            "min": 3906305,
+            "max": 3906818
+          },
+          "allScriptWireBytes": {
+            "median": 651735,
+            "min": 651735,
+            "max": 651735
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273562,
+            "min": 272195,
+            "max": 274283
+          },
+          "fontWireBytes": {
+            "median": 2389521,
+            "min": 2389513,
+            "max": 2389523
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217103
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 348,
+            "min": 264,
+            "max": 448
+          },
+          "longTaskTotalMs": {
+            "median": 842,
+            "min": 806,
+            "max": 962
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "degraded",
+            "degraded",
+            "degraded"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 5694.700000000186,
+            "min": 5644.4000000003725,
+            "max": 5725.200000000186
+          },
+          "visibleMs": {
+            "median": 6181.600000000559,
+            "min": 6119.0999999996275,
+            "max": 6197.899999999441
+          },
+          "fontStableMs": {
+            "median": 10161.399999999441,
+            "min": 10138.5,
+            "max": 10247.600000000559
+          },
+          "lcpMs": {
+            "median": 6452,
+            "min": 6440,
+            "max": 6488
+          },
+          "cls": {
+            "median": 0.02590536747685185,
+            "min": 0.02587364486882716,
+            "max": 0.02590536747685185
+          },
+          "totalWireBytes": {
+            "median": 1794269,
+            "min": 1794261,
+            "max": 1798165
+          },
+          "allScriptWireBytes": {
+            "median": 758270,
+            "min": 758270,
+            "max": 762150
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 378455,
+            "min": 378455,
+            "max": 378455
+          },
+          "fontWireBytes": {
+            "median": 171183,
+            "min": 171183,
+            "max": 171183
+          },
+          "fontStyleWireBytes": {
+            "median": 217103,
+            "min": 217103,
+            "max": 217115
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 312,
+            "min": 311,
+            "max": 319
+          },
+          "longTaskTotalMs": {
+            "median": 815,
+            "min": 807,
+            "max": 876
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "degraded",
+            "degraded",
+            "degraded"
+          ]
+        }
+      ],
+      "journeys": [
+        {
+          "section": "services",
+          "detail": "/en/services/renovation",
+          "returned": "/en/services",
+          "readCount": 1,
+          "eventDurations": [
+            48,
+            48,
+            48
+          ]
+        },
+        {
+          "section": "projects",
+          "detail": "/en/projects/mont-kiara-luxury-condo-renovation",
+          "returned": "/en/projects",
+          "readCount": 1,
+          "eventDurations": [
+            16,
+            16,
+            16
+          ]
+        },
+        {
+          "section": "materials",
+          "detail": "/en/materials/spc-flooring-natural-oak",
+          "returned": "/en/materials/category/flooring",
+          "readCount": 3,
+          "eventDurations": [
+            16,
+            16,
+            16
+          ]
+        },
+        {
+          "section": "furniture",
+          "detail": "/en/furniture/product/ws-2102-wooden-bunk-bed-white",
+          "returned": "/en/furniture",
+          "readCount": 0,
+          "eventDurations": [
+            24,
+            24,
+            24
+          ]
+        },
+        {
+          "section": "blog",
+          "detail": "/en/blog/renovation-handover-defect-checklist-malaysia",
+          "returned": "/en/blog",
+          "readCount": 1,
+          "eventDurations": [
+            16,
+            16,
+            16
+          ]
+        }
+      ]
+    },
+    "after": {
+      "profile": "release-final",
+      "build": "release-final",
+      "sourceVersion": "13866a416bd7f210b2d8c0e8254679815ddf905a",
+      "browserVersion": "147.0.7727.15",
+      "testedAt": "2026-10-26T10:56:05.454Z",
+      "samples": 54,
+      "staticJsGzip": 184085,
+      "staticModules": 19,
+      "cohorts": [
+        {
+          "language": "/en",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 648,
+            "min": 609.7999999988824,
+            "max": 941
+          },
+          "visibleMs": {
+            "median": 1115.699999999255,
+            "min": 1087.800000000745,
+            "max": 1419.4000000003725
+          },
+          "fontStableMs": {
+            "median": 4258.200000001118,
+            "min": 4035.7999999988824,
+            "max": 4455
+          },
+          "lcpMs": {
+            "median": 672,
+            "min": 648,
+            "max": 980
+          },
+          "cls": {
+            "median": 0.0010985042735042736,
+            "min": 0.0010985042735042736,
+            "max": 0.0010985042735042736
+          },
+          "totalWireBytes": {
+            "median": 1328582,
+            "min": 1328571,
+            "max": 1328583
+          },
+          "allScriptWireBytes": {
+            "median": 649508,
+            "min": 649508,
+            "max": 649508
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 171185,
+            "min": 171185,
+            "max": 171185
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 159,
+            "min": 68,
+            "max": 193
+          },
+          "longTaskTotalMs": {
+            "median": 308,
+            "min": 256,
+            "max": 448
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 390,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 641.8000000007451,
+            "min": 508.7999999988824,
+            "max": 759.7000000011176
+          },
+          "visibleMs": {
+            "median": 1452,
+            "min": 1044.8999999985099,
+            "max": 1478.300000000745
+          },
+          "fontStableMs": {
+            "median": 1711.5,
+            "min": 1136.5999999996275,
+            "max": 1735.300000000745
+          },
+          "lcpMs": {
+            "median": 664,
+            "min": 524,
+            "max": 784
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 841471,
+            "min": 841471,
+            "max": 841472
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 50,
+            "min": 0,
+            "max": 68
+          },
+          "longTaskTotalMs": {
+            "median": 50,
+            "min": 0,
+            "max": 68
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 439.19999999925494,
+            "min": 398.5,
+            "max": 826.9000000003725
+          },
+          "visibleMs": {
+            "median": 887.3999999985099,
+            "min": 848.6999999992549,
+            "max": 1286.0999999996275
+          },
+          "fontStableMs": {
+            "median": 3815.4000000003725,
+            "min": 3260.199999999255,
+            "max": 5170.800000000745
+          },
+          "lcpMs": {
+            "median": 468,
+            "min": 420,
+            "max": 868
+          },
+          "cls": {
+            "median": 0.0002915144230769231,
+            "min": 0.0002915144230769231,
+            "max": 0.0002915144230769231
+          },
+          "totalWireBytes": {
+            "median": 3555022,
+            "min": 3555007,
+            "max": 3558876
+          },
+          "allScriptWireBytes": {
+            "median": 649508,
+            "min": 649508,
+            "max": 653388
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 2389481,
+            "min": 2389471,
+            "max": 2389481
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 70,
+            "min": 0,
+            "max": 121
+          },
+          "longTaskTotalMs": {
+            "median": 208,
+            "min": 151,
+            "max": 307
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 390,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 610.5,
+            "min": 242.30000000074506,
+            "max": 665.5999999996275
+          },
+          "visibleMs": {
+            "median": 1098.0999999996275,
+            "min": 687.1000000014901,
+            "max": 1137
+          },
+          "fontStableMs": {
+            "median": 1228.199999999255,
+            "min": 798,
+            "max": 1246
+          },
+          "lcpMs": {
+            "median": 632,
+            "min": 264,
+            "max": 704
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 833427,
+            "min": 833427,
+            "max": 833428
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 180,
+            "min": 119,
+            "max": 198
+          },
+          "longTaskTotalMs": {
+            "median": 180,
+            "min": 119,
+            "max": 198
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 669.7000000011176,
+            "min": 408.7999999988824,
+            "max": 712.6999999992549
+          },
+          "visibleMs": {
+            "median": 1142,
+            "min": 861.9000000003725,
+            "max": 1160.4000000003725
+          },
+          "fontStableMs": {
+            "median": 3651.0999999996275,
+            "min": 3561.9000000003725,
+            "max": 3979.9000000003725
+          },
+          "lcpMs": {
+            "median": 720,
+            "min": 444,
+            "max": 728
+          },
+          "cls": {
+            "median": 0.016982638888888887,
+            "min": 0.016982638888888887,
+            "max": 0.02450140491452991
+          },
+          "totalWireBytes": {
+            "median": 1424058,
+            "min": 1424057,
+            "max": 1424068
+          },
+          "allScriptWireBytes": {
+            "median": 756043,
+            "min": 756043,
+            "max": 756043
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 378862,
+            "min": 378862,
+            "max": 378862
+          },
+          "fontWireBytes": {
+            "median": 171185,
+            "min": 171185,
+            "max": 171185
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 51,
+            "min": 0,
+            "max": 56
+          },
+          "longTaskTotalMs": {
+            "median": 114,
+            "min": 0,
+            "max": 228
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 390,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 211.09999999962747,
+            "min": 158.90000000037253,
+            "max": 406.5
+          },
+          "visibleMs": {
+            "median": 693.7999999988824,
+            "min": 605.7999999988824,
+            "max": 844.3000000007451
+          },
+          "fontStableMs": {
+            "median": 818.6999999992549,
+            "min": 716.6999999992549,
+            "max": 987.6999999992549
+          },
+          "lcpMs": {
+            "median": 232,
+            "min": 176,
+            "max": 420
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 851913,
+            "min": 851912,
+            "max": 851914
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 378862,
+            "min": 378862,
+            "max": 378862
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 476.90000000037253,
+            "min": 409.8999999985099,
+            "max": 619.8000000007451
+          },
+          "visibleMs": {
+            "median": 952.6999999992549,
+            "min": 874,
+            "max": 1075.800000000745
+          },
+          "fontStableMs": {
+            "median": 3863.7999999988824,
+            "min": 3525.5,
+            "max": 3915
+          },
+          "lcpMs": {
+            "median": 508,
+            "min": 464,
+            "max": 644
+          },
+          "cls": {
+            "median": 0.00043808808084705073,
+            "min": 0.00043808808084705073,
+            "max": 0.00043808808084705073
+          },
+          "totalWireBytes": {
+            "median": 1983794,
+            "min": 1964575,
+            "max": 1983807
+          },
+          "allScriptWireBytes": {
+            "median": 650502,
+            "min": 650502,
+            "max": 650502
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 171185,
+            "min": 171185,
+            "max": 171185
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 50,
+            "min": 0,
+            "max": 75
+          },
+          "longTaskTotalMs": {
+            "median": 134,
+            "min": 127,
+            "max": 151
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 1440,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 384.7000000011176,
+            "min": 227.90000000037253,
+            "max": 400.5
+          },
+          "visibleMs": {
+            "median": 867.3000000007451,
+            "min": 705.0999999996275,
+            "max": 1071.6000000014901
+          },
+          "fontStableMs": {
+            "median": 1026.300000000745,
+            "min": 821.3000000007451,
+            "max": 1145.2000000011176
+          },
+          "lcpMs": {
+            "median": 420,
+            "min": 268,
+            "max": 428
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 935208,
+            "min": 934664,
+            "max": 954432
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 101,
+            "min": 0,
+            "max": 116
+          },
+          "longTaskTotalMs": {
+            "median": 101,
+            "min": 0,
+            "max": 116
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            1,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 546.5999999996275,
+            "min": 523.1999999992549,
+            "max": 958.4000000003725
+          },
+          "visibleMs": {
+            "median": 992.7000000011176,
+            "min": 985.7999999988824,
+            "max": 1399
+          },
+          "fontStableMs": {
+            "median": 3576,
+            "min": 3279.5999999996275,
+            "max": 5677.4000000003725
+          },
+          "lcpMs": {
+            "median": 572,
+            "min": 564,
+            "max": 984
+          },
+          "cls": {
+            "median": 0.00006808057243441358,
+            "min": 0.00006292649257330247,
+            "max": 0.00006808057243441358
+          },
+          "totalWireBytes": {
+            "median": 4202223,
+            "min": 4202198,
+            "max": 4202226
+          },
+          "allScriptWireBytes": {
+            "median": 650502,
+            "min": 650502,
+            "max": 650502
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 2389503,
+            "min": 2389475,
+            "max": 2389504
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 57,
+            "min": 50,
+            "max": 111
+          },
+          "longTaskTotalMs": {
+            "median": 191,
+            "min": 116,
+            "max": 258
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 1440,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 742.0999999996275,
+            "min": 586.1999999992549,
+            "max": 1333.2999999988824
+          },
+          "visibleMs": {
+            "median": 1227.2999999988824,
+            "min": 1066.0999999996275,
+            "max": 1785.5999999996275
+          },
+          "fontStableMs": {
+            "median": 1377,
+            "min": 1267.8999999985099,
+            "max": 1914.7999999988824
+          },
+          "lcpMs": {
+            "median": 804,
+            "min": 632,
+            "max": 1352
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 935210,
+            "min": 935209,
+            "max": 935211
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 192,
+            "min": 171,
+            "max": 234
+          },
+          "longTaskTotalMs": {
+            "median": 192,
+            "min": 171,
+            "max": 304
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 538.5999999996275,
+            "min": 393.69999999925494,
+            "max": 666.5999999996275
+          },
+          "visibleMs": {
+            "median": 1012.5,
+            "min": 845.9000000003725,
+            "max": 1120.4000000003725
+          },
+          "fontStableMs": {
+            "median": 3115.5,
+            "min": 2979.5999999996275,
+            "max": 3756.699999999255
+          },
+          "lcpMs": {
+            "median": 576,
+            "min": 436,
+            "max": 712
+          },
+          "cls": {
+            "median": 0.008074697788065844,
+            "min": 0.008074697788065844,
+            "max": 0.01211213348765432
+          },
+          "totalWireBytes": {
+            "median": 2089680,
+            "min": 2070457,
+            "max": 2089722
+          },
+          "allScriptWireBytes": {
+            "median": 757037,
+            "min": 757037,
+            "max": 757037
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 379583,
+            "min": 379583,
+            "max": 379583
+          },
+          "fontWireBytes": {
+            "median": 171185,
+            "min": 171185,
+            "max": 171185
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 0,
+            "min": 0,
+            "max": 57
+          },
+          "longTaskTotalMs": {
+            "median": 91,
+            "min": 0,
+            "max": 107
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 1440,
+          "cache": "reload / warm browser",
+          "network": "unthrottled",
+          "samples": 3,
+          "readyMs": {
+            "median": 341.59999999962747,
+            "min": 192.80000000074506,
+            "max": 666.6999999992549
+          },
+          "visibleMs": {
+            "median": 830.7999999988824,
+            "min": 626.6999999992549,
+            "max": 1115.699999999255
+          },
+          "fontStableMs": {
+            "median": 1038.199999999255,
+            "min": 725.9000000003725,
+            "max": 1263.8999999985099
+          },
+          "lcpMs": {
+            "median": 388,
+            "min": 212,
+            "max": 700
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "totalWireBytes": {
+            "median": 935208,
+            "min": 935206,
+            "max": 954103
+          },
+          "allScriptWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 379583,
+            "min": 379583,
+            "max": 379583
+          },
+          "fontWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "fontStyleWireBytes": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 62,
+            "min": 0,
+            "max": 75
+          },
+          "longTaskTotalMs": {
+            "median": 62,
+            "min": 0,
+            "max": 147
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 4567.800000000745,
+            "min": 4358.4000000003725,
+            "max": 4987.89999999851
+          },
+          "visibleMs": {
+            "median": 5117.5999999996275,
+            "min": 5079.300000000745,
+            "max": 5481.0999999996275
+          },
+          "fontStableMs": {
+            "median": 8564.5,
+            "min": 8385.200000001118,
+            "max": 8977.199999999255
+          },
+          "lcpMs": {
+            "median": 4608,
+            "min": 4392,
+            "max": 5024
+          },
+          "cls": {
+            "median": 0,
+            "min": 0,
+            "max": 0.0010985042735042736
+          },
+          "totalWireBytes": {
+            "median": 1318139,
+            "min": 1318136,
+            "max": 1318152
+          },
+          "allScriptWireBytes": {
+            "median": 649508,
+            "min": 649494,
+            "max": 649508
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 171185,
+            "min": 171185,
+            "max": 171190
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 633,
+            "min": 589,
+            "max": 688
+          },
+          "longTaskTotalMs": {
+            "median": 1208,
+            "min": 1170,
+            "max": 1348
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 4669.9000000003725,
+            "min": 4606,
+            "max": 4809.200000001118
+          },
+          "visibleMs": {
+            "median": 5363,
+            "min": 5232.0999999996275,
+            "max": 5485.9000000003725
+          },
+          "fontStableMs": {
+            "median": 19526.900000000373,
+            "min": 18971.39999999851,
+            "max": 19781.700000001118
+          },
+          "lcpMs": {
+            "median": 4788,
+            "min": 4648,
+            "max": 4868
+          },
+          "cls": {
+            "median": 0.0002915144230769231,
+            "min": 0.0002915144230769231,
+            "max": 0.0002915144230769231
+          },
+          "totalWireBytes": {
+            "median": 3536561,
+            "min": 3536545,
+            "max": 3540414
+          },
+          "allScriptWireBytes": {
+            "median": 649508,
+            "min": 649508,
+            "max": 653388
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 272602,
+            "min": 272602,
+            "max": 272602
+          },
+          "fontWireBytes": {
+            "median": 2389487,
+            "min": 2389482,
+            "max": 2389512
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 630,
+            "min": 611,
+            "max": 720
+          },
+          "longTaskTotalMs": {
+            "median": 3153,
+            "min": 2753,
+            "max": 3673
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 390,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 4943.800000000745,
+            "min": 4920.299999998882,
+            "max": 5134.5999999996275
+          },
+          "visibleMs": {
+            "median": 5392,
+            "min": 5386.299999998882,
+            "max": 6185.9000000003725
+          },
+          "fontStableMs": {
+            "median": 9054.60000000149,
+            "min": 8991.699999999255,
+            "max": 9180.5
+          },
+          "lcpMs": {
+            "median": 4972,
+            "min": 4964,
+            "max": 5196
+          },
+          "cls": {
+            "median": 0.016982638888888887,
+            "min": 0.016982638888888887,
+            "max": 0.016982638888888887
+          },
+          "totalWireBytes": {
+            "median": 1424076,
+            "min": 1424072,
+            "max": 1424321
+          },
+          "allScriptWireBytes": {
+            "median": 756043,
+            "min": 756029,
+            "max": 756043
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 378862,
+            "min": 378862,
+            "max": 378862
+          },
+          "fontWireBytes": {
+            "median": 171190,
+            "min": 171190,
+            "max": 171190
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 685,
+            "min": 661,
+            "max": 847
+          },
+          "longTaskTotalMs": {
+            "median": 1344,
+            "min": 1267,
+            "max": 1415
+          },
+          "cinematicScans": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/en",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 5164.199999999255,
+            "min": 5005.200000001118,
+            "max": 5315.200000001118
+          },
+          "visibleMs": {
+            "median": 5862,
+            "min": 5478.9000000003725,
+            "max": 6251.4000000003725
+          },
+          "fontStableMs": {
+            "median": 9865.800000000745,
+            "min": 9617,
+            "max": 10011
+          },
+          "lcpMs": {
+            "median": 5220,
+            "min": 5056,
+            "max": 5368
+          },
+          "cls": {
+            "median": 0.00043808808084705073,
+            "min": 0.00042973143861454045,
+            "max": 0.00043808808084705073
+          },
+          "totalWireBytes": {
+            "median": 1540292,
+            "min": 1540274,
+            "max": 1540762
+          },
+          "allScriptWireBytes": {
+            "median": 650502,
+            "min": 650502,
+            "max": 650502
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 273323
+          },
+          "fontWireBytes": {
+            "median": 171186,
+            "min": 171186,
+            "max": 171186
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 768,
+            "min": 492,
+            "max": 867
+          },
+          "longTaskTotalMs": {
+            "median": 1392,
+            "min": 1272,
+            "max": 1541
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "ready"
+          ]
+        },
+        {
+          "language": "/zh",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 5068.9000000003725,
+            "min": 5042.699999999255,
+            "max": 5557.300000000745
+          },
+          "visibleMs": {
+            "median": 5536.4000000003725,
+            "min": 5523,
+            "max": 6232.699999999255
+          },
+          "fontStableMs": {
+            "median": 20547.900000000373,
+            "min": 20228.599999999627,
+            "max": 20564.699999999255
+          },
+          "lcpMs": {
+            "median": 5104,
+            "min": 5072,
+            "max": 5692
+          },
+          "cls": {
+            "median": 0.00006808057243441358,
+            "min": 0.00006292649257330247,
+            "max": 0.00006808057243441358
+          },
+          "totalWireBytes": {
+            "median": 3758681,
+            "min": 3758681,
+            "max": 3760179
+          },
+          "allScriptWireBytes": {
+            "median": 650502,
+            "min": 650488,
+            "max": 651735
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 273323,
+            "min": 273323,
+            "max": 274283
+          },
+          "fontWireBytes": {
+            "median": 2389498,
+            "min": 2389478,
+            "max": 2389501
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 514,
+            "min": 495,
+            "max": 794
+          },
+          "longTaskTotalMs": {
+            "median": 2932,
+            "min": 2519,
+            "max": 3752
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "ready",
+            "ready",
+            "degraded"
+          ]
+        },
+        {
+          "language": "/ms",
+          "width": 1440,
+          "cache": "cold browser / warm middleware",
+          "network": "limited",
+          "samples": 3,
+          "readyMs": {
+            "median": 5551.300000000745,
+            "min": 5445.89999999851,
+            "max": 5555.5999999996275
+          },
+          "visibleMs": {
+            "median": 6262.5,
+            "min": 6256.0999999996275,
+            "max": 6350.0999999996275
+          },
+          "fontStableMs": {
+            "median": 10255,
+            "min": 10088,
+            "max": 10427
+          },
+          "lcpMs": {
+            "median": 5700,
+            "min": 5576,
+            "max": 5728
+          },
+          "cls": {
+            "median": 0.008074697788065844,
+            "min": 0.008074697788065844,
+            "max": 0.008074697788065844
+          },
+          "totalWireBytes": {
+            "median": 1651290,
+            "min": 1647434,
+            "max": 1651291
+          },
+          "allScriptWireBytes": {
+            "median": 762150,
+            "min": 758270,
+            "max": 762150
+          },
+          "localJsGzipBeforeVisible": {
+            "median": 380543,
+            "min": 380543,
+            "max": 380543
+          },
+          "fontWireBytes": {
+            "median": 171186,
+            "min": 171186,
+            "max": 171191
+          },
+          "fontStyleWireBytes": {
+            "median": 70648,
+            "min": 70648,
+            "max": 70648
+          },
+          "restRequests": {
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "longTaskBeforeVisibleMs": {
+            "median": 572,
+            "min": 560,
+            "max": 671
+          },
+          "longTaskTotalMs": {
+            "median": 1350,
+            "min": 1318,
+            "max": 1554
+          },
+          "cinematicScans": {
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "pendingRequests": [
+            0,
+            0,
+            0
+          ],
+          "routeStates": [
+            "degraded",
+            "degraded",
+            "degraded"
+          ]
+        }
+      ],
+      "journeys": [
+        {
+          "section": "services",
+          "detail": "/en/services/renovation",
+          "returned": "/en/services",
+          "readCount": 1,
+          "eventDurations": [
+            64,
+            64,
+            64
+          ]
+        },
+        {
+          "section": "projects",
+          "detail": "/en/projects/mont-kiara-luxury-condo-renovation",
+          "returned": "/en/projects",
+          "readCount": 1,
+          "eventDurations": [
+            16,
+            16,
+            16
+          ]
+        },
+        {
+          "section": "materials",
+          "detail": "/en/materials/spc-flooring-natural-oak",
+          "returned": "/en/materials/category/flooring",
+          "readCount": 1,
+          "eventDurations": [
+            16,
+            16,
+            16,
+            24,
+            24,
+            24
+          ]
+        },
+        {
+          "section": "furniture",
+          "detail": "/en/furniture/product/ws-2102-wooden-bunk-bed-white",
+          "returned": "/en/furniture",
+          "readCount": 0,
+          "eventDurations": []
+        },
+        {
+          "section": "blog",
+          "detail": "/en/blog/renovation-handover-defect-checklist-malaysia",
+          "returned": "/en/blog",
+          "readCount": 1,
+          "eventDurations": [
+            24,
+            24,
+            24
+          ]
+        }
+      ]
+    }
+  },
+  "homeParity": [
+    {
+      "key": "en-390-home",
+      "textEqual": true,
+      "imagesAndOrderEqual": true,
+      "beforeOverflow": false,
+      "afterOverflow": false
+    },
+    {
+      "key": "zh-390-home",
+      "textEqual": true,
+      "imagesAndOrderEqual": true,
+      "beforeOverflow": false,
+      "afterOverflow": false
+    },
+    {
+      "key": "ms-390-home",
+      "textEqual": true,
+      "imagesAndOrderEqual": true,
+      "beforeOverflow": false,
+      "afterOverflow": false
+    },
+    {
+      "key": "en-1440-home",
+      "textEqual": true,
+      "imagesAndOrderEqual": true,
+      "beforeOverflow": false,
+      "afterOverflow": false
+    },
+    {
+      "key": "zh-1440-home",
+      "textEqual": true,
+      "imagesAndOrderEqual": true,
+      "beforeOverflow": false,
+      "afterOverflow": false
+    },
+    {
+      "key": "ms-1440-home",
+      "textEqual": true,
+      "imagesAndOrderEqual": true,
+      "beforeOverflow": false,
+      "afterOverflow": false
+    }
+  ],
+  "fontResources": {
+    "adopted": true,
+    "beforeGzip": 221851,
+    "afterGzip": 70380,
+    "beforeFaces": 707,
+    "afterFaces": 707,
+    "fontUrlsEqual": true,
+    "rendering": {
+      "results": [
+        {
+          "browser": "chromium",
+          "version": "147.0.7727.15",
+          "pairs": [
+            {
+              "family": "Noto Sans SC",
+              "weight": 300,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 400,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 500,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 600,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 700,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 800,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 300,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 400,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 500,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 600,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 700,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 800,
+              "widthEqual": true,
+              "pixelsEqual": true
+            }
+          ]
+        },
+        {
+          "browser": "webkit",
+          "version": "26.4",
+          "pairs": [
+            {
+              "family": "Noto Sans SC",
+              "weight": 300,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 400,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 500,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 600,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 700,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": 800,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 300,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 400,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 500,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 600,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 700,
+              "widthEqual": true,
+              "pixelsEqual": true
+            },
+            {
+              "family": "Noto Serif SC",
+              "weight": 800,
+              "widthEqual": true,
+              "pixelsEqual": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "strictBuild": {
+    "sha": "13866a416bd7f210b2d8c0e8254679815ddf905a",
+    "directory": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/.codex-worktrees/performance-release-20261026/tmp/performance-evidence/strict-13866a416bd7f210b2d8c0e8254679815ddf905a",
+    "exactGitArchive": true,
+    "exitCode": 0,
+    "completedAt": "2026-10-26T10:31:52.278Z"
+  },
+  "fieldMetrics": {
+    "mobileP75": "NOT_MEASURED",
+    "desktopP75": "NOT_MEASURED",
+    "physicalAndroidIPhone": "NOT_MEASURED"
+  }
+}

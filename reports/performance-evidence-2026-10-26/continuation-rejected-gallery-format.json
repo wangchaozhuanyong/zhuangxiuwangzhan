@@ -1,0 +1,60 @@
+[
+  {
+    "slug": "ws-2102-wooden-bunk-bed-white",
+    "image": "/images/furniture/assets/8fc6125492be2f99b8a2.webp",
+    "sourceBytes": 35402,
+    "avifBytes": 372969,
+    "pixelsEqual": true,
+    "dimensionsEqual": true,
+    "eligible": false
+  },
+  {
+    "slug": "slcfz-195-80x80cm-square-stainless-steel-folding-table",
+    "image": "/images/furniture/assets/28041aafe93d19c98f81.webp",
+    "sourceBytes": 38364,
+    "avifBytes": 541096,
+    "pixelsEqual": true,
+    "dimensionsEqual": true,
+    "eligible": false
+  },
+  {
+    "slug": "ws-2102-wooden-bunk-bed-white",
+    "index": 1,
+    "image": "/images/furniture/assets/1d97bab51a4f319a9df5.webp",
+    "sourceBytes": 58650,
+    "avifBytes": 667448,
+    "pixelsEqual": true,
+    "dimensionsEqual": true,
+    "eligible": false
+  },
+  {
+    "slug": "ws-2102-wooden-bunk-bed-white",
+    "index": 3,
+    "image": "/images/furniture/assets/46b6777f2c8c5d80f416.webp",
+    "sourceBytes": 28948,
+    "avifBytes": 416744,
+    "pixelsEqual": true,
+    "dimensionsEqual": true,
+    "eligible": false
+  },
+  {
+    "slug": "slcfz-195-80x80cm-square-stainless-steel-folding-table",
+    "index": 1,
+    "image": "/images/furniture/assets/ff41e100c91a45573745.webp",
+    "sourceBytes": 49376,
+    "avifBytes": 647277,
+    "pixelsEqual": true,
+    "dimensionsEqual": true,
+    "eligible": false
+  },
+  {
+    "slug": "slcfz-195-80x80cm-square-stainless-steel-folding-table",
+    "index": 3,
+    "image": "/images/furniture/assets/6e4bfc6f8a3a79580966.webp",
+    "sourceBytes": 58088,
+    "avifBytes": 775241,
+    "pixelsEqual": true,
+    "dimensionsEqual": true,
+    "eligible": false
+  }
+]

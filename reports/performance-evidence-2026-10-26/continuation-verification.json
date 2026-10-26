@@ -1,0 +1,166 @@
+{
+  "verifiedAt": "2026-10-26T09:04:00.932392+00:00",
+  "source": {
+    "comparisonBefore": "a48f4d3a04ef8033ce19246e13f8db4ced218f9a",
+    "productCode": "910ac24a051e86489c6011ab6421b91ad932ed8a",
+    "integratedMain": "56dae48f134dfafd464e1439c65869515b5ad1d2",
+    "branch": "perf/verified-loading-20261026",
+    "status": "Draft branch only; no merge or deployment"
+  },
+  "checks": [
+    {
+      "localEvidenceFile": "/Users/wangchao/Desktop/\u88c5\u4fee\u7f51\u7ad9/zhuangxiuwangzhan-main/backups/performance-evidence-20261026/continuation-delivery-quality.log",
+      "sha256": "36bec17aebbdbf1dfe73b5b167f1dd17477284568c9c5ab0e518b76955f350c3",
+      "command": "npm run verify:interaction-quality",
+      "result": "PASS: 310 files / 3656 tests; typecheck, strict types, lint, architecture, admin, 98 routes, i18n and UI text"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-final-script-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command": "npx eslint changed performance evidence scripts",
+      "result": "PASS"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-final-architecture.log",
+      "sha256": "1c0b0490763db255c535eb8fedb37d2d6a14617d5e37e23beef377d80d6da40f",
+      "command": "npm run arch:check",
+      "result": "PASS with existing registered legacy warnings"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-static-node-tests.log",
+      "sha256": "59b5f1a067e1cce03fdb9f0dde7fda1c1255de390f1413a7b52ffdf57d5ce848",
+      "command": "node --test scripts/performance-delivery.test.mjs scripts/pages-release.test.mjs",
+      "result": "PASS: 12 tests, including 5 performance delivery cases"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-static-strict.log",
+      "sha256": "7736ace1e9015f6022832698032093a8ee989690a56245cb85380a7785f95683",
+      "command": "node scripts/performance-evidence/strict-build.mjs",
+      "result": "PASS: original prebuild + production build in exact Git archive"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-static-budget.log",
+      "sha256": "0c02bd6e361eb91bd279e1439ec28f72b3c340e3d3b3f2e16b6c0e066288c6fa",
+      "command": "PERFORMANCE_BUDGET_DIST_DIR=<strict archive>/dist node scripts/verify-performance-budget.mjs",
+      "result": "PASS: 179.8 KiB external static JS / 19 modules; 30.8 KiB CSS; largest public CSS 54.4 KiB"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-final-measure.log",
+      "sha256": "4abe3c9cac5f3539db2160ee716b392f0b8697cfbb8054bfe096c7356c7ec63a",
+      "command": "PERFORMANCE_BUILD_PROFILE=continuation-font-original PERFORMANCE_PRODUCTION_HOST=1 ... measure.mjs continuation-final",
+      "result": "PASS: 54 home samples + 5 journeys; normal36 all ready; desktop limited remains degraded"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-final-acceptance.log",
+      "sha256": "59c85e07b3230423779ebcf283a7b06897df7d53f1c90c07da6f4a5ad52245d4",
+      "command": "PERFORMANCE_REFERENCE_PROFILE=continuation-final-control node scripts/performance-evidence/acceptance.mjs continuation-font-original",
+      "result": "PASS: 29 scenarios / 120 locale list-detail direct entries"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-final-failures.log",
+      "sha256": "2dd89b7af0272e5f7182d34f986840f172ee1ec58a42883ad0dafc45afbc3a4e",
+      "command": "PERFORMANCE_BUILD_PROFILE=continuation-font-original node scripts/performance-evidence/failures.mjs",
+      "result": "PASS: 3 recovery scenarios"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-final-motion.log",
+      "sha256": "3e7bcd87b4554ebdf1e0e78e9707734d8d5c44cabd6bf2d5e28468d25246b594",
+      "command": "PERFORMANCE_BUILD_PROFILE=continuation-font-original node scripts/performance-evidence/motion-recovery.mjs",
+      "result": "PASS: Chromium + WebKit; late real image restores original decoration, no false ready or duplicate brand"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-final-public-performance.log",
+      "sha256": "c30057da98d2355b23181bed01679be0725b021a734c8233d128f689c7f898f7",
+      "command": "PERFORMANCE_BUILD_PROFILE=continuation-font-original node scripts/performance-evidence/public-verifier.mjs",
+      "result": "PASS: warnings=[]; failures=[]"
+    },
+    {
+      "localEvidenceFile": "tmp/performance-evidence/continuation-frozen-guard.log",
+      "sha256": "8be631ccb191d756a8796c584cccb5981e71cf3ff648d813a4c819832eb5ca69",
+      "command": "await assert.rejects(start(missing profile) with PERFORMANCE_FROZEN_MIDDLEWARE=1)",
+      "result": "PASS: missing frozen comparison refuses candidate rebuild"
+    }
+  ],
+  "strictBuild": {
+    "sha": "910ac24a051e86489c6011ab6421b91ad932ed8a",
+    "directory": "/Users/wangchao/Desktop/\u88c5\u4fee\u7f51\u7ad9/zhuangxiuwangzhan-main/.codex-worktrees/performance-evidence-20261026/tmp/performance-evidence/strict-910ac24a051e86489c6011ab6421b91ad932ed8a",
+    "exactGitArchive": true,
+    "exitCode": 0,
+    "completedAt": "2026-10-26T08:52:25.852Z"
+  },
+  "comparisonBuilds": [
+    {
+      "sourceSha": "a48f4d3a04ef8033ce19246e13f8db4ced218f9a",
+      "dirty": true,
+      "trackedPatchSha256": "f572623dab9c539313e3cbc5f80c6660bcf0778e451a9c268141a1d6ff56dc54",
+      "profile": "continuation-baseline",
+      "compiledVersionPinnedForComparison": "c502ed547ff28be63b226e2f87f3ea9e29e2347d",
+      "builtAt": "2026-10-26T07:35:05.949Z"
+    },
+    {
+      "sourceSha": "910ac24a051e86489c6011ab6421b91ad932ed8a",
+      "dirty": true,
+      "trackedPatchSha256": "469f9e0e98117124a7d2c97957df17b7f44a7bda9e0d62f91ccc206fd37b1d85",
+      "profile": "continuation-font-original",
+      "compiledVersionPinnedForComparison": "c502ed547ff28be63b226e2f87f3ea9e29e2347d",
+      "builtAt": "2026-10-26T08:51:34.158Z"
+    }
+  ],
+  "frozenEvidence": [
+    {
+      "file": "tmp/performance-evidence/continuation-final-control-evidence/results.json",
+      "sha256": "206022845b5acb69b53920fb5126aa79144cb0b0b7733647bfd3477599291adf"
+    },
+    {
+      "file": "tmp/performance-evidence/continuation-final-evidence/results.json",
+      "sha256": "b330eda911d8c772188b5180aea0682ae1743f6b03336724aa0755662d444d9a"
+    },
+    {
+      "file": "tmp/performance-evidence/middleware-continuation-baseline.mjs",
+      "sha256": "7f3e4a1e950c448b3c57ef81e8be80e9f377e0a9bdca08bd0268e348897ec510"
+    },
+    {
+      "file": "tmp/performance-evidence/middleware-continuation-font-original.mjs",
+      "sha256": "0bf04d6e51d283958e5954c25d96ee73ad5155a82c0efaa293194eeaffad1154"
+    },
+    {
+      "file": "tmp/performance-evidence/font-static-order/comparison.json",
+      "sha256": "566b88323ea81cbf2f59d4c2252a24561fc5c4d9db1e0a9f09c746f1c5b6077c"
+    },
+    {
+      "file": "tmp/performance-evidence/font-static-order/render-comparison.json",
+      "sha256": "31caeb8170de1a5c16461d88397a59e75406382e0b39ac3500879a7257433bae"
+    },
+    {
+      "file": "tmp/performance-evidence/font-comparison/comparison.json",
+      "sha256": "c82f83560de056a6da78e068a054eaf68f46e4ee9e03e0e016031e06cc57068b"
+    },
+    {
+      "file": "tmp/performance-evidence/font-comparison/render-comparison.json",
+      "sha256": "31caeb8170de1a5c16461d88397a59e75406382e0b39ac3500879a7257433bae"
+    },
+    {
+      "file": "tmp/performance-evidence/gallery-lossless-format-probe/expanded-results.json",
+      "sha256": "3b786f3d297af8be70460e2acc84abf453af46e5f1b2aef0a4bf28a0640bc274"
+    }
+  ],
+  "primaryProtection": {
+    "checkedAt": "2026-10-26T09:04:00.845269+00:00",
+    "trackedFilesChecked": 314,
+    "differentFromProtectedSnapshot": [],
+    "primaryHead": "d33175ae32a9a857ddc0744b5f1bd7cf0a54b1ec",
+    "primaryBranch": "main",
+    "taskWorktreeHead": "910ac24a051e86489c6011ab6421b91ad932ed8a",
+    "writesToPrimaryCode": false
+  },
+  "physicalDevices": "NOT_MEASURED",
+  "fieldMobileAndDesktopP75": "NOT_MEASURED",
+  "productionDeployment": "NOT_EXECUTED",
+  "onlineAcceptanceOfThisBranch": "NOT_EXECUTED",
+  "onlineVersionIdentityOnly": {
+    "checkedAt": "2026-10-26T09:05:12.539Z",
+    "httpStatus": 200,
+    "deploymentVersion": "56dae48f134dfafd464e1439c65869515b5ad1d2",
+    "scope": "Read-only version identity only; this draft was not deployed and online acceptance of its changes was not executed."
+  }
+}

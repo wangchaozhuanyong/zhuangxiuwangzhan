@@ -46,7 +46,7 @@ const render = async (lang: "en" | "zh", row: ServiceRow, slug = "kitchen") => {
 };
 const fallbackRow = () => ({ ...reviewedKitchen(), content_en: "", content_zh: "" });
 const summary = (html: string) => new JSDOM(html);
-const head = (html: string) => html.match(/<head>[\s\S]*?<\/head>/)?.[0];
+const head = (html: string) => html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "").match(/<head>[\s\S]*?<\/head>/)?.[0];
 afterEach(() => vi.unstubAllGlobals());
 
 describe("kitchen existing noscript summary fallback", () => {

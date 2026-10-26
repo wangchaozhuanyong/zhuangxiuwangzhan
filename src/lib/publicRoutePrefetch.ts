@@ -1,10 +1,10 @@
+import { withPublicDetailReuse } from "./publicDetailReuse";
 import "@/lib/publicQuerySeed";
 import type { QueryClient, QueryKey, QueryFunction } from "@tanstack/react-query";
 import type { Language } from "@/i18n/routes";
 import { stripLanguagePrefix } from "@/i18n/routes";
 import { publicContentQueries } from "@/lib/publicContentQueries";
 
-import { claimPublicQuerySeed, documentSeedTime } from "@/lib/publicQuerySeedCache";
 import { INTERACTION_POLICY, runReadQuery } from "@/lib/interactionPolicy";
 const STALE_TIME = INTERACTION_POLICY.publicStaleTime;
 const GC_TIME = INTERACTION_POLICY.gcTime;
@@ -139,10 +139,7 @@ export const prefetchPublishedRouteContent = async (
     await import("./furnitureQuerySeed");
   }
   await Promise.allSettled(tasks.map((task) => queryClient.prefetchQuery({
-    ...task,
-    initialData: () => claimPublicQuerySeed(queryClient, task.queryKey),
-    initialDataUpdatedAt: documentSeedTime,
-    queryFn: (context) => runReadQuery(context.signal, async (signal) => task.queryFn({ ...context, signal })),
+    ...withPublicDetailReuse(queryClient, { queryKey: task.queryKey, queryFn: (context) => runReadQuery(context.signal, async (signal) => task.queryFn({ ...context, queryKey: task.queryKey, signal, meta: undefined, client: queryClient })) }),
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
   })));

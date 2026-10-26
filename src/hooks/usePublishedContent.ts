@@ -1,8 +1,8 @@
+import { withPublicDetailReuse } from "@/lib/publicDetailReuse";
 import "@/lib/publicQuerySeed";
 import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { publicContentQueries } from "@/lib/publicContentQueries";
-import type { getPublishedBlogPosts } from "@/lib/contentApi";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 import type { OptionalHomeSection } from "@/lib/homeOptionalSections";
@@ -96,7 +96,8 @@ export function usePublishedFurnitureCatalog(language: "en" | "zh" | "ms") {
 }
 
 export function usePublishedFurnitureProduct(slug: string | undefined, language: "en" | "zh" | "ms") {
-  return useQuery({ ...publicContentQueries.furnitureProduct(slug, language), enabled: Boolean(slug), ...queryDefaults });
+  const client = useQueryClient();
+  return useQuery({ ...withPublicDetailReuse(client, publicContentQueries.furnitureProduct(slug, language)), enabled: Boolean(slug), ...queryDefaults });
 }
 
 export function usePublishedManagedFurnitureProductBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
@@ -215,19 +216,9 @@ export function usePublishedMaterialBySlug(slug: string | undefined, language: "
 
 export function usePublishedBlogPostBySlug(slug: string | undefined, language: "en" | "zh" | "ms") {
   const queryClient = useQueryClient();
-  const listKey = publicContentQueries.blogPosts(language).queryKey;
   return useQuery({
-    ...publicContentQueries.blogPost(slug, language),
+    ...withPublicDetailReuse(queryClient, publicContentQueries.blogPost(slug, language)),
     enabled: Boolean(slug),
-    // Only complete articles can seed the detail cache. Edge-injected listing
-    // summaries have no body and must still fetch the actual article.
-    initialData: () => {
-      if (queryClient.getQueryState(listKey)?.isInvalidated) return undefined;
-      return queryClient
-        .getQueryData<Awaited<ReturnType<typeof getPublishedBlogPosts>>>(listKey)
-        ?.find((post) => post.slug === slug && Boolean(post.content?.trim()));
-    },
-    initialDataUpdatedAt: () => queryClient.getQueryState(listKey)?.dataUpdatedAt,
     ...queryDefaults,
   });
 }

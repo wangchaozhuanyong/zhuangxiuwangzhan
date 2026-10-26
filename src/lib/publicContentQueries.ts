@@ -1,3 +1,5 @@
+import { loadMalayContent } from "@/i18n/malayContentRuntime";
+import { readPublicContentQueryKey } from "./publicContentQueryKeys";
 import type { QueryKey } from "@tanstack/react-query";
 import type { Language } from "@/i18n/routes";
 import type { OptionalHomeSection } from "./homeOptionalSections";
@@ -39,7 +41,10 @@ export { readPublicContentQueryKey } from "./publicContentQueryKeys";
 export type { PublicContentQueryParameters } from "./publicContentQueryKeys";
 
 const query = <T>(queryKey: QueryKey, read: (signal: AbortSignal) => Promise<T>) => ({
-  queryKey, queryFn: ({ signal }: { signal: AbortSignal }) => read(signal),
+  queryKey, queryFn: async ({ signal }: { signal: AbortSignal }) => {
+    if (readPublicContentQueryKey(queryKey)?.language === "ms") await loadMalayContent();
+    return read(signal);
+  },
 });
 
 export const publicContentQueries = {

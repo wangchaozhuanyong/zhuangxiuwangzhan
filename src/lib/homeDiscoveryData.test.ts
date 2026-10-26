@@ -1,3 +1,4 @@
+import { PUBLIC_BLOG_FIELDS } from "./publicContentFields";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getPublishedBlogPosts,
@@ -144,7 +145,7 @@ describe("homepage discovery read contracts", () => {
     const fullAreas = await getPublishedServiceAreas("en");
     expect(fullAreas).toHaveLength(10);
     expect(fullAreas[0].description).toBe("Directory description");
-    expect(request.select.mock.calls).toEqual([["*"], ["*"]]);
+    expect(request.select.mock.calls).toEqual([[PUBLIC_BLOG_FIELDS.join(",")], ["*"]]);
     expect(request.limit).not.toHaveBeenCalled();
   });
 });

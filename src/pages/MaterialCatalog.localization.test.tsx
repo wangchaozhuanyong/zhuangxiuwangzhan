@@ -1,3 +1,5 @@
+// Standalone rendering bypasses the production language route resource gate.
+import "@/i18n/malayContent";
 import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
