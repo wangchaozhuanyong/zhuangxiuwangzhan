@@ -21,7 +21,8 @@ import { adminQuoteDetailText, adminQuoteFollowupTypeLabels } from "@/i18n/admin
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateProjectType, translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
-import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 const statuses = ["pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];

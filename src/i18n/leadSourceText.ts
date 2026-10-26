@@ -1,0 +1,45 @@
+import type { Language } from "./routes";
+
+export const unknownSourceText: Record<Language, string> = {
+  en: "Unknown source",
+  zh: "未知来源",
+
+  ms: "Sumber tidak diketahui",
+};
+
+export const sourceLabels: Record<string, Record<Language, string>> = {
+  contact: { en: "Contact page", zh: "联系页" ,
+             ms: "Halaman kenalan",
+           },
+  quote: { en: "Quote page", zh: "报价页" ,
+           ms: "Halaman petikan",
+         },
+  services: { en: "Services page", zh: "服务页" ,
+              ms: "Halaman perkhidmatan",
+            },
+  service: { en: "Service page", zh: "服务详情页" ,
+             ms: "Halaman perkhidmatan",
+           },
+  projects: { en: "Projects page", zh: "案例页" ,
+              ms: "Halaman projek",
+            },
+  project: { en: "Project page", zh: "案例详情页" ,
+             ms: "Halaman projek",
+           },
+  materials: { en: "Materials page", zh: "材料页" ,
+               ms: "Halaman bahan",
+             },
+  material: { en: "Material page", zh: "材料详情页" ,
+              ms: "Halaman bahan",
+            },
+  blog: { en: "Blog page", zh: "博客页" ,
+          ms: "Laman blog",
+        },
+  home: { en: "Home page", zh: "首页" ,
+          ms: "Laman utama",
+        },
+  old_house_renovation: { en: "Old house renovation page", zh: "老房翻新页" ,
+                          ms: "Laman ubah suai rumah lama",
+                        },
+  unknown: unknownSourceText,
+};

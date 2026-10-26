@@ -10,9 +10,10 @@ import MobileBottomDock from "@/components/MobileBottomDock";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { getInitialPublicTheme, PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
-import { adminRouteText } from "@/i18n/adminRouteText";
+import { adminLoadingText } from "@/i18n/adminLoadingText";
 import { createPublicPageViewLifecycle } from "@/lib/analytics";
 import { createAnalyticsRouterWindow } from "@/lib/analyticsRouterWindow";
+import { captureInquirySources } from "@/lib/inquirySource";
 import { withSynchronousPublicHistory } from "@/lib/synchronousPublicHistory";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminPreferences";
@@ -28,13 +29,13 @@ import ScrollToTop from "./components/ScrollToTop";
 import NavigationProtectionProvider from "@/components/NavigationProtectionProvider";
 import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 import QueryInvalidationBridge from "@/components/QueryInvalidationBridge";
-import RouteReadFeedback from "@/components/RouteReadFeedback";
 import { StructuredDataProvider } from "@/contexts/StructuredDataContext";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
 const AdminUiProviders = lazy(() => import("@/components/admin/AdminUiProviders"));
 const PublicUpdateNotice = lazy(() => import("@/components/PublicUpdateNotice"));
+const RouteReadFeedback = lazy(() => import("@/components/RouteReadFeedback"));
 
 
 const queryClient = new QueryClient({
@@ -62,7 +63,7 @@ const PageLoader = () => {
 };
 
 const AdminPageLoader = () => {
-  const label = adminRouteText[getAdminLang()].checking;
+  const label = adminLoadingText[getAdminLang()];
 
   return (
     <main
@@ -92,6 +93,7 @@ const AnalyticsRouteTracker = () => {
   useEffect(() => tracker.start(), [tracker]);
 
   useEffect(() => {
+    captureInquirySources();
     tracker.updateRoute(`${location.pathname}${location.search}`, routeLanguage);
     return tracker.cancelPending;
   }, [tracker, routeLanguage, location.pathname, location.search]);
@@ -188,7 +190,9 @@ const AppShell = () => {
     >
       <DynamicBrandHead />
       <QueryInvalidationBridge />
-      <RouteReadFeedback surface={isAdminRoute ? "admin" : "public"} />
+      <Suspense fallback={null}>
+        <RouteReadFeedback surface={isAdminRoute ? "admin" : "public"} />
+      </Suspense>
       <ScrollToTop />
       {!isAdminRoute && (
         <a href="#main-content" onClick={handleSkipToMainContent} className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg">

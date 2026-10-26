@@ -63,7 +63,7 @@ describe("public HTML dependency ordering", () => {
       expect(resolved.phone_href).toBe(displayOnly ? "tel:0312345678" : "tel:+60312345678");
       expect(new URL(resolved.whatsapp_url()).pathname).toBe("/60123456789");
       expect(new URL(resolved.whatsapp_url()).searchParams.get("text")).toContain(language === "zh" ? "你好 FLASH CAST" : "Hi FLASH CAST");
-      expect(new URL(resolved.whatsapp_url("  fixture enquiry  ")).searchParams.get("text")).toBe("fixture enquiry");
+      expect(new URL(resolved.whatsapp_url("  fixture enquiry  ")).searchParams.get("text")).toBe(language === "zh" ? "fixture enquiry\n\n来源（浏览器参考）: 不确定" : "fixture enquiry\n\nSource (browser reference): Unknown");
       expect(fetcher).not.toHaveBeenCalled();
     } finally {
       window.document.body.innerHTML = previousBody;

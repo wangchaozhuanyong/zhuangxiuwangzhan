@@ -21,7 +21,8 @@ import { adminQuoteListText } from "@/i18n/adminQuoteListText";
 import { translateProjectType, translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
 import { toast } from "@/hooks/use-toast";
-import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 const statuses = ["all", "pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;

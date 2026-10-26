@@ -15,9 +15,9 @@ describe("adminLeadReports", () => {
         { id: "backend-service", source: "website_contact", source_path: "/ms/contact?source=service&title=Kitchen" },
       ],
     });
-    expect(report.sourceRows.find(row => row.sourcePath === "/ms/contact")).toMatchObject({ sourceType: "contact", label: "联系页 · /contact" });
-    expect(report.sourceRows.find(row => row.sourcePath === null)).toMatchObject({ sourceType: "contact", label: "联系页" });
-    expect(report.sourceRows.find(row => row.sourceType === "service")?.label).toBe("服务详情：Kitchen");
+    expect(report.sourceRows.find(row => row.sourcePath === "/ms/contact")).toMatchObject({ sourceType: "contact", label: "来源（浏览器参考）: 不确定 · 联系页 · /contact" });
+    expect(report.sourceRows.find(row => row.sourcePath === null)).toMatchObject({ sourceType: "contact", label: "来源（浏览器参考）: 不确定 · 联系页" });
+    expect(report.sourceRows.find(row => row.sourceType === "service")?.label).toBe("来源（浏览器参考）: 不确定 · 服务详情：Kitchen");
   });
 
   it.each(["/", "/contact", "/quote", "/services/kitchen", "/projects/example", "/materials/example"])(
@@ -104,7 +104,7 @@ describe("adminLeadReports", () => {
     expect(report.totals.won).toBe(2);
     expect(report.totals.wonValue).toBe(30000);
     expect(report.funnel.map((stage) => stage.count)).toEqual([3, 2, 2, 2]);
-    expect(report.sourceRows.map((row) => row.label)).toContain("装修案例：Mont Kiara Condo");
+    expect(report.sourceRows.map((row) => row.label)).toContain("来源（浏览器参考）: 不确定 · 装修案例：Mont Kiara Condo");
     expect(report.projectTypeRows[0]).toMatchObject({
       key: "residential renovation",
       label: "住宅装修",

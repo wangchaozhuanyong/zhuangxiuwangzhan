@@ -13,7 +13,7 @@ import { adminStatusLabel, getAdminLang } from "@/lib/adminLocale";
 import { buildAdminWorkflowHref } from "@/lib/adminLeadWorkflow";
 import { adminDashboardActions, adminDashboardCards, adminDashboardText } from "@/i18n/adminDashboardText";
 import { translateProjectType } from "@/i18n/displayLabels";
-import { formatSourcePath } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 type AdminDashboardTextKey = keyof typeof adminDashboardText;
 type AdminDashboardCardKey = (typeof adminDashboardCards)[number]["key"];

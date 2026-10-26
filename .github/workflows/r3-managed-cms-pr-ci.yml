@@ -8,6 +8,8 @@ on:
       - src/i18n/locationContextLinks.ts
       - src/i18n/malayFallbackText.json
       - .github/workflows/r3-managed-cms-pr-ci.yml
+      - src/App.tsx
+      - src/components/RouteReadFeedback.test.tsx
       - scripts/publish-surface-repair*
       - src/components/services/SurfaceRepairContent*
       - src/i18n/surfaceRepairPageText.ts
