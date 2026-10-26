@@ -153,12 +153,16 @@ const scheduleGoogleTagScript = () => {
   const idleWindow = window as IdleWindow;
   let idleHandle: number | null = null;
   let fallbackTimer = 0;
+  let bootObserver: MutationObserver | undefined;
 
   const interactionEvents = ["pointerdown", "keydown", "touchstart"] as const;
   const cleanup = () => {
     interactionEvents.forEach((eventName) => window.removeEventListener(eventName, load));
     if (idleHandle !== null) idleWindow.cancelIdleCallback?.(idleHandle);
     window.clearTimeout(fallbackTimer);
+    bootObserver?.disconnect();
+    window.removeEventListener("pagehide", load);
+    document.removeEventListener("visibilitychange", flushHiddenPage);
   };
   const load = () => {
     cleanup();
@@ -167,12 +171,24 @@ const scheduleGoogleTagScript = () => {
     analyticsLoadScheduled = false;
     ensureGoogleTagScript();
   };
+  const flushHiddenPage = () => { if (document.visibilityState === "hidden") load(); };
+  const loadWhenPageIsReady = () => {
+    // Idle CPU does not mean critical network/decode work has finished. Keep
+    // queued commands intact and give the first document its original handoff.
+    if (!canUseBrowserAnalytics() || !document.documentElement.hasAttribute("data-public-boot")) { load(); return; }
+    bootObserver = new MutationObserver(() => {
+      if (!document.documentElement.hasAttribute("data-public-boot")) load();
+    });
+    bootObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-public-boot"] });
+  };
 
   interactionEvents.forEach((eventName) => window.addEventListener(eventName, load, { once: true, passive: true }));
+  window.addEventListener("pagehide", load, { once: true });
+  document.addEventListener("visibilitychange", flushHiddenPage);
   if (idleWindow.requestIdleCallback) {
-    idleHandle = idleWindow.requestIdleCallback(load, { timeout: 4000 });
+    idleHandle = idleWindow.requestIdleCallback(loadWhenPageIsReady, { timeout: 4000 });
   } else {
-    fallbackTimer = window.setTimeout(load, 3000);
+    fallbackTimer = window.setTimeout(loadWhenPageIsReady, 3000);
   }
 };
 
