@@ -8,6 +8,11 @@ import { pathToFileURL } from "node:url";
 export const workflow = "cloudflare-pages-deploy.yml";
 export const repository = "wangchaozhuanyong/zhuangxiuwangzhan";
 export const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
+export function verifyCurrentMain() {
+  git("fetch", "origin", "main", "--no-tags");
+  assert.equal(git("rev-parse", "HEAD"), git("rev-parse", "FETCH_HEAD"),
+    "Release source is older than the latest main; stop this release and inspect the current revision");
+}
 const digest = value => createHash("sha256").update(value).digest("hex");
 // These standalone operations never enter the Pages build or Functions bundle.
 const backupOperationFiles = new Set([
@@ -82,6 +87,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (process.env.GITHUB_EVENT_NAME === "pull_request") output("deploy", false);
     else {
       assert.equal(process.env.GITHUB_REF, "refs/heads/main");
+      verifyCurrentMain();
       if (process.env.EXPECTED_SHA) assert.equal(sha, process.env.EXPECTED_SHA, "main advanced before dispatch; inspect the new source first");
       const live = await liveVersion();
       const deploy = websiteInputsChanged(filesSince(live, sha));
@@ -92,6 +98,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       output("deploy", deploy);
       appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Target: ${sha}; current production: ${live}; website inputs changed: ${deploy}.\n`);
     }
+  } else if (command === "verify-current-main") {
+    verifyCurrentMain();
+    console.log(`Latest main verified: ${sha}`);
   } else if (command === "cache-key") {
     output("key", `pages-${process.env.GITHUB_RUN_ID}-${sha}-${buildIdentity()}`);
   } else if (command === "record" || command === "verify-build") {
@@ -111,5 +120,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     }
     assert.equal(current, sha, "Production revision does not match the deployed artifact");
     console.log(`Production revision verified: ${sha}`);
-  } else throw new Error("Expected plan, cache-key, record, verify-build or verify-live");
+  } else throw new Error("Expected plan, verify-current-main, cache-key, record, verify-build or verify-live");
 }

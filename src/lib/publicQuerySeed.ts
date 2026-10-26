@@ -26,15 +26,19 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
       const sectionKey = parameters.sectionKey;
       if (sectionKey !== "brand_partners" && sectionKey !== "testimonials") return undefined;
       const row = toArray(payload.homeContentBundle?.home_sections).find((row) => toRecord(row).section_key === sectionKey);
-      return row ? isOptionalHomeSectionEnabled(sectionKey, row) : undefined;
+      if (row) return isOptionalHomeSectionEnabled(sectionKey, row);
+      const confirmed = toRecord(payload.homeContentBundle?.preload_optional_visibility)[sectionKey];
+      return typeof confirmed === "boolean" ? confirmed : undefined;
     }
     case "home_journal": return payload.homeJournalPosts ? mapPublishedBlogPostRows(payload.homeJournalPosts, language) : undefined;
     case "home_service_areas": return payload.homeServiceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));
     case "services": return payload.services?.map((row) => mapPublishedService(row, language));
     case "service_summaries": return payload.services ? limit(payload.services, parameters.limit).map((row) => mapPublishedService(row, language)) : undefined;
     case "service": {
-      const row = payload.services?.find((item) => item.slug === parameters.slug);
-      return row && (row[`content_${language}`] || row.content_en || row.content_zh) && ("suitable_for_en" in row || "faqs_en" in row) ? mapPublishedService(row, language) : undefined;
+      const row = payload.serviceDetails?.[String(parameters.slug)] || payload.services?.find((item) => item.slug === parameters.slug);
+      return row && (!row.preload_language || row.preload_language === language)
+        && (row[`content_${language}`] || row.content_en || row.content_zh)
+        && (`suitable_for_${language}` in row || `faqs_${language}` in row || "suitable_for_en" in row || "faqs_en" in row) ? mapPublishedService(row, language) : undefined;
     }
     case "project_summaries": {
       const rows = payload.projectSummaries ? limit(payload.projectSummaries, parameters.limit) : undefined;
@@ -43,10 +47,12 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
     case "project": { const row = payload.projectDetails?.[String(parameters.slug)]; return row ? mapPublishedProjectDetail(row, language) : undefined; }
     case "materials": return payload.materials ? mapPublishedMaterialRows(payload.materials.filter((row) => String(row.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY), language) : undefined;
     case "material": {
-      const row = payload.materials?.find((item) => item.slug === parameters.slug);
+      const context = payload.materialDetailContext;
+      const rows = context && context.slug === parameters.slug ? context.rows : payload.materials;
+      const row = rows?.find((item) => item.slug === parameters.slug);
       // Summary body fallback alone does not prove that detail fields were projected.
       if (!row || !("material_images" in row || "suitable_spaces_en" in row || "seo_title_en" in row)) return undefined;
-      const categories = mapPublishedMaterialRows(payload.materials!.filter((item) => String(item.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY), language);
+      const categories = mapPublishedMaterialRows(rows!.filter((item) => String(item.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY), language);
       const category = categories.find((item) => item.items.some((material) => material.slug === parameters.slug));
       return category ? { material: category.items.find((item) => item.slug === parameters.slug), category } : undefined;
     }
@@ -57,7 +63,11 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
       return items.length >= Number(parameters.limit) ? items.slice(0, Number(parameters.limit)) : undefined;
     }
     case "blog": return payload.blogPosts ? mapPublishedBlogPostRows(payload.blogPosts, language) : undefined;
-    case "blog_post": return payload.blogPosts ? mapPublishedBlogPostRows(payload.blogPosts, language).find((post) => post.slug === parameters.slug && Boolean(post.content?.trim())) : undefined;
+    case "blog_post": {
+      const row = payload.blogPostDetails?.[String(parameters.slug)];
+      const rows = row && (!row.preload_language || row.preload_language === language) ? [row] : payload.blogPosts;
+      return rows ? mapPublishedBlogPostRows(rows, language).find((post) => post.slug === parameters.slug && Boolean(post.content?.trim())) : undefined;
+    }
     case "service_areas": return payload.serviceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));
     case "home_bundle": return payload.homeContentBundle ? createRemoteContent(mapRemoteHomeContentBundle(payload.homeContentBundle, language)) : undefined;
     case "process_steps": return payload.processSteps ? mapRemoteHomeContentBundle({ process_steps: payload.processSteps }, language).processSteps : undefined;

@@ -1,4 +1,6 @@
 import { estimateBlogReadMinutes } from "../src/lib/blogMeta";
+import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
+import { hasMalayContent } from "../src/i18n/localizedContent";
 
 export type PublicProjectionRecord = Record<string, unknown>;
 
@@ -87,6 +89,20 @@ const projectServiceSummary = (row: PublicProjectionRecord) =>
 export const projectServiceSummariesForPreload = (rows: PublicProjectionRecord[]) =>
   rows.map(projectServiceSummary);
 
+const localizedDetail = (row: PublicProjectionRecord, fields: string[], language: "en" | "zh" | "ms", blog = false) => {
+  const projected = pickFields(row, fields.filter(field => {
+    const match = field.match(/^(.*)_(en|zh|ms)$/);
+    if (!match || match[2] === language) return true;
+    const preferred = row[`${match[1]}_${language}`];
+    if (hasContent(preferred) && !(Array.isArray(preferred) && !preferred.length)) return false;
+    const fallback = language === "ms" || language === "zh" ? "en" : "zh";
+    return (language === "ms" || blog) && match[2] === fallback;
+  }));
+  return { ...projected, preload_language: language, preload_malay_ready: hasMalayContent(row) };
+};
+export const projectServiceDetailForPreload = (row: PublicProjectionRecord, language: "en" | "zh" | "ms") => localizedDetail(row, PUBLIC_SERVICE_FIELDS, language);
+export const projectBlogDetailForPreload = (row: PublicProjectionRecord, language: "en" | "zh" | "ms") => localizedDetail(row, PUBLIC_BLOG_FIELDS, language, true);
+
 const MATERIAL_LIST_FIELDS = [
   "id",
   "slug",
@@ -136,7 +152,7 @@ const projectMaterialListRow = (row: PublicProjectionRecord) =>
 const projectMaterialDetailRow = (row: PublicProjectionRecord) => {
   const projected = pickFields(row, MATERIAL_DETAIL_FIELDS);
   const images = toRows(row.material_images).map((image) => pickFields(image, MATERIAL_IMAGE_FIELDS));
-  if (images.length) projected.material_images = images;
+  if (Array.isArray(row.material_images)) projected.material_images = images;
   return projected;
 };
 
@@ -295,6 +311,13 @@ export const projectCtaBlockForPreload = (row: PublicProjectionRecord) =>
 
 export const projectHomeContentBundleForPreload = (bundle: PublicProjectionRecord) => {
   const projected: PublicProjectionRecord = {};
+  const visibility = bundle.preload_optional_visibility;
+  if (visibility && typeof visibility === "object" && !Array.isArray(visibility)) {
+    const values = visibility as PublicProjectionRecord;
+    const confirmed = Object.fromEntries(["brand_partners", "testimonials"].flatMap((key) =>
+      typeof values[key] === "boolean" ? [[key, values[key]]] : []));
+    if (Object.keys(confirmed).length) projected.preload_optional_visibility = confirmed;
+  }
   const projectTable = (
     field: string,
     projector: (row: PublicProjectionRecord) => PublicProjectionRecord,

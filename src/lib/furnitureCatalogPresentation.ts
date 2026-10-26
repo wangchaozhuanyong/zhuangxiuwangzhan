@@ -1,4 +1,4 @@
-import { localizeMalayContent } from "@/i18n/malayContent";
+import { localizeMalayContent } from "@/i18n/malayContentRuntime";
 import catalogJson from "../data/furnitureCatalog.json";
 import catalogZhJson from "../data/furnitureCatalogZh.json";
 import catalogEnJson from "../data/furnitureCatalogEn.json";

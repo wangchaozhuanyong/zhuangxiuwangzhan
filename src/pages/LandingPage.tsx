@@ -20,7 +20,7 @@ import { translateDisplayText } from "@/i18n/displayLabels";
 import { trackCtaClick } from "@/lib/analytics";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
 import { landingPageText } from "@/i18n/landingPageText";
-import { localizeMalayContent } from "@/i18n/malayContent";
+import { localizeMalayContent } from "@/i18n/malayContentRuntime";
 import { isMalayContentReady } from "@/i18n/localizedContent";
 import {
   anonymizeLandingProjectCards,

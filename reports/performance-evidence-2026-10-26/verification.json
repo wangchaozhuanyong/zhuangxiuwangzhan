@@ -1,0 +1,105 @@
+{
+  "source": {
+    "base": "c502ed547ff28be63b226e2f87f3ea9e29e2347d",
+    "branch": "perf/verified-loading-20261026",
+    "authorization": "Performance code, tests, batch commits and draft PR only. No merge, deploy, production writes or configuration changes.",
+    "verifiedCodeCommit": "c1b51ce5099e61b5eb687af32cbd3f88476c4402",
+    "thumbnailDecision": "Rejected: 35%-saving lossless candidates still caused ~0.9s weak-network switches and increased complete gallery transfer. Original gallery preserved.",
+    "performanceSampleCodeCommit": "76702a79ca739f9ec50c025b98a26f48bc674209",
+    "integratedMain": "f988ac316fddd3effa30f3e2e88c5a09307a997c"
+  },
+  "checks": [
+    {
+      "localEvidenceFile": "latest-main-quality.log",
+      "sha256": "188afb592565337f28387b1d787eabe977c3b11bb37e67c060440ba25c65a4e3",
+      "command": "npm run verify:interaction-quality",
+      "result": "PASS: 308 files / 3641 tests; types, strict core, lint, architecture, admin foundation, 98 routes, i18n, UI text"
+    },
+    {
+      "localEvidenceFile": "latest-main-strict-build.log",
+      "sha256": "0b79196c57a989d9e32293b9bf61b1d552e826ae940be3c73d39dd3e75fc4b64",
+      "command": "node scripts/performance-evidence/strict-build.mjs",
+      "result": "PASS: original strict prebuild + production build from Git archive"
+    },
+    {
+      "localEvidenceFile": "latest-main-budget.log",
+      "sha256": "a396da1a8fd99c9ec72e3434aec3292f08c448dc4ff03a645becf01987b0e832",
+      "command": "PERFORMANCE_BUDGET_DIST_DIR=<strict archive>/dist node scripts/verify-performance-budget.mjs",
+      "result": "PASS: 179.7 KiB external static JS / 180 KiB threshold"
+    },
+    {
+      "localEvidenceFile": "latest-main-node-scripts.log",
+      "sha256": "0883419ddd4685f8315f59afe9b0896366c2fce46b6e3df7954a65df4c433fd9",
+      "command": "node --test scripts/performance-delivery.test.mjs scripts/pages-release.test.mjs",
+      "result": "PASS: 12 tests"
+    },
+    {
+      "localEvidenceFile": "fresh-direct-entry-acceptance.log",
+      "sha256": "04f68e2d3c548d4683419ab86a9be6ba403cdba1436601e580ef45b0f1c3dad2",
+      "command": "node scripts/performance-evidence/acceptance.mjs candidate",
+      "result": "PASS: 29 grouped scenarios, 120 direct entries"
+    },
+    {
+      "localEvidenceFile": "final-bundle-recovery.log",
+      "sha256": "2dd89b7af0272e5f7182d34f986840f172ee1ec58a42883ad0dafc45afbc3a4e",
+      "command": "node scripts/performance-evidence/failures.mjs",
+      "result": "PASS: 3 recovery scenarios"
+    },
+    {
+      "localEvidenceFile": "final-bundle-public-performance.log",
+      "sha256": "6fdb87aa5f9693a5de370c519afa2bd9ba2291fabb5a209b12476f0245cb3e26",
+      "command": "node scripts/performance-evidence/public-verifier.mjs",
+      "result": "PASS: local candidate adapter, zero warnings/failures"
+    },
+    {
+      "localEvidenceFile": "live-baseline-public-performance.log",
+      "sha256": "800d613db00aadf08318fc11824e7b950c5c2cca2729737b8c8c0d0d12ee066c",
+      "command": "PERFORMANCE_TARGET_URL=https://flashcast.com.my node scripts/performance-evidence/public-verifier.mjs",
+      "result": "PASS: live baseline c502 only; not candidate live acceptance"
+    },
+    {
+      "localEvidenceFile": "canonical-baseline-final.log",
+      "sha256": "57b71ac2b639c708b0ed40a4fd315d3473d72fa74fb5fd24c1b4c079302e7b38",
+      "command": "PERFORMANCE_PRODUCTION_HOST=1 PERFORMANCE_LIMITED_SAMPLES=2 node scripts/performance-evidence/measure.mjs baseline",
+      "result": "38 samples + 5 journeys"
+    },
+    {
+      "localEvidenceFile": "canonical-candidate-final.log",
+      "sha256": "a05be8adec0047d7f1b92d4a998fecb5c49dc23bd6d31feff0f4e65bc5dfbb74",
+      "command": "PERFORMANCE_PRODUCTION_HOST=1 PERFORMANCE_LIMITED_SAMPLES=2 node scripts/performance-evidence/measure.mjs candidate",
+      "result": "38 samples + 5 journeys"
+    }
+  ],
+  "strictBuild": {
+    "sha": "c1b51ce5099e61b5eb687af32cbd3f88476c4402",
+    "directory": "/Users/wangchao/Desktop/\u88c5\u4fee\u7f51\u7ad9/zhuangxiuwangzhan-main/.codex-worktrees/performance-evidence-20261026/tmp/performance-evidence/strict-c1b51ce5099e61b5eb687af32cbd3f88476c4402",
+    "exactGitArchive": true,
+    "exitCode": 0,
+    "completedAt": "2026-10-25T21:21:19.174Z"
+  },
+  "originalTrackedWipFilesProtected": 314,
+  "protectedSourcePathsUnchangedAgainstLatestMain": [
+    "index.html",
+    "public/_headers",
+    "public/_redirects",
+    "public/sw.js",
+    "package.json",
+    "package-lock.json",
+    "src/styles",
+    "src/data",
+    "public/images",
+    "src/pages/FurnitureProductDetail.tsx",
+    "src/components/SmartImage.tsx",
+    "src/components/DeferredSmartImage.tsx"
+  ],
+  "environment": {
+    "node": "22.23.4",
+    "npm": "11.17.0",
+    "os": "macOS 26.5.2 arm64",
+    "chromium": "147.0.7727.15",
+    "webkit": "26.4",
+    "physicalDevices": "NOT_MEASURED",
+    "fieldP75": "NOT_MEASURED"
+  },
+  "status": "Branch / draft PR only; no main merge or deployment by this task."
+}

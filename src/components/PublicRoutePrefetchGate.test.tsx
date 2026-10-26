@@ -7,6 +7,9 @@ const renderPrefetch = vi.fn();
 let root: Root;
 let container: HTMLDivElement;
 beforeEach(() => {
+  // Each transfer scenario models a fresh document, with a fresh ESM result.
+  // Do not reuse the prior scenario's successfully cached mock import.
+  vi.resetModules();
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   renderPrefetch.mockClear();
   vi.doMock("./PublicRouteEnhancements", () => ({ default: () => { renderPrefetch(); return null; } }));
@@ -33,6 +36,26 @@ describe("optional prefetch startup", () => {
       await act(async () => root.render(<PublicRoutePrefetchGate />));
       await vi.waitFor(() => expect(renderPrefetch).toHaveBeenCalledOnce());
     } finally { readyContent.remove(); }
+  });
+  it("restores optional decoration after real late images without emitting a false ready event", async () => {
+    const page = document.createElement("main"); page.className = "public-route-content"; page.dataset.routeVisualState = "degraded";
+    const image = document.createElement("img"); image.src = "https://example.test/late.webp"; image.dataset.criticalImage = "true"; image.dataset.imageState = "loading";
+    Object.defineProperties(image, { complete: { configurable: true, value: false }, naturalWidth: { configurable: true, value: 0 }, currentSrc: { configurable: true, value: image.src } });
+    image.getBoundingClientRect = () => ({ top: 0, left: 0, right: 100, bottom: 100, width: 100, height: 100 } as DOMRect);
+    page.append(image); document.body.append(page);
+    const ready = vi.fn(); window.addEventListener("public-route-ready", ready);
+    try {
+      await act(async () => root.render(<PublicRoutePrefetchGate />));
+      expect(renderPrefetch).not.toHaveBeenCalled();
+      await act(async () => {
+        Object.defineProperties(image, { complete: { configurable: true, value: true }, naturalWidth: { configurable: true, value: 100 } });
+        image.dataset.imageState = "loaded"; image.dataset.decodedSrc = image.src;
+        image.dispatchEvent(new Event("load"));
+      });
+      await vi.waitFor(() => expect(renderPrefetch).toHaveBeenCalledOnce());
+      expect(page.dataset.routeVisualState).toBe("degraded");
+      expect(ready).not.toHaveBeenCalled();
+    } finally { page.remove(); window.removeEventListener("public-route-ready", ready); }
   });
   it("contains optional transfer failures without blocking subsequent route readiness", async () => {
     const failedImport = vi.fn(() => { throw new Error("Optional transfer unavailable"); });

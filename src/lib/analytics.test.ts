@@ -255,6 +255,7 @@ describe("analytics loading", () => {
     document.getElementById("flashcast-google-tag")?.remove();
     delete window.gtag;
     delete window.dataLayer;
+    document.documentElement.removeAttribute("data-public-boot");
     Object.defineProperty(window, "requestIdleCallback", {
       configurable: true,
       value: vi.fn(() => 1),
@@ -272,6 +273,7 @@ describe("analytics loading", () => {
     if (vi.isFakeTimers()) vi.clearAllTimers();
     vi.useRealTimers();
     document.getElementById("flashcast-google-tag")?.remove();
+    document.documentElement.removeAttribute("data-public-boot");
   });
 
   it.each(["/admin", "/admin/publish-center", "/admin/login?next=quote"])(
@@ -378,6 +380,33 @@ describe("analytics loading", () => {
 
     window.dispatchEvent(new Event("pointerdown"));
     expect(document.getElementById("flashcast-google-tag")).toBeInstanceOf(HTMLScriptElement);
+  });
+
+  it("queues page events immediately but keeps idle tag work behind the first real handoff", async () => {
+    document.documentElement.setAttribute("data-public-boot", "waiting");
+    const { trackPageView } = await import("@/lib/analytics");
+    trackPageView({ path: "/zh", language: "zh" });
+    const queued = window.dataLayer?.length;
+    vi.mocked(window.requestIdleCallback).mock.calls[0][0]({ didTimeout: false, timeRemaining: () => 10 });
+    expect(document.getElementById("flashcast-google-tag")).toBeNull();
+    expect((window.dataLayer || []).map(command => Array.from(command as IArguments)))
+      .toContainEqual(["event", "page_view", expect.objectContaining({ page_path: "/zh", language: "zh" })]);
+    document.documentElement.removeAttribute("data-public-boot");
+    await Promise.resolve();
+    expect(document.getElementById("flashcast-google-tag")).toBeInstanceOf(HTMLScriptElement);
+    expect(window.dataLayer).toHaveLength(queued!);
+  });
+
+  it.each(["pointerdown", "pagehide"])("loads immediately on %s while a boot-gated idle request is pending", async (event) => {
+    document.documentElement.setAttribute("data-public-boot", "waiting");
+    const { initAnalytics } = await import("@/lib/analytics");
+    initAnalytics();
+    vi.mocked(window.requestIdleCallback).mock.calls[0][0]({ didTimeout: false, timeRemaining: () => 10 });
+    window.dispatchEvent(new Event(event));
+    expect(document.getElementById("flashcast-google-tag")).toBeInstanceOf(HTMLScriptElement);
+    document.documentElement.removeAttribute("data-public-boot");
+    await Promise.resolve();
+    expect(document.querySelectorAll("#flashcast-google-tag")).toHaveLength(1);
   });
 
   it("loads the Google Tag immediately for a conversion event", async () => {

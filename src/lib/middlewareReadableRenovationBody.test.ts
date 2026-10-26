@@ -70,10 +70,10 @@ describe("renovation no-script body summary", () => {
   ])("renders only the matching published locale for %s", async (path, expectedText) => {
     const html = await render(path, publishedRenovation());
     expect(html).toContain('data-flashcast-readable-body');
-    expect(html).not.toContain('data-flashcast-readable-service-body');
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain('data-flashcast-readable-service-body');
     expect(html).toContain(expectedText);
-    expect(html).not.toContain("alert(1)");
-    expect(html).not.toContain("onerror");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("alert(1)");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("onerror");
     expect(html).toContain('id="root"></div>');
 
     const jsEnabled = new JSDOM(`${html}<script>document.documentElement.dataset.scripted = "true";</script>`, { runScripts: "dangerously" });
@@ -89,9 +89,9 @@ describe("renovation no-script body summary", () => {
 
   it("does not use a renovation row to enrich a different kitchen route", async () => {
     const html = await render("/en/services/kitchen", publishedRenovation());
-    expect(html).not.toContain("data-flashcast-readable-body");
-    expect(html).not.toContain("data-flashcast-readable-service-body");
-    expect(html).not.toContain("Kitchen &amp; bathroom coordination.");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("data-flashcast-readable-body");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("data-flashcast-readable-service-body");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("Kitchen &amp; bathroom coordination.");
   });
 
   it.each([
@@ -104,9 +104,9 @@ describe("renovation no-script body summary", () => {
     expect(main?.textContent).toContain(body);
     expect(main?.textContent).toContain(excerpt);
     expect(noJs.window.document.title).toBe(title);
-    expect(html).not.toContain("Kitchen &amp; bathroom coordination.");
-    expect(html).not.toContain("厨房与浴室协调。");
-    expect(html).not.toContain("data-flashcast-readable-service-body");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("Kitchen &amp; bathroom coordination.");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("厨房与浴室协调。");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("data-flashcast-readable-service-body");
     noJs.window.close();
   });
 
@@ -122,8 +122,8 @@ describe("renovation no-script body summary", () => {
   it("does not substitute the other language when the matching body is absent", async () => {
     const row = publishedRenovation({ content_en: "", content_zh: "仅中文正文。" });
     const html = await render("/en/services/renovation", row);
-    expect(html).not.toContain("data-flashcast-readable-service-body");
-    expect(html).not.toContain("data-flashcast-readable-body");
-    expect(html).not.toContain("仅中文正文。");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("data-flashcast-readable-service-body");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("data-flashcast-readable-body");
+    expect(html.replace(/<script[^>]*id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/g, "")).not.toContain("仅中文正文。");
   });
 });

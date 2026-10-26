@@ -1,4 +1,7 @@
+import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
+import "../src/i18n/malayContent";
 import { hasMalayContent } from "../src/i18n/localizedContent";
+import { isOptionalHomeSectionEnabled } from "../src/lib/homeOptionalSections";
 import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
 import { getFurnitureListingPage, getFurnitureListingRoute, furnitureListingPagePath, mapFurnitureCatalogSeed, normalizeFurnitureListingPage, type FurnitureMaterialRow } from "../src/lib/furnitureCatalogPresentation";
 import {
@@ -35,6 +38,8 @@ import {
 } from "../src/i18n/languageDetection";
 import {
   projectBlogPostSummariesForPreload,
+  projectBlogDetailForPreload,
+  projectServiceDetailForPreload,
   projectCtaBlockForPreload,
   projectHomeContentBundleForPreload,
   projectMaterialsForPreload,
@@ -1015,6 +1020,12 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
       ...homeSections,
       ...(brandPartnersVisibilityRows || []),
     ];
+    // A successful empty visibility read is different from a failed read.
+    // Hand off that result so absent optional sections need no duplicate GET.
+    if (brandPartnersVisibilityRows !== null) value.preload_optional_visibility = {
+      brand_partners: isOptionalHomeSectionEnabled("brand_partners", brandPartnersVisibilityRows),
+      testimonials: isOptionalHomeSectionEnabled("testimonials", brandPartnersVisibilityRows),
+    };
     homeContentBundleCache = {
       key: cacheKey,
       value,
@@ -1412,21 +1423,22 @@ const fetchDynamicRouteState = async (
 
 const fetchPublicServices = async (env: Record<string, string | undefined>, fresh = false) => {
   const configure = (url: URL) => {
-    url.searchParams.set("select", "*");
+    url.searchParams.set("select", PUBLIC_SERVICE_FIELDS.join(","));
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "sort_order.asc");
   };
   return fresh ? fetchFreshPublicRows(env, "services", configure) : fetchPublicRows(env, "services", "services", configure);
 };
 
-const fetchPublicMaterials = async (env: Record<string, string | undefined>, fresh = false) => {
+const fetchPublicMaterials = async (env: Record<string, string | undefined>, fresh = false, category?: string) => {
   const configure = (url: URL) => {
     url.searchParams.set("select", "*");
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("or", "(category.is.null,category.neq.furniture)");
+    if (category) url.searchParams.set("category", `eq.${category}`);
     url.searchParams.set("order", "sort_order.asc");
   };
-  return fresh ? fetchFreshPublicRows(env, "materials", configure) : fetchPublicRows(env, "materials", "materials", configure);
+  return fresh ? fetchFreshPublicRows(env, "materials", configure) : fetchPublicRows(env, category ? `materials:category:${encodeURIComponent(category)}` : "materials", "materials", configure);
 };
 
 const fetchPublicMaterialDetail = async (
@@ -1448,7 +1460,7 @@ const fetchPublicMaterialDetail = async (
     url.searchParams.set("is_active", "eq.true");
     url.searchParams.set("order", "sort_order.asc");
   });
-  return { ...material, material_images: gallery || [] };
+  return gallery === null ? null : { ...material, material_images: gallery };
 };
 
 const fetchPublicServiceAreas = async (env: Record<string, string | undefined>) =>
@@ -1460,7 +1472,7 @@ const fetchPublicServiceAreas = async (env: Record<string, string | undefined>) 
 
 const fetchPublicBlogPosts = async (env: Record<string, string | undefined>) =>
   fetchPublicRows(env, "blog_posts", "blog_posts", (url) => {
-    url.searchParams.set("select", "*");
+    url.searchParams.set("select", PUBLIC_BLOG_FIELDS.join(","));
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "published_at.desc");
   });
@@ -1518,7 +1530,9 @@ const fetchPublicSitePageBundle = async (env: Record<string, string | undefined>
   const bundle: PublicDataRow = {};
   if (legacyRows?.length) bundle.site_pages = legacyRows;
   if (cmsRows?.length) bundle.cms_pages = cmsRows;
-  return Object.keys(bundle).length ? bundle : null;
+  // Null reads are failures, not a successful empty page. Omit the HTML seed
+  // so the client can perform its normal recoverable read.
+  return legacyRows === null || cmsRows === null ? null : bundle;
 };
 
 const fetchPublicCtaBlock = async (env: Record<string, string | undefined>, blockKey: string) => {
@@ -1583,12 +1597,15 @@ const normalizePath = (pathname: string) => {
 };
 
 const isHomePageKey = (key: string) => key === "/en" || key === "/zh";
+// Data handoff also serves Malay. Keep the existing SEO/readable-home rules
+// above independent so adding a cache seed cannot change fallback metadata.
+const isHomeDataPageKey = (key: string) => isHomePageKey(key) || key === "/ms";
 
 const getTopLevelPublicPageKey = (key: string) => {
   const parts = key.split("/").filter(Boolean);
   if (parts.length !== 2) return null;
   const pageKey = parts[1];
-  return pageKey === "services" || pageKey === "materials" || pageKey === "products" || pageKey === "promotions" || pageKey === "locations" || pageKey === "blog" || pageKey === "projects" ? pageKey : null;
+  return pageKey === "services" || pageKey === "materials" || pageKey === "products" || pageKey === "promotions" || pageKey === "locations" || pageKey === "blog" || pageKey === "projects" || pageKey === "contact" ? pageKey : null;
 };
 
 const getPathWithoutLanguage = (key: string) => {
@@ -2210,12 +2227,13 @@ export const onRequest: PagesFunction = async (context) => {
     ? getPublicHtmlFreshnessRequest(publicHtmlCacheRequest)
     : null;
 
+  let currentDynamicRoute: DynamicRouteState | null = null;
   const generatePublicHtml = async (existingLastModified?: string | null) => {
     let unpublishedBlog = false;
     const appShellUrl = new URL(request.url);
     appShellUrl.pathname = "/";
     appShellUrl.search = "";
-    const earlyHome = Boolean(staticMeta && isHomePageKey(key));
+    const earlyHome = Boolean(staticMeta && isHomeDataPageKey(key));
     const earlyFurnitureDetailSlug = key.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
     const earlyFurnitureSetting = earlyFurnitureDetailSlug ? fetchFurnitureCatalogSetting(env as Record<string, string | undefined>) : undefined;
     const earlyPageKey = staticMeta ? getTopLevelPublicPageKey(key) : null;
@@ -2232,6 +2250,7 @@ export const onRequest: PagesFunction = async (context) => {
       fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta, () => { unpublishedBlog = true; }, earlyFurnitureSetting),
       env.ASSETS ? env.ASSETS.fetch(new Request(appShellUrl.toString(), request)) : next("/"),
     ]);
+    currentDynamicRoute = dynamicRouteState;
     const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
     // Match the page's published FAQ projection; use its reviewed locale fallback
     // only when the public service record is unavailable, not for an empty locale.
@@ -2265,12 +2284,14 @@ export const onRequest: PagesFunction = async (context) => {
   const projectDetailSlug = getProjectDetailSlugFromKey(key);
   const productDetailSlug = getProductDetailSlugFromKey(key);
   const topLevelPublicPageKey = getTopLevelPublicPageKey(key);
-  const shouldInjectHomeBundle = Boolean(meta && isHomePageKey(key));
-  const shouldInjectProjectSummaries = Boolean(meta && (key === "/en/projects" || key === "/zh/projects" || projectDetailSlug));
+  const shouldInjectHomeBundle = Boolean(meta && isHomeDataPageKey(key));
+  const shouldInjectProjectSummaries = Boolean(meta && (/^\/(en|zh|ms)\/projects$/.test(key) || projectDetailSlug));
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
   const reviewedMaterialBody = isReviewedMaterialBodyPath(key);
   const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug) || reviewedMaterialBody || /^\/(en|zh|ms)\/materials\/category\//.test(key);
+  const materialCategory = productDetailSlug && dynamicRouteState?.kind === "material"
+    ? readString(dynamicRouteState.row, "category") : "";
   const shouldInjectServiceAreas = topLevelPublicPageKey === "locations";
   const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
   const furniturePath = key.replace(/^\/(?:en|zh|ms)/, "");
@@ -2309,7 +2330,7 @@ export const onRequest: PagesFunction = async (context) => {
       ? earlyPageBundle || fetchPublicSitePageBundle(env as Record<string, string | undefined>, topLevelPublicPageKey)
       : Promise.resolve(null),
     shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>, key === "/en/services") : Promise.resolve(null),
-    shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>, reviewedMaterialBody) : Promise.resolve(null),
+    shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>, reviewedMaterialBody, materialCategory || undefined) : Promise.resolve(null),
     productDetailSlug
       ? fetchPublicMaterialDetail(
           env as Record<string, string | undefined>,
@@ -2346,10 +2367,10 @@ export const onRequest: PagesFunction = async (context) => {
       en: `${PUBLIC_SITE_URL}/en${listingPath}`, zh: `${PUBLIC_SITE_URL}/zh${listingPath}`, xDefault: `${PUBLIC_SITE_URL}/en${listingPath}`,
     } };
   }
-  const homeFaqs = shouldInjectHomeBundle
+  const homeFaqs = shouldInjectHomeBundle && isHomePageKey(key)
     ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
     : [];
-  if (shouldInjectHomeBundle && meta) meta = { ...meta, faqs: homeFaqs };
+  if (shouldInjectHomeBundle && isHomePageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
   const html = await response.text();
   const readableBody = buildReadableFurnitureListingBody(key, furnitureListing)
     || buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
@@ -2374,25 +2395,33 @@ export const onRequest: PagesFunction = async (context) => {
       [projectDetailSlug]: projectDetail,
     };
   }
-  if (shouldInjectPublicPageBundle && topLevelPublicPageKey) {
+  if (shouldInjectPublicPageBundle && topLevelPublicPageKey && publicPageBundle !== null) {
     publicDataPayload.sitePages = {
       [topLevelPublicPageKey]: publicPageBundle ? projectSitePageBundleForPreload(publicPageBundle) : {},
     };
   }
+  if (dynamicRouteState?.kind === "service") {
+    publicDataPayload.serviceDetails = { [String(dynamicRouteState.row.slug)]: projectServiceDetailForPreload(dynamicRouteState.row, key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en") };
+  }
   if (services?.length) {
     publicDataPayload.services = projectServiceSummariesForPreload(services);
   }
-  if (materials?.length || materialDetail) {
+  if ((materials?.length || materialDetail) && (!productDetailSlug || materialDetail)) {
     const materialRows = materials?.length ? [...materials] : [];
     if (materialDetail) {
       const existingIndex = materialRows.findIndex((row) => String(row.slug || "") === productDetailSlug);
       if (existingIndex >= 0) materialRows[existingIndex] = materialDetail;
       else materialRows.push(materialDetail);
     }
-    publicDataPayload.materials = projectMaterialsForPreload(materialRows, productDetailSlug);
+    const projected = projectMaterialsForPreload(materialRows, productDetailSlug);
+    if (productDetailSlug) publicDataPayload.materialDetailContext = { slug: productDetailSlug, rows: projected };
+    else publicDataPayload.materials = projected;
   }
   if (serviceAreas?.length) {
     publicDataPayload.serviceAreas = projectServiceAreaSummariesForPreload(serviceAreas);
+  }
+  if (dynamicRouteState?.kind === "blog") {
+    publicDataPayload.blogPostDetails = { [String(dynamicRouteState.row.slug)]: projectBlogDetailForPreload(dynamicRouteState.row, key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en") };
   }
   if (blogPosts?.length) {
     publicDataPayload.blogPosts = projectBlogPostSummariesForPreload(blogPosts);
@@ -2415,7 +2444,7 @@ export const onRequest: PagesFunction = async (context) => {
   transformed = injectDynamicImagePreloads(
     transformed,
     getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail, {
-      isHomePage: isHomePageKey(key), projectDetailSlug, topLevelPublicPageKey, publicPageBundle,
+      isHomePage: isHomeDataPageKey(key), projectDetailSlug, topLevelPublicPageKey, publicPageBundle,
     }),
   );
   transformed = injectPerformanceHints(
@@ -2479,6 +2508,17 @@ export const onRequest: PagesFunction = async (context) => {
       let transformed = fallbackMeta
         ? injectSeo(html, fallbackMeta, prefetchedSiteSettings)
         : injectNoIndexNotFound(html, prefetchedSiteSettings, key);
+      // Keep the existing metadata/readable fallback unchanged, but do not
+      // discard an already successful current-record read when an optional
+      // HTML transformation fails (including incomplete Malay no-script labels).
+      const fallbackLanguage = key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en";
+      const current = currentDynamicRoute;
+      if (fallbackMeta && current && !current.hidden && (current.kind === "service" || current.kind === "blog")) {
+        const detail = current.kind === "service"
+          ? { serviceDetails: { [String(current.row.slug)]: projectServiceDetailForPreload(current.row, fallbackLanguage) } }
+          : { blogPostDetails: { [String(current.row.slug)]: projectBlogDetailForPreload(current.row, fallbackLanguage) } };
+        transformed = injectPublicData(transformed, detail).html;
+      }
       transformed = injectPerformanceHints(transformed, env as Record<string, string | undefined>);
       const headers = new Headers(appShellResponse.headers);
       if (staticMeta) {
