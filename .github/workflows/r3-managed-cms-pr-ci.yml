@@ -80,6 +80,8 @@ on:
       - drafts/seo/fc-20260927-cms-native-admission-contract-v1/**
       - backups/fc-20260927-cms-native-admission-contract-v1/**
       - scripts/publish-content-trust-fixes.mjs
+      - scripts/managed-cms-targets-seo-cabinet-two-anchors-v1.mjs
+      - src/lib/contentPublishSeoCabinetTwoAnchors.test.ts
       - scripts/publish-malay-cms-single-target.mjs
       - scripts/supabase-content-publish-release.mjs
       - scripts/supabase-content-publish-release.test.mjs
