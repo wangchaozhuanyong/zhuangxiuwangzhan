@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - src/data/locations.ts
+      - src/i18n/locationContextLinks.ts
+      - src/i18n/malayFallbackText.json
       - .github/workflows/r3-managed-cms-pr-ci.yml
       - scripts/publish-surface-repair*
       - src/components/services/SurfaceRepairContent*
