@@ -11,7 +11,7 @@ let navigationLoad: Promise<unknown> | undefined;
 export const prepareMalayContent = () => malayLoad ??= loadMalayContent()
   .then(() => { malayReady = true; }, (error: unknown) => { malayLoad = undefined; throw error; });
 
-export const LanguageRouteSync = ({ children }: PropsWithChildren) => {
+export const LanguageRouteSync = ({ children, preparePage }: PropsWithChildren<{ preparePage?: () => Promise<unknown> }>) => {
   const { language, setLanguage } = useLanguage();
   const { lang } = useParams<{ lang?: string }>();
 
@@ -25,6 +25,9 @@ export const LanguageRouteSync = ({ children }: PropsWithChildren) => {
   // and focus are not remounted by adding/removing a locale-only wrapper.
   if (lang === "ms" && !malayReady) {
     if (malayError) throw malayError;
+    // Discover the current page's code/CSS while its required dictionary loads.
+    // The shared loader deduplicates this work; React.lazy still owns errors.
+    void preparePage?.().catch(() => {});
     // Speculation may fail before the user navigates. Give the real navigation
     // its own attempt; only a failure of that attempt reaches route recovery.
     throw navigationLoad ??= prepareMalayContent().catch((error: unknown) => { malayError = error; throw error; });

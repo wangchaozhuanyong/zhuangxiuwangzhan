@@ -14,10 +14,12 @@ describe("failed optional language preparation", () => {
     await expect(prepareMalayContent()).rejects.toThrow("Optional transfer failed");
     const container = document.createElement("div"); document.body.append(container);
     const root = createRoot(container);
+    const preparePage = vi.fn().mockRejectedValue(new Error("Optional page preparation failed"));
     try {
-      await act(async () => root.render(<LanguageProvider><MemoryRouter initialEntries={["/ms"]}><Suspense fallback={<span>Loading resource</span>}><Routes><Route path="/:lang" element={<LanguageRouteSync><h1>Malay page</h1></LanguageRouteSync>} /></Routes></Suspense></MemoryRouter></LanguageProvider>));
+      await act(async () => root.render(<LanguageProvider><MemoryRouter initialEntries={["/ms"]}><Suspense fallback={<span>Loading resource</span>}><Routes><Route path="/:lang" element={<LanguageRouteSync preparePage={preparePage}><h1>Malay page</h1></LanguageRouteSync>} /></Routes></Suspense></MemoryRouter></LanguageProvider>));
       expect(container.querySelector("h1")?.textContent).toBe("Malay page");
       expect(resource).toHaveBeenCalledTimes(2);
+      expect(preparePage).toHaveBeenCalled();
     } finally { await act(async () => root.unmount()); container.remove(); }
   });
 });
