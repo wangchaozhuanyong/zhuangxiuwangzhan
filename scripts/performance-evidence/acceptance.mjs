@@ -5,7 +5,8 @@ import { start } from './server.mjs';
 
 const profile=process.argv[2]||'candidate',directory=path.resolve('tmp/performance-evidence',profile+'-acceptance');
 fs.mkdirSync(directory,{recursive:true});
-const server=await start(profile),results=[],snapshots={},reference=JSON.parse(fs.readFileSync('tmp/performance-evidence/baseline-evidence/results.json','utf8'));
+const referenceProfile=process.env.PERFORMANCE_REFERENCE_PROFILE||'baseline';
+const server=await start(profile),results=[],snapshots={},reference=JSON.parse(fs.readFileSync(`tmp/performance-evidence/${referenceProfile}-evidence/results.json`,'utf8'));
 const selectedCase=process.env.PERFORMANCE_ACCEPTANCE_CASE,selectedTest=process.env.PERFORMANCE_ACCEPTANCE_TEST;
 if((selectedCase||selectedTest)&&fs.existsSync(path.join(directory,'results.json'))){
   const previous=JSON.parse(fs.readFileSync(path.join(directory,'results.json'),'utf8'));

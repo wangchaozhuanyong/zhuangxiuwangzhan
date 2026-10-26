@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { chromium, expect } from '@playwright/test';
 import { start } from './server.mjs';
-const server=await start('candidate'),browser=await chromium.launch(),results=[];
+const server=await start(process.env.PERFORMANCE_BUILD_PROFILE||'candidate'),browser=await chromium.launch(),results=[];
 const frames=page=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 const ready=page=>expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state','ready',{timeout:45000});
 async function context(fault){

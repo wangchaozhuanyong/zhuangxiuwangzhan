@@ -15,7 +15,8 @@ export async function start(profile, { secure = false } = {}) {
   const output = path.resolve('tmp/performance-evidence', profile);
   const bundle = path.resolve('tmp/performance-evidence', `middleware-${profile}.mjs`);
   if (profile === 'baseline' && !fs.existsSync(bundle) && execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim() !== 'c502ed547ff28be63b226e2f87f3ea9e29e2347d') throw new Error('Missing frozen baseline middleware; create it from c502ed54 first.');
-  if (profile !== 'baseline' || !fs.existsSync(bundle)) await build({ entryPoints: ['functions/_middleware.ts'], bundle: true, platform: 'node', format: 'esm', outfile: bundle, logLevel: 'silent' });
+  if (process.env.PERFORMANCE_FROZEN_MIDDLEWARE === '1' && !fs.existsSync(bundle)) throw new Error('Missing frozen middleware; preserve the original source bundle rather than rebuilding it from a candidate.');
+  if ((profile !== 'baseline' && process.env.PERFORMANCE_FROZEN_MIDDLEWARE !== '1') || !fs.existsSync(bundle)) await build({ entryPoints: ['functions/_middleware.ts'], bundle: true, platform: 'node', format: 'esm', outfile: bundle, logLevel: 'silent' });
   const reads = [];
   globalThis.fetch = async (input, options) => {
     const url = new URL(typeof input === 'string' || input instanceof URL ? input : input.url);

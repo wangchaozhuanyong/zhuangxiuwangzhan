@@ -1,0 +1,89 @@
+[
+  {
+    "key": "en-390-home",
+    "before": {
+      "file": "continuation-screenshots/before-en-390-home.png",
+      "sha256": "54441d0c432db6f3c4b6c1f274fc2c5c82b52b5aedb8d7a9497a1c103f0e7e1e",
+      "bytes": 401016
+    },
+    "after": {
+      "file": "continuation-screenshots/after-en-390-home.png",
+      "sha256": "54441d0c432db6f3c4b6c1f274fc2c5c82b52b5aedb8d7a9497a1c103f0e7e1e",
+      "bytes": 401016
+    },
+    "pngBytesEqual": true
+  },
+  {
+    "key": "zh-390-home",
+    "before": {
+      "file": "continuation-screenshots/before-zh-390-home.png",
+      "sha256": "972d4df5e314d35a0230ff1807a944f4fbf2cdc0a6d8dc006e6e94990874bad8",
+      "bytes": 444025
+    },
+    "after": {
+      "file": "continuation-screenshots/after-zh-390-home.png",
+      "sha256": "972d4df5e314d35a0230ff1807a944f4fbf2cdc0a6d8dc006e6e94990874bad8",
+      "bytes": 444025
+    },
+    "pngBytesEqual": true
+  },
+  {
+    "key": "ms-390-home",
+    "before": {
+      "file": "continuation-screenshots/before-ms-390-home.png",
+      "sha256": "6dbd0324cd219d4edcb53fe54400b5c19136c8eff6696c63dd4824024a00df6c",
+      "bytes": 378350
+    },
+    "after": {
+      "file": "continuation-screenshots/after-ms-390-home.png",
+      "sha256": "6dbd0324cd219d4edcb53fe54400b5c19136c8eff6696c63dd4824024a00df6c",
+      "bytes": 378350
+    },
+    "pngBytesEqual": true
+  },
+  {
+    "key": "en-1440-home",
+    "before": {
+      "file": "continuation-screenshots/before-en-1440-home.png",
+      "sha256": "f02ed2bd16763269fe7be498c4b1f6a5d5bf8fbca6e71160bee951520167c2e4",
+      "bytes": 1368447
+    },
+    "after": {
+      "file": "continuation-screenshots/after-en-1440-home.png",
+      "sha256": "a955f216284c9f8e49fbcdc42c6f1d93ff3852ba299c8cd8d8f564e1c8c34426",
+      "bytes": 1368454
+    },
+    "pngBytesEqual": false,
+    "differentPixels": 10,
+    "totalPixels": 1296000,
+    "visualReview": "Both full screenshots inspected; no visible layout, copy or photo changes."
+  },
+  {
+    "key": "zh-1440-home",
+    "before": {
+      "file": "continuation-screenshots/before-zh-1440-home.png",
+      "sha256": "a0be522ceedf2dab66aa0080bd447d85f5a78b08f57daa2d771dd52adcc7c6cb",
+      "bytes": 1384929
+    },
+    "after": {
+      "file": "continuation-screenshots/after-zh-1440-home.png",
+      "sha256": "a0be522ceedf2dab66aa0080bd447d85f5a78b08f57daa2d771dd52adcc7c6cb",
+      "bytes": 1384929
+    },
+    "pngBytesEqual": true
+  },
+  {
+    "key": "ms-1440-home",
+    "before": {
+      "file": "continuation-screenshots/before-ms-1440-home.png",
+      "sha256": "50c6aa399ff04f5c0f974421503e8ad3d7c8e5f74dcea21ce39990e2c8180071",
+      "bytes": 1277622
+    },
+    "after": {
+      "file": "continuation-screenshots/after-ms-1440-home.png",
+      "sha256": "50c6aa399ff04f5c0f974421503e8ad3d7c8e5f74dcea21ce39990e2c8180071",
+      "bytes": 1277622
+    },
+    "pngBytesEqual": true
+  }
+]

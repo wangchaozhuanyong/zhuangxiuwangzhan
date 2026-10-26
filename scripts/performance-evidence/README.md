@@ -50,3 +50,24 @@ node scripts/performance-evidence/strict-build.mjs
 `PERFORMANCE_TARGET_URL=https://flashcast.com.my PERFORMANCE_HOME_ONLY=1 PERFORMANCE_WIDTHS=390 node scripts/performance-evidence/measure.mjs online-reference` 可记录只读线上参考；禁止把该线上结果与本地候选直接当成同环境加速对比。
 
 具体数字、失败记录、剩余问题和回退方式见本轮 `reports/performance-evidence-2026-10-26/` 报告。
+
+## 继续修复的最终复测（2026-10-26）
+
+第一阶段的 `baseline` / `candidate` 证据保留不变。本次对照使用修改前冻结的 `continuation-baseline` 构建和同名 middleware（源码 `a48f4d3a`）；最终源码为 `910ac24a`，比较构建名 `continuation-font-original`，测量名 `continuation-final`。字体试验已撤回，最终 `index.html` 字节与本次对照源码一致。不得用当前代码重新生成旧 middleware 后冒充对照。
+
+```sh
+PERFORMANCE_BUILD_PROFILE=continuation-baseline PERFORMANCE_FROZEN_MIDDLEWARE=1 PERFORMANCE_PRODUCTION_HOST=1 PERFORMANCE_TRACE_READINESS=1 PERFORMANCE_LIMITED_WIDTHS=390,1440 PERFORMANCE_LIMITED_LANGUAGES=en,zh,ms PERFORMANCE_LIMITED_SAMPLES=3 node scripts/performance-evidence/measure.mjs continuation-final-control
+node scripts/performance-evidence/build.mjs continuation-font-original
+PERFORMANCE_BUILD_PROFILE=continuation-font-original PERFORMANCE_PRODUCTION_HOST=1 PERFORMANCE_TRACE_READINESS=1 PERFORMANCE_LIMITED_WIDTHS=390,1440 PERFORMANCE_LIMITED_LANGUAGES=en,zh,ms PERFORMANCE_LIMITED_SAMPLES=3 node scripts/performance-evidence/measure.mjs continuation-final
+PERFORMANCE_REFERENCE_PROFILE=continuation-final-control node scripts/performance-evidence/acceptance.mjs continuation-font-original
+PERFORMANCE_BUILD_PROFILE=continuation-font-original node scripts/performance-evidence/failures.mjs
+PERFORMANCE_BUILD_PROFILE=continuation-font-original node scripts/performance-evidence/motion-recovery.mjs
+PERFORMANCE_BUILD_PROFILE=continuation-font-original node scripts/performance-evidence/public-verifier.mjs
+node scripts/performance-evidence/summarize-continuation.mjs
+```
+
+每版本 36 条普通网络冷/刷新样本、18 条受限网络样本（3 语言 × 2 视口 × 3 次），另有 5 条列表→详情→返回。`PERF_LIMITED_ONLY=1` 只用于额外的单独试验目录；不能覆盖已验收的完整结果。`PERFORMANCE_TRACE_READINESS=1` 记录有界图片/路由属性变化；LCP 元素候选用于区分主图与字体重绘。失败运行保留部分结果、控制台错误、网络记录和截图；不能只保留通过样本。
+
+`motion-recovery.mjs` 对两种浏览器人为延迟实际首屏主图，验证原 degraded 状态保持不变、只发一次 degraded 事件、原品牌层不重现、输入释放，真实图片恢复后装饰效果才恢复。它不生成假的 ready，不替代真实网络计时。
+
+两种字体压缩原型及无损图库格式原型被否决，源码/原始资源/失败结果保存在所属项目忽略目录；没有进入最终产品或公开图片资源。汇总脚本仅读取冻结的试验摘要和像素对比结果，缺少原始实验目录时不会自行重建或伪造证据。完整复测结论与限制见 `CONTINUATION.md`。

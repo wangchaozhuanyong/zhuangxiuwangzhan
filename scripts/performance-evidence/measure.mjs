@@ -15,8 +15,9 @@ const browserUrl=isolatedProductionHost?'https://flashcast.com.my':server.url;
 const externalVersion=external ? await fetch(server.url+'/__flashcast/version',{cache:'no-store'}).then(response=>response.json()) : undefined;
 const browser = await chromium.launch(isolatedProductionHost?{args:[`--host-resolver-rules=MAP flashcast.com.my 127.0.0.1:${new URL(server.url).port}`,'--no-proxy-server',`--ignore-certificate-errors-spki-list=${server.certificatePin}`]}:{});
 const replaceLanguage=process.env.PERFORMANCE_REPLACE_LANGUAGE;
-const prior = process.env.PERF_JOURNEYS_ONLY || process.env.PERF_LIMITED_ONLY || replaceLanguage ? JSON.parse(fs.readFileSync(path.join(directory, 'results.json'), 'utf8')) : undefined;
-const results = (prior?.results || []).filter(row=>!replaceLanguage||row.key!=='/'+replaceLanguage||row.network!=='unthrottled'), snapshots = prior?.snapshots || {}, journeys = process.env.PERF_LIMITED_ONLY||replaceLanguage ? prior.journeys : [];
+const priorPath=path.join(directory,'results.json');
+const prior = (process.env.PERF_JOURNEYS_ONLY || process.env.PERF_LIMITED_ONLY || replaceLanguage)&&fs.existsSync(priorPath) ? JSON.parse(fs.readFileSync(priorPath, 'utf8')) : undefined;
+const results = (prior?.results || []).filter(row=>!replaceLanguage||row.key!=='/'+replaceLanguage||row.network!=='unthrottled'), snapshots = prior?.snapshots || {}, journeys = process.env.PERF_LIMITED_ONLY||replaceLanguage ? prior?.journeys||[] : [];
 let writes = 0, analytics = 0, collectionBlocked = 0;
 const blockedExternal=[];
 function allowedIsolatedRead(url,method){
@@ -87,7 +88,10 @@ async function context(width, network = 'unthrottled') {
     window.addEventListener('public-route-ready', event => audit.ready.push({ at: performance.now(), degraded: event.detail?.degraded, path: location.pathname }));
     for (const type of ['largest-contentful-paint', 'layout-shift', 'longtask', 'event']) {
       try { new PerformanceObserver(list => list.getEntries().forEach(entry => {
-        if (type === 'largest-contentful-paint') audit.lcp = entry.startTime;
+        if (type === 'largest-contentful-paint') {
+          audit.lcp = entry.startTime;
+          (audit.lcpCandidates ||= []).push({ at: entry.startTime, tag: entry.element?.tagName, id: entry.element?.id, className: entry.element?.className, url: entry.url ? new URL(entry.url).pathname : '', size: entry.size });
+        }
         if (type === 'layout-shift' && !entry.hadRecentInput) audit.cls += entry.value;
         if (type === 'longtask') audit.longTasks.push({ at: entry.startTime, duration: entry.duration });
         if (type === 'event' && entry.interactionId) audit.events.push({ name: entry.name, duration: entry.duration, interactionId: entry.interactionId });
@@ -106,6 +110,18 @@ async function context(width, network = 'unthrottled') {
       return bounds.call(this);
     };
   },isolatedProductionHost);
+  if(process.env.PERFORMANCE_TRACE_READINESS==='1')await context.addInitScript(()=>{
+    window.__gateTrace=[];
+    new MutationObserver(records=>{
+      for(const record of records){
+        const node=record.target;
+        if(node instanceof HTMLElement&&(node.matches('.public-route-content,img[data-critical-image]')||node.closest('.scheme-a-chrome__brand'))){
+          window.__gateTrace.push({at:performance.now(),tag:node.tagName,attribute:record.attributeName,state:node.dataset.routeVisualState,wait:node.dataset.routeWaitReason,image:node.dataset.imageState,decoded:node.dataset.decodedSrc,src:node instanceof HTMLImageElement?node.currentSrc:undefined});
+          if(window.__gateTrace.length>160)window.__gateTrace.shift();
+        }
+      }
+    }).observe(document,{subtree:true,attributes:true,attributeFilter:['data-route-visual-state','data-route-wait-reason','data-image-state','data-decoded-src']});
+  });
   return { context, page, session };
 }
 const ready = async page => {
@@ -120,7 +136,7 @@ async function snapshot(page, key) {
 async function metrics(page, key, width, cache, sample, network) {
   if (network === "limited") await expect.poll(() => page.locator(".public-route-content").getAttribute("data-route-visual-state"), { timeout: 60000 }).toMatch(/^(ready|degraded|timeout)$/);
   else try{await ready(page);}catch(error){
-    const diagnostic=await page.evaluate(()=>({url:location.href,title:document.title,body:document.body?.textContent?.slice(0,600),routeState:document.querySelector('.public-route-content')?.dataset.routeVisualState}));
+    const diagnostic=await page.evaluate(()=>({url:location.href,title:document.title,body:document.body?.textContent?.slice(0,600),routeState:document.querySelector('.public-route-content')?.dataset.routeVisualState,gateTrace:window.__gateTrace,events:window.__evidence.ready,boot:{state:window.__flashcastPublicBoot?.state,deadline:window.__flashcastPublicBoot?.deadline},criticalImages:[...document.querySelectorAll('img[data-critical-image],.scheme-a-chrome__brand img')].map(image=>({src:image.currentSrc,complete:image.complete,width:image.naturalWidth,state:image.dataset.imageState,decoded:image.dataset.decodedSrc})),pending:[...document.querySelectorAll('[data-route-pending="true"]')].map(node=>({tag:node.tagName,className:node.className}))}));
     fs.writeFileSync(path.join(directory,'failure-diagnostic.json'),JSON.stringify({diagnostic,errors:page.__measurementErrors,requests:[...networkRecords.get(page).values()].map(({url,...record})=>({...record,path:new URL(url).host+new URL(url).pathname}))},null,2)+'\n');
     await page.screenshot({path:path.join(directory,'failure.png')});throw error;
   }
@@ -192,10 +208,10 @@ try {
   await ctx.close();
   }
   if(!process.env.PERFORMANCE_HOME_ONLY&&!process.env.PERF_JOURNEYS_ONLY){
-  for(let sample=1;sample<=Number(process.env.PERFORMANCE_LIMITED_SAMPLES||1);sample++){
-    const limited = await context(390, 'limited');
-    await limited.page.goto(browserUrl + '/en', { waitUntil: 'domcontentloaded' });
-    await metrics(limited.page, '/en', 390, 'cold browser / warm middleware', sample, 'limited');
+  for(const width of (process.env.PERFORMANCE_LIMITED_WIDTHS||'390').split(',').map(Number))for(const language of (process.env.PERFORMANCE_LIMITED_LANGUAGES||'en').split(','))for(let sample=1;sample<=Number(process.env.PERFORMANCE_LIMITED_SAMPLES||1);sample++){
+    const limited = await context(width, 'limited');
+    await limited.page.goto(browserUrl + '/'+language, { waitUntil: 'domcontentloaded' });
+    await metrics(limited.page, '/'+language, width, 'cold browser / warm middleware', sample, 'limited');
     await limited.context.close();
   }
   }

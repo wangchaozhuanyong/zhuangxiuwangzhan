@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import { start } from './server.mjs';
 const server=process.env.PERFORMANCE_TARGET_URL
   ? {url:process.env.PERFORMANCE_TARGET_URL.replace(/\/$/,''),close:async()=>{}}
-  : await start('candidate');
+  : await start(process.env.PERFORMANCE_BUILD_PROFILE||'candidate');
 const launch=chromium.launch.bind(chromium);
 chromium.launch=async(...args)=>{
   const browser=await launch(...args),newContext=browser.newContext.bind(browser);
