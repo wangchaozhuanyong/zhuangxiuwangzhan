@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { formatSourcePath, formatUserFacingError, isTechnicalFieldLeak } from "@/lib/userFacingText";
+import { formatUserFacingError, isTechnicalFieldLeak } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 describe("userFacingText", () => {
   it("does not expose technical database errors to Chinese admin UI", () => {
@@ -23,9 +24,9 @@ describe("userFacingText", () => {
   });
 
   it("turns source paths into readable labels", () => {
-    expect(formatSourcePath("/zh/contact", "zh")).toBe("联系页");
+    expect(formatSourcePath("/zh/contact", "zh")).toBe("来源（浏览器参考）: 不确定 · 联系页");
     expect(formatSourcePath("/zh/quote?source=project&title=Mont%20Kiara%20Condo", "zh")).toBe(
-      "案例详情页：Mont Kiara Condo",
+      "来源（浏览器参考）: 不确定 · 案例详情页：Mont Kiara Condo",
     );
   });
 });

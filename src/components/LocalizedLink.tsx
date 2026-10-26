@@ -3,6 +3,7 @@ import { createPath, Link, useLocation, useNavigate, useResolvedPath, type LinkP
 import { useLanguage } from "@/i18n/LanguageContext";
 import { requestPublicNavigation } from "@/lib/publicNavigation";
 import { withLanguagePrefix } from "@/i18n/routes";
+import { withInquiryWhatsAppHref } from "@/lib/contactLinks";
 
 const isExternal = (to: LinkProps["to"]) => {
   if (typeof to !== "string") return false;
@@ -13,7 +14,7 @@ const LocalizedLink = forwardRef<HTMLAnchorElement, LinkProps>(({ to, onClick, .
   const { language } = useLanguage();
   const localizedTo = typeof to === "string" && to.startsWith("/") && !isExternal(to)
     ? withLanguagePrefix(to, language)
-    : to;
+    : typeof to === "string" ? withInquiryWhatsAppHref(to, language) : to;
 
   const navigate = useNavigate();
   const location = useLocation();

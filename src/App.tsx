@@ -10,9 +10,10 @@ import MobileBottomDock from "@/components/MobileBottomDock";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { getInitialPublicTheme, PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
-import { adminRouteText } from "@/i18n/adminRouteText";
+import { adminLoadingText } from "@/i18n/adminLoadingText";
 import { createPublicPageViewLifecycle } from "@/lib/analytics";
 import { createAnalyticsRouterWindow } from "@/lib/analyticsRouterWindow";
+import { captureInquirySources } from "@/lib/inquirySource";
 import { withSynchronousPublicHistory } from "@/lib/synchronousPublicHistory";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminPreferences";
@@ -62,7 +63,7 @@ const PageLoader = () => {
 };
 
 const AdminPageLoader = () => {
-  const label = adminRouteText[getAdminLang()].checking;
+  const label = adminLoadingText[getAdminLang()];
 
   return (
     <main
@@ -92,6 +93,7 @@ const AnalyticsRouteTracker = () => {
   useEffect(() => tracker.start(), [tracker]);
 
   useEffect(() => {
+    captureInquirySources();
     tracker.updateRoute(`${location.pathname}${location.search}`, routeLanguage);
     return tracker.cancelPending;
   }, [tracker, routeLanguage, location.pathname, location.search]);

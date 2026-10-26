@@ -21,7 +21,8 @@ import { adminLeadListText } from "@/i18n/adminLeadListText";
 import { translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
 import { toast } from "@/hooks/use-toast";
-import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 const statuses = ["all", "new", "contacted", "site_visit_scheduled", "quoted", "converted", "closed", "spam"];
 

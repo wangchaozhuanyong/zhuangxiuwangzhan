@@ -35,51 +35,6 @@ const unavailableErrorText: Record<Language, string> = {
   ms: "Perkhidmatan ini tidak tersedia buat sementara waktu. Sila cuba lagi kemudian.",
 };
 
-const unknownSourceText: Record<Language, string> = {
-  en: "Unknown source",
-  zh: "未知来源",
-
-  ms: "Sumber tidak diketahui",
-};
-
-const sourceLabels: Record<string, Record<Language, string>> = {
-  contact: { en: "Contact page", zh: "联系页" ,
-             ms: "Halaman kenalan",
-           },
-  quote: { en: "Quote page", zh: "报价页" ,
-           ms: "Halaman petikan",
-         },
-  services: { en: "Services page", zh: "服务页" ,
-              ms: "Halaman perkhidmatan",
-            },
-  service: { en: "Service page", zh: "服务详情页" ,
-             ms: "Halaman perkhidmatan",
-           },
-  projects: { en: "Projects page", zh: "案例页" ,
-              ms: "Halaman projek",
-            },
-  project: { en: "Project page", zh: "案例详情页" ,
-             ms: "Halaman projek",
-           },
-  materials: { en: "Materials page", zh: "材料页" ,
-               ms: "Halaman bahan",
-             },
-  material: { en: "Material page", zh: "材料详情页" ,
-              ms: "Halaman bahan",
-            },
-  blog: { en: "Blog page", zh: "博客页" ,
-          ms: "Laman blog",
-        },
-  home: { en: "Home page", zh: "首页" ,
-          ms: "Laman utama",
-        },
-  old_house_renovation: { en: "Old house renovation page", zh: "老房翻新页" ,
-                          ms: "Laman ubah suai rumah lama",
-                        },
-  unknown: unknownSourceText,
-};
-const fallbackSourceLabel = sourceLabels.unknown ?? unknownSourceText;
-
 const CODE_LIKE_PATTERN = /^[a-z0-9]+(?:[_-][a-z0-9]+)+$/i;
 const CJK_PATTERN = /[\u3400-\u9FFF]/;
 const LATIN_WORD_PATTERN = /[A-Za-z]{3,}/;
@@ -135,31 +90,4 @@ export const formatUserFacingError = (
   }
 
   return isTechnicalFieldLeak(raw, language) ? fallback : raw;
-};
-
-const sourceLabel = (key: string, language: Language) =>
-  sourceLabels[key]?.[language] || fallbackSourceLabel[language];
-
-export const formatSourcePath = (value: string | null | undefined, language: Language = "zh") => {
-  const raw = (value || "").trim();
-  if (!raw) return "-";
-
-  try {
-    const url = new URL(raw, "https://flashcast.local");
-    const pathParts = url.pathname.split("/").filter(Boolean);
-    const withoutLang = pathParts[0] === "zh" || pathParts[0] === "en" ? pathParts.slice(1) : pathParts;
-    const first = withoutLang[0] || "home";
-    const sourceParam = url.searchParams.get("source");
-    const titleParam = url.searchParams.get("title");
-    const key =
-      sourceParam === "service" || sourceParam === "project" || sourceParam === "material"
-        ? sourceParam
-        : first === "old-house-renovation"
-          ? "old_house_renovation"
-          : first;
-    const label = sourceLabel(key, language);
-    return titleParam ? `${label}：${titleParam}` : label;
-  } catch {
-    return unknownSourceText[language];
-  }
 };

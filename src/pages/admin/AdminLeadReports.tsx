@@ -15,7 +15,8 @@ import {
   type LeadProjectTypeSummary,
   type LeadSourceSummary,
 } from "@/lib/adminLeadReports";
-import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 const copy = adminLeadReportsText;
 
@@ -58,7 +59,7 @@ const SourceTable = ({
         {rows.map((row) => (
           <article key={row.key} className="space-y-3 p-4">
             <div>
-              <p className="font-medium">{row.label}</p>
+              <p className="font-medium break-words [overflow-wrap:anywhere]">{row.label}</p>
               <p className="truncate text-xs text-muted-foreground">{formatSourcePath(row.sourcePath, language)}</p>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
@@ -91,7 +92,7 @@ const SourceTable = ({
           {rows.map((row) => (
             <tr key={row.key} className="border-t border-border">
               <td className="max-w-[320px] px-4 py-3">
-                <p className="font-medium">{row.label}</p>
+                <p className="font-medium break-words [overflow-wrap:anywhere]">{row.label}</p>
                 <p className="truncate text-xs text-muted-foreground">{formatSourcePath(row.sourcePath, language)}</p>
               </td>
               <td className="px-4 py-3">{row.total}</td>

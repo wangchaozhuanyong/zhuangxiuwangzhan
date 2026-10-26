@@ -1,3 +1,4 @@
+import { withInquiryWhatsAppHref } from "@/lib/contactLinks";
 import { siteConfig } from "@/config/site";
 
 
@@ -189,7 +190,7 @@ export const resolveSiteSettings = (
     whatsapp_url: (message?: string) => {
       const baseUrl = `https://wa.me/${whatsappNumber}`;
       const whatsappMessage = (message || DEFAULT_WHATSAPP_MESSAGES[language]).trim();
-      return whatsappMessage ? `${baseUrl}?text=${encodeURIComponent(whatsappMessage)}` : baseUrl;
+      return withInquiryWhatsAppHref(whatsappMessage ? `${baseUrl}?text=${encodeURIComponent(whatsappMessage)}` : baseUrl, language);
     },
     address,
     short_address: shortAddress,

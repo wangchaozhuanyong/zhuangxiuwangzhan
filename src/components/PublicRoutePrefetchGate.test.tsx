@@ -1,21 +1,25 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import PublicRoutePrefetchGate from "./PublicRoutePrefetchGate";
 
 const renderPrefetch = vi.fn();
+let PublicRoutePrefetchGate: typeof import("./PublicRoutePrefetchGate").default;
 let root: Root;
 let container: HTMLDivElement;
-beforeEach(() => {
+beforeEach(async () => {
   // Each transfer scenario models a fresh document, with a fresh ESM result.
   // Do not reuse the prior scenario's successfully cached mock import.
   vi.resetModules();
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   renderPrefetch.mockClear();
   vi.doMock("./PublicRouteEnhancements", () => ({ default: () => { renderPrefetch(); return null; } }));
+  PublicRoutePrefetchGate = (await import("./PublicRoutePrefetchGate")).default;
   container = document.createElement("div"); document.body.append(container); root = createRoot(container);
 });
-afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.doUnmock("./PublicRouteEnhancements"); vi.unstubAllGlobals(); });
+afterEach(async () => {
+  await act(async () => { root.unmount(); await vi.dynamicImportSettled(); });
+  container.remove(); vi.doUnmock("./PublicRouteEnhancements"); vi.unstubAllGlobals();
+});
 const announce = (degraded: boolean) => window.dispatchEvent(new CustomEvent("public-route-ready", { detail: { degraded } }));
 
 describe("optional prefetch startup", () => {

@@ -1,6 +1,8 @@
 import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 import { translateProjectType } from "@/i18n/displayLabels";
 import { isStoredLeadTest } from "@/lib/leadTest";
+import { readInquirySources } from "@/lib/inquirySourcePath";
+import { formatInquirySources } from "@/i18n/inquirySourceText";
 
 export type AdminLeadReportPeriod = "30d" | "90d" | "all";
 
@@ -190,11 +192,12 @@ const readSourceInfo = (
   const baseLabel = sourceTypeLabel(sourceType, language);
   const pathLabel = pathname ? pathname.replace(/^\/(zh|en|ms)(?=\/|$)/, "") || "/" : "";
   const label = title ? `${baseLabel}：${title}` : pathLabel && pathLabel !== "/" ? `${baseLabel} · ${pathLabel}` : baseLabel;
-  const key = `${sourceType}:${title || pathLabel || rawPath || "unknown"}`.toLowerCase();
+  const channels = readInquirySources(rawPath);
+  const key = `${channels.first}:${channels.last}:${sourceType}:${title || pathLabel || rawPath || "unknown"}`.toLowerCase();
 
   return {
     key,
-    label,
+    label: `${formatInquirySources(channels, language)} · ${label}`,
     sourceType,
     sourcePath: rawPath || null,
   };

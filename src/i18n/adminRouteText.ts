@@ -1,3 +1,5 @@
+import { adminLoadingText } from "./adminLoadingText";
+
 export const adminRouteText = {
   en: {
     brand: "FLASH CAST Admin",
@@ -6,7 +8,7 @@ export const adminRouteText = {
     notConfiguredHelp: "Check environment variables and database configuration first. The admin panel stays closed until they are configured.",
     backToWebsite: "Back to website",
     backToLogin: "Back to login",
-    checking: "Checking admin session...",
+    checking: adminLoadingText.en,
     mfaRequired: "Complete two-factor verification to continue to the requested admin page.",
     accessRequired: "Admin access required",
     deniedBody: "You are signed in, but this account is not listed as a FLASH CAST admin.",
@@ -25,7 +27,7 @@ export const adminRouteText = {
     notConfiguredHelp: "先检查环境变量和数据库配置，没配好时后台不会开放。",
     backToWebsite: "返回网站",
     backToLogin: "返回登录页",
-    checking: "正在检查管理员状态...",
+    checking: adminLoadingText.zh,
     mfaRequired: "请先完成两步验证，验证后继续访问刚才打开的后台页面。",
     accessRequired: "需要管理员权限",
     deniedBody: "当前账号已经登录，但没有被列为 FLASH CAST 管理员。",
