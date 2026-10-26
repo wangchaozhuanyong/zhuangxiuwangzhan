@@ -90,12 +90,12 @@ const binding = {
   "publicPaths": [
     {
       "path": "/zh/blog/built-in-cabinet-cost-malaysia",
-      "expected": "马来西亚定制内嵌柜价格指南",
+      "expected": "马来西亚定制内嵌柜价格指南 | FLASH CAST SDN. BHD.",
       "strictMetadataTitle": true
     },
     {
       "path": "/en/blog/built-in-cabinet-cost-malaysia",
-      "expected": "Built-In Cabinet Cost in Malaysia",
+      "expected": "Built-In Cabinet Cost in Malaysia | FLASH CAST SDN. BHD.",
       "strictMetadataTitle": true
     }
   ]

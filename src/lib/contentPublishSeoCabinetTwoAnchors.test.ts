@@ -6,7 +6,8 @@ import { publishContent } from "../../supabase/functions/content-publish/service
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "../../supabase/functions/_shared/seo-cabinet-two-anchor-targets.ts";
 import { MANAGED_BLOGS, managedAction } from "../../supabase/functions/_shared/managed-targets.ts";
 import { issueManagedPermit, type ManagedPermitIssue } from "../../supabase/functions/content-publish/permit-issuer.ts";
-import { targetConfigs, buildLockedDryRunRequest } from "../../scripts/publish-content-trust-fixes.mjs";
+import { targetConfigs, buildLockedDryRunRequest, inspectPublicReadback } from "../../scripts/publish-content-trust-fixes.mjs";
+import { withCompanyBrandSuffix } from "../../scripts/lib/publisher-public-readback.mjs";
 import { readSeoCabinetTwoAnchorCandidate } from "../../scripts/managed-cms-targets-seo-cabinet-two-anchors-v1.mjs";
 import { withPublishedLinkTargets } from "@/test/helpers/publishedLinkTargets";
 import type { ContentPublishClient, ContentPublishRequest } from "../../supabase/functions/content-publish/types.ts";
@@ -57,6 +58,29 @@ function request(mode: "dry-run" | "publish" = "dry-run"): ContentPublishRequest
 }
 
 describe("exact cabinet two-anchor protected channel", () => {
+  it("expects the complete source-derived company title while retaining exact raw metadata matching", () => {
+    for (const page of config.publicPaths) {
+      const rawTitle = String(source.before[page.path.startsWith("/zh/") ? "seo_title_zh" : "seo_title_en"]);
+      const completeTitle = withCompanyBrandSuffix(rawTitle, { brandName: "FLASH CAST", companyName: "FLASH CAST SDN. BHD." });
+      expect(page.strictMetadataTitle).toBe(true);
+      expect(page.expected).toBe(completeTitle);
+      const validHtml = `<title>${completeTitle}</title>`;
+      expect(inspectPublicReadback(page, 200, validHtml).found).toBe(true);
+      // Reproduce the old false negative without changing a correct response.
+      expect(inspectPublicReadback({ ...page, expected: rawTitle }, 200, validHtml).found).toBe(false);
+    }
+  });
+  it("still rejects wrong-language, stale, wrong-brand and body-only title matches", () => {
+    for (const page of config.publicPaths) {
+      const other = config.publicPaths.find(x => x.path !== page.path)!;
+      for (const title of [other.expected, "Built-In Cabinet Cost Factors in Malaysia", page.expected.replace("FLASH CAST SDN. BHD.", "Another company")]) {
+        expect(inspectPublicReadback(page, 200, `<title>${title}</title><p>${page.expected}</p>`).found).toBe(false);
+      }
+      const check = inspectPublicReadback({ ...page, forbidden: ["unapproved"], requiredPhrases: ["required source"] }, 200, `<title>${page.expected}</title><p>unapproved</p>`);
+      expect(check.forbiddenFound).toEqual(["unapproved"]);
+      expect(check.missingRequired).toEqual(["required source"]);
+    }
+  });
   it("binds one existing row, two fields, full29 and stable25 including all six MS", () => {
     expect(MANAGED_BLOGS.filter(x => x.taskId === target.taskId)).toEqual([target]);
     expect(target.changedFields).toEqual(["content_en", "content_zh"]);
