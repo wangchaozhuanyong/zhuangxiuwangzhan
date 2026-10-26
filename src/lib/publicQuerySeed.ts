@@ -26,7 +26,9 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
       const sectionKey = parameters.sectionKey;
       if (sectionKey !== "brand_partners" && sectionKey !== "testimonials") return undefined;
       const row = toArray(payload.homeContentBundle?.home_sections).find((row) => toRecord(row).section_key === sectionKey);
-      return row ? isOptionalHomeSectionEnabled(sectionKey, row) : undefined;
+      if (row) return isOptionalHomeSectionEnabled(sectionKey, row);
+      const confirmed = toRecord(payload.homeContentBundle?.preload_optional_visibility)[sectionKey];
+      return typeof confirmed === "boolean" ? confirmed : undefined;
     }
     case "home_journal": return payload.homeJournalPosts ? mapPublishedBlogPostRows(payload.homeJournalPosts, language) : undefined;
     case "home_service_areas": return payload.homeServiceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));

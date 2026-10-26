@@ -32,6 +32,25 @@ afterEach(() => {
 });
 
 describe("public preload data", () => {
+  it("seeds confirmed absent optional sections but leaves unknown visibility recoverable", async () => {
+    setPreloadedPublicData({ homeContentBundle: { home_sections: [], preload_optional_visibility: { brand_partners: false } } });
+    const { getPublicQuerySeed } = await import("./publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "home_optional_visibility", "brand_partners"])).toBe(false);
+    expect(getPublicQuerySeed(["published", "home_optional_visibility", "testimonials"])).toBeUndefined();
+  });
+  it("does not restore an old false visibility seed after cache removal", async () => {
+    setPreloadedPublicData({ homeContentBundle: { home_sections: [], preload_optional_visibility: { brand_partners: false } } });
+    await import("./publicQuerySeed");
+    const { QueryClient } = await import("@tanstack/react-query");
+    const { claimPublicQuerySeed } = await import("./publicQuerySeedCache");
+    const client = new QueryClient();
+    const key = ["published", "home_optional_visibility", "brand_partners"];
+    expect(claimPublicQuerySeed(client, key)).toBe(false);
+    client.setQueryData(key, false);
+    client.removeQueries({ queryKey: key });
+    expect(claimPublicQuerySeed(client, key)).toBeUndefined();
+    client.clear();
+  });
   it("does not treat a single-category material detail context as the full directory", async () => {
     setPreloadedPublicData({ materialDetailContext: { slug: "oak", rows: [{ id: "oak", slug: "oak", category: "Flooring", title_en: "Oak", content_en: "Full body", seo_title_en: "Oak", material_images: [] }] } });
     const { getPublicQuerySeed } = await import("./publicQuerySeed");

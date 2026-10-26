@@ -4,7 +4,7 @@ import { furnitureCatalog } from "./furnitureCatalogPresentation";
 import * as homeFurniture from "./homeFurniture";
 
 type Row = Record<string, unknown>;
-type FailedSource = "furniture-materials" | "furniture-settings" | "journal" | "areas";
+type FailedSource = "furniture-materials" | "furniture-settings" | "journal" | "areas" | "visibility";
 type FixtureOptions = { empty?: boolean; failedSource?: FailedSource; invalidSource?: "journal" | "areas" };
 type ShowcasePayload = Record<string, unknown> & {
   homeFurniture?: homeFurniture.HomeFurnitureSeed;
@@ -99,7 +99,7 @@ const queryRows = (rows: Row[], url: URL) => {
     : Object.fromEntries(selected.split(",").flatMap((field) => Object.prototype.hasOwnProperty.call(row, field) ? [[field, row[field]]] : [])));
 };
 
-const renderHome = async (language: "en" | "zh", { empty = false, failedSource, invalidSource }: FixtureOptions = {}) => {
+const renderHome = async (language: "en" | "zh" | "ms", { empty = false, failedSource, invalidSource }: FixtureOptions = {}) => {
   const fixtureId = ++fixtureSequence;
   const supabaseUrl = `https://home-showcase-${fixtureId}.supabase.co`;
   const requests: URL[] = [];
@@ -118,6 +118,10 @@ const renderHome = async (language: "en" | "zh", { empty = false, failedSource, 
     let body: unknown = [];
     if (url.pathname.endsWith("/site_settings")) body = [{ company_name: "FLASH CAST Fixture", updated_at: `fixture-${fixtureId}` }];
     else if (url.pathname.endsWith("/rpc/get_public_home_bundle")) body = homeBundle;
+    else if (url.pathname.endsWith("/home_sections") && url.searchParams.get("section_key")?.startsWith("in.")) {
+      source = "visibility";
+      body = [];
+    }
     else if (url.pathname.endsWith("/materials") && url.searchParams.get("category") === "eq.furniture") {
       source = "furniture-materials";
       body = queryRows(furnitureRows, url);
@@ -179,11 +183,12 @@ describe("compact homepage showcase preload", () => {
     vi.unstubAllGlobals();
   });
 
-  it.each(["en", "zh"] as const)("injects bounded bilingual showcase summaries on /%s within the existing 55000-byte budget", async (language) => {
+  it.each(["en", "zh", "ms"] as const)("injects bounded showcase summaries on /%s within the existing 55000-byte budget", async (language) => {
     const { response, requests, serialized, payload } = await renderHome(language);
     expect(response.headers.get("x-flashcast-public-data")).not.toBe("omitted-too-large");
     expect(new TextEncoder().encode(serialized).byteLength).toBeLessThanOrEqual(55_000);
     expect(payload.homeContentBundle).toBeTruthy();
+    expect(payload.homeContentBundle).toHaveProperty("preload_optional_visibility", { brand_partners: false, testimonials: false });
     expect(payload.homeFurniture).toBeDefined();
     expect(payload.homeJournalPosts).toHaveLength(3);
     expect(payload.homeServiceAreas).toHaveLength(8);
@@ -215,7 +220,7 @@ describe("compact homepage showcase preload", () => {
     expect(requests.filter((url) => url.pathname.endsWith("/home_sections") && url.searchParams.get("section_key") === "eq.furniture_catalog")).toHaveLength(1);
   });
 
-  it.each(["en", "zh"] as const)("preserves successful empty lists and an entirely hidden furniture catalog on /%s", async (language) => {
+  it.each(["en", "zh", "ms"] as const)("preserves successful empty lists and an entirely hidden furniture catalog on /%s", async (language) => {
     const { payload } = await renderHome(language, { empty: true });
     expect(payload.homeFurniture).toEqual({ en: [], zh: [], ms: [] });
     expect(payload.homeJournalPosts).toEqual([]);
@@ -259,5 +264,11 @@ describe("compact homepage showcase preload", () => {
     expect(payload.homeFurniture?.zh).toHaveLength(2);
     expect(payload.homeContentBundle).toBeTruthy();
     expect(payload).toHaveProperty(invalidSource === "journal" ? "homeServiceAreas" : "homeJournalPosts");
+  });
+
+  it("does not hand off false visibility when the independent server read fails", async () => {
+    const { payload } = await renderHome("ms", { failedSource: "visibility" });
+    expect(payload.homeContentBundle).not.toHaveProperty("preload_optional_visibility");
+    expect(payload.homeFurniture).toBeDefined();
   });
 });

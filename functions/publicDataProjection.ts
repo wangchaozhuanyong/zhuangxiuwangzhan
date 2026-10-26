@@ -311,6 +311,13 @@ export const projectCtaBlockForPreload = (row: PublicProjectionRecord) =>
 
 export const projectHomeContentBundleForPreload = (bundle: PublicProjectionRecord) => {
   const projected: PublicProjectionRecord = {};
+  const visibility = bundle.preload_optional_visibility;
+  if (visibility && typeof visibility === "object" && !Array.isArray(visibility)) {
+    const values = visibility as PublicProjectionRecord;
+    const confirmed = Object.fromEntries(["brand_partners", "testimonials"].flatMap((key) =>
+      typeof values[key] === "boolean" ? [[key, values[key]]] : []));
+    if (Object.keys(confirmed).length) projected.preload_optional_visibility = confirmed;
+  }
   const projectTable = (
     field: string,
     projector: (row: PublicProjectionRecord) => PublicProjectionRecord,

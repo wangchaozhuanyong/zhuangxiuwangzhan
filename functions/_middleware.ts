@@ -1,6 +1,7 @@
 import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
 import "../src/i18n/malayContent";
 import { hasMalayContent } from "../src/i18n/localizedContent";
+import { isOptionalHomeSectionEnabled } from "../src/lib/homeOptionalSections";
 import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
 import { getFurnitureListingPage, getFurnitureListingRoute, furnitureListingPagePath, mapFurnitureCatalogSeed, normalizeFurnitureListingPage, type FurnitureMaterialRow } from "../src/lib/furnitureCatalogPresentation";
 import {
@@ -1019,6 +1020,12 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
       ...homeSections,
       ...(brandPartnersVisibilityRows || []),
     ];
+    // A successful empty visibility read is different from a failed read.
+    // Hand off that result so absent optional sections need no duplicate GET.
+    if (brandPartnersVisibilityRows !== null) value.preload_optional_visibility = {
+      brand_partners: isOptionalHomeSectionEnabled("brand_partners", brandPartnersVisibilityRows),
+      testimonials: isOptionalHomeSectionEnabled("testimonials", brandPartnersVisibilityRows),
+    };
     homeContentBundleCache = {
       key: cacheKey,
       value,
@@ -1590,6 +1597,9 @@ const normalizePath = (pathname: string) => {
 };
 
 const isHomePageKey = (key: string) => key === "/en" || key === "/zh";
+// Data handoff also serves Malay. Keep the existing SEO/readable-home rules
+// above independent so adding a cache seed cannot change fallback metadata.
+const isHomeDataPageKey = (key: string) => isHomePageKey(key) || key === "/ms";
 
 const getTopLevelPublicPageKey = (key: string) => {
   const parts = key.split("/").filter(Boolean);
@@ -2223,7 +2233,7 @@ export const onRequest: PagesFunction = async (context) => {
     const appShellUrl = new URL(request.url);
     appShellUrl.pathname = "/";
     appShellUrl.search = "";
-    const earlyHome = Boolean(staticMeta && isHomePageKey(key));
+    const earlyHome = Boolean(staticMeta && isHomeDataPageKey(key));
     const earlyFurnitureDetailSlug = key.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
     const earlyFurnitureSetting = earlyFurnitureDetailSlug ? fetchFurnitureCatalogSetting(env as Record<string, string | undefined>) : undefined;
     const earlyPageKey = staticMeta ? getTopLevelPublicPageKey(key) : null;
@@ -2274,7 +2284,7 @@ export const onRequest: PagesFunction = async (context) => {
   const projectDetailSlug = getProjectDetailSlugFromKey(key);
   const productDetailSlug = getProductDetailSlugFromKey(key);
   const topLevelPublicPageKey = getTopLevelPublicPageKey(key);
-  const shouldInjectHomeBundle = Boolean(meta && isHomePageKey(key));
+  const shouldInjectHomeBundle = Boolean(meta && isHomeDataPageKey(key));
   const shouldInjectProjectSummaries = Boolean(meta && (/^\/(en|zh|ms)\/projects$/.test(key) || projectDetailSlug));
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
@@ -2357,10 +2367,10 @@ export const onRequest: PagesFunction = async (context) => {
       en: `${PUBLIC_SITE_URL}/en${listingPath}`, zh: `${PUBLIC_SITE_URL}/zh${listingPath}`, xDefault: `${PUBLIC_SITE_URL}/en${listingPath}`,
     } };
   }
-  const homeFaqs = shouldInjectHomeBundle
+  const homeFaqs = shouldInjectHomeBundle && isHomePageKey(key)
     ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
     : [];
-  if (shouldInjectHomeBundle && meta) meta = { ...meta, faqs: homeFaqs };
+  if (shouldInjectHomeBundle && isHomePageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
   const html = await response.text();
   const readableBody = buildReadableFurnitureListingBody(key, furnitureListing)
     || buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
@@ -2434,7 +2444,7 @@ export const onRequest: PagesFunction = async (context) => {
   transformed = injectDynamicImagePreloads(
     transformed,
     getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail, {
-      isHomePage: isHomePageKey(key), projectDetailSlug, topLevelPublicPageKey, publicPageBundle,
+      isHomePage: isHomeDataPageKey(key), projectDetailSlug, topLevelPublicPageKey, publicPageBundle,
     }),
   );
   transformed = injectPerformanceHints(
