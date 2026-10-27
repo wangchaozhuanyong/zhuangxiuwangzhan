@@ -2224,8 +2224,11 @@ export async function publishContent(
   }
 
   if (managedService) {
+    // This W target's raw full41 row and exact body were validated above; MS protection is not a write payload.
+    const permitPayload = managedService.taskId === "fc-20261014-builtin-wardrobe-layout-cms-publication-v1"
+      && managedService.rollbackFieldsSha256 ? writePayload : cleaned.payload;
     const denied = await beginManagedCmsWrite(input, client, context, managedService, existing, cleaned.slug,
-      cleaned.payload, expectedUpdatedAt, writePayload);
+      permitPayload, expectedUpdatedAt, writePayload);
     if (denied) return denied;
   }
 
