@@ -213,5 +213,5 @@ export function isProtectedContentRecord(table: string, record: Record<string, u
   };
   return MANAGED_TARGETS.some((target) => (target.table || tables[target.contentType]) === table
     && (record.id === target.id || (Boolean(target.slug) && (record.slug === target.slug
-      || (table === "site_pages" && record.page_key === target.slug)))));
+      || ((table === "site_pages" || (table === "cms_pages" && target.contentType === "site_page")) && record.page_key === target.slug)))));
 }
