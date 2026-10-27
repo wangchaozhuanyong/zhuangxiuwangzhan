@@ -1,0 +1,1821 @@
+{
+  "schema": "next12-five-record-ten-field-frozen-source/v1",
+  "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+  "business_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+  "owner_source": {
+    "path": "drafts/seo/fc-20261016-industry-keyword-next-twelve-pages-v1/content-organic-website/resume-20261027-next12-live-delta-v1/C1-standing-five-record-execution-source-v1/C1-EXACT-NEXT12-FIVE-RECORD-TEN-FIELD-STANDING-EXECUTION-SOURCE-v1.json",
+    "sha256": "90066428e82cda6e838d58efd998052f385bd5a54f58487341ca881980c1ffbe",
+    "size": 132353
+  },
+  "registration_input": {
+    "path": "drafts/seo/fc-20261016-industry-keyword-next-twelve-pages-v1/content-organic-website/resume-20261027-next12-live-delta-v1/C1-standing-five-record-execution-source-v1/EXACT-NEXT12-FIVE-TWO-FIELD-NORMAL-TARGET-REGISTRATION-INPUT-v1.json",
+    "sha256": "02870b0c40da0892e95f67fa5b13f4deb9d6a7b5c45dba947c95610129d37a09",
+    "size": 37427
+  },
+  "original_PUB_result": {
+    "path": "drafts/publishing/fc-20261016-industry-keyword-next-twelve-pages-v1/five-services-ten-field-readonly-binding-20261027-v1/PUB-NEXT12-FIVE-ROW-TEN-FIELD-AUTHENTICATED-READONLY-BINDING-RESULT-v1.json",
+    "sha256": "fbe13ee778079a5ecf10cc3cbcd2abf981acf200de2560a9c8f2f69a67706321",
+    "size": 32023
+  },
+  "execution_department": "publishing",
+  "original_professional_owner": "content-organic-website",
+  "content_integration_department": "content-organic-website",
+  "registration_grants_write_authority": false,
+  "entries": [
+    {
+      "runtime_target": {
+        "id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+        "slug": "warehouse",
+        "contentType": "service",
+        "table": "services",
+        "taskId": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "actionId": "publish-next12-warehouse-fbe13ee7-cms-v1",
+        "candidateVersion": "next12-warehouse-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:1fab3adb-aa8c-4aab-9c30-8931152cdc91:content_en,content_zh",
+        "changedFields": [
+          "content_en",
+          "content_zh"
+        ],
+        "baselineProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_en",
+          "content_ms",
+          "content_zh",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh",
+          "updated_at",
+          "version"
+        ],
+        "baselineFieldsSha256": "8215b2751a46d407fef15661f3a5f375468d6f238efb07654e27971b1a858e78",
+        "desiredFieldsSha256": "2fe4c33c1fcaa04b94d866946a7a14ede151e79a240a7cb14a5855e44f61ff68",
+        "rollbackFieldsSha256": "5989209e78d7924174d7a339ad250aca59a1232c1b77a5a001f12fdf1c4f101f",
+        "expectedUpdatedAt": "2026-10-23T17:55:59.461184+00:00",
+        "retainedProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_ms",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh"
+        ],
+        "retainedFieldsSha256": "6bedb20e829294a395bdd5d0461bf1e84da5523f712657444bfe34f62a2f844a",
+        "rollbackAllowed": true,
+        "requiresParentRun": true
+      },
+      "before": {
+        "id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+        "slug": "warehouse",
+        "alt_en": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+        "alt_ms": "Rak gudang, lorong tengah, zon lantai dan konsep perancangan kawasan pemilihan",
+        "alt_zh": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+        "status": "published",
+        "faqs_en": [
+          {
+            "a": "A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.",
+            "q": "What information helps with an initial discussion?"
+          },
+          {
+            "a": "Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.",
+            "q": "Can only part of a warehouse be adjusted?"
+          },
+          {
+            "a": "No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.",
+            "q": "Do the planning examples show real completed sites?"
+          }
+        ],
+        "faqs_ms": [
+          {
+            "a": "Ya. Perancangan dibuat berdasarkan jenis dan dimensi barangan, kaedah penerimaan serta keperluan kapasiti beban.",
+            "q": "Bolehkah sistem rak dirancang mengikut keperluan kapasiti beban?"
+          }
+        ],
+        "faqs_zh": [
+          {
+            "a": "建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。",
+            "q": "初次沟通要准备哪些资料？"
+          },
+          {
+            "a": "可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。",
+            "q": "可以只调整仓库的一部分吗？"
+          },
+          {
+            "a": "不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。",
+            "q": "规划示例是否代表真实项目？"
+          }
+        ],
+        "version": 2,
+        "title_en": "Warehouse Shelving and Storage Planning",
+        "title_ms": "Perancangan Rak dan Penyimpanan Gudang",
+        "title_zh": "雪兰莪仓库货架与仓储空间规划",
+        "image_url": "/images/services/ai-concepts/warehouse-concept.webp",
+        "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>\n\n<h2>How should a racking proposal relate to its quotation?</h2>\n<p>Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification.</p>\n<h2>Which scope and issue records should be retained at handover?</h2>\n<p>Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover issue-recording checklist</a> can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, <a href=\"/en/quote\">send the warehouse layout and goods information</a>.</p>",
+        "content_ms": "<h1>Perancangan Rak dan Penyimpanan Gudang</h1>\n<p>Susun atur gudang yang berkesan adalah lebih daripada mengisi lantai dengan rak. Dimensi barangan, kekerapan pergerakan, kaedah pengambilan stok, lorong, kawasan pemuatan dan peralatan sedia ada semuanya membentuk pelan. FLASH CAST membantu pengusaha gudang dan unit perindustrian di Selangor dan Lembah Klang menggabungkan keperluan ini dalam skop perancangan dan penyelarasan yang praktikal.</p>\n<p><strong>Nota visualisasi konsep:</strong> visual pada halaman ini ialah contoh susun atur storan dan perancangan pergerakan. Ia bukan projek siap, gambar gudang sebenar atau komitmen kapasiti beban.</p>\n<h2>Maklumat untuk Dikongsi Sebelum Merancang</h2>\n<ul><li>Maklumat dimensi dan berat untuk barangan, palet, karton dan peralatan.</li><li>Penerimaan, penyimpanan, pengambilan, penghantaran dan pemuatan harian.</li><li>Kedudukan capaian, laluan troli dan pintu pemuatan.</li><li>Lantai, tiang, pencahayaan, saliran dan perkhidmatan tapak sedia ada.</li></ul>\n<h2>Keutamaan Perancangan Penyimpanan</h2>\n<ul><li>Asingkan zon penerimaan, penyimpanan sementara, penyimpanan, pemilihan, pembungkusan dan penghantaran dengan jelas.</li><li>Letakkan barangan yang kerap diambil di kawasan yang mudah dicapai.</li><li>Pastikan laluan operasi dan penyelenggaraan sentiasa lapang.</li><li>Selaraskan rak, lantai, pencahayaan dan sebarang kerja pengubahsuaian yang berkaitan dalam satu skop yang jelas.</li></ul>\n<h2>Proses Perbincangan dan Penghantaran</h2>\n<ol><li>Semak penggunaan gudang, aliran barangan dan kesesakan semasa.</li><li>Semak pelan, pengukuran, aktiviti pemuatan dan kekangan peralatan.</li><li>Bincangkan pengezonan, arah rak dan penyelarasan tapak item.</li><li>Sahkan pengubahsuaian yang berkaitan atau skop kerja sokongan.</li><li>Teruskan dengan penyelarasan tapak dan semak terhadap skop yang dipersetujui.</li></ol>\n<h2>Perkhidmatan Berkaitan</h2>\n<p>Jika kawasan pejabat perlu bertukar pada masa yang sama, lihat <a href=\"/ms/services/office-renovation\">Pengubahsuaian Pejabat</a>. Jika dokumen permit atau pengubahsuaian mungkin berkaitan, lihat <a href=\"/ms/services/approval\">Sokongan Kelulusan Pengubahsuaian</a>. Gunakan <a href=\"/ms/quote\">Minta Perundingan Pengubahsuaian</a> untuk berkongsi pelan lantai, maklumat barangan dan foto tapak.</p>\n<h2>FAQs</h2>\n<h3>Apakah maklumat yang membantu dengan perbincangan awal?</h3><p>Pelan lantai, dimensi barangan dan peralatan, proses aliran barangan harian dan foto atau video tapak membantu mengenal pasti keutamaan pengukuran dan penyelarasan.</p>\n<h3>Bolehkah hanya sebahagian daripada gudang dilaraskan?</h3><p>Ya. Zon menerima, menahan, memilih atau bersebelahan pejabat boleh dibincangkan secara berasingan. Skop yang boleh dilaksanakan bergantung pada penggunaan dan keadaan tapak.</p>\n<h3>Adakah contoh perancangan menunjukkan tapak sebenar yang telah siap?</h3><p>No. Konsep visualisasi menerangkan aliran storan dan organisasi spatial. Konfigurasi akhir dan keperluan tapak mesti disahkan untuk barangan, peralatan dan kemudahan tertentu.</p>\n<p><a href=\"/ms/quote\">Minta Perundingan Pengubahsuaian</a></p>\n\n<h2>Bagaimanakah cadangan sistem rak harus dikaitkan dengan sebut harganya?</h2>\n<p>AMinta pihak yang bertanggungjawab untuk menentukan jenis rak, kuantiti, dimensi, tahap, semakan susun atur, pengendalian dan skop pemasangan, termasuk maklumat tapak yang masih belum diselesaikan. Untuk memuatkan, keadaan lantai, penetapan atau pengesahan kejuruteraan, minta dokumen pembekal untuk konfigurasi yang tepat dan tentukan sama ada penilaian profesional yang berkaitan diperlukan. Imej umum, projek serupa atau penyata beban terpencil tidak menetapkan kesesuaian untuk tapak ini. Halaman ini tidak membekalkan reka bentuk beban, jaminan berangka atau pensijilan kejuruteraan.</p>\n<h2>Apakah skop dan rekod keluaran yang perlu disimpan semasa penyerahan?</h2>\n<p>Review menghantar item dengan pihak yang bertanggungjawab terhadap susun atur, konfigurasi dan skop yang dipersetujui. Rakam lokasi, kerosakan yang boleh dilihat atau item tertunggak, foto, pemilikan dan pengaturan semak semula. Arahan, label, had penggunaan dan maklumat penyelenggaraan hendaklah sepadan dengan konfigurasi yang dihantar, dengan pemeriksaan khusus yang dijalankan oleh pihak bertanggungjawab yang dipersetujui. Senarai semak rakaman isu penyerahan <a href=\"/ms/blog/renovation-handover-defect-checklist-malaysia\">senarai semak rekod isu semasa serahan</a> boleh mengatur perbincangan; senarai semak pengubahsuaian am tidak memerlukan pensijilan keselamatan. Untuk membincangkan skop, <a href=\"/ms/quote\">hantar susun atur gudang dan maklumat barangan</a>.</p>",
+        "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>\n\n<h2>货架方案与报价要怎样对应？</h2>\n<p>请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。</p>\n<h2>交付时应留下哪些范围和问题记录？</h2>\n<p>按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付问题记录清单</a> 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，<a href=\"/zh/quote\">提交仓库平面与货物资料</a>。</p>",
+        "created_at": "2026-05-25T10:58:29.820388+00:00",
+        "excerpt_en": "Plan warehouse zones, shelving direction and storage flow around goods, pallet or carton dimensions, handling activity, equipment and site constraints in Selangor and the Klang Valley.",
+        "excerpt_ms": "Rancang zon gudang, arah rak dan aliran penyimpanan di sekeliling barangan, dimensi palet atau karton, aktiviti pengendalian, peralatan dan kekangan tapak di Selangor dan Lembah Klang.",
+        "excerpt_zh": "根据货物类型、托盘或箱体尺寸、拣货动线、设备和现场限制，协助梳理仓库货架与仓储空间规划方向，服务雪兰莪及巴生谷。",
+        "sort_order": 70,
+        "updated_at": "2026-10-23T17:55:59.461184+00:00",
+        "seo_title_en": "Warehouse Shelving & Storage Planning | FLASH CAST",
+        "seo_title_ms": "Perancangan Rak & Penyimpanan Gudang | FLASH CAST",
+        "seo_title_zh": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+        "scope_items_en": [
+          "Warehouse brief and goods-flow review",
+          "Site measurements and equipment constraints",
+          "Receiving, storage, picking and dispatch zoning",
+          "Shelving direction and aisle coordination",
+          "Related renovation and supporting-work scope",
+          "Site coordination and scope check"
+        ],
+        "scope_items_ms": [
+          "Semakan ukuran tapak",
+          "Perancangan sistem rak dan aliran kerja",
+          "Pembinaan tapak asas",
+          "Pemeriksaan pemasangan dan keselamatan"
+        ],
+        "scope_items_zh": [
+          "仓库用途与货物流向沟通",
+          "现场尺寸与设备条件核对",
+          "收货、存储、拣货与出库分区",
+          "货架方向与通道协调",
+          "相关装修与配套工作范围",
+          "现场协调与范围检查"
+        ],
+        "suitable_for_en": [
+          "Receiving zones",
+          "Holding and storage zones",
+          "Picking and packing zones",
+          "Warehouse-office transition zones"
+        ],
+        "suitable_for_ms": [
+          "Gudang",
+          "Unit perindustrian",
+          "Ruang logistik",
+          "Bilik simpanan"
+        ],
+        "suitable_for_zh": [
+          "收货区",
+          "暂存与存储区",
+          "拣货与包装区",
+          "仓库办公连接区"
+        ],
+        "process_steps_en": [
+          {
+            "desc": "Review warehouse use, goods flow and current bottlenecks.",
+            "title": "Review the brief"
+          },
+          {
+            "desc": "Check the plan, measurements, loading activity and equipment constraints.",
+            "title": "Check the site"
+          },
+          {
+            "desc": "Discuss zoning, shelving directions and site-coordination items.",
+            "title": "Discuss zoning"
+          },
+          {
+            "desc": "Confirm the related renovation or supporting-work scope.",
+            "title": "Confirm the scope"
+          }
+        ],
+        "process_steps_ms": [
+          {
+            "desc": "Sahkan saiz barangan, anggaran beban, penggunaan forklift, aliran penerimaan dan keperluan keselamatan.",
+            "title": "Semakan keperluan"
+          },
+          {
+            "desc": "Rancang sistem rak, lebar lorong, pencahayaan, ruang pejabat dan zon simpanan.",
+            "title": "Perancangan susun atur"
+          },
+          {
+            "desc": "Pasang sistem rak atau kerja fit-out, kemudian periksa akses, kestabilan dan butiran penyerahan.",
+            "title": "Pemasangan dan pemeriksaan keselamatan"
+          }
+        ],
+        "process_steps_zh": [
+          {
+            "desc": "了解仓库用途、货物流向和现有问题。",
+            "title": "了解需求"
+          },
+          {
+            "desc": "核对平面、尺寸、进出货与设备条件。",
+            "title": "核对现场"
+          },
+          {
+            "desc": "讨论分区、货架类型方向和施工协调事项。",
+            "title": "讨论分区"
+          },
+          {
+            "desc": "确认需要处理的装修或配套工作范围。",
+            "title": "确认范围"
+          }
+        ],
+        "common_projects_en": [
+          "Warehouse shelving zoning",
+          "Pallet and carton storage planning",
+          "Picking and packing flow",
+          "Receiving and dispatch areas"
+        ],
+        "common_projects_ms": [
+          "Sistem rak gudang",
+          "Ruang pejabat dalam gudang",
+          "Kerja lantai dan pencahayaan",
+          "Perancangan aliran kerja"
+        ],
+        "common_projects_zh": [
+          "仓库货架分区",
+          "托盘与箱体存储规划",
+          "拣货与包装动线",
+          "收货与出库区域"
+        ],
+        "seo_description_en": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley.",
+        "seo_description_ms": "Rancang aliran rak dan penyimpanan gudang di sekitar barangan, peralatan, lorong dan aktiviti pemuatan di Selangor dan Lembah Klang.",
+        "seo_description_zh": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+      },
+      "desired": {
+        "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>\n\n<h2>货架方案与报价要怎样对应？</h2>\n<p>请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。</p>\n<h2>交付时应留下哪些范围和问题记录？</h2>\n<p>按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付问题记录清单</a> 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，<a href=\"/zh/quote\">提交仓库平面与货物资料</a>。</p>\n<h2>开始前怎样确认负责方与实际范围？</h2><p>由仓库使用方确认日常作业与进出场限制，并请货架供应或安装负责方核对拟用配置及所需资料。开始前将布局版本、供货、安装、通道或地面标线、现场配合及检查责任分别写入确认范围。FLASH CAST 已确认的仓储业务包括货架、通道规划、地面标线和存储分区；不能由此推定包含整套工业厂房装修、消防、结构或承载设计及专业签署。</p><h2>哪些费用需要在报价中另行说明？</h2><p>除已列明的货架配置外，询问搬运安装、旧设施处理、地面标线、保护清运及现场协调是否包含，并将排除项目和仍待现场或供应方确认的工作单列。先提供地址、平面和货物资料，再确认现场安排。报价免费；上门量房在30公里以内免费，超过30公里收费，预约前先核对地点与收费。</p>",
+        "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>\n\n<h2>How should a racking proposal relate to its quotation?</h2>\n<p>Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification.</p>\n<h2>Which scope and issue records should be retained at handover?</h2>\n<p>Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover issue-recording checklist</a> can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, <a href=\"/en/quote\">send the warehouse layout and goods information</a>.</p>\n<h2>Who should confirm the work before it starts?</h2><p>The warehouse operator should confirm daily operations and access restrictions, while the responsible rack supplier or installer checks the proposed configuration and required information. Record the layout revision and separate responsibilities for supply, installation, aisles or floor markings, site coordination and checks before starting. FLASH CAST’s confirmed warehouse scope includes shelving, aisle planning, floor markings and storage zones; this does not establish a complete industrial fit-out, fire, structural or load design service, or professional sign-off.</p><h2>Which costs need separate confirmation?</h2><p>Beyond the stated rack configuration, ask whether handling and installation, existing-installation removal, floor markings, protection, waste removal and site coordination are included. List exclusions and work awaiting site or supplier confirmation separately. Share the address, plan and goods information before arranging a visit. Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking.</p>"
+      },
+      "forward_tuple": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "publish-next12-warehouse-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-warehouse-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:1fab3adb-aa8c-4aab-9c30-8931152cdc91:content_en,content_zh",
+        "physical_target_scope": "flashcast.com.my:services:1fab3adb-aa8c-4aab-9c30-8931152cdc91:content_en,content_zh",
+        "business_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "business_policy_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "table": "services",
+        "record_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+        "slug": "warehouse",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "original_professional_owner": "content-organic-website",
+        "content_integration_department": "content-organic-website",
+        "authority_department": "content-organic-website",
+        "execution_department": "publishing",
+        "risk_level": "R2"
+      },
+      "conditional_inverse": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "rollback-next12-warehouse-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-warehouse-fbe13ee7-cms-v1-rollback-v1",
+        "scope": "flashcast.com.my:services:1fab3adb-aa8c-4aab-9c30-8931152cdc91:content_en,content_zh",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "restore_only_original_two_fields": {
+          "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>\n\n<h2>货架方案与报价要怎样对应？</h2>\n<p>请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。</p>\n<h2>交付时应留下哪些范围和问题记录？</h2>\n<p>按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付问题记录清单</a> 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，<a href=\"/zh/quote\">提交仓库平面与货物资料</a>。</p>",
+          "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>\n\n<h2>How should a racking proposal relate to its quotation?</h2>\n<p>Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification.</p>\n<h2>Which scope and issue records should be retained at handover?</h2>\n<p>Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover issue-recording checklist</a> can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, <a href=\"/en/quote\">send the warehouse layout and goods information</a>.</p>"
+        },
+        "requiresParentRun": true,
+        "parentPermitId": null,
+        "parentRunId": null,
+        "saved_updated_at": null,
+        "current_post_Save_complete_row": null,
+        "both_current_fields_must_equal_exact_forward": true,
+        "new_independent_inverse_policy_and_permit_required": true,
+        "full_row_raw_restore_forbidden": true
+      },
+      "baseline_is_current_CAS": false,
+      "original_PUB_full41_pin": {
+        "path": "backups/fc-20261016-industry-keyword-next-twelve-pages-v1/five-services-ten-field-readonly-binding-20261027-v1/warehouse-authenticated-full41-before.json",
+        "sha256": "4343d8c671e684b82a322c11f22bf099d84b86766ce07a598840218d4a662421",
+        "size": 19682
+      },
+      "public_paths": [
+        {
+          "path": "/en/services/warehouse",
+          "expected": "Warehouse Shelving & Storage Planning | FLASH CAST",
+          "strictMetadataTitle": true
+        },
+        {
+          "path": "/zh/services/warehouse",
+          "expected": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+          "strictMetadataTitle": true
+        }
+      ]
+    },
+    {
+      "runtime_target": {
+        "id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+        "slug": "bathroom",
+        "contentType": "service",
+        "table": "services",
+        "taskId": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "actionId": "publish-next12-bathroom-fbe13ee7-cms-v1",
+        "candidateVersion": "next12-bathroom-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:0f294e6d-2e2c-4f13-a93f-096728ccc6af:content_en,content_zh",
+        "changedFields": [
+          "content_en",
+          "content_zh"
+        ],
+        "baselineProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_en",
+          "content_ms",
+          "content_zh",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh",
+          "updated_at",
+          "version"
+        ],
+        "baselineFieldsSha256": "b33cdaa5b69ab20fc4cbe32acf7e1a607bfb08ca8971d99184c8e5d71ad1d21f",
+        "desiredFieldsSha256": "8010cf4a40a9b976f7e221008cab1c59ccefa21e26063360d3b2f9b0d183ad97",
+        "rollbackFieldsSha256": "b28494ba8898a21be18d037b1a34962aac94e5ee651634776fb71cfe1e2a5cd1",
+        "expectedUpdatedAt": "2026-10-19T13:38:41.340877+00:00",
+        "retainedProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_ms",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh"
+        ],
+        "retainedFieldsSha256": "a934771afd6daf2c328f299689f3e2f421600b1a3535228c76c96a88c48cbe36",
+        "rollbackAllowed": true,
+        "requiresParentRun": true
+      },
+      "before": {
+        "id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+        "slug": "bathroom",
+        "alt_en": "Bathroom renovation and waterproofing design concept in Kuala Lumpur showing shower area, tiles and vanity planning",
+        "alt_ms": "Konsep reka bentuk pengubahsuaian bilik mandi dan kalis air di Kuala Lumpur menunjukkan kawasan pancuran mandian, jubin dan perancangan meja solek",
+        "alt_zh": "吉隆坡浴室装修与防水工程效果图方案，展示淋浴区、瓷砖和浴室柜规划",
+        "status": "published",
+        "faqs_en": [
+          {
+            "a": "Not always. The right scope depends on the leak source, waterproofing, drainage, tiles and fittings. A site review should come first.",
+            "q": "Does bathroom leakage always require a full renovation?"
+          },
+          {
+            "a": "Prepare bathroom photos, size, main issues, the items you want to replace, and any building-management restrictions on work timing.",
+            "q": "What should I prepare before starting a bathroom renovation?"
+          },
+          {
+            "a": "Bathroom leakage can come from floor areas, wall corners, pipe penetrations, floor traps, thresholds, or even adjacent areas. Checking the scope first helps decide whether waterproofing, drainage adjustment, or tile replacement is needed.",
+            "q": "Why should waterproofing scope be checked first?"
+          },
+          {
+            "a": "Size, demolition, waterproofing, drainage, plumbing, tiles, fittings, shower screen, vanity and reinstatement needs affect the quotation.",
+            "q": "What affects a bathroom renovation quotation?"
+          },
+          {
+            "a": "Yes. A clearly labeled concept can support planning, but it is not proof of a completed customer project.",
+            "q": "Can a bathroom rendering be prepared first?"
+          },
+          {
+            "a": "Requirements vary by building. Confirm working hours, protection, deposits, forms and documents with the property management.",
+            "q": "Does a condo bathroom renovation need management approval?"
+          }
+        ],
+        "faqs_ms": [
+          {
+            "a": "Jika berlaku kebocoran, jubin berongga atau kerja perobohan besar, lapisan kalis air disyorkan untuk diperbaharui.",
+            "q": "Perlukah lapisan kalis air dibuat semula?"
+          }
+        ],
+        "faqs_zh": [
+          {
+            "a": "不一定。合适范围取决于漏水来源、防水、排水、瓷砖与洁具，建议先查看现场。",
+            "q": "浴室漏水一定要全部翻新吗？"
+          },
+          {
+            "a": "建议先准备浴室照片、面积、主要问题、希望更换的项目，以及公寓或管理处对施工时间的限制。",
+            "q": "浴室装修前需要准备什么资料？"
+          },
+          {
+            "a": "浴室漏水可能来自地面、墙角、管口、地漏、门槛或楼上/隔壁位置。先确认范围，才能判断是否需要重做防水、调整排水或更换瓷砖。",
+            "q": "浴室防水为什么要先检查范围？"
+          },
+          {
+            "a": "尺寸、拆除、防水、排水、水管、瓷砖、洁具、淋浴屏、浴室柜与恢复工程都会影响报价。",
+            "q": "哪些因素会影响浴室装修报价？"
+          },
+          {
+            "a": "可以。清楚标注的概念图可用于规划，但不作为真实客户完工项目证明。",
+            "q": "可以先准备浴室效果图吗？"
+          },
+          {
+            "a": "不同大楼要求不同，应向管理处确认施工时段、保护、押金、表格与所需资料。",
+            "q": "公寓浴室装修需要管理处批准吗？"
+          }
+        ],
+        "version": 1,
+        "title_en": "Bathroom Renovation and Waterproofing",
+        "title_ms": "Pengubahsuaian Bilik Mandi dan Kalis Air",
+        "title_zh": "浴室装修与防水工程",
+        "image_url": "/images/services/bathroom-renovation.webp",
+        "content_en": "<p>A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.</p><h2>How should demolition, waterproofing and fittings be scoped separately?</h2><p>Share current leakage or usability issues, bathroom photos and the items you want to retain or replace. Review drainage, pipes, floor traps, wall and floor finishes, waterproofing, fittings and vanity coordination on site, then distinguish removal, repairs, new installation and reinstatement in the quotation. Inspection, work and acceptance requirements follow the site and agreed scope.</p><h2>What daily-use arrangements should be discussed before bathroom work?</h2><p>Explain whether the home is occupied, whether another bathroom is available, and any access or building work-hour restrictions. Discuss material delivery, protection of adjacent areas, removal of waste, work dependencies and periods that may affect bathroom use. Actual arrangements depend on the site and agreed work.</p><h2>How can bathroom materials and quotation items be compared?</h2><p>List wall and floor tiles, fittings, shower screens, vanity units and other items to retain or replace. Check specifications, quantities and whether plumbing changes, waterproofing and reinstatement are included. Record inspection-dependent items and optional upgrades separately, and compare the written scope rather than images or totals alone.</p><p>Continue planning: <a href=\"/en/services/renovation\">Residential renovation</a>; <a href=\"/en/materials\">Material library</a>; <a href=\"/en/quote\">Bathroom renovation enquiry</a></p>",
+        "content_ms": "Pengubahsuaian bilik mandi <p>Bilik mandi yang selesa bukan sekadar bergantung pada pilihan jubin dan kelengkapan. Ketahanan serta kemudahan penggunaan bergantung pada skop kalis air, cerun saliran, kedudukan perangkap lantai, jubin dinding dan lantai, skrin pancuran, ruang simpanan, kedudukan tandas, pengudaraan, pencahayaan dan akses penyelenggaraan. Selepas menyemak tapak, FLASH CAST boleh membantu menyelaraskan perancangan kalis air, pemilihan serta pemasangan jubin, semakan paip dan kerja pengubahsuaian mengikut skop yang dipersetujui.</p><h2>Bagaimanakah perobohan, kalis air dan kelengkapan perlu diskop secara berasingan?</h2><p>Kongsi masalah kebocoran atau kesukaran penggunaan yang sedang dihadapi. Semak saliran, paip, perangkap lantai, kemasan dinding dan lantai, kalis air, kelengkapan dan kedudukan kabinet meja solek di tapak, kemudian bezakan pengalihan, pembaikan, pemasangan baharu dan pemulihan keadaan asal dalam sebut harga. Keperluan pemeriksaan, kerja dan penerimaan mengikut tapak dan skop yang dipersetujui.</p><h2>Apakah aturan penggunaan harian yang perlu dibincangkan sebelum kerja bilik mandi?</h2><p>Terangkan sama ada rumah itu diduduki, sama ada bilik mandi lain tersedia dan sebarang sekatan waktu kerja akses atau bangunan. Bincangkan penghantaran bahan, perlindungan kawasan bersebelahan, penyingkiran sisa, kebergantungan kerja dan tempoh yang boleh menjejaskan penggunaan bilik mandi. Susunan sebenar bergantung pada tapak dan kerja yang dipersetujui.</p><h2>Bagaimanakah bahan bilik mandi dan item sebut harga boleh dibandingkan?</h2><p>Senaraikan jubin dinding dan lantai, kelengkapan, skrin pancuran mandian, unit meja solek dan barang lain untuk disimpan atau diganti. Semak spesifikasi, kuantiti dan sama ada perubahan paip, kalis air dan pemulihan keadaan asal disertakan. Catatkan item yang bergantung kepada pemeriksaan dan peningkatan pilihan secara berasingan, dan bandingkan skop bertulis daripada imej atau jumlah sahaja.</p><p>Teruskan perancangan: <a href=\"/ms/services/renovation\">Pengubahsuaian kediaman</a>; <a href=\"/ms/materials\">Perpustakaan bahan</a>; <a href=\"/ms/quote\">Pertanyaan pengubahsuaian bilik mandi</a></p>",
+        "content_zh": "<p>浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。</p><h2>拆改、防水和洁具怎样分别确认范围？</h2><p>先提供现有漏水或使用问题、浴室照片及希望保留或更换的项目。现场核对排水、水管、地漏、墙地面、防水、洁具和浴室柜之间的衔接，再把拆除、维修、新装和恢复工程分开列入报价。具体检查、施工及验收要求以现场条件和确认范围为准。</p><h2>施工期间的日常使用安排要先确认什么？</h2><p>说明住宅是否有人居住、是否有其他可用浴室、进出场和物业施工时段限制。与团队确认材料搬运、相邻区域保护、清运和各工序衔接，以及哪些时段可能影响浴室使用；实际安排需按现场和施工范围确认。</p><h2>怎样比较浴室装修的材料与报价项目？</h2><p>对照需要保留与更换的墙地砖、洁具、淋浴屏、浴室柜和其他项目，核对规格、数量、给排水调整、防水和恢复工程是否包含。把待检查事项与可选升级分开记录，按书面范围比较，而不是只比较照片或总价。</p><p>继续了解：<a href=\"/zh/services/renovation\">住宅装修范围</a>；<a href=\"/zh/materials\">材料库</a>；<a href=\"/zh/quote\">浴室装修报价咨询</a></p>",
+        "created_at": "2026-05-25T10:58:29.820388+00:00",
+        "excerpt_en": "Bathroom renovation and waterproofing planning for homes, condos, old-house upgrades, rental units, and resale units, including leakage review, tile works, drainage, sanitary fittings, shower screen planning, ventilation, storage, and quotation scope.",
+        "excerpt_ms": "Perancangan pengubahsuaian bilik mandi dan kalis air untuk rumah, kondo, naik taraf rumah lama, unit sewaan dan unit jualan semula, termasuk semakan kebocoran, kerja jubin, saliran, kelengkapan kebersihan, perancangan skrin pancuran mandian, pengudaraan, penyimpanan dan skop sebut harga.",
+        "excerpt_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括漏水检查、瓷砖、排水、洁具、shower screen、浴室柜、通风和报价咨询。",
+        "sort_order": 30,
+        "updated_at": "2026-10-19T13:38:41.340877+00:00",
+        "seo_title_en": "Bathroom Renovation Malaysia | FLASH CAST",
+        "seo_title_ms": "Pengubahsuaian Bilik Mandi di Malaysia | FLASH CAST",
+        "seo_title_zh": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation",
+        "scope_items_en": [
+          "Bathroom Waterproofing Scope",
+          "Wall & Floor Tiling",
+          "Drainage Slope and Floor Trap Review",
+          "Shower Screen Planning",
+          "Toilet, Basin, Tap and Mixer Positions",
+          "Vanity Cabinet and Mirror Cabinet",
+          "Plumbing and Water Supply",
+          "Water Heater and Electrical Points",
+          "Lighting and Ventilation",
+          "Moisture-Resistant Material Direction",
+          "Bathroom Rendering Concept"
+        ],
+        "scope_items_ms": [
+          "Menanggalkan jubin dan kelengkapan lama",
+          "Kerja kalis air dan saliran",
+          "Pemasangan jubin dan kelengkapan",
+          "Ujian takungan air dan kerja kemasan"
+        ],
+        "scope_items_zh": [
+          "浴室防水范围",
+          "墙砖与地砖",
+          "排水坡度和地漏检查",
+          "Shower screen 规划",
+          "马桶、洗手盆、龙头和花洒点位",
+          "浴室柜与镜柜",
+          "给排水位置",
+          "热水器和电源点位",
+          "灯光与通风",
+          "防潮材料方向",
+          "浴室效果图方案"
+        ],
+        "suitable_for_en": [
+          "Homeowners with bathroom leakage, mold, or waterproofing concerns",
+          "Owners replacing old tiles, old sanitary fittings, or outdated bathroom cabinets",
+          "Condo owners who need bathroom renovation under management rules",
+          "Old-house renovation clients coordinating bathroom, kitchen, plumbing, wiring, and waterproofing",
+          "Landlords or sellers preparing a unit with a practical bathroom upgrade"
+        ],
+        "suitable_for_ms": [
+          "Bilik mandi di kondo",
+          "Bilik mandi di rumah lama",
+          "Bilik mandi en suite",
+          "Tandas komersial"
+        ],
+        "suitable_for_zh": [
+          "浴室漏水、墙地面发霉或防水需要重新检查的业主",
+          "旧瓷砖、旧洁具、旧浴室柜需要翻新的屋主",
+          "公寓业主需要在管理处规定下安排浴室装修",
+          "旧屋翻新客户需要浴室、厨房、水电和防水一起协调",
+          "出租单位或转售单位需要基础浴室升级的业主"
+        ],
+        "process_steps_en": [
+          {
+            "desc": "Check leakage signs, floor slope, floor trap, drainage pipes, hollow tiles, existing fittings, water heater, electrical points, ventilation, and management requirements. Before the visit, mark the area that sounds hollow on a simple sketch and note when you first noticed it. Photograph the whole bathroom and close-ups; note visible cracks, gaps in grout or nearby dampness. Share these notes during the site review. A hollow sound alone does not confirm the cause or determine how much tile or waterproofing work is needed; agree the scope after checking the actual site.",
+            "title": "Site Inspection"
+          },
+          {
+            "desc": "Review wet-area usage, wall and floor scope, shower area, pipe penetrations, wall corners, thresholds, and drainage condition.",
+            "title": "Waterproofing Scope"
+          },
+          {
+            "desc": "Plan wall tiles, floor tiles, sanitary fittings, shower screen, vanity cabinet, mirror cabinet, ventilation, and maintenance access.",
+            "title": "Tile & Fitting Direction"
+          },
+          {
+            "desc": "Confirm whether hacking, waterproofing, drainage, plumbing, tile works, fittings, cabinets, shower screen, or rendering concepts are included.",
+            "title": "Scope & Quotation"
+          },
+          {
+            "desc": "Coordinate the confirmed bathroom scope after site conditions, materials, and quotation are approved.",
+            "title": "Renovation Coordination"
+          }
+        ],
+        "process_steps_ms": [
+          {
+            "desc": "Periksa kebocoran, saliran, keadaan jubin, pengudaraan dan lapisan kalis air sedia ada.",
+            "title": "Pemeriksaan"
+          },
+          {
+            "desc": "Susun kerja perobohan, pembetulan cerun, kalis air, pemasangan jubin dan kelengkapan.",
+            "title": "Kerja basah"
+          },
+          {
+            "desc": "Semak keputusan ujian takungan air, saliran dan kemasan. Bersihkan ruang sebelum penyerahan.",
+            "title": "Ujian dan penyerahan"
+          }
+        ],
+        "process_steps_zh": [
+          {
+            "desc": "检查漏水位置、地面坡度、地漏、排水管、墙面空鼓、现有洁具、热水器、电源、通风和管理处要求。现场评估前，可在简图上标出听起来空鼓的位置，并记下首次发现的时间。拍摄浴室全景和近照；记录可见裂纹、填缝开裂或附近潮湿等情况，并在现场一并说明。仅凭空鼓声无法确认原因，也不能判断需处理多少瓷砖或防水范围；工程范围应按实际现场确认。",
+            "title": "现场检查"
+          },
+          {
+            "desc": "确认湿区使用方式、墙地面范围、淋浴区、管口、墙角、门槛和排水条件。",
+            "title": "防水范围"
+          },
+          {
+            "desc": "规划墙砖、地砖、洁具、shower screen、浴室柜、镜柜、通风和维护便利性。",
+            "title": "瓷砖与洁具方向"
+          },
+          {
+            "desc": "确认是否包含拆除、防水、排水、给水、瓷砖、洁具、浴室柜、shower screen 或效果图方案。",
+            "title": "范围与报价"
+          },
+          {
+            "desc": "在现场条件、材料和报价确认后，协调已确认的浴室装修范围。",
+            "title": "装修协调"
+          }
+        ],
+        "common_projects_en": [
+          "Bathroom waterproofing scope and site inspection",
+          "Wall tiles, floor tiles, niche, backsplash, and edge finishing direction",
+          "Shower screen, shower area, wet/dry separation, and drainage slope",
+          "Toilet, basin, tap, mixer, bidet, and sanitary fitting positions",
+          "Vanity cabinet, mirror cabinet, storage, and countertop direction",
+          "Drainage, water supply, water heater, socket, and lighting planning",
+          "Bathroom rendering concept or bathroom design concept"
+        ],
+        "common_projects_ms": [
+          "Kerja memperbaharui lapisan kalis air",
+          "Penggantian jubin",
+          "Pemasangan kelengkapan sanitari",
+          "Skrin pancuran dan meja solek"
+        ],
+        "common_projects_zh": [
+          "浴室防水范围与现场检查",
+          "墙砖、地砖、niche、backsplash 和收口方向",
+          "Shower screen、淋浴区、干湿分区和排水坡度",
+          "马桶、洗手盆、龙头、花洒、bidet 和洁具点位",
+          "洗手盆柜、镜柜、收纳和台面方向",
+          "排水、给水、电热水器、插座和灯光规划",
+          "浴室效果图方案或 bathroom design concept"
+        ],
+        "seo_description_en": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice.",
+        "seo_description_ms": "FLASH CAST menyediakan pengubahsuaian bilik mandi di Kuala Lumpur, Selangor dan Lembah Klang, meliputi kalis air, kerja jubin, saliran, kelengkapan kebersihan, perancangan skrin pancuran mandian, penyimpanan meja solek dan nasihat sebut harga.",
+        "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。"
+      },
+      "desired": {
+        "content_zh": "<p>浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。</p><h2>拆改、防水和洁具怎样分别确认范围？</h2><p>先提供现有漏水或使用问题、浴室照片及希望保留或更换的项目。现场核对排水、水管、地漏、墙地面、防水、洁具和浴室柜之间的衔接，再把拆除、维修、新装和恢复工程分开列入报价。具体检查、施工及验收要求以现场条件和确认范围为准。</p><h2>施工期间的日常使用安排要先确认什么？</h2><p>说明住宅是否有人居住、是否有其他可用浴室、进出场和物业施工时段限制。与团队确认材料搬运、相邻区域保护、清运和各工序衔接，以及哪些时段可能影响浴室使用；实际安排需按现场和施工范围确认。</p><h2>怎样比较浴室装修的材料与报价项目？</h2><p>对照需要保留与更换的墙地砖、洁具、淋浴屏、浴室柜和其他项目，核对规格、数量、给排水调整、防水和恢复工程是否包含。把待检查事项与可选升级分开记录，按书面范围比较，而不是只比较照片或总价。</p><p>继续了解：<a href=\"/zh/services/renovation\">住宅装修范围</a>；<a href=\"/zh/materials\">材料库</a>；<a href=\"/zh/quote\">浴室装修报价咨询</a></p>\n<h2>洁具布局和交付怎样留下可核对的记录？</h2><p>在平面资料上标明门的开启、洁具尺寸、淋浴区、现有给排水位置和日常使用需要，由业主确认偏好、负责工种现场核对可行性后，再确认布局与材料版本。示意图不能代替漏水诊断或专业检查。开工前写明各项工作的负责方与未包含项目；交付时按确认范围记录未完成事项、位置、照片、联系负责人和复查安排，不预设保修或验收结论。</p><h2>咨询与量房的收费怎样确认？</h2><p>报价免费；上门量房在30公里以内免费，超过30公里收费。先提供项目地点再确认预约及收费，施工、材料和需要另行确认的检查费用以书面范围为准。</p>",
+        "content_en": "<p>A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.</p><h2>How should demolition, waterproofing and fittings be scoped separately?</h2><p>Share current leakage or usability issues, bathroom photos and the items you want to retain or replace. Review drainage, pipes, floor traps, wall and floor finishes, waterproofing, fittings and vanity coordination on site, then distinguish removal, repairs, new installation and reinstatement in the quotation. Inspection, work and acceptance requirements follow the site and agreed scope.</p><h2>What daily-use arrangements should be discussed before bathroom work?</h2><p>Explain whether the home is occupied, whether another bathroom is available, and any access or building work-hour restrictions. Discuss material delivery, protection of adjacent areas, removal of waste, work dependencies and periods that may affect bathroom use. Actual arrangements depend on the site and agreed work.</p><h2>How can bathroom materials and quotation items be compared?</h2><p>List wall and floor tiles, fittings, shower screens, vanity units and other items to retain or replace. Check specifications, quantities and whether plumbing changes, waterproofing and reinstatement are included. Record inspection-dependent items and optional upgrades separately, and compare the written scope rather than images or totals alone.</p><p>Continue planning: <a href=\"/en/services/renovation\">Residential renovation</a>; <a href=\"/en/materials\">Material library</a>; <a href=\"/en/quote\">Bathroom renovation enquiry</a></p>\n<h2>How can the fixture layout and handover be checked against a record?</h2><p>Mark door swings, fitting dimensions, the shower area, existing water and drainage points, and everyday-use needs on the plan. The owner confirms preferences and the responsible trades check feasibility on site before the layout and material revision is agreed. A sketch does not replace leakage diagnosis or specialist checks. Record work ownership and exclusions before starting. At handover, log outstanding items, locations, photos, the responsible contact and recheck arrangements against the agreed scope, without assuming a warranty or acceptance outcome.</p><h2>How are consultation and measurement charges confirmed?</h2><p>Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km. Share the project location before confirming the appointment and charge. Construction, materials and any separately required checks follow the written scope.</p>"
+      },
+      "forward_tuple": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "publish-next12-bathroom-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-bathroom-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:0f294e6d-2e2c-4f13-a93f-096728ccc6af:content_en,content_zh",
+        "physical_target_scope": "flashcast.com.my:services:0f294e6d-2e2c-4f13-a93f-096728ccc6af:content_en,content_zh",
+        "business_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "business_policy_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "table": "services",
+        "record_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+        "slug": "bathroom",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "original_professional_owner": "content-organic-website",
+        "content_integration_department": "content-organic-website",
+        "authority_department": "content-organic-website",
+        "execution_department": "publishing",
+        "risk_level": "R2"
+      },
+      "conditional_inverse": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "rollback-next12-bathroom-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-bathroom-fbe13ee7-cms-v1-rollback-v1",
+        "scope": "flashcast.com.my:services:0f294e6d-2e2c-4f13-a93f-096728ccc6af:content_en,content_zh",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "restore_only_original_two_fields": {
+          "content_zh": "<p>浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。</p><h2>拆改、防水和洁具怎样分别确认范围？</h2><p>先提供现有漏水或使用问题、浴室照片及希望保留或更换的项目。现场核对排水、水管、地漏、墙地面、防水、洁具和浴室柜之间的衔接，再把拆除、维修、新装和恢复工程分开列入报价。具体检查、施工及验收要求以现场条件和确认范围为准。</p><h2>施工期间的日常使用安排要先确认什么？</h2><p>说明住宅是否有人居住、是否有其他可用浴室、进出场和物业施工时段限制。与团队确认材料搬运、相邻区域保护、清运和各工序衔接，以及哪些时段可能影响浴室使用；实际安排需按现场和施工范围确认。</p><h2>怎样比较浴室装修的材料与报价项目？</h2><p>对照需要保留与更换的墙地砖、洁具、淋浴屏、浴室柜和其他项目，核对规格、数量、给排水调整、防水和恢复工程是否包含。把待检查事项与可选升级分开记录，按书面范围比较，而不是只比较照片或总价。</p><p>继续了解：<a href=\"/zh/services/renovation\">住宅装修范围</a>；<a href=\"/zh/materials\">材料库</a>；<a href=\"/zh/quote\">浴室装修报价咨询</a></p>",
+          "content_en": "<p>A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.</p><h2>How should demolition, waterproofing and fittings be scoped separately?</h2><p>Share current leakage or usability issues, bathroom photos and the items you want to retain or replace. Review drainage, pipes, floor traps, wall and floor finishes, waterproofing, fittings and vanity coordination on site, then distinguish removal, repairs, new installation and reinstatement in the quotation. Inspection, work and acceptance requirements follow the site and agreed scope.</p><h2>What daily-use arrangements should be discussed before bathroom work?</h2><p>Explain whether the home is occupied, whether another bathroom is available, and any access or building work-hour restrictions. Discuss material delivery, protection of adjacent areas, removal of waste, work dependencies and periods that may affect bathroom use. Actual arrangements depend on the site and agreed work.</p><h2>How can bathroom materials and quotation items be compared?</h2><p>List wall and floor tiles, fittings, shower screens, vanity units and other items to retain or replace. Check specifications, quantities and whether plumbing changes, waterproofing and reinstatement are included. Record inspection-dependent items and optional upgrades separately, and compare the written scope rather than images or totals alone.</p><p>Continue planning: <a href=\"/en/services/renovation\">Residential renovation</a>; <a href=\"/en/materials\">Material library</a>; <a href=\"/en/quote\">Bathroom renovation enquiry</a></p>"
+        },
+        "requiresParentRun": true,
+        "parentPermitId": null,
+        "parentRunId": null,
+        "saved_updated_at": null,
+        "current_post_Save_complete_row": null,
+        "both_current_fields_must_equal_exact_forward": true,
+        "new_independent_inverse_policy_and_permit_required": true,
+        "full_row_raw_restore_forbidden": true
+      },
+      "baseline_is_current_CAS": false,
+      "original_PUB_full41_pin": {
+        "path": "backups/fc-20261016-industry-keyword-next-twelve-pages-v1/five-services-ten-field-readonly-binding-20261027-v1/bathroom-authenticated-full41-before.json",
+        "sha256": "b85d89bcb006078cbe1ab4690ca1053d41468c200b2c87d5f533a85847f21ef6",
+        "size": 17575
+      },
+      "public_paths": [
+        {
+          "path": "/en/services/bathroom",
+          "expected": "Bathroom Renovation Malaysia | FLASH CAST",
+          "strictMetadataTitle": true
+        },
+        {
+          "path": "/zh/services/bathroom",
+          "expected": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation | FLASH CAST SDN. BHD.",
+          "strictMetadataTitle": true
+        }
+      ]
+    },
+    {
+      "runtime_target": {
+        "id": "22782cff-239c-45ec-8075-9deaa5932269",
+        "slug": "flooring",
+        "contentType": "service",
+        "table": "services",
+        "taskId": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "actionId": "publish-next12-flooring-fbe13ee7-cms-v1",
+        "candidateVersion": "next12-flooring-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:22782cff-239c-45ec-8075-9deaa5932269:content_en,content_zh",
+        "changedFields": [
+          "content_en",
+          "content_zh"
+        ],
+        "baselineProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_en",
+          "content_ms",
+          "content_zh",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh",
+          "updated_at",
+          "version"
+        ],
+        "baselineFieldsSha256": "42c3add540f5efcc7a61cf868a2a028ae5f9bef1919cb90aea4dbb1d386e2d30",
+        "desiredFieldsSha256": "d06d0c1158375d2fe2db5f98e693b35bc9bcf01c884e478fbc0df19e9325b19a",
+        "rollbackFieldsSha256": "a63fd663aa3b91b531a150d2f6a38b5e3b0623b3d81cf302ec060b4299efbd04",
+        "expectedUpdatedAt": "2026-10-19T13:38:46.016893+00:00",
+        "retainedProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_ms",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh"
+        ],
+        "retainedFieldsSha256": "0586c01f603c1e4af221fc31e57b0c95cb9fa7e975c302c0ad8d637cd3dbe48f",
+        "rollbackAllowed": true,
+        "requiresParentRun": true
+      },
+      "before": {
+        "id": "22782cff-239c-45ec-8075-9deaa5932269",
+        "slug": "flooring",
+        "alt_en": "Flooring material and interior concept image",
+        "alt_ms": "Bahan lantai dan imej konsep dalaman",
+        "alt_zh": "地板材质与空间效果图（示意）",
+        "status": "published",
+        "faqs_en": [
+          {
+            "a": "Please share your location, space type, area, and site photos. We will review the requirements and arrange the next discussion.",
+            "q": "What details are useful for a flooring consultation?"
+          },
+          {
+            "a": "Yes. We can discuss a direction based on the site information and intended use; the final scope and quotation follow the confirmed requirements.",
+            "q": "Can we discuss budget and material direction first?"
+          }
+        ],
+        "faqs_ms": [
+          {
+            "a": "Sila kongsi lokasi, jenis ruang, kawasan dan foto tapak anda. Kami akan menyemak keperluan dan mengatur perbincangan seterusnYa.",
+            "q": "Apakah butiran yang berguna untuk perundingan lantai?"
+          },
+          {
+            "a": "Ya. Kita boleh membincangkan arah berdasarkan maklumat tapak dan penggunaan yang dimaksudkan; skop akhir dan sebut harga mengikut keperluan yang disahkan.",
+            "q": "Bolehkah kita membincangkan anggaran dan hala tuju bahan terlebih dahulu?"
+          }
+        ],
+        "faqs_zh": [
+          {
+            "a": "请提供地区、空间类型、面积及现场照片，我们会先了解需求并安排下一步沟通。",
+            "q": "开始地板项目咨询需要什么资料？"
+          },
+          {
+            "a": "可以。我们会先根据使用需求和现场资料沟通方向；最终范围和报价以确认内容为准。",
+            "q": "可以先沟通预算和材料方向吗？"
+          }
+        ],
+        "version": 1,
+        "title_en": "Flooring Services and Project Consultation",
+        "title_ms": "Perkhidmatan Lantai dan Perundingan Projek",
+        "title_zh": "地板服务与方案沟通",
+        "image_url": "/images/materials/category-flooring.webp",
+        "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>\n\n<h2>What should you prepare for a flooring quotation?</h2>\n<p>Alongside the location, area and photos, list each room's use, existing floor, items to retain or replace, and adjoining doors, cabinetry and spaces. Note furniture removal, access and working-hour restrictions, and any known moisture, loose areas or changes in level. Photos and approximate measurements support an initial discussion; they do not replace a site assessment or the selected product's installation requirements.</p>\n<h2>Which items should be separated when comparing quotations?</h2>\n<p>Compare the same room list and material specification. Ask whether existing-floor work, substrate preparation, materials and installation, skirting and trims, doorway transitions, furniture moving, protection and disposal are included. Mark unresolved items as pending confirmation and review changes when the product or scope changes. A price per area alone does not establish that two proposals cover the same work.</p>\n<h2>Review material questions before confirming the site scope</h2>\n<p>Start with the <a href=\"/en/blog/spc-vinyl-vs-laminate-flooring\">SPC, vinyl and laminate comparison guide</a> to organise questions about the exact model, use, care and installation conditions. Where other rooms or trades are involved, review <a href=\"/en/services/renovation\">residential renovation planning</a>, then send the details through the <a href=\"/en/quote\">free quotation form</a>. A catalogue or reference article does not confirm stock, certification or inclusion in a quotation.</p>",
+        "content_ms": "<p>Setiap projek lantai harus mengambil kira keadaan tapak, kegunaan harian dan pelan pengubahsuaian yang lebih luas. FLASH CAST mula-mula menyemak ruang anda, kemudian membincangkan arah bahan, skop dan keperluan sebut harga.</p><p>Kongsi lokasi, jenis ruang, kawasan dan foto tapak anda supaya kami boleh mengaturkan perundingan seterusnYa.</p>\n\n<h2>Apakah yang perlu anda sediakan untuk sebut harga lantai?</h2>\n<p>Selain lokasi, keluasan dan foto tapak, senaraikan kegunaan setiap bilik, keadaan lantai sedia ada, barang yang perlu disimpan atau dialihkan serta pintu dan kabinet berdekatan. Catat keperluan pemindahan perabot, had akses dan waktu kerja, serta sebarang masalah kelembapan, bahagian lantai longgar atau perbezaan aras yang diketahui. Foto dan ukuran anggaran membantu perbincangan awal, tetapi tidak menggantikan pemeriksaan tapak atau panduan pemasangan produk yang dipilih.</p>\n<h2>Item manakah yang harus diasingkan apabila membandingkan sebut harga?</h2>\n<p>Bandingkan sebut harga berdasarkan senarai bilik dan spesifikasi bahan yang sama. Semak sama ada kerja menanggalkan lantai lama, menyediakan permukaan asas, membekal dan memasang bahan, memasang papan skirting serta kemasan peralihan, memindahkan perabot, melindungi kawasan dan melupuskan sisa telah dimasukkan. Catat perkara yang masih perlu disahkan secara berasingan. Harga bagi setiap keluasan sahaja tidak membuktikan bahawa skop kedua-dua sebut harga adalah sama.</p>\n<h2>Semak soalan bahan sebelum mengesahkan skop tapak</h2>\n<p>Gunakan <a href=\"/ms/blog/spc-vinyl-vs-laminate-flooring\">panduan perbandingan lantai SPC, vinil dan lamina</a> untuk menyusun soalan tentang model, kegunaan, penjagaan dan keadaan pemasangan. Jika kerja turut melibatkan bilik atau kontraktor lain, semak halaman <a href=\"/ms/services/renovation\">pengubahsuaian kediaman</a> dan hantar butiran projek melalui <a href=\"/ms/quote\">borang permintaan sebut harga</a>. Katalog atau artikel rujukan tidak mengesahkan stok, pensijilan atau item yang termasuk dalam sebut harga.</p>",
+        "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>\n\n<h2>怎样准备地板报价资料？</h2>\n<p>除地点、面积和照片外，可按房间列出日常用途、现有地面、希望保留或更换的部分，以及需要一起考虑的门、柜体和相邻空间。标明家具是否搬离、进场与施工时段限制，并把已知的潮湿、松动或高差问题单独列出。照片和概略尺寸用于初步沟通，不能代替现场评估或具体产品的安装要求。</p>\n<h2>比较报价时，哪些项目要单独确认？</h2>\n<p>用同一房间清单和材料规格比较，逐项询问原地面处理、基层准备、材料与安装、踢脚和收边、门口衔接、家具搬移、保护及清运是否包含。未核实项目应标为待确认，材料型号或范围改变后重新确认差异；不能只凭面积单价判断两个方案相同。</p>\n<h2>先看选材问题，再确认现场范围</h2>\n<p>可先阅读 <a href=\"/zh/blog/spc-vinyl-vs-laminate-flooring\">SPC、PVC与复合地板比较指南</a>，整理具体型号、使用环境、维护和安装条件。涉及其他房间或工种时，可结合 <a href=\"/zh/services/renovation\">住宅装修规划</a> 一起讨论，再通过 <a href=\"/zh/quote\">免费报价入口</a> 提交资料。目录或参考文章不代表某款产品现货、性能认证或已经包含在报价中。</p>",
+        "created_at": "2026-08-30T12:47:49.142184+00:00",
+        "excerpt_en": "Flooring project consultation for homes and commercial spaces, covering site conditions, material direction, scope discussions, and quotation requirements.",
+        "excerpt_ms": "Perundingan projek lantai untuk rumah dan ruang komersial, meliputi keadaan tapak, arah bahan, perbincangan skop dan keperluan sebut harga.",
+        "excerpt_zh": "面向住宅与商业空间的地板项目咨询，协助沟通现场条件、材料方向、施工范围和报价需求。",
+        "sort_order": 85,
+        "updated_at": "2026-10-19T13:38:46.016893+00:00",
+        "seo_title_en": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+        "seo_title_ms": "Perkhidmatan Lantai di Kuala Lumpur & Selangor | FLASH CAST",
+        "seo_title_zh": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+        "scope_items_en": [
+          "Discussion of site conditions and use requirements",
+          "Material direction and budget requirement discussion",
+          "Confirmation of flooring scope and related coordination items",
+          "Quotation consultation and next-step planning"
+        ],
+        "scope_items_ms": [
+          "Perbincangan keadaan tapak dan keperluan penggunaan",
+          "Arah bahan dan perbincangan keperluan belanjawan",
+          "Pengesahan skop lantai dan item penyelarasan yang berkaitan",
+          "Perundingan sebut harga dan perancangan langkah seterusnya"
+        ],
+        "scope_items_zh": [
+          "现场条件与使用需求沟通",
+          "材料方向与预算需求讨论",
+          "地板施工范围与衔接事项确认",
+          "报价咨询与下一步安排"
+        ],
+        "suitable_for_en": [
+          "Residential spaces planning a flooring update",
+          "Commercial spaces coordinating flooring with a renovation plan"
+        ],
+        "suitable_for_ms": [
+          "Ruang kediaman merancang kemas kini lantai",
+          "Ruang komersial menyelaraskan lantai dengan pelan pengubahsuaian"
+        ],
+        "suitable_for_zh": [
+          "希望更新地面使用体验的住宅空间",
+          "需要配合整体装修规划的商业空间"
+        ],
+        "process_steps_en": [
+          {
+            "desc": "Provide your location, space type, area, and site photos so we can understand the initial requirements.",
+            "title": "Share project details"
+          },
+          {
+            "desc": "We discuss the existing floor, intended use, and how the flooring work fits the wider renovation plan.",
+            "title": "Discuss site conditions and use"
+          },
+          {
+            "desc": "We confirm the material direction, scope, and information needed for a quotation discussion.",
+            "title": "Define the scope and quotation inputs"
+          },
+          {
+            "desc": "Once the scope is clear, we arrange the next consultation and project coordination step.",
+            "title": "Confirm the next step"
+          }
+        ],
+        "process_steps_ms": [
+          {
+            "desc": "Berikan lokasi, jenis ruang, kawasan dan foto tapak anda supaya kami dapat memahami keperluan awal.",
+            "title": "Kongsi butiran projek"
+          },
+          {
+            "desc": "Kami membincangkan lantai sedia ada, tujuan penggunaan dan cara kerja lantai sesuai dengan pelan pengubahsuaian yang lebih luas.",
+            "title": "Bincangkan keadaan tapak dan penggunaan"
+          },
+          {
+            "desc": "Kami mengesahkan arah bahan, skop dan maklumat yang diperlukan untuk perbincangan sebut harga.",
+            "title": "Tentukan skop dan input sebut harga"
+          },
+          {
+            "desc": "Setelah skop jelas, kami mengatur langkah perundingan dan penyelarasan projek seterusnYa.",
+            "title": "Sahkan langkah seterusnya"
+          }
+        ],
+        "process_steps_zh": [
+          {
+            "desc": "提供地区、空间类型、面积与现场照片，便于初步了解需求。",
+            "title": "提交项目资料"
+          },
+          {
+            "desc": "结合地面现况、使用方式和整体装修安排讨论方向。",
+            "title": "沟通现场与使用需求"
+          },
+          {
+            "desc": "根据沟通内容确认材料方向、施工范围与报价所需资料。",
+            "title": "整理方案与报价范围"
+          },
+          {
+            "desc": "在范围确认后安排后续咨询与项目衔接。",
+            "title": "确认下一步"
+          }
+        ],
+        "common_projects_en": [
+          "Residential flooring updates and space improvement",
+          "Flooring planning for offices or retail spaces"
+        ],
+        "common_projects_ms": [
+          "Kemas kini lantai kediaman dan peningkatan ruang",
+          "Perancangan lantai untuk pejabat atau ruang runcit"
+        ],
+        "common_projects_zh": [
+          "住宅地板更新与空间改造",
+          "办公室或商铺的地板方案沟通"
+        ],
+        "seo_description_en": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST.",
+        "seo_description_ms": "Perundingan projek lantai untuk rumah dan ruang komersial. Bincangkan keadaan tapak, arah bahan, skop dan keperluan sebut harga dengan FLASH CAST.",
+        "seo_description_zh": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。"
+      },
+      "desired": {
+        "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>\n\n<h2>怎样准备地板报价资料？</h2>\n<p>除地点、面积和照片外，可按房间列出日常用途、现有地面、希望保留或更换的部分，以及需要一起考虑的门、柜体和相邻空间。标明家具是否搬离、进场与施工时段限制，并把已知的潮湿、松动或高差问题单独列出。照片和概略尺寸用于初步沟通，不能代替现场评估或具体产品的安装要求。</p>\n<h2>比较报价时，哪些项目要单独确认？</h2>\n<p>用同一房间清单和材料规格比较，逐项询问原地面处理、基层准备、材料与安装、踢脚和收边、门口衔接、家具搬移、保护及清运是否包含。未核实项目应标为待确认，材料型号或范围改变后重新确认差异；不能只凭面积单价判断两个方案相同。</p>\n<h2>先看选材问题，再确认现场范围</h2>\n<p>可先阅读 <a href=\"/zh/blog/spc-vinyl-vs-laminate-flooring\">SPC、PVC与复合地板比较指南</a>，整理具体型号、使用环境、维护和安装条件。涉及其他房间或工种时，可结合 <a href=\"/zh/services/renovation\">住宅装修规划</a> 一起讨论，再通过 <a href=\"/zh/quote\">免费报价入口</a> 提交资料。目录或参考文章不代表某款产品现货、性能认证或已经包含在报价中。</p>\n<h2>开工与交付怎样衔接地板确认单？</h2><p>请业主与安装负责方在开始前核对房间清单、门口衔接、保留物品、材料型号和准备工作的负责方。交付时按确认范围记录可见问题、位置、照片、待完成事项、联系负责人和复查结果。具体材料的使用与维护说明应对应实际产品，记录不代替基层检测或产品认证。</p><h2>不同铺装需求是否已经包含？</h2><p>瓷砖、木纹或SPC等名称只说明咨询方向，不能据此认定某款材料有货、该现场适用，或所有铺装工种均已承接。请先提供具体产品与现场资料，另行确认可做范围、排除项目及需供应或安装负责方核实的条件。报价免费；上门量房在30公里以内免费，超过30公里收费，预约前核对地点与收费。</p>",
+        "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>\n\n<h2>What should you prepare for a flooring quotation?</h2>\n<p>Alongside the location, area and photos, list each room's use, existing floor, items to retain or replace, and adjoining doors, cabinetry and spaces. Note furniture removal, access and working-hour restrictions, and any known moisture, loose areas or changes in level. Photos and approximate measurements support an initial discussion; they do not replace a site assessment or the selected product's installation requirements.</p>\n<h2>Which items should be separated when comparing quotations?</h2>\n<p>Compare the same room list and material specification. Ask whether existing-floor work, substrate preparation, materials and installation, skirting and trims, doorway transitions, furniture moving, protection and disposal are included. Mark unresolved items as pending confirmation and review changes when the product or scope changes. A price per area alone does not establish that two proposals cover the same work.</p>\n<h2>Review material questions before confirming the site scope</h2>\n<p>Start with the <a href=\"/en/blog/spc-vinyl-vs-laminate-flooring\">SPC, vinyl and laminate comparison guide</a> to organise questions about the exact model, use, care and installation conditions. Where other rooms or trades are involved, review <a href=\"/en/services/renovation\">residential renovation planning</a>, then send the details through the <a href=\"/en/quote\">free quotation form</a>. A catalogue or reference article does not confirm stock, certification or inclusion in a quotation.</p>\n<h2>How should the flooring record connect start-of-work and handover?</h2><p>Before starting, the owner and responsible installer should check the room list, doorway transitions, retained items, product model and ownership of preparation work. At handover, record visible issues, locations, photos, outstanding items, the responsible contact and recheck results against the agreed scope. Use and care instructions should match the installed product; the record is not a substrate test or product certification.</p><h2>Is every requested flooring type already included?</h2><p>Tile, wood-look or SPC describes an enquiry direction; the label does not establish stock, site suitability or acceptance of every installation trade. Share the exact product and site information, then confirm the available work, exclusions and conditions requiring supplier or installer checks separately. Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking.</p>"
+      },
+      "forward_tuple": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "publish-next12-flooring-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-flooring-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:22782cff-239c-45ec-8075-9deaa5932269:content_en,content_zh",
+        "physical_target_scope": "flashcast.com.my:services:22782cff-239c-45ec-8075-9deaa5932269:content_en,content_zh",
+        "business_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "business_policy_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "table": "services",
+        "record_id": "22782cff-239c-45ec-8075-9deaa5932269",
+        "slug": "flooring",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "original_professional_owner": "content-organic-website",
+        "content_integration_department": "content-organic-website",
+        "authority_department": "content-organic-website",
+        "execution_department": "publishing",
+        "risk_level": "R2"
+      },
+      "conditional_inverse": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "rollback-next12-flooring-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-flooring-fbe13ee7-cms-v1-rollback-v1",
+        "scope": "flashcast.com.my:services:22782cff-239c-45ec-8075-9deaa5932269:content_en,content_zh",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "restore_only_original_two_fields": {
+          "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>\n\n<h2>怎样准备地板报价资料？</h2>\n<p>除地点、面积和照片外，可按房间列出日常用途、现有地面、希望保留或更换的部分，以及需要一起考虑的门、柜体和相邻空间。标明家具是否搬离、进场与施工时段限制，并把已知的潮湿、松动或高差问题单独列出。照片和概略尺寸用于初步沟通，不能代替现场评估或具体产品的安装要求。</p>\n<h2>比较报价时，哪些项目要单独确认？</h2>\n<p>用同一房间清单和材料规格比较，逐项询问原地面处理、基层准备、材料与安装、踢脚和收边、门口衔接、家具搬移、保护及清运是否包含。未核实项目应标为待确认，材料型号或范围改变后重新确认差异；不能只凭面积单价判断两个方案相同。</p>\n<h2>先看选材问题，再确认现场范围</h2>\n<p>可先阅读 <a href=\"/zh/blog/spc-vinyl-vs-laminate-flooring\">SPC、PVC与复合地板比较指南</a>，整理具体型号、使用环境、维护和安装条件。涉及其他房间或工种时，可结合 <a href=\"/zh/services/renovation\">住宅装修规划</a> 一起讨论，再通过 <a href=\"/zh/quote\">免费报价入口</a> 提交资料。目录或参考文章不代表某款产品现货、性能认证或已经包含在报价中。</p>",
+          "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>\n\n<h2>What should you prepare for a flooring quotation?</h2>\n<p>Alongside the location, area and photos, list each room's use, existing floor, items to retain or replace, and adjoining doors, cabinetry and spaces. Note furniture removal, access and working-hour restrictions, and any known moisture, loose areas or changes in level. Photos and approximate measurements support an initial discussion; they do not replace a site assessment or the selected product's installation requirements.</p>\n<h2>Which items should be separated when comparing quotations?</h2>\n<p>Compare the same room list and material specification. Ask whether existing-floor work, substrate preparation, materials and installation, skirting and trims, doorway transitions, furniture moving, protection and disposal are included. Mark unresolved items as pending confirmation and review changes when the product or scope changes. A price per area alone does not establish that two proposals cover the same work.</p>\n<h2>Review material questions before confirming the site scope</h2>\n<p>Start with the <a href=\"/en/blog/spc-vinyl-vs-laminate-flooring\">SPC, vinyl and laminate comparison guide</a> to organise questions about the exact model, use, care and installation conditions. Where other rooms or trades are involved, review <a href=\"/en/services/renovation\">residential renovation planning</a>, then send the details through the <a href=\"/en/quote\">free quotation form</a>. A catalogue or reference article does not confirm stock, certification or inclusion in a quotation.</p>"
+        },
+        "requiresParentRun": true,
+        "parentPermitId": null,
+        "parentRunId": null,
+        "saved_updated_at": null,
+        "current_post_Save_complete_row": null,
+        "both_current_fields_must_equal_exact_forward": true,
+        "new_independent_inverse_policy_and_permit_required": true,
+        "full_row_raw_restore_forbidden": true
+      },
+      "baseline_is_current_CAS": false,
+      "original_PUB_full41_pin": {
+        "path": "backups/fc-20261016-industry-keyword-next-twelve-pages-v1/five-services-ten-field-readonly-binding-20261027-v1/flooring-authenticated-full41-before.json",
+        "sha256": "0d19c1254659365d048fd5d96462b11f031977f7581462f6ebb7cc383cd12491",
+        "size": 12512
+      },
+      "public_paths": [
+        {
+          "path": "/en/services/flooring",
+          "expected": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+          "strictMetadataTitle": true
+        },
+        {
+          "path": "/zh/services/flooring",
+          "expected": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+          "strictMetadataTitle": true
+        }
+      ]
+    },
+    {
+      "runtime_target": {
+        "id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+        "slug": "artistic-coating",
+        "contentType": "service",
+        "table": "services",
+        "taskId": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "actionId": "publish-next12-artistic-coating-fbe13ee7-cms-v1",
+        "candidateVersion": "next12-artistic-coating-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:d862312d-d5f3-4bb7-9bf0-137ed71c87be:content_en,content_zh",
+        "changedFields": [
+          "content_en",
+          "content_zh"
+        ],
+        "baselineProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_en",
+          "content_ms",
+          "content_zh",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh",
+          "updated_at",
+          "version"
+        ],
+        "baselineFieldsSha256": "1e409b74a518a843c49ed244476029ea7fcb8ee11c714a66c8f29dd88c40192a",
+        "desiredFieldsSha256": "81a734b09b1121b4ebbc4573389382ff835b5055232ceb1d2bc6436ad4a9586a",
+        "rollbackFieldsSha256": "b94d1b040a5890379289ebb7804a58d7cbcec8bf8c2897d5d45f2e9e8ef08382",
+        "expectedUpdatedAt": "2026-10-19T13:39:03.81419+00:00",
+        "retainedProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_ms",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh"
+        ],
+        "retainedFieldsSha256": "b00e2290025b7aee5ed688b537a9659c746164dc6b8a23478355988edaf797ba",
+        "rollbackAllowed": true,
+        "requiresParentRun": true
+      },
+      "before": {
+        "id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+        "slug": "artistic-coating",
+        "alt_en": "Decorative wall finish planning reference",
+        "alt_ms": "Rujukan perancangan kemasan dinding hiasan",
+        "alt_zh": "艺术墙面饰面规划参考",
+        "status": "published",
+        "faqs_en": [
+          {
+            "a": "Artistic wall coating is a decorative finish that can create texture, depth, and distinctive visual effects on selected walls.",
+            "q": "What is artistic wall coating?"
+          },
+          {
+            "a": "Durability depends on wall condition, coating type, application method, sealing, and daily use. Maintenance needs should be confirmed before work starts.",
+            "q": "How durable is it?"
+          },
+          {
+            "a": "Cost depends on wall area, selected finish, surface preparation, number of layers, and site condition. A quotation should be confirmed after reviewing the wall.",
+            "q": "How much does it cost?"
+          }
+        ],
+        "faqs_ms": [
+          {
+            "a": "Kemasan dinding artistik ialah kemasan hiasan yang menghasilkan tekstur, kedalaman dan kesan visual tersendiri pada dinding terpilih.",
+            "q": "Apakah kemasan dinding artistik?"
+          },
+          {
+            "a": "Ketahanan bergantung pada keadaan dinding, jenis kemasan, kaedah aplikasi, lapisan pelindung dan penggunaan harian. Sahkan keperluan penyelenggaraan sebelum kerja bermula.",
+            "q": "Sejauh manakah ketahanannya?"
+          },
+          {
+            "a": "Kos bergantung pada keluasan dinding, kemasan yang dipilih, penyediaan permukaan, bilangan lapisan dan keadaan tapak. Minta sebut harga selepas keadaan dinding diperiksa.",
+            "q": "Berapakah kosnya?"
+          }
+        ],
+        "faqs_zh": [
+          {
+            "a": "它是一种有质感的装饰涂装，能做出纹理、层次和特别的视觉效果。",
+            "q": "什么是艺术墙面涂装？"
+          },
+          {
+            "a": "耐用度会受墙面状态、涂装类型、施工方式、封层和日常使用影响，施工前应先确认维护要求。",
+            "q": "耐用吗？"
+          },
+          {
+            "a": "费用会根据面积、效果、墙面处理、层数和现场情况变化，需要看过墙面和需求后确认报价。",
+            "q": "价格大概多少？"
+          }
+        ],
+        "version": 1,
+        "title_en": "Artistic Wall Coating and Feature Wall Planning",
+        "title_ms": "Kemasan Dinding Artistik dan Perancangan Dinding Fokus",
+        "title_zh": "艺术墙面涂装与特色墙规划",
+        "image_url": "/images/services/artistic-coating.webp",
+        "content_en": "<p>Artistic wall coating helps explore colour, texture, reflected light and maintenance for interior feature walls. FLASH CAST first reviews the wall condition and design direction, then confirms materials and application within an approved sample and written scope.</p><h2>Check the substrate and use</h2><p>Share wall dimensions, photos, existing finishes and any dampness or cracking. Damp, loose or uneven substrates need an assessment of preparation work; a decorative finish should not simply cover an unresolved problem.</p><h2>Confirm the effect with physical samples</h2><p>Compare texture, metallic appearance or other decorative effects against samples, lighting and viewing distance. Product identity, system, suitable substrate, coverage and care follow the selected product documentation. A rendering does not prove an installed finish.</p><h2>Quotation and next step</h2><p>Area, preparation, selected finish, samples, protection and access affect the quotation. For wider coordination, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share wall photos and requirements through the <a href=\"/en/quote\">free quotation form</a>. This page does not claim authorised distribution, a brand partnership or a general performance guarantee.</p>",
+        "content_ms": "<p>Salutan dinding artistik membantu meneroka warna, tekstur, cahaya yang dipantulkan dan penyelenggaraan untuk dinding fokus dalaman. FLASH CAST mula-mula menyemak keadaan dinding dan arah reka bentuk, kemudian mengesahkan bahan dan aplikasi dalam sampel yang diluluskan dan skop bertulis.</p><h2>Periksa substrat dan gunakan</h2><p>Kongsi dimensi dinding, foto, kemasan sedia ada dan sebarang kelembapan atau retak. Substrat lembap, longgar atau tidak rata memerlukan penilaian kerja penyediaan; kemasan hiasan tidak seharusnya hanya meliputi masalah yang tidak dapat diselesaikan.</p><h2>Sahkan kesan dengan sampel fizikal</h2><p>Bandingkan tekstur, penampilan logam atau kesan hiasan lain terhadap sampel, pencahayaan dan jarak tontonan. Identiti produk, sistem, substrat yang sesuai, liputan dan penjagaan ikut dokumentasi produk yang dipilih. Paparan tidak membuktikan kemasan yang dipasang.</p><h2>Sebut harga dan langkah seterusnya</h2><p>Keluasan kawasan, kerja penyediaan, kemasan terpilih, sampel, perlindungan dan akses tapak boleh mempengaruhi sebut harga. Untuk skop yang lebih luas, lihat <a href=\"/ms/services/design\">perancangan reka bentuk dalaman</a>. Kongsi foto dinding dan keperluan projek melalui <a href=\"/ms/quote\">borang permintaan sebut harga</a>. Halaman ini tidak menyatakan bahawa sesuatu produk atau jenama telah diluluskan dan tidak menjanjikan prestasi umum.</p>",
+        "content_zh": "<p>艺术墙面涂装可用于讨论室内特色墙的颜色、肌理、光感与维护需求。FLASH CAST 会先核对墙面状况和设计方向，再按样板与书面范围确认材料和施工。</p><h2>先看基层与使用条件</h2><p>提供墙面尺寸、照片、现有饰面及受潮或开裂情况。潮湿、松动或不平整基层应先评估处理范围，不能仅靠饰面覆盖问题。</p><h2>用实物样板确认效果</h2><p>纹理、金属感或其他装饰效果应结合样板、照明和观看距离比较。产品名称、体系、适用基层、用量和维护方法须按所选产品的当前资料确认，不以效果图代替真实施工效果。</p><h2>报价与下一步</h2><p>面积、基层处理、选定饰面、样板确认、保护和现场出入都会影响报价。需要整体空间协调时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>；可通过 <a href=\"/zh/quote\">免费报价入口</a> 提供墙面照片和需求。本页不声明任何品牌的授权经销、合作关系或通用性能保证。</p>",
+        "created_at": "2026-05-29T10:14:07.591592+00:00",
+        "excerpt_en": "Review the wall condition, colour, texture, samples and care needs before confirming the finish and work scope.",
+        "excerpt_ms": "Semak keadaan dinding, warna, tekstur, sampel dan keperluan penjagaan sebelum mengesahkan kemasan dan skop kerja.",
+        "excerpt_zh": "先核对墙面状态、颜色、肌理、样板与维护需求，再确认饰面及施工范围。",
+        "sort_order": 80,
+        "updated_at": "2026-10-19T13:39:03.81419+00:00",
+        "seo_title_en": "Artistic Wall Coating and Feature Walls Kuala Lumpur | FLASH CAST",
+        "seo_title_ms": "Kemasan Dinding Artistik di Kuala Lumpur | FLASH CAST",
+        "seo_title_zh": "吉隆坡艺术墙面涂装与特色墙规划 | FLASH CAST",
+        "scope_items_en": [
+          "Wall dimensions and existing condition",
+          "Colour and texture direction",
+          "Selected product and sample confirmation",
+          "Surface-preparation scope",
+          "Protection, access and maintenance requirements"
+        ],
+        "scope_items_ms": [
+          "Salutan berasaskan kapur Remmers (Kalkfarbe)",
+          "Kesan metalik Artisto Fill",
+          "Plaster hiasan (Dekorputz)",
+          "Kemasan gaya Venetian",
+          "Kesan batu semula jadi dan konkrit",
+          "Kemasan Marmorino dan Stucco",
+          "Kesan karat dan pengoksidaan",
+          "Campuran dan padanan warna tersuai"
+        ],
+        "scope_items_zh": [
+          "墙面尺寸与现状核对",
+          "颜色与肌理方向",
+          "所选产品与样板确认",
+          "基层处理范围",
+          "保护、出入与维护要求"
+        ],
+        "suitable_for_en": [
+          "Homeowners wanting premium feature walls",
+          "Interior designers seeking unique finishes",
+          "Hotels and hospitality venues",
+          "Restaurants and F&B interiors",
+          "Commercial showrooms and lobbies"
+        ],
+        "suitable_for_ms": [
+          "Pemilik rumah yang mahukan dinding aksen eksklusif",
+          "Pereka dalaman yang mencari kemasan unik",
+          "Hotel dan premis hospitaliti",
+          "Restoran dan ruang dalaman F&B",
+          "Bilik pameran dan lobi komersial"
+        ],
+        "suitable_for_zh": [
+          "想提升质感的住宅业主",
+          "室内设计师",
+          "酒店与接待空间",
+          "餐饮空间",
+          "商业展厅与大堂"
+        ],
+        "process_steps_en": [
+          {
+            "desc": "Share dimensions, photos and the intended effect.",
+            "title": "Brief and site information"
+          },
+          {
+            "desc": "Check the current wall and preparation requirements for the selected product.",
+            "title": "Substrate and material review"
+          },
+          {
+            "desc": "Review physical samples, work stages, protection and the written quotation.",
+            "title": "Sample and scope confirmation"
+          },
+          {
+            "desc": "Coordinate the agreed system and work scope.",
+            "title": "Work and stage checks"
+          },
+          {
+            "desc": "Confirm any sealing, cleaning and care requirements against product and project documents.",
+            "title": "Care and handover"
+          }
+        ],
+        "process_steps_ms": [
+          {
+            "desc": "Lihat sampel fizikal dan pilih kemasan yang sesuai dengan ruang serta gaya anda.",
+            "title": "Rundingan dan pemilihan warna"
+          },
+          {
+            "desc": "Bersihkan dan sapukan lapisan asas pada dinding supaya permukaannya sedia untuk kerja kemasan.",
+            "title": "Penyediaan permukaan"
+          },
+          {
+            "desc": "Sapukan sampel pada dinding di tapak untuk mendapatkan kelulusan terhadap hasil sebenar.",
+            "title": "Ujian sampel"
+          },
+          {
+            "desc": "Juruteknik terlatih menyapu kemasan secara berlapis dan teliti.",
+            "title": "Aplikasi penuh"
+          },
+          {
+            "desc": "Sapukan lapisan pelindung untuk meningkatkan ketahanan dan memudahkan pembersihan.",
+            "title": "Lapisan pelindung"
+          }
+        ],
+        "process_steps_zh": [
+          {
+            "desc": "提供尺寸、照片和期望效果。",
+            "title": "需求与现场资料"
+          },
+          {
+            "desc": "检查现况，并按所选产品资料确认准备要求。",
+            "title": "基层与材料核对"
+          },
+          {
+            "desc": "核对实物样板、工序、保护和书面报价。",
+            "title": "样板与范围确认"
+          },
+          {
+            "desc": "按确认体系和范围协调工序及阶段检查。",
+            "title": "施工与检查"
+          },
+          {
+            "desc": "所需封层、清洁与维护按产品资料和项目文件确认。",
+            "title": "维护与交付说明"
+          }
+        ],
+        "common_projects_en": [
+          "Living room TV feature wall",
+          "Master bedroom accent wall",
+          "Hotel lobby and corridor coating",
+          "Restaurant interior wall finish",
+          "Office reception feature wall"
+        ],
+        "common_projects_ms": [
+          "Dinding aksen di ruang TV ruang tamu",
+          "Dinding aksen bilik tidur utama",
+          "Kemasan dinding lobi dan koridor hotel",
+          "Kemasan dinding dalaman restoran",
+          "Dinding aksen di kaunter penerimaan pejabat"
+        ],
+        "common_projects_zh": [
+          "艺术背景墙",
+          "主卧强调墙",
+          "酒店大堂墙面",
+          "餐厅墙面",
+          "办公接待区",
+          "展示墙"
+        ],
+        "seo_description_en": "Discuss feature-wall colour, texture, preparation and maintenance in Kuala Lumpur and Selangor. Confirm the selected finish with samples and a written quotation.",
+        "seo_description_ms": "Bincangkan ciri-warna dinding, tekstur, penyediaan dan penyelenggaraan di Kuala Lumpur dan Selangor. Sahkan kemasan yang dipilih dengan sampel dan sebut harga bertulis.",
+        "seo_description_zh": "讨论吉隆坡与雪兰莪特色墙的颜色、肌理、基层与维护条件，按实物样板和书面范围确认艺术墙面饰面及报价。"
+      },
+      "desired": {
+        "content_zh": "<p>艺术墙面涂装可用于讨论室内特色墙的颜色、肌理、光感与维护需求。FLASH CAST 会先核对墙面状况和设计方向，再按样板与书面范围确认材料和施工。</p><h2>先看基层与使用条件</h2><p>提供墙面尺寸、照片、现有饰面及受潮或开裂情况。潮湿、松动或不平整基层应先评估处理范围，不能仅靠饰面覆盖问题。</p><h2>用实物样板确认效果</h2><p>纹理、金属感或其他装饰效果应结合样板、照明和观看距离比较。产品名称、体系、适用基层、用量和维护方法须按所选产品的当前资料确认，不以效果图代替真实施工效果。</p><h2>报价与下一步</h2><p>面积、基层处理、选定饰面、样板确认、保护和现场出入都会影响报价。需要整体空间协调时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>；可通过 <a href=\"/zh/quote\">免费报价入口</a> 提供墙面照片和需求。本页不声明任何品牌的授权经销、合作关系或通用性能保证。</p>\n<h2>有人使用的空间要先确认哪些施工安排？</h2><p>除墙面资料外，说明房间是否继续使用、家具与保留饰面的位置，以及进出场、通风和物业施工时段限制。请施工负责方按实际产品与现场条件确认保护、搬移、工序和可恢复使用的安排，并写清谁负责；不预先保证入住时间或仅凭照片判断基层问题。</p><h2>样板与墙面施工报价怎样对应？</h2><p>将选定样板和材料版本与实际墙面位置对应，询问基层处理、样板制作、保护、施工、收边及清运哪些已包含，哪些需评估或另计，避免把不同范围的总价直接比较。报价免费；上门量房在30公里以内免费，超过30公里收费，预约前核对地点与收费。</p>",
+        "content_en": "<p>Artistic wall coating helps explore colour, texture, reflected light and maintenance for interior feature walls. FLASH CAST first reviews the wall condition and design direction, then confirms materials and application within an approved sample and written scope.</p><h2>Check the substrate and use</h2><p>Share wall dimensions, photos, existing finishes and any dampness or cracking. Damp, loose or uneven substrates need an assessment of preparation work; a decorative finish should not simply cover an unresolved problem.</p><h2>Confirm the effect with physical samples</h2><p>Compare texture, metallic appearance or other decorative effects against samples, lighting and viewing distance. Product identity, system, suitable substrate, coverage and care follow the selected product documentation. A rendering does not prove an installed finish.</p><h2>Quotation and next step</h2><p>Area, preparation, selected finish, samples, protection and access affect the quotation. For wider coordination, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share wall photos and requirements through the <a href=\"/en/quote\">free quotation form</a>. This page does not claim authorised distribution, a brand partnership or a general performance guarantee.</p>\n<h2>What should be agreed if the space remains in use?</h2><p>Alongside wall information, explain whether the room remains occupied, where furniture and retained finishes sit, and any access, ventilation or building work-hour limits. The responsible applicator should confirm protection, moving, work sequence and return-to-use arrangements for the actual product and site, with clear ownership. No move-in time or substrate diagnosis is established from photos alone.</p><h2>How should a sample relate to the wall-finishing quotation?</h2><p>Match the selected sample and material revision to the actual wall locations. Ask which substrate preparation, sample work, protection, application, edge finishing and waste removal are included, assessment-dependent or charged separately. Compare equivalent scopes rather than totals alone. Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking.</p>"
+      },
+      "forward_tuple": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "publish-next12-artistic-coating-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-artistic-coating-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:d862312d-d5f3-4bb7-9bf0-137ed71c87be:content_en,content_zh",
+        "physical_target_scope": "flashcast.com.my:services:d862312d-d5f3-4bb7-9bf0-137ed71c87be:content_en,content_zh",
+        "business_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "business_policy_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "table": "services",
+        "record_id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+        "slug": "artistic-coating",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "original_professional_owner": "content-organic-website",
+        "content_integration_department": "content-organic-website",
+        "authority_department": "content-organic-website",
+        "execution_department": "publishing",
+        "risk_level": "R2"
+      },
+      "conditional_inverse": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "rollback-next12-artistic-coating-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-artistic-coating-fbe13ee7-cms-v1-rollback-v1",
+        "scope": "flashcast.com.my:services:d862312d-d5f3-4bb7-9bf0-137ed71c87be:content_en,content_zh",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "restore_only_original_two_fields": {
+          "content_zh": "<p>艺术墙面涂装可用于讨论室内特色墙的颜色、肌理、光感与维护需求。FLASH CAST 会先核对墙面状况和设计方向，再按样板与书面范围确认材料和施工。</p><h2>先看基层与使用条件</h2><p>提供墙面尺寸、照片、现有饰面及受潮或开裂情况。潮湿、松动或不平整基层应先评估处理范围，不能仅靠饰面覆盖问题。</p><h2>用实物样板确认效果</h2><p>纹理、金属感或其他装饰效果应结合样板、照明和观看距离比较。产品名称、体系、适用基层、用量和维护方法须按所选产品的当前资料确认，不以效果图代替真实施工效果。</p><h2>报价与下一步</h2><p>面积、基层处理、选定饰面、样板确认、保护和现场出入都会影响报价。需要整体空间协调时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>；可通过 <a href=\"/zh/quote\">免费报价入口</a> 提供墙面照片和需求。本页不声明任何品牌的授权经销、合作关系或通用性能保证。</p>",
+          "content_en": "<p>Artistic wall coating helps explore colour, texture, reflected light and maintenance for interior feature walls. FLASH CAST first reviews the wall condition and design direction, then confirms materials and application within an approved sample and written scope.</p><h2>Check the substrate and use</h2><p>Share wall dimensions, photos, existing finishes and any dampness or cracking. Damp, loose or uneven substrates need an assessment of preparation work; a decorative finish should not simply cover an unresolved problem.</p><h2>Confirm the effect with physical samples</h2><p>Compare texture, metallic appearance or other decorative effects against samples, lighting and viewing distance. Product identity, system, suitable substrate, coverage and care follow the selected product documentation. A rendering does not prove an installed finish.</p><h2>Quotation and next step</h2><p>Area, preparation, selected finish, samples, protection and access affect the quotation. For wider coordination, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share wall photos and requirements through the <a href=\"/en/quote\">free quotation form</a>. This page does not claim authorised distribution, a brand partnership or a general performance guarantee.</p>"
+        },
+        "requiresParentRun": true,
+        "parentPermitId": null,
+        "parentRunId": null,
+        "saved_updated_at": null,
+        "current_post_Save_complete_row": null,
+        "both_current_fields_must_equal_exact_forward": true,
+        "new_independent_inverse_policy_and_permit_required": true,
+        "full_row_raw_restore_forbidden": true
+      },
+      "baseline_is_current_CAS": false,
+      "original_PUB_full41_pin": {
+        "path": "backups/fc-20261016-industry-keyword-next-twelve-pages-v1/five-services-ten-field-readonly-binding-20261027-v1/artistic-coating-authenticated-full41-before.json",
+        "sha256": "d34567b1b4dfa72f27d955ea5544a85800bcde7aad25d909e7ef5c80fef4252c",
+        "size": 11759
+      },
+      "public_paths": [
+        {
+          "path": "/en/services/artistic-coating",
+          "expected": "Artistic Wall Coating and Feature Walls Kuala Lumpur | FLASH CAST",
+          "strictMetadataTitle": true
+        },
+        {
+          "path": "/zh/services/artistic-coating",
+          "expected": "吉隆坡艺术墙面涂装与特色墙规划 | FLASH CAST",
+          "strictMetadataTitle": true
+        }
+      ]
+    },
+    {
+      "runtime_target": {
+        "id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+        "slug": "approval",
+        "contentType": "service",
+        "table": "services",
+        "taskId": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "actionId": "publish-next12-approval-fbe13ee7-cms-v1",
+        "candidateVersion": "next12-approval-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:912750be-05ad-40e5-b20a-d1e5c33f232f:content_en,content_zh",
+        "changedFields": [
+          "content_en",
+          "content_zh"
+        ],
+        "baselineProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_en",
+          "content_ms",
+          "content_zh",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh",
+          "updated_at",
+          "version"
+        ],
+        "baselineFieldsSha256": "217f3ac44e14dcf5bd091ba18bd527c9f5cb798519471396212e94bb74d02c29",
+        "desiredFieldsSha256": "2ece88bf75e217f158d3dd6f738b69249645926062beda2fe06bf1986143790f",
+        "rollbackFieldsSha256": "3c91a8e17d6200e725e5cb7ba351b9efe3c2aa11e0215d00b90736c23b0c1312",
+        "expectedUpdatedAt": "2026-10-23T17:56:23.345342+00:00",
+        "retainedProjectionFields": [
+          "alt_en",
+          "alt_ms",
+          "alt_zh",
+          "common_projects_en",
+          "common_projects_ms",
+          "common_projects_zh",
+          "content_ms",
+          "created_at",
+          "excerpt_en",
+          "excerpt_ms",
+          "excerpt_zh",
+          "faqs_en",
+          "faqs_ms",
+          "faqs_zh",
+          "id",
+          "image_url",
+          "process_steps_en",
+          "process_steps_ms",
+          "process_steps_zh",
+          "scope_items_en",
+          "scope_items_ms",
+          "scope_items_zh",
+          "seo_description_en",
+          "seo_description_ms",
+          "seo_description_zh",
+          "seo_title_en",
+          "seo_title_ms",
+          "seo_title_zh",
+          "slug",
+          "sort_order",
+          "status",
+          "suitable_for_en",
+          "suitable_for_ms",
+          "suitable_for_zh",
+          "title_en",
+          "title_ms",
+          "title_zh"
+        ],
+        "retainedFieldsSha256": "3f8615f2a9dcfee23eaf227a5cbc43240cada081b073bf207524748e6f82ec9b",
+        "rollbackAllowed": true,
+        "requiresParentRun": true
+      },
+      "before": {
+        "id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+        "slug": "approval",
+        "alt_en": "Permit & Drawing Support",
+        "alt_ms": "Sokongan Permit dan Lukisan",
+        "alt_zh": "Permit & Drawing Support",
+        "status": "published",
+        "faqs_en": [
+          {
+            "a": "Timing depends on the current process, document completeness, review comments, responsible parties, fees and the management or authority. Confirm the latest requirements before scheduling work.",
+            "q": "How long does a renovation approval take?"
+          },
+          {
+            "a": "Selected tasks can be coordinated when they are included in the confirmed scope. Owner, consultant, landlord, management and authority responsibilities should be listed separately.",
+            "q": "Can document preparation and follow-up be coordinated?"
+          },
+          {
+            "a": "Share the site address, property type, management or landlord guide, existing and proposed plans, intended work, and any correspondence already received.",
+            "q": "What should I prepare for an initial approval review?"
+          }
+        ],
+        "faqs_ms": [
+          {
+            "a": "Kelulusan daripada pejabat pengurusan lazimnya mengambil masa 1 hingga 2 minggu. Permit DBKL mungkin mengambil masa 2 hingga 4 minggu.",
+            "q": "Berapa lamakah masa untuk mendapatkan permit pengubahsuaian?"
+          },
+          {
+            "a": "Ya. Kami membantu menyediakan dokumen, mengemukakan permohonan dan membuat susulan.",
+            "q": "Bolehkah anda menguruskan keseluruhan proses permit?"
+          }
+        ],
+        "faqs_zh": [
+          {
+            "a": "时间取决于当前流程、文件完整度、审核意见、责任方、费用与管理方或相关单位。排期前应确认最新要求。",
+            "q": "装修审批需要多长时间？"
+          },
+          {
+            "a": "已纳入确认范围的部分任务可以协调。业主、顾问、房东、管理方与相关单位的责任应分别列明。",
+            "q": "可以协调文件准备与跟进吗？"
+          },
+          {
+            "a": "提交现场地址、房产类型、管理方或房东指南、现有与拟议图纸、计划工程与已收到的往来文件。",
+            "q": "初步检查审批需求时应准备什么？"
+          }
+        ],
+        "version": 1,
+        "title_en": "Permit & Drawing Support",
+        "title_ms": "Sokongan Permit dan Lukisan Pengubahsuaian",
+        "title_zh": "装修准证与图纸支持",
+        "image_url": "/images/services/approval-docs.webp",
+        "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project.\n\n<h2>How can you organise existing information before the first discussion?</h2>\n<p>Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval.</p>\n<h2>How should document-support fees and responsibilities be clarified?</h2>\n<p>Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through <a href=\"/en/services/renovation\">home-renovation planning</a> or commercial requirements through the <a href=\"/en/services/office-renovation\">office fit-out scope</a>, then <a href=\"/en/quote\">submit the document-support enquiry</a>. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here.</p>",
+        "content_ms": "Keperluan kelulusan dan dokumen berbeza mengikut harta, cadangan kerja, pengurusan atau peraturan tuan tanah dan proses kuasa semasa yang berkaitan. FLASH CAST boleh membantu mengenal pasti dan menyelaras lukisan atau dokumen yang dipilih apabila ia dimasukkan dalam skop yang disahkan. Tanggungjawab tepat, input pihak yang layak, yuran, masa dan hasil mesti disahkan untuk projek.\n\n<h2>Bagaimana anda boleh menyusun maklumat sedia ada sebelum perbincangan pertama?</h2>\n<p>Sediakan lokasi dan jenis hartanah, foto tapak, pelan yang tersedia serta perubahan yang dicadangkan. Sertakan panduan daripada pihak pengurusan bangunan atau tuan tanah, surat-menyurat dan maklumat hubungan yang telah diterima. Tandakan dokumen yang tiada, belum disahkan atau tidak bertarikh. Senarai ini membantu perbincangan awal; ia bukan senarai permohonan rasmi yang lengkap dan tidak menjamin kelulusan.</p>\n<h2>Bagaimanakah bayaran dan tanggungjawab sokongan dokumen harus dijelaskan?</h2>\n<p>Jelaskan siapa yang menyediakan maklumat asal, menyediakan atau menyemak dokumen, menghubungi pihak pengurusan dan menyelaras kerja yang memerlukan profesional berkelayakan. Sahkan yuran perkhidmatan, caj pihak ketiga, skop dan pengecualian secara bertulis. Untuk projek kediaman, lihat <a href=\"/ms/services/renovation\">perkhidmatan pengubahsuaian rumah</a>; untuk projek komersial, lihat <a href=\"/ms/services/office-renovation\">perkhidmatan fit-out pejabat</a>. Hantar pertanyaan sokongan dokumen melalui <a href=\"/ms/quote\">borang pertanyaan</a>. Keperluan hendaklah disahkan dengan pihak pengurusan dan pihak berkuasa yang berkaitan. Tiada tandatangan profesional, yuran tetap, tempoh kelulusan atau keputusan dijanjikan di halaman ini.</p>",
+        "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。\n\n<h2>初次沟通前，怎样整理已有资料？</h2>\n<p>可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。</p>\n<h2>文件协助的费用与责任应怎样确认？</h2>\n<p>逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 <a href=\"/zh/services/renovation\">住宅装修咨询</a> 中；商业单位可结合 <a href=\"/zh/services/office-renovation\">办公室装修范围</a>，再 <a href=\"/zh/quote\">提交文件协助需求</a>。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。</p>",
+        "created_at": "2026-05-29T10:14:07.868773+00:00",
+        "excerpt_en": "Review renovation approval, management, drawing and document-coordination needs against the property and confirmed project scope.",
+        "excerpt_ms": "Semak kelulusan pengubahsuaian, pengurusan, lukisan dan keperluan penyelarasan dokumen terhadap hartanah dan skop projek yang disahkan.",
+        "excerpt_zh": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
+        "sort_order": 100,
+        "updated_at": "2026-10-23T17:56:23.345342+00:00",
+        "seo_title_en": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+        "seo_title_ms": "Sokongan Permit dan Lukisan Kuala Lumpur | FLASH CAST",
+        "seo_title_zh": "装修准证与图纸支持 | FLASH CAST",
+        "scope_items_en": [
+          "Management Office Renovation Application",
+          "DBKL Renovation Permit Assistance",
+          "Drawing Submission Coordination",
+          "Documentation Preparation",
+          "Site Inspection Coordination"
+        ],
+        "scope_items_ms": [
+          "Permohonan pengubahsuaian kepada pejabat pengurusan",
+          "Bantuan permohonan permit pengubahsuaian DBKL",
+          "Penyelarasan penyerahan lukisan",
+          "Penyediaan dokumen",
+          "Penyelarasan pemeriksaan tapak"
+        ],
+        "scope_items_zh": [
+          "管理处申请协助",
+          "DBKL 准证协助",
+          "图纸提交协调",
+          "文件准备",
+          "现场检查协调"
+        ],
+        "suitable_for_en": [
+          "Anyone doing renovation in a managed property",
+          "Projects requiring DBKL or local council permits",
+          "Commercial renovations needing compliance documentation"
+        ],
+        "suitable_for_ms": [
+          "Pemilik yang mengubah suai hartanah di bawah pengurusan bangunan",
+          "Projek yang memerlukan permit DBKL atau pihak berkuasa tempatan",
+          "Pengubahsuaian komersial yang memerlukan dokumen pematuhan"
+        ],
+        "suitable_for_zh": [
+          "管理处监管项目业主",
+          "需要 DBKL 或地方政府审批的项目",
+          "需要合规文件的商业装修"
+        ],
+        "process_steps_en": [
+          {
+            "desc": "Identify the property, proposed work, current requirements and responsible parties.",
+            "title": "Requirement Check"
+          },
+          {
+            "desc": "Confirm which drawings, forms, supporting documents, fees and qualified parties are required.",
+            "title": "Document Scope"
+          },
+          {
+            "desc": "Coordinate the agreed submission tasks and responses when included in the project scope.",
+            "title": "Submission Coordination"
+          },
+          {
+            "desc": "Keep relevant submitted, approved or returned documents with the project records.",
+            "title": "Record Handover"
+          }
+        ],
+        "process_steps_ms": [
+          {
+            "desc": "Kumpulkan dokumen projek dan lukisan yang diperlukan.",
+            "title": "Pengumpulan dokumen"
+          },
+          {
+            "desc": "Kemukakan permohonan kepada pihak berkuasa yang berkaitan.",
+            "title": "Penyerahan permohonan"
+          },
+          {
+            "desc": "Semak status permohonan dan jawab pertanyaan yang diterima.",
+            "title": "Susulan permohonan"
+          },
+          {
+            "desc": "Selepas kelulusan diberikan, serahkan semua dokumen kepada anda.",
+            "title": "Kelulusan dan penyerahan"
+          }
+        ],
+        "process_steps_zh": [
+          {
+            "desc": "确认房产、拟议工程、当前要求与责任方。",
+            "title": "要求检查"
+          },
+          {
+            "desc": "确认所需图纸、表格、支持文件、费用与专业人士。",
+            "title": "文件范围"
+          },
+          {
+            "desc": "如已纳入项目范围，协调已约定的提交与回复任务。",
+            "title": "提交协调"
+          },
+          {
+            "desc": "将相关已提交、已批准或退回文件纳入项目记录。",
+            "title": "记录交付"
+          }
+        ],
+        "common_projects_en": [
+          "Condo management office renovation applications",
+          "DBKL renovation permit submissions",
+          "Drawing and plan submissions",
+          "Site inspection coordination"
+        ],
+        "common_projects_ms": [
+          "Permohonan pengubahsuaian kepada pejabat pengurusan kondo",
+          "Permohonan permit pengubahsuaian DBKL",
+          "Penyerahan lukisan dan pelan",
+          "Penyelarasan pemeriksaan tapak"
+        ],
+        "common_projects_zh": [
+          "公寓管理处申请",
+          "DBKL 装修准证申请",
+          "图纸与平面图提交",
+          "现场检查协调"
+        ],
+        "seo_description_en": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project.",
+        "seo_description_ms": "Permohonan permit pengubahsuaian, penyelarasan pejabat pengurusan, lukisan seni bina, dan semua perkhidmatan dokumentasi untuk projek anda.",
+        "seo_description_zh": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+      },
+      "desired": {
+        "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。\n\n<h2>初次沟通前，怎样整理已有资料？</h2>\n<p>可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。</p>\n<h2>文件协助的费用与责任应怎样确认？</h2>\n<p>逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 <a href=\"/zh/services/renovation\">住宅装修咨询</a> 中；商业单位可结合 <a href=\"/zh/services/office-renovation\">办公室装修范围</a>，再 <a href=\"/zh/quote\">提交文件协助需求</a>。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。</p>\n<h2>怎样核对图纸版本与协助报价？</h2><p>列出已有及拟补的图纸、文件和版本，确认是否需现场量度、整理多少资料、预计包含哪些修改与沟通，以及后续新增要求由谁处理。费用会受实际文件工作、修订范围及协调需求影响；原有文件不代表仍获管理方接受，修改次数和任何第三方费用都应分别确认。报价免费；如需上门量房，30公里以内免费，超过30公里收费，预约前核对地点与收费。现有管理方与专业人士责任及不保证审批结果的条件继续适用。</p>",
+        "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project.\n\n<h2>How can you organise existing information before the first discussion?</h2>\n<p>Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval.</p>\n<h2>How should document-support fees and responsibilities be clarified?</h2>\n<p>Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through <a href=\"/en/services/renovation\">home-renovation planning</a> or commercial requirements through the <a href=\"/en/services/office-renovation\">office fit-out scope</a>, then <a href=\"/en/quote\">submit the document-support enquiry</a>. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here.</p>\n<h2>How can drawing revisions be checked against the support quotation?</h2><p>List existing and proposed drawings, documents and revisions. Confirm whether a site measurement is needed, what information must be organised, which revisions and communications are included, and who handles later requests. Charges depend on the actual document work, revision scope and coordination. Existing documents are not proof of current management acceptance; confirm revision allowances and any third-party fees separately. Quotations are free. If site measurement is needed, it is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking. The existing responsibilities of management and professionals, and the absence of any approval guarantee, continue to apply.</p>"
+      },
+      "forward_tuple": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "publish-next12-approval-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-approval-fbe13ee7-cms-v1",
+        "scope": "flashcast.com.my:services:912750be-05ad-40e5-b20a-d1e5c33f232f:content_en,content_zh",
+        "physical_target_scope": "flashcast.com.my:services:912750be-05ad-40e5-b20a-d1e5c33f232f:content_en,content_zh",
+        "business_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "business_policy_scope": "project:flashcast:industry-keyword-next-twelve-pages:v1",
+        "table": "services",
+        "record_id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+        "slug": "approval",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "original_professional_owner": "content-organic-website",
+        "content_integration_department": "content-organic-website",
+        "authority_department": "content-organic-website",
+        "execution_department": "publishing",
+        "risk_level": "R2"
+      },
+      "conditional_inverse": {
+        "task_id": "fc-20261016-industry-keyword-next-twelve-pages-v1",
+        "action_id": "rollback-next12-approval-fbe13ee7-cms-v1",
+        "action_class": "cms_write",
+        "candidate_version": "next12-approval-fbe13ee7-cms-v1-rollback-v1",
+        "scope": "flashcast.com.my:services:912750be-05ad-40e5-b20a-d1e5c33f232f:content_en,content_zh",
+        "changed_fields": [
+          "content_en",
+          "content_zh"
+        ],
+        "restore_only_original_two_fields": {
+          "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。\n\n<h2>初次沟通前，怎样整理已有资料？</h2>\n<p>可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。</p>\n<h2>文件协助的费用与责任应怎样确认？</h2>\n<p>逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 <a href=\"/zh/services/renovation\">住宅装修咨询</a> 中；商业单位可结合 <a href=\"/zh/services/office-renovation\">办公室装修范围</a>，再 <a href=\"/zh/quote\">提交文件协助需求</a>。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。</p>",
+          "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project.\n\n<h2>How can you organise existing information before the first discussion?</h2>\n<p>Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval.</p>\n<h2>How should document-support fees and responsibilities be clarified?</h2>\n<p>Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through <a href=\"/en/services/renovation\">home-renovation planning</a> or commercial requirements through the <a href=\"/en/services/office-renovation\">office fit-out scope</a>, then <a href=\"/en/quote\">submit the document-support enquiry</a>. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here.</p>"
+        },
+        "requiresParentRun": true,
+        "parentPermitId": null,
+        "parentRunId": null,
+        "saved_updated_at": null,
+        "current_post_Save_complete_row": null,
+        "both_current_fields_must_equal_exact_forward": true,
+        "new_independent_inverse_policy_and_permit_required": true,
+        "full_row_raw_restore_forbidden": true
+      },
+      "baseline_is_current_CAS": false,
+      "original_PUB_full41_pin": {
+        "path": "backups/fc-20261016-industry-keyword-next-twelve-pages-v1/five-services-ten-field-readonly-binding-20261027-v1/approval-authenticated-full41-before.json",
+        "sha256": "4b9e06686684eb89ed2e2dcd40a8e0785f0f1644b4ff7f9e35b0e66685cdbc1e",
+        "size": 12135
+      },
+      "public_paths": [
+        {
+          "path": "/en/services/approval",
+          "expected": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+          "strictMetadataTitle": true
+        },
+        {
+          "path": "/zh/services/approval",
+          "expected": "装修准证与图纸支持 | FLASH CAST",
+          "strictMetadataTitle": true
+        }
+      ]
+    }
+  ],
+  "public_metadata_renderer_sources": [
+    {
+      "path": "src/i18n/brandIdentity.ts",
+      "sha256": "b9d8530f3e55910804aa7a99f633050a4e844e6d45cdaf7abb54cda361a5e7d4"
+    },
+    {
+      "path": "functions/_middleware.ts",
+      "sha256": "7f5912722328baaf3b2da91208298273b30da7ef6814c352d7ebfaff81848d09"
+    },
+    {
+      "path": "scripts/lib/publisher-public-readback.mjs",
+      "sha256": "1faab81c442728351c0f7ec6f9a1eb996d1a9c8e85ee78848dd63d63c3d01a81"
+    }
+  ]
+}

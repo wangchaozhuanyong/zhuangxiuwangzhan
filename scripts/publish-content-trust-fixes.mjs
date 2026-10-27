@@ -17,6 +17,7 @@ import { lockedBuiltinWardrobeCandidates } from "./managed-cms-targets-builtin-w
 import { lockedShopOfficeSixFieldCandidates } from "./managed-cms-targets-shop-office-six-field-v4.mjs";
 import { lockedSeoCabinetTwoAnchorCandidates } from "./managed-cms-targets-seo-cabinet-two-anchors-v1.mjs";
 import { lockedNext8TwoRecordCandidates } from "./managed-cms-targets-next8-two-record-v1.mjs";
+import { lockedNext12FiveRecordCandidates } from "./managed-cms-targets-next12-five-record-v1.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -992,7 +993,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates, ...lockedNext12FiveRecordCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
       keyField: locked.keyField || "slug",

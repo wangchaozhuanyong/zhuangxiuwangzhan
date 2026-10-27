@@ -8,6 +8,7 @@ import { MALAY_TRANSLATION_TARGETS } from "./malay-translation-targets.ts";
 import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.ts";
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
 import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
+import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
 export { ORG020_V7_TARGETS };
 
 export type ManagedTarget = {
@@ -46,6 +47,7 @@ const PAID_THREE_PAGE_NATIVE_FIELDS = [
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
   ...SHOP_OFFICE_SIX_FIELD_TARGETS,
   ...NEXT8_TWO_RECORD_TARGETS,
+  ...NEXT12_FIVE_RECORD_TARGETS,
   ...BUILTIN_WARDROBE_TARGETS,
   ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),
