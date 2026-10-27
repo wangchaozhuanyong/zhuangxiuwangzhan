@@ -9,7 +9,8 @@ import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.t
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
 import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
-export { ORG020_V7_TARGETS };
+import { CONTACT_CMS_PAGE_TITLE_TARGETS } from "./contact-cms-page-title-targets.ts";
+export { ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS };
 
 export type ManagedTarget = {
   id: string;
@@ -138,6 +139,7 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_TARGETS: readonly ManagedTarget[] = [
+  ...CONTACT_CMS_PAGE_TITLE_TARGETS,
   ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
 

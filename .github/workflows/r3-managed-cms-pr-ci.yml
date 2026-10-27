@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - scripts/managed-cms-targets-contact-three-titles-v1.mjs
+      - supabase/functions/_shared/contact-cms-page-title-targets.ts
+      - drafts/publishing/fc-20261019-contact-conversion-malay-followthrough-v1/frozen-contact-cms-pages-three-titles.json
+      - src/lib/contentPublishContactThreeTitles.test.ts
       - src/data/locations.ts
       - src/i18n/locationContextLinks.ts
       - src/i18n/malayFallbackText.json
@@ -193,6 +197,7 @@ jobs:
           npm test -- \
             src/lib/contentPublishNext8TwoRecord.test.ts \
             src/lib/contentPublishNext12FiveRecord.test.ts \
+            src/lib/contentPublishContactThreeTitles.test.ts \
             src/lib/contentPublishSeoCabinetTwoAnchors.test.ts \
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \
