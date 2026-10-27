@@ -93,6 +93,10 @@ on:
       - supabase/functions/_shared/next12-five-record-targets.ts
       - drafts/publishing/fc-20261016-industry-keyword-next-twelve-pages-v1/frozen-next12-five-row-candidates.json
       - src/lib/contentPublishNext12FiveRecord.test.ts
+      - scripts/managed-cms-targets-wardrobe15-builtin-v1.mjs
+      - supabase/functions/_shared/wardrobe15-builtin-targets.ts
+      - drafts/publishing/fc-20261015-industry-keywords-site-coverage-plan-v1/frozen-wardrobe15-single-row-candidate.json
+      - src/lib/contentPublishWardrobe15Builtin.test.ts
       - scripts/managed-cms-targets-seo-cabinet-two-anchors-v1.mjs
       - src/lib/contentPublishSeoCabinetTwoAnchors.test.ts
       - scripts/publish-malay-cms-single-target.mjs
@@ -193,6 +197,7 @@ jobs:
           npm test -- \
             src/lib/contentPublishNext8TwoRecord.test.ts \
             src/lib/contentPublishNext12FiveRecord.test.ts \
+            src/lib/contentPublishWardrobe15Builtin.test.ts \
             src/lib/contentPublishSeoCabinetTwoAnchors.test.ts \
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \
