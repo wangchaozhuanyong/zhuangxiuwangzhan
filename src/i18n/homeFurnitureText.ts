@@ -14,7 +14,7 @@ export const homeFurnitureText = {
     empty: "精选家具正在更新，您可以进入家具展示或商城继续浏览。",
   },
   en: {
-    heroShopTitle: "Furniture shop",
+    heroShopTitle: "View our furniture",
     heroShopDescription: "Sofas · Dining · Bedroom",
     heroShopLabel: "Furniture shop (opens in a new window)",
     heroShopBadge: "Curated",

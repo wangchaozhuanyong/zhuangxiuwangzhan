@@ -1,14 +1,17 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import SchemeAHome from "@/components/scheme-a/SchemeAHome";
 import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { homeFurnitureText } from "@/i18n/homeFurnitureText";
+import { loadMalayContent } from "@/i18n/malayContentRuntime";
+import { mapPublishedProjectSummary } from "@/lib/contentApi";
+import { translateDisplayText } from "@/i18n/displayLabels";
 
 const state = vi.hoisted(() => ({
-  language: "en" as "en" | "zh",
+  language: "en" as "en" | "zh" | "ms",
   whatsappHref: "https://wa.me/601100000000?text=Configured%20message",
   query: { data: [], isLoading: false, isFetching: false, isInitialError: false, refetch: vi.fn() },
 }));
@@ -51,6 +54,7 @@ const originalServiceSlugs = [
 describe("SchemeAHome composed CMS behavior", () => {
   let container: HTMLDivElement;
   let root: Root;
+  beforeAll(async () => { await loadMalayContent(); });
 
   const render = (content: PublishedHomeContentBundle, faqItems: { question: string; answer: string }[] = []) => {
     act(() => root.render(
@@ -91,7 +95,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero?.querySelector("img")).toHaveAttribute("alt", alt);
     const heroLinks = hero!.querySelectorAll("a");
     expect(heroLinks).toHaveLength(3);
-    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "发照片，先聊需求" : "Share photos, discuss your plans");
+    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "发照片，先聊需求" : "Send photos, start a conversation");
     expect(heroLinks[0]).toHaveAttribute("href", state.whatsappHref);
     expect(heroLinks[0]).toHaveAttribute("target", "_blank");
     expect(heroLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
@@ -121,6 +125,26 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(container.querySelector(`[data-home-section="hero"] a[href="/${language}/contact"]`)).toBeNull();
   });
 
+  it("uses the existing Malay project classification mapping without changing English or Chinese badges", () => {
+    for (const [language, expected] of [["ms", "Kediaman"], ["en", "Residential"], ["zh", "住宅"]] as const) {
+      state.language = language;
+      const project = mapPublishedProjectSummary({ id: "fixture-project", slug: "fixture-residence", title_en: "Fixture space", title_zh: "测试空间", title_ms: "Ruang ujian", excerpt_en: "Fixture summary", excerpt_zh: "测试简介", excerpt_ms: "Ringkasan ujian", project_type: "residential", status: "published", image_url: "/images/fixture.webp", updated_at: "2026-10-27T00:00:00.000001+00:00" }, language);
+      render(bundle({ projects: [project, { ...project, id: "fixture-project-2", slug: "fixture-residence-2", thumbnail: "/images/fixture-2.webp" }] }));
+      for (const badge of [container.querySelector(".scheme-a-project__meta span"), container.querySelector(".scheme-a-project__collection-copy small")]) {
+        expect(badge).toHaveTextContent(expected);
+        if (language === "ms") expect(badge).not.toHaveTextContent("Residential");
+      }
+    }
+  });
+
+  it.each(["en", "zh"] as const)("retains the original %s display fallback for a project type outside the fixed classification map", language => {
+    state.language = language;
+    const project = mapPublishedProjectSummary({ id: "fixture-special-type", slug: "fixture-special-type", title_en: "Fixture space", title_zh: "测试空间", project_type: "Decorative wall finishes", image_url: "/images/fixture.webp" }, language);
+    render(bundle({ projects: [project] }));
+    const expected = language === "zh" ? translateDisplayText(project.type, language) : project.type;
+    expect(container.querySelector(".scheme-a-project__meta span")).toHaveTextContent(expected);
+  });
+
   it.each(["zh", "en"] as const)("retains the original hero actions without a language-specific panel in %s", (language) => {
     state.language = language;
     render(bundle());
@@ -130,7 +154,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero!.querySelector('a[target="_blank"]')).toHaveAttribute("href", state.whatsappHref);
     expect(hero!.querySelector(`a[href="/${language}/projects"]`)).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
     expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();
-    expect(hero!.querySelector("h1")).toHaveTextContent(language === "zh" ? /更好的空间，\s*更美好的生活。/ : /A Better Space.\s*A Brighter Life./);
+    expect(hero!.querySelector("h1")).toHaveTextContent(language === "zh" ? "装修、空间规划与定制家具" : "Renovation, Space Planning & Custom Furniture");
   });
 
   it("renders every passed FAQ answer and keeps the final answer operable", () => {

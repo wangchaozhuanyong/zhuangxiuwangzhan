@@ -6,7 +6,7 @@ import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { translateDisplayText } from "@/i18n/displayLabels";
+import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { getChineseBrandDisplayName } from "@/i18n/brandIdentity";
 import { schemeAHomeText } from "@/i18n/schemeAText";
@@ -105,7 +105,6 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
     { image: "/images/blog/editorial-concepts-20260926-v1/kitchen-cabinet-price-malaysia/kitchen-materials-hardware.webp", alt: editorial.materialsDetailAlt, label: editorial.materialsDetailLabel, disclosure: mediaCopy.materialPalette, width: 1536, height: 1024 },
     { image: "/images/services/design/material-board-v2-1200.webp", alt: editorial.materialsPaletteAlt, label: editorial.materialsPaletteLabel, disclosure: mediaCopy.materialPalette, width: 1200, height: 1200 },
   ];
-  const displayText = (value: string) => language === "zh" ? translateDisplayText(value, language) : value;
   const resolvedServices = copy.serviceFallbacks.map((fallback) => {
     const slug = fallback.path.split("/").filter(Boolean).at(-1);
     const publishedService = content?.services.find((service) => service.slug === slug);
@@ -114,8 +113,10 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
       : fallback;
   });
   const featuredProjectIsConcept = isRenderingConceptProject(featuredProject);
+  const displayProjectType = (value: string) => language === "ms"
+    ? translateProjectType(value, language) : language === "zh" ? translateDisplayText(value, language) : value;
   const projectMeta = featuredProject
-    ? [displayText(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
+    ? [displayProjectType(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
     : copy.projectFallbackMeta;
   return (
     <div className="scheme-a-home scheme-a-home--atelier scheme-a-home--editorial">
@@ -167,7 +168,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
               <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
               <div className="scheme-a-hero__actions-group">
                 <div className="scheme-a-actions">
-                  <PhotoEnquiryLink className="scheme-a-button scheme-a-button--paper" source="home_hero" />
+                  <PhotoEnquiryLink className="scheme-a-button scheme-a-button--paper" source="home_hero" label={language === "en" ? copy.whatsappCta : undefined} />
                   <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
                     {copy.projectsCta}
                     <ArrowUpRight aria-hidden="true" />
@@ -286,7 +287,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                     </span>
                     <span className="scheme-a-project__collection-copy">
                       <strong>{project.title}</strong>
-                      <small>{[displayText(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
+                      <small>{[displayProjectType(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
                     </span>
                   </LocalizedLink>
                 );

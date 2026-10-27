@@ -24,7 +24,7 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
     expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
-    expect(historicalTargets).toHaveLength(83); // Includes the cabinet candidate, two NEXT8 and five NEXT12 registrations.
+    expect(historicalTargets).toHaveLength(84); // Includes the cabinet candidate, two NEXT8 and five NEXT12 registrations.
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 
