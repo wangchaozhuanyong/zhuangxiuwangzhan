@@ -9,12 +9,13 @@ import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.t
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
 import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
-export { ORG020_V7_TARGETS };
+import { TWO_ORIGINAL_MATERIAL_BODY_TARGETS } from "./two-original-material-body-targets.ts";
+export { ORG020_V7_TARGETS, TWO_ORIGINAL_MATERIAL_BODY_TARGETS };
 
 export type ManagedTarget = {
   id: string;
   slug: string;
-  contentType: "service" | "service_area" | "blog" | "site_page" | "faq" | "translation_patch";
+  contentType: "material" | "service" | "service_area" | "blog" | "site_page" | "faq" | "translation_patch";
   taskId: string;
   actionId: string;
   candidateVersion: string;
@@ -138,6 +139,7 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_TARGETS: readonly ManagedTarget[] = [
+  ...TWO_ORIGINAL_MATERIAL_BODY_TARGETS,
   ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
 
@@ -204,7 +206,7 @@ export async function findManagedPreviewCandidate(
 // All protected IDs and aliases derive from the same exact publisher targets.
 export function isProtectedContentRecord(table: string, record: Record<string, unknown>): boolean {
   const tables: Record<ManagedTarget["contentType"], string> = {
-    service: "services", service_area: "service_areas", blog: "blog_posts",
+    material: "materials", service: "services", service_area: "service_areas", blog: "blog_posts",
     site_page: "site_pages", faq: "faqs", translation_patch: "",
   };
   return MANAGED_TARGETS.some((target) => (target.table || tables[target.contentType]) === table

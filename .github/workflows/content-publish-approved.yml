@@ -18,6 +18,8 @@ on:
         default: all-20260906
         type: choice
         options:
+          - two-original-material-body-sintered-stone-grey
+          - two-original-material-body-solid-surface-warm-white
           - next8-renovation-11ab9ac6-cms-v1
           - next8-design-11ab9ac6-cms-v1
           - next12-warehouse-fbe13ee7-cms-v1
