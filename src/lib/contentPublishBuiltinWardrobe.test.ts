@@ -148,7 +148,7 @@ describe("one exact protected builtin wardrobe delta", () => {
       actionId: locked.actionId, scope: "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71:content_zh",
       changedFields: ["content_zh"], rollbackAllowed: false, requiresParentRun: true,
       desiredFieldsSha256: "ac15ee387764d4a7420edc106cc2b078b3f28ce273d608664cf18ef00ec57e83",
-      expectedUpdatedAt: "2026-10-10T16:08:22.003433+00:00",
+      expectedUpdatedAt: "2026-10-19T13:38:58.669156+00:00",
     });
     expect(MANAGED_TARGETS.filter((value) => value.taskId === target.taskId)).toEqual([target]);
     expect(findManagedTarget(MANAGED_TARGETS, target.id, target.slug, { ...managedAction(target, "publish"), operation: "publish" })).toBe(target);
@@ -156,10 +156,14 @@ describe("one exact protected builtin wardrobe delta", () => {
     expect(targetConfigs[name]).toMatchObject({ keyField: "id", key: target.id, table: "services" });
     expect(targetConfigs[locked.candidateVersion]).toBeUndefined();
     expect(targetConfigs[locked.actionId]).toBeUndefined();
-    expect(target.baselineProjectionFields).toHaveLength(30);
-    expect(new Set(target.baselineProjectionFields).size).toBe(30);
+    expect(target.baselineProjectionFields).toHaveLength(41);
+    expect(new Set(target.baselineProjectionFields).size).toBe(41);
     expect(target.retainedProjectionFields).toEqual(target.baselineProjectionFields!.filter((field) => !["content_zh", "updated_at", "version"].includes(field)));
-    expect(target.retainedProjectionFields).toHaveLength(27);
+    expect(target.retainedProjectionFields).toHaveLength(38);
+    expect(target.retainedProjectionFields!.filter((field) => field.endsWith("_ms"))).toHaveLength(11);
+    expect(locked.baselineProjectionFields).toEqual(target.baselineProjectionFields);
+    expect(locked.retainedProjectionFields).toEqual(target.retainedProjectionFields);
+    expect(locked.expectedUpdatedAt).toBe(target.expectedUpdatedAt);
     expect(Object.isFrozen(locked.desiredFields)).toBe(true);
     expect(Object.keys(locked.desiredFields)).toEqual(["content_zh"]);
     for (const field of ["baselineFieldsSha256", "retainedFieldsSha256", "rollbackFieldsSha256"] as const) {
@@ -170,6 +174,9 @@ describe("one exact protected builtin wardrobe delta", () => {
   it("loads only the tracked one-field public package without a production backup dependency", () => {
     const bytes = readFileSync(locked.sourceCandidatePath); const source = JSON.parse(bytes.toString("utf8"));
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(locked.sourceCandidateSha256);
+    expect(locked.sourceCandidateSha256).toBe("09dea94387fd851e2684ce2b9cf0abe8f98d671f9f321b0b2257816ab0ac9f78");
+    expect(source.expected_updated_at).toBe("2026-10-10T16:08:22.003433+00:00");
+    expect(source.expected_updated_at).not.toBe(locked.expectedUpdatedAt);
     expect(readBuiltinWardrobeCandidate(bytes).desiredFields).toEqual(locked.desiredFields);
     expect(stableDigest(source.desired_fields)).toBe(target.desiredFieldsSha256);
     expect(source).not.toHaveProperty("record"); expect(source).not.toHaveProperty("before_fields");
@@ -191,9 +198,9 @@ describe("one exact protected builtin wardrobe delta", () => {
     expect(() => readBuiltinWardrobeCandidate(Buffer.from(JSON.stringify({ ...source, ...patch })))).toThrow(/package hash differs/);
   });
 
-  it("builds only content_zh and preserves all other 29 native fixture values", () => {
+  it("builds only content_zh and preserves all other 40 native fixture values", () => {
     const before = syntheticBefore(); const desired = targetConfigs[name].buildRecord(before);
-    expect(Object.keys(before)).toHaveLength(30);
+    expect(Object.keys(before)).toHaveLength(41);
     expect(Object.keys(desired).filter((field) => stableDigest(desired[field]) !== stableDigest(before[field]))).toEqual(["content_zh"]);
     for (const field of locked.baselineProjectionFields.filter((value: string) => value !== "content_zh")) expect(desired[field]).toEqual(before[field]);
     const syntheticLocked = { ...locked, baselineFieldsSha256: stableDigest(before) };
@@ -223,6 +230,23 @@ describe("one exact protected builtin wardrobe delta", () => {
     expect(stableDigest(result.body.payload_preview)).toBe(target.desiredFieldsSha256);
     expect(fake.row()).toEqual(before); expect(fake.writes).toEqual([]); expect(fake.rpcs).toEqual([]);
   });
+
+  it.each(locked.retainedProjectionFields.filter((field: string) => field.endsWith("_ms")))(
+    "protects current Malay %s in the CLI and service before a write or permit claim", async (field: string) => {
+      const before = bindSyntheticBaseline();
+      const changed = { ...before, [field]: "SYNTHETIC newer Malay value" };
+      const syntheticLocked = { ...locked, baselineFieldsSha256: stableDigest(before) };
+      expect(() => assertLockedServiceCandidate(syntheticLocked, changed)).toThrow();
+      const fake = clientFor(changed);
+      expect((await publishContent(request(before), fake.client, context)).status).toBe(403);
+      expect(fake.writes).toEqual([]); expect(fake.rpcs).toEqual([]);
+      const publishFake = clientFor(before);
+      const forged = request(before, "publish");
+      forged.record = { ...forged.record, [field]: "SYNTHETIC unapproved Malay request" };
+      expect((await publishContent(forged, publishFake.client, context)).status).toBe(403);
+      expect(publishFake.writes).toEqual([]); expect(publishFake.rpcs).toEqual([]);
+    },
+  );
 
   it.each([
     ["unreviewed body", "content_zh", "unreviewed"], ["English body", "content_en", "unreviewed"],
@@ -276,7 +300,7 @@ describe("one exact protected builtin wardrobe delta", () => {
   it("claims one exact permit and writes only content_zh under ID and raw CAS predicates", async () => {
     const before = bindSyntheticBaseline(); const fake = clientFor(before);
     const result = await publishContent(request(before, "publish"), fake.client, context);
-    expect(result.status || 200).toBe(200); expect(result.body.saved_id).toBe(target.id);
+    expect(result.status || 200, JSON.stringify(result.body)).toBe(200); expect(result.body.saved_id).toBe(target.id);
     expect(fake.writes).toEqual([locked.desiredFields]);
     expect(fake.predicates).toEqual([["id", target.id], ["updated_at", before.updated_at]]);
     expect(fake.rpcs.map((call) => call.name)).toEqual([
