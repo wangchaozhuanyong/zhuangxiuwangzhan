@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - scripts/managed-cms-targets-english-kitchen-en2-v1.mjs
+      - supabase/functions/_shared/english-kitchen-en2-targets.ts
+      - drafts/publishing/fc-20261011-english-kitchen-actual-publication-goal-v1/frozen-current-english-kitchen-en2-candidate.json
+      - src/lib/contentPublishEnglishKitchenEn2.test.ts
       - src/data/locations.ts
       - src/i18n/locationContextLinks.ts
       - src/i18n/malayFallbackText.json
@@ -198,6 +202,7 @@ jobs:
             src/lib/contentPublishNext8TwoRecord.test.ts \
             src/lib/contentPublishNext12FiveRecord.test.ts \
             src/lib/contentPublishWardrobe15Builtin.test.ts \
+            src/lib/contentPublishEnglishKitchenEn2.test.ts \
             src/lib/contentPublishSeoCabinetTwoAnchors.test.ts \
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \

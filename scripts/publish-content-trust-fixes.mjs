@@ -20,6 +20,8 @@ import { lockedNext8TwoRecordCandidates } from "./managed-cms-targets-next8-two-
 import { lockedNext12FiveRecordCandidates } from "./managed-cms-targets-next12-five-record-v1.mjs";
 import { lockedWardrobe15BuiltinCandidates } from "./managed-cms-targets-wardrobe15-builtin-v1.mjs";
 
+import { lockedEnglishKitchenEn2Candidates } from "./managed-cms-targets-english-kitchen-en2-v1.mjs";
+
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
 const target = args.find((arg) => arg.startsWith("--target="))?.slice("--target=".length) || "";
@@ -994,7 +996,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates, ...lockedNext12FiveRecordCandidates, ...lockedWardrobe15BuiltinCandidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates, ...lockedNext12FiveRecordCandidates, ...lockedWardrobe15BuiltinCandidates, ...lockedEnglishKitchenEn2Candidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
       keyField: locked.keyField || "slug",
