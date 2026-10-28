@@ -1,5 +1,6 @@
 @layer components {
   /* Home-only composition; shared navigation, controls and route styles stay owned by their components. */
+  .scheme-a-home--editorial .photo-enquiry-label--compact { display: none; }
   .scheme-a-home--editorial :is(.home-renovation, .home-services, .home-materials, .home-furniture, .home-journal, .home-areas) {
     color: var(--public-text-primary);
     background: var(--public-surface-base);
@@ -151,7 +152,23 @@
     .scheme-a-home--editorial .scheme-a-hero__service { font-size: 13px; line-height: 1.6; }
     /* Match the specificity of the shared shell's explicit typography rules. */
     html[data-public-theme] #root .scheme-a-home--editorial .scheme-a-hero__lead { padding-top: 8px; font-size: 13px !important; line-height: 1.6 !important; }
-    html[data-public-theme] #root .scheme-a-home--editorial .scheme-a-hero .scheme-a-button { min-height: 44px !important; padding: 12px 16px !important; font-size: 13px !important; }
+    .scheme-a-home--editorial .scheme-a-hero__actions-group { width: 100% !important; }
+    /* Keep longer translations from changing the homepage's two-button layout. */
+    html[data-public-theme="warm-stone"] .scheme-a-home--editorial .scheme-a-hero .scheme-a-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 10px;
+    }
+    html[data-public-theme] #root .scheme-a-home--editorial .scheme-a-hero .scheme-a-button {
+      width: 100%; min-width: 0 !important; min-height: 48px !important;
+      padding: 10px 8px !important; gap: 8px !important; font-size: 13px !important;
+      white-space: normal;
+    }
+    .scheme-a-home--editorial .photo-enquiry-label--full { display: none; }
+    .scheme-a-home--editorial .photo-enquiry-label--compact { display: inline; }
+    .scheme-a-home--editorial .scheme-a-home-furniture-entry__header { flex-wrap: wrap; }
+    .scheme-a-home--editorial .scheme-a-home-furniture-entry__badge { white-space: nowrap; }
     .scheme-a-home--editorial .home-services__grid { grid-template-columns: 1fr; gap: 32px; }
     .scheme-a-home--editorial .home-services__card:nth-child(2) { margin-top: 0; }
     .scheme-a-home--editorial .home-services__image { aspect-ratio: 4 / 3; }
@@ -176,5 +193,10 @@
     .scheme-a-home--editorial .home-furniture__actions { justify-content: flex-start; padding: 0; }
     .scheme-a-home--editorial .home-journal__grid { grid-template-columns: 1fr; gap: 36px; }
     .scheme-a-home--editorial .home-areas__links { gap: 0 20px; }
+  }
+  @media (max-width: 359px) {
+    html[data-public-theme] #root .scheme-a-home--editorial .scheme-a-hero .scheme-a-button {
+      padding-inline: 4px !important; gap: 4px !important;
+    }
   }
 }
