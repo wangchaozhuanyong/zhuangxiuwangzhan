@@ -110,7 +110,18 @@ const BrandMark = ({ logo, name, displayName, language }: { logo: string; name: 
             onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
           />
         </span>
-        {showLocalizedName && <span className="scheme-a-chrome__wordmark-copy"><span className="scheme-a-chrome__wordmark-name" lang={languageTag(language)}>{displayName}</span>{language === "zh" && <span className="scheme-a-chrome__wordmark-english" lang="en">{getPublicSiteName({ company_name: name })}</span>}</span>}
+        {showLocalizedName && (
+          <span className="scheme-a-chrome__wordmark-copy">
+            <span className="scheme-a-chrome__wordmark-name" lang={languageTag(language)}>{displayName}</span>
+            {language === "zh" && (
+              <span className="scheme-a-chrome__wordmark-english" lang="en">
+                {Array.from(getPublicSiteName({ company_name: name }), (letter, index) => (
+                  <span key={index}>{letter}</span>
+                ))}
+              </span>
+            )}
+          </span>
+        )}
       </span>
       {!showLocalizedName && <span className="sr-only">{name}</span>}
     </LocalizedLink>

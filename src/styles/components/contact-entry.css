@@ -120,67 +120,40 @@
 }
 .scheme-a-hero__actions-group { display: grid; grid-template-columns: minmax(0, 1fr); width: fit-content; max-width: 100%; }
 .scheme-a-hero__actions-group .scheme-a-actions > a { flex: 1 1 auto; }
-.scheme-a-home-furniture-entry { min-width: 0; margin-top: 20px; }
+.scheme-a-home-furniture-entry { container-type: inline-size; min-width: 0; margin-top: 20px; }
 .scheme-a-home-furniture-entry__card {
-  display: flex; align-items: center; gap: 14px;
-  width: 100%; min-height: 76px; padding: 14px 18px;
+  display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 14px;
+  width: 100%; min-height: 80px; padding: 14px 18px;
   border: 1px solid rgba(217, 167, 106, 0.40); border-radius: 18px;
-  background: linear-gradient(135deg, #FFFDF9 0%, #FAF4EA 50%, #F5ECE0 100%);
-  color: #382718;
-  box-shadow: 0 8px 24px rgba(180, 130, 70, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  background: #FAF4EA; color: #3F4E42;
+  box-shadow: 0 6px 20px rgba(180, 130, 70, 0.08);
   text-decoration: none;
-  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
 .scheme-a-home-furniture-entry__icon {
-  display: grid; place-items: center; flex: none; width: 48px; height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
-  border: 1px solid rgba(217, 167, 106, 0.45);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 2px 6px rgba(180, 130, 70, 0.12);
+  display: block; width: 48px; height: 48px; overflow: hidden;
+  border-radius: 12px; background: #F5ECE0;
 }
-.scheme-a-home-furniture-entry__icon svg { width: 34px; height: 34px; }
-.scheme-a-home-furniture-entry__copy { display: grid; flex: 1; min-width: 0; gap: 5px; }
-.scheme-a-home-furniture-entry__header { display: flex; align-items: center; gap: 8px; }
-.scheme-a-home-furniture-entry__title { font-size: 16px; font-weight: 700; line-height: 1.35; color: #382718; }
-.scheme-a-home-furniture-entry__badge {
-  display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px;
-  font-size: 10px; font-weight: 700;
-  background: rgba(217, 167, 106, 0.18); color: #8B5A24;
-  border: 1px solid rgba(217, 167, 106, 0.40);
-  line-height: 1.4;
-}
-.scheme-a-home-furniture-entry__description {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-}
-.scheme-a-chip {
-  display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px;
-  font-size: 11px; font-weight: 600; line-height: 1.35;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-.scheme-a-chip--0 { background: #2B5442; color: #FFFFFF; }
-.scheme-a-chip--1 { background: #C05621; color: #FFFFFF; }
-.scheme-a-chip--2 { background: #B7791F; color: #FFFFFF; }
+.scheme-a-home-furniture-entry__icon img { width: 100%; height: 100%; object-fit: cover; object-position: 52% center; }
+.scheme-a-home-furniture-entry__copy { display: grid; min-width: 0; gap: 5px; }
+.scheme-a-home-furniture-entry__title { font-size: 16px; font-weight: 600; line-height: 1.4; color: #3F4E42; }
+.scheme-a-home-furniture-entry__description { font-size: 12px; line-height: 1.6; color: #5D594F; }
 .scheme-a-home-furniture-entry small { color: #8C6D46; font-size: 11px; line-height: 1.4; }
 .scheme-a-home-furniture-entry__action {
-  display: grid; place-items: center; flex: none; width: 36px; height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(217, 167, 106, 0.45);
-  color: #8B5A24;
-  box-shadow: 0 2px 6px rgba(180, 130, 70, 0.1);
-  transition: background-color .2s ease, color .2s ease, transform .2s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 32px; padding: 6px 10px; border-radius: 999px;
+  border: 1px solid rgba(217, 167, 106, 0.45); color: #3F4E42;
+  font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap;
 }
-.scheme-a-home-furniture-entry__arrow { width: 18px; height: 18px; }
-.scheme-a-home-furniture-entry__card:focus-visible { outline: 2px solid #D9A76A; outline-offset: 4px; }
+.scheme-a-home-furniture-entry__arrow { flex: none; width: 16px; height: 16px; }
+.scheme-a-home-furniture-entry__card:focus-visible { outline: 2px solid #3F4E42; outline-offset: 4px; }
 @media (hover: hover) {
-  .scheme-a-home-furniture-entry__card:hover {
-    transform: translateY(-2px);
-    border-color: #D9A76A;
-    box-shadow: 0 12px 28px rgba(180, 130, 70, 0.18), inset 0 1px 2px rgba(255, 255, 255, 1);
-  }
-  .scheme-a-home-furniture-entry__card:hover .scheme-a-home-furniture-entry__action {
-    background: #D9A76A; color: #FFFFFF; border-color: #D9A76A;
-  }
+  .scheme-a-home-furniture-entry__card:hover { border-color: #D9A76A; box-shadow: 0 8px 24px rgba(180, 130, 70, 0.12); }
+}
+@container (max-width: 459px) {
+  .scheme-a-home-furniture-entry__card { grid-template-columns: 42px minmax(0, 1fr); column-gap: 12px; row-gap: 8px; padding: 12px 14px; }
+  .scheme-a-home-furniture-entry__icon { grid-row: 1 / 3; width: 42px; height: 48px; }
+  .scheme-a-home-furniture-entry__action { grid-column: 2; justify-self: start; min-height: 24px; padding: 0; border: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .scheme-a-home-furniture-entry__card { transition: none; }
@@ -193,13 +166,7 @@
   .fc-contact-entry { min-height: 48px; padding: 6px 16px 6px 6px; gap: 9px; font-size: 13px; }
   .fc-contact-entry__icon { width: 34px; height: 34px; }
   .fc-contact-entry__icon svg { width: 18px; height: 18px; }
-  .scheme-a-home-furniture-entry__card { padding: 12px 14px; gap: 10px; }
-  .scheme-a-home-furniture-entry__icon { width: 42px; height: 42px; border-radius: 12px; }
-  .scheme-a-home-furniture-entry__icon svg { width: 28px; height: 28px; }
   .scheme-a-home-furniture-entry__title { font-size: 15px; }
-  .scheme-a-chip { font-size: 10px; padding: 1.5px 6px; }
-  .scheme-a-home-furniture-entry__action { width: 30px; height: 30px; }
-  .scheme-a-home-furniture-entry__arrow { width: 15px; height: 15px; }
   .fc-furniture-floating[lang="ms"] { width: 170px; grid-template-columns: 24px minmax(0, 1fr); grid-template-rows: auto; gap: 10px; text-align: left; padding: 9px 12px; }
   .fc-furniture-floating[lang="ms"] .fc-furniture-floating__copy { display: grid; gap: 3px; }
   .fc-furniture-floating[lang="ms"] .fc-furniture-floating__hint { display: block; white-space: normal; }

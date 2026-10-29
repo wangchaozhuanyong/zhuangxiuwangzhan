@@ -14,6 +14,7 @@ import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureC
 import { rememberFurnitureNavigationScroll } from "@/lib/publicScrollRestoration";
 import { withLanguagePrefix } from "@/i18n/routes";
 import { furnitureListingImageSizes, furnitureListingPictureSources } from "@/lib/furnitureListingImages";
+import { furnitureListingHeroImage } from "@/lib/routeHeroImage";
 
 const keepFurnitureScrollPosition = (event: MouseEvent<HTMLAnchorElement>) => {
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -58,9 +59,7 @@ export default function FurnitureShowcase() {
       ].map((item) => ({ ...item, url: withLanguagePrefix(item.url, language) }))} />
       <SchemeARouteHero
         kind="listing"
-        showIntro={false}
-        image="/images/heroes/v20261007/furniture-showcase-wide.webp"
-        imageSourceWidth={2160}
+        {...furnitureListingHeroImage}
         imageAlt={copy.heroImageAlt}
         label={copy.title}
         title={categoryCopy?.h1 || subcategoryLabel || (categoryKey ? categoryLabel : copy.title)}

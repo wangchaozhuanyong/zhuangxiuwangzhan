@@ -1,9 +1,9 @@
 export const homeFurnitureText = {
   zh: {
-    heroShopTitle: "家具商城",
-    heroShopDescription: "沙发 · 餐桌 · 卧室家具",
-    heroShopLabel: "家具商城（新窗口打开）",
-    heroShopBadge: "官方甄选",
+    heroShopTitle: "装修客户专属礼遇",
+    heroShopDescription: "精选家具，为您的新家添一份心意",
+    heroShopLabel: "通过 WhatsApp 咨询装修客户家具礼遇（新窗口打开）",
+    heroShopAction: "WhatsApp 咨询礼遇",
     title: "为空间，找到合适的家具。",
     description: "从一张休闲椅到一套餐桌椅，浏览家具款式，为日常生活找到合适的搭配。",
     sceneCaption: "设计效果图",
@@ -14,10 +14,10 @@ export const homeFurnitureText = {
     empty: "精选家具正在更新，您可以进入家具展示或商城继续浏览。",
   },
   en: {
-    heroShopTitle: "Furniture shop",
-    heroShopDescription: "Sofas · Dining · Bedroom",
-    heroShopLabel: "Furniture shop (opens in a new window)",
-    heroShopBadge: "Curated",
+    heroShopTitle: "Renovation client privileges",
+    heroShopDescription: "A thoughtful furniture selection for your new home.",
+    heroShopLabel: "Enquire about renovation client furniture privileges on WhatsApp (opens in a new window)",
+    heroShopAction: "WhatsApp enquiry",
     title: "Find the pieces that make it yours.",
     description: "From a lounge chair to a dining set, explore furniture that brings your space into everyday life.",
     sceneCaption: "Design rendering",
@@ -29,10 +29,10 @@ export const homeFurnitureText = {
   },
 
   ms: {
-    heroShopTitle: "Kedai perabot",
-    heroShopDescription: "Sofa · Ruang makan · Bilik tidur",
-    heroShopLabel: "Kedai perabot dalam bahasa Inggeris (dibuka dalam tetingkap baharu)",
-    heroShopBadge: "Pilihan Rasmi",
+    heroShopTitle: "Keistimewaan pelanggan renovasi",
+    heroShopDescription: "Pilihan perabot istimewa untuk kediaman baharu anda.",
+    heroShopLabel: "Tanya tentang keistimewaan perabot pelanggan renovasi melalui WhatsApp (dibuka dalam tetingkap baharu)",
+    heroShopAction: "Tanya di WhatsApp",
     title: "Cari kepingan yang menjadikannya milik anda.",
     description: "Daripada kerusi rehat kepada set makan, terokai perabot yang membawa ruang anda ke dalam kehidupan seharian.",
     sceneCaption: "Penyampaian reka bentuk",

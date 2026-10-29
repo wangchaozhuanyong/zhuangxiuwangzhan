@@ -6,6 +6,7 @@ import { stripLanguagePrefix } from "@/i18n/routes";
 import { publicContentQueries } from "@/lib/publicContentQueries";
 
 import { INTERACTION_POLICY, runReadQuery } from "@/lib/interactionPolicy";
+import { prefetchPublicRouteHero, publicRouteHeroPageKey } from "./publicRouteHeroPrefetch";
 const STALE_TIME = INTERACTION_POLICY.publicStaleTime;
 const GC_TIME = INTERACTION_POLICY.gcTime;
 
@@ -133,14 +134,22 @@ export const prefetchPublishedRouteContent = async (
   language: Language,
 ) => {
   const tasks = getPublicRoutePrefetchTasks(pathname, language);
+  // Static furniture heroes do not wait for their catalog module or queries.
+  prefetchPublicRouteHero(pathname);
   // claimPublicQuerySeed consumes each client/key once. Register the furniture
   // mapper before claiming, including hover/keyboard prefetch before page mount.
   if (tasks.some((task) => task.queryKey[1] === "furniture_catalog")) {
     await import("./furnitureQuerySeed");
   }
-  await Promise.allSettled(tasks.map((task) => queryClient.prefetchQuery({
-    ...withPublicDetailReuse(queryClient, { queryKey: task.queryKey, queryFn: (context) => runReadQuery(context.signal, async (signal) => task.queryFn({ ...context, queryKey: task.queryKey, signal, meta: undefined, client: queryClient })) }),
-    staleTime: STALE_TIME,
-    gcTime: GC_TIME,
-  })));
+  await Promise.allSettled(tasks.map(async (task) => {
+    await queryClient.prefetchQuery({
+      ...withPublicDetailReuse(queryClient, { queryKey: task.queryKey, queryFn: (context) => runReadQuery(context.signal, async (signal) => task.queryFn({ ...context, queryKey: task.queryKey, signal, meta: undefined, client: queryClient })) }),
+      staleTime: STALE_TIME,
+      gcTime: GC_TIME,
+    });
+    if (task.queryKey[1] === "site_page" && task.queryKey[3] === publicRouteHeroPageKey(pathname)
+      && queryClient.getQueryState(task.queryKey)?.status === "success") {
+      prefetchPublicRouteHero(pathname, queryClient.getQueryData<{ image_url?: string | null } | null>(task.queryKey));
+    }
+  }));
 };

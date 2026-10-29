@@ -2,11 +2,11 @@ import {
   buildLocalResponsiveSrcSet,
   isLocalResponsiveImageCandidate,
   normalizeLocalResponsiveImageWidths,
-  resolveLocalCoverSizes,
   toLocalResponsiveImageSrc,
 } from "../src/lib/localResponsiveImage";
 import { getFurnitureListingRoute } from "../src/lib/furnitureCatalogPresentation";
 import { pageHeroImages, resolvePageHeroImage } from "../src/lib/pageHeroImages";
+import { furnitureListingHeroImage, getRouteHeroImagePreloads } from "../src/lib/routeHeroImage";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 
 type ProjectSummaryRow = Record<string, unknown>;
@@ -335,26 +335,11 @@ const getServiceHeroPreloads = (key: string, pageBundle: HomeContentBundleRow | 
   const publishedImage = readString(content, "image_url").trim() || readString(settings, "image_url").trim()
     || readString(readRecordArray(pageBundle?.site_pages)[0], "image_url").trim();
   const image = resolvePageHeroImage(publishedImage, pageHeroImages.services);
-  const build = (source: string, widths: number[], sourceWidth: number | undefined, sizes: string, media: string, quality: number, pictureSource = false): ImagePreload => {
-    if (isSupabasePublicObjectUrl(source)) return buildSupabaseImagePreload(source, widths, {
-      height: 1100, quality, sizes, media, resize: "cover", aspectRatio: { width: 16, height: 11 }, fetchPriority: "high",
-    });
-    // SchemeARouteHero's <source> candidates use the supplied CMS URL directly;
-    // SmartImage normalizes only its desktop <img> fallback.
-    const normalized = pictureSource ? source : normalizePreloadImageUrl(source);
-    return {
-      href: isLocalResponsiveImageCandidate(normalized) ? toLocalResponsiveImageSrc(normalized, widths[0]) : normalized,
-      srcSet: isLocalResponsiveImageCandidate(normalized) ? buildLocalResponsiveSrcSet(normalized, widths, sourceWidth) : undefined,
-      sizes, media, fetchPriority: "high",
-    };
-  };
-  return [
-    build(image.mobile, [560, 720, 900, 1200, 1600], image.mobileWidth, "100vw", "(max-width: 767px)", 86, true),
-    build(image.tablet || image.desktop, [720, 900, 1200, 1600, 2000], image.tabletWidth, "100vw", "(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)", 84, true),
-    build(image.desktop, [560, 720, 960, 1200, 1600], image.desktopWidth,
-      resolveLocalCoverSizes(normalizePreloadImageUrl(image.desktop), "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw", { width: 16, height: 11 }),
-      "(min-width: 1024px), (min-width: 768px) and (max-width: 1023px) and (orientation: landscape)", 86),
-  ];
+  return getRouteHeroImagePreloads({
+    image: image.desktop, imageSourceWidth: image.desktopWidth,
+    mobileImage: image.mobile, mobileImageSourceWidth: image.mobileWidth,
+    tabletImage: image.tablet, tabletImageSourceWidth: image.tabletWidth,
+  }).map(preload => ({ ...preload, fetchPriority: "high" }));
 };
 
 export const getDynamicImagePreloads = (
@@ -367,14 +352,7 @@ export const getDynamicImagePreloads = (
   if (getFurnitureListingRoute(key)) {
     // The current listing hero is discovered only after its route chunk loads.
     // Match SchemeARouteHero's candidates and cover sizes to reuse one request.
-    const hero = "/images/heroes/v20261007/furniture-showcase-wide.webp";
-    return [{
-      ...buildImagePreload(hero, [560, 720, 960, 1200, 1600], {
-        height: 720,
-        sizes: resolveLocalCoverSizes(hero, "(min-width: 1536px) 1440px, (min-width: 1024px) 94vw, 100vw", { width: 3, height: 1 }),
-      }),
-      fetchPriority: "high" as const,
-    }];
+    return getRouteHeroImagePreloads(furnitureListingHeroImage).map(preload => ({ ...preload, fetchPriority: "high" as const }));
   }
 
   if (route.topLevelPublicPageKey === "services") {

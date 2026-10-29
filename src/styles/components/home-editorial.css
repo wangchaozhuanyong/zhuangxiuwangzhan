@@ -167,8 +167,6 @@
     }
     .scheme-a-home--editorial .photo-enquiry-label--full { display: none; }
     .scheme-a-home--editorial .photo-enquiry-label--compact { display: inline; }
-    .scheme-a-home--editorial .scheme-a-home-furniture-entry__header { flex-wrap: wrap; }
-    .scheme-a-home--editorial .scheme-a-home-furniture-entry__badge { white-space: nowrap; }
     .scheme-a-home--editorial .home-services__grid { grid-template-columns: 1fr; gap: 32px; }
     .scheme-a-home--editorial .home-services__card:nth-child(2) { margin-top: 0; }
     .scheme-a-home--editorial .home-services__image { aspect-ratio: 4 / 3; }

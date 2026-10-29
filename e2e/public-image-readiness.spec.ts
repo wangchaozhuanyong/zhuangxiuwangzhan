@@ -147,7 +147,8 @@ test("keeps initial branding unique, brands real page waits and leaves warmed na
     await expect(page).toHaveURL(/\/zh\/services$/);
     await ready();
     await expect(page.locator(loader)).toHaveCount(0);
-    await page.locator('.scheme-a-language-switch a[href="/en/services"]').first().click();
+    await page.locator('.language-selector--header').click();
+    await page.locator('.language-drawer__option[href="/en/services"]').click();
     await expect(page).toHaveURL(/\/en\/services$/);
     await ready();
     await expect(page.locator(loader)).toHaveCount(0);

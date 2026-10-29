@@ -2,22 +2,8 @@ import * as React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { interactionText } from "@/i18n/interactionText";
 import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
-import { isLocalImageSrc, preferWebpSrc, toLocalStaticImageSrc } from "@/lib/imageUrl";
-import {
-  buildLocalResponsiveSrcSet,
-  isLocalResponsiveImageCandidate,
-  normalizeLocalResponsiveImageWidths,
-  resolveLocalCoverSizes,
-  toLocalResponsiveImageSrc,
-  toVersionedLocalResponsiveImageSrc,
-} from "@/lib/localResponsiveImage";
-import {
-  buildSupabaseSrcSet,
-  isSupabasePublicObjectUrl,
-  resolveSupabaseHeightForWidth,
-  toSupabaseRenderImageUrl,
-  type SupabaseTargetAspectRatio,
-} from "@/lib/supabaseImage";
+import { resolveSmartImageSource } from "@/lib/smartImageSource";
+import type { SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
 import { cn } from "@/lib/utils";
 import { forgetDecodedPublicImage, getPublicImageSelectedSource, hasDecodedPublicImage, rememberDecodedPublicImage } from "@/lib/publicImageDecodeCache";
 
@@ -70,28 +56,9 @@ export function SmartImage({
 }: SmartImageProps) {
   const { language } = useLanguage();
   const feedback = interactionText[language];
-  const isSupabase = isSupabasePublicObjectUrl(src);
-  const normalizedSrc = isSupabase ? src : toLocalStaticImageSrc(src);
-  const normalizedLocalSrc = !isSupabase && isLocalImageSrc(normalizedSrc) ? preferWebpSrc(normalizedSrc) : normalizedSrc;
-  const localSrc = !isSupabase ? toVersionedLocalResponsiveImageSrc(normalizedLocalSrc) : normalizedLocalSrc;
-  const resolvedSizes = isSupabase
-    ? sizes ?? "100vw"
-    : resolveLocalCoverSizes(localSrc, sizes ?? "100vw", targetAspectRatio);
-  const widths = candidateWidths ?? (width ? [width, Math.min(width * 2, 2400)] : [480, 768, 1024, 1440]);
-  const fallbackWidth = candidateWidths?.[0] ?? width ?? widths[0] ?? 480;
-  const localResponsiveWidths = !isSupabase && candidateWidths && isLocalResponsiveImageCandidate(localSrc)
-    ? normalizeLocalResponsiveImageWidths(widths) : [];
-  const localResponsiveSrcSet = localResponsiveWidths.length
-    ? buildLocalResponsiveSrcSet(localSrc, localResponsiveWidths, sourceWidth) : undefined;
-  const srcSet = isSupabase
-    ? buildSupabaseSrcSet(src, widths, { height, quality, resize, targetAspectRatio })
-    : localResponsiveSrcSet;
-  const fallbackHeight = resolveSupabaseHeightForWidth(fallbackWidth, targetAspectRatio, height);
-  const resolvedSrc = isSupabase
-    ? toSupabaseRenderImageUrl(src, { width: fallbackWidth, height: fallbackHeight, quality, resize })
-    : localResponsiveWidths.length
-      ? toLocalResponsiveImageSrc(localSrc, localResponsiveWidths[0] ?? fallbackWidth)
-      : localSrc;
+  const { resolvedSrc, srcSet, resolvedSizes } = resolveSmartImageSource({
+    src, width, height, sizes, candidateWidths, sourceWidth, quality, resize, targetAspectRatio,
+  });
 
   const [retry, setRetry] = React.useState(0);
   const finalSrc = withRetry(resolvedSrc, retry);
