@@ -122,7 +122,7 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
       ? [publicContentQueries.furnitureProduct(productSlug, language)]
       : [publicContentQueries.furnitureCatalog(language)];
   }
-  if (["privacy", "terms"].includes(section || "")) return [];
+  if (["privacy", "terms", "custom-cabinets"].includes(section || "")) return [];
 
   return [publicContentQueries.cmsPage(language, path)];
 };

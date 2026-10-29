@@ -22,6 +22,8 @@ const countByGroup = entries.reduce((acc, entry) => {
 }, {});
 
 const priorityRoutes = new Set([
+  "/en/custom-cabinets",
+  "/zh/custom-cabinets",
   "/en",
   "/zh",
   "/en/services",

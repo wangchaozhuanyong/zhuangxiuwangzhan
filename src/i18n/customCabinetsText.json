@@ -1,0 +1,728 @@
+{
+  "zh": {
+    "title": "喜欢这一套，就看整套价。",
+    "eyebrow": "全屋定制套餐",
+    "intro": "先看款式、整套预算和包含尺寸，再挑适合你家的配色。厨房、卧室与客厅，搭成一套更好比较。",
+    "metaTitle": "全屋定制柜选配 | 橱柜、衣柜与收纳搭配 | FLASH CAST",
+    "metaDescription": "探索现代、中式、欧式等12种定制柜风格与36套精选搭配。查看完整空间效果图，搭配柜门、柜身和台面颜色，收藏分享喜欢的方案，并咨询吉隆坡与雪兰莪定制柜报价。",
+    "home": "首页",
+    "start": "看款式与套餐",
+    "browse": "浏览组合方案",
+    "heroAlt": "奶油白与浅橡木搭配的厨房橱柜",
+    "packagesTitle": "看得见款式，也看得清整套。",
+    "packagesIntro": "每套都有空间效果图、包含柜体与尺寸清单。按标准范围比较，再决定是否调整。",
+    "choosePackage": "查看这套与尺寸",
+    "selected": "已选",
+    "reference": "搭配参考",
+    "packages": {
+      "kitchen-wardrobe": {
+        "title": "厨衣组合",
+        "description": "把厨房与卧室的日常收纳先安排好。",
+        "scope": "橱柜 · 衣柜"
+      },
+      "whole-home": {
+        "title": "全屋收纳组合",
+        "description": "从厨房到玄关，让柜体有统一的设计语言。",
+        "scope": "橱柜 · 衣柜 · 电视柜 · 鞋柜"
+      },
+      "free": {
+        "title": "自由组合",
+        "description": "只选择你家需要的柜体，慢慢搭出自己的方案。",
+        "scope": "从空白清单开始"
+      }
+    },
+    "configTitle": "这套喜欢，细节按你家来。",
+    "configIntro": "查看所选套餐的空间与配色；更改柜体或配色后，按新清单重新报价。选择会保存在链接中。",
+    "styleStep": "选择风格",
+    "paletteStep": "选择配色",
+    "moduleStep": "需要哪些柜体",
+    "sceneLabel": "查看空间",
+    "styles": {
+      "cream": {
+        "title": "奶油简约",
+        "description": "柔和浅色、平板柜门，干净而温暖。"
+      },
+      "natural": {
+        "title": "自然原木",
+        "description": "连续木纹与局部开放格，把自然感带回家。"
+      },
+      "grey": {
+        "title": "暖灰现代",
+        "description": "克制的暖灰、清晰的分区与细线条拉手。"
+      },
+      "walnut": {
+        "title": "胡桃中古",
+        "description": "深浅胡桃木纹，配上细金属拉手与温润留白。"
+      }
+    },
+    "palettes": {
+      "cream-oak": {
+        "name": "奶油白＋浅橡木",
+        "countertop": "浅米色细纹石材搭配",
+        "description": "奶油白为主，浅橡木点缀，温和明亮。"
+      },
+      "oat-wood": {
+        "name": "燕麦米＋浅木纹",
+        "countertop": "浅暖米色石材搭配",
+        "description": "燕麦米与暖浅木纹，营造柔和层次。"
+      },
+      "oak-white": {
+        "name": "浅橡木＋暖白",
+        "countertop": "暖白细纹石材搭配",
+        "description": "浅橡木成为主角，暖白让空间更轻盈。"
+      },
+      "light-walnut": {
+        "name": "浅胡桃木纹＋米白",
+        "countertop": "浅暖石灰岩纹理搭配",
+        "description": "浅棕木纹与米白相配，自然而安静。"
+      },
+      "cashmere-oak": {
+        "name": "羊绒灰＋暖橡木",
+        "countertop": "浅暖灰石材搭配",
+        "description": "带暖意的灰米色，搭配清晰橡木纹。"
+      },
+      "grey-smoke": {
+        "name": "暖灰＋烟熏木纹",
+        "countertop": "浅灰细纹石材搭配",
+        "description": "暖灰与较深木纹，层次分明而不过分冷硬。"
+      },
+      "walnut-cream": {
+        "name": "胡桃木纹＋奶油白",
+        "countertop": "象牙白细纹石材搭配",
+        "description": "胡桃棕为主，奶油白留出呼吸感。"
+      },
+      "dark-walnut": {
+        "name": "深胡桃木纹＋暖灰",
+        "countertop": "浅暖灰石材搭配",
+        "description": "深胡桃木纹与暖灰、少量古铜色细节相衬。"
+      }
+    },
+    "modules": {
+      "kitchen": "橱柜",
+      "wardrobe": "衣柜",
+      "tv": "电视柜",
+      "shoe": "鞋柜",
+      "sideboard": "餐边柜"
+    },
+    "scenes": {
+      "kitchen": "厨房",
+      "bedroom": "卧室",
+      "living": "客厅"
+    },
+    "previewLoading": "正在更新配色预览，先保留上一张图片。",
+    "previewAlt": "空间配色预览",
+    "previewNote": "预览展示款式与材质搭配；柜体数量、内部结构及尺寸会按实际空间另行规划。",
+    "sampleNote": "颜色与纹理以实物样板为准。",
+    "paletteChanged": "已切换为此风格的默认配色，柜体选择已保留。",
+    "recovered": "链接中的部分选项已失效，已为你恢复有效的搭配，可以继续调整。",
+    "summaryTitle": "我的套餐与配置",
+    "summaryHint": "展开查看当前选择",
+    "emptyModules": "请选择至少一种柜体，才能按此方案咨询。",
+    "summary": {
+      "package": "起始组合",
+      "modules": "需要的柜体",
+      "style": "款式风格",
+      "palette": "饰面配色",
+      "countertop": "厨房台面参考"
+    },
+    "enquire": "按此方案咨询",
+    "copy": "复制方案链接",
+    "copied": "方案链接已复制",
+    "copyFailed": "暂时无法复制，请复制浏览器地址栏中的链接。",
+    "quoteNote": "最终费用以确认尺寸、材料、五金、运输、安装和税费的书面报价为准。",
+    "materialsTitle": "先选喜欢的感觉，再确认每一层材料。",
+    "materialsIntro": "饰面决定观感，基材、封边、五金和现场条件共同影响使用方案。",
+    "materialItems": [
+      {
+        "title": "饰面与颜色",
+        "description": "这里展示免漆饰面与木纹的搭配方向。木纹饰面不等于实木，具体品牌与型号按实物样板确认。"
+      },
+      {
+        "title": "基材与使用位置",
+        "description": "厨房、衣柜与玄关的环境不同。板材基材、封边及适用位置会分别核对，不以颜色推断防水或环保等级。"
+      },
+      {
+        "title": "台面、五金与收口",
+        "description": "台面纹理为配色参考。最终台面材料、铰链、滑轨、拉手、灯光和安装细节按确认范围列入方案。"
+      }
+    ],
+    "materialLink": "浏览定制柜材料",
+    "serviceLink": "了解定制柜服务",
+    "backToDesign": "去搭配全屋定制方案",
+    "projectsTitle": "项目与空间参考",
+    "projectsIntro": "浏览已发布的空间内容，了解不同柜体如何融入整体设计。",
+    "projectsEmpty": "可继续浏览项目库，寻找适合你的空间方向。",
+    "projectsLink": "浏览项目案例",
+    "projectView": "查看空间",
+    "processTitle": "从喜欢的搭配，到适合你家的方案。",
+    "process": [
+      {
+        "title": "整理需求",
+        "description": "带上这份清单，提供空间照片或平面图，说明收纳习惯与优先事项。"
+      },
+      {
+        "title": "测量与确认",
+        "description": "按项目需要确认现场尺寸、供货样板、内部结构、五金及安装条件。"
+      },
+      {
+        "title": "书面方案与报价",
+        "description": "确认材料、尺寸、范围及费用后，再安排后续制作与安装。"
+      }
+    ],
+    "faqTitle": "开始之前，你可能想知道",
+    "faqs": [
+      {
+        "question": "需要增加柜体或调整尺寸怎么办？",
+        "answer": "请在咨询时补充需要的柜体和尺寸。本页按原款式搭配颜色，设计师会结合现场测量确认柜体数量、布局、造型与制作规格。"
+      },
+      {
+        "question": "套餐金额包括哪些费用？",
+        "answer": "请按套餐尺寸、用料与书面费用范围核对。增减柜体、更换配色、超出标准尺寸或现场条件变化，都需重新报价。运输、安装与税费必须在正式报价中列清。"
+      },
+      {
+        "question": "页面上的颜色都是现货板材吗？",
+        "answer": "这些配色用于搭配参考，不代表已确认品牌型号或库存。可供应样板与具体材料会在方案确认时逐项核对。"
+      },
+      {
+        "question": "调整颜色后，效果图会变化吗？",
+        "answer": "会。所选颜色会更新到该款式效果图中适用的柜门、柜身或台面部位，房间与柜体布局保持原款式。可用空间和部位按款式提供；颜色与纹理以实物样板为准。"
+      }
+    ],
+    "finalTitle": "喜欢哪一套，就从这一套开始。",
+    "finalDescription": "把套餐、配色与柜体清单带入询价，补充你家的尺寸或其他需要。",
+    "sales": {
+      "draftTitle": "套餐展示草稿 · 等待定价确认",
+      "draftNote": "以下为待确认的套餐建议价与拟定规格，尚未核算成本或批准销售。运输、安装、税费及现场费用另待核定，确认完整范围后才能正式发布。",
+      "priceLabel": "整套套餐价",
+      "draftPriceLabel": "建议套餐价 · 待核价",
+      "pendingPrice": "售价确认中",
+      "pendingSpecs": "尺寸与材料方案确认后公布",
+      "includes": "套餐包含",
+      "dimensions": "查看完整尺寸与范围",
+      "width": "长度",
+      "height": "高度",
+      "depth": "深度",
+      "ft": "英尺",
+      "mm": "毫米",
+      "specLabels": {
+        "base": "厨房地柜",
+        "wall": "厨房吊柜",
+        "wardrobe": "衣柜",
+        "tv": "电视地柜",
+        "shoe": "鞋柜"
+      },
+      "unitsNote": "长度以英尺列出；高度、深度以毫米列出。尺寸为每类柜体的总长，不等于每扇门的宽度。",
+      "materialTitle": "板材与台面范围",
+      "material": "拟用 18 毫米免漆饰面板，平板门；厨房拟配 {length} 英尺台面。基材、台面材质与五金型号待核定。木纹为饰面，不表示实木。",
+      "termsTitle": "费用与适用范围",
+      "terms": "运输、安装、税费及现场条件尚未定价；电器、水槽、龙头、灯具、装饰品、拆旧与水电改造不在此草案范围。须在正式报价中逐项确认。",
+      "imageNote": "款式与配色参考，包含范围以尺寸清单为准。",
+      "wholeLabel": "厨、衣、电视与玄关收纳",
+      "essentialLabel": "厨房与卧室，先配齐日常所需",
+      "customTitle": "尺寸不同，或想增减柜体？",
+      "customDescription": "先挑一套喜欢的款式，再按你家的清单单独报价。",
+      "customAction": "自由搭配并询价",
+      "customPrice": "已改配 · 需重新报价",
+      "customNote": "当前配置不再对应标准套餐；原套餐金额不适用于此清单。",
+      "selectedPriceNote": "此金额仅对应上列标准尺寸与配色，不是按图无限定制价。",
+      "reset": "恢复标准套餐",
+      "scopeDraft": "拟定尺寸",
+      "scopeApproved": "标准尺寸",
+      "selectedOffer": "所选款式套餐",
+      "compareHint": "款式、尺寸、总价，一起比较",
+      "heroPriceIntro": "厨衣组合 · 本地展示草案",
+      "homePriceIntro": "整套预算一眼看清",
+      "homeDraft": "本地草稿金额，待核价",
+      "names": {
+        "cream-essential": "奶油简约 · 厨衣套餐",
+        "natural-home": "自然原木 · 全屋套餐",
+        "grey-home": "暖灰现代 · 加长全屋套餐",
+        "walnut-home": "胡桃中古 · 大容量全屋套餐"
+      }
+    }
+  },
+  "en": {
+    "title": "Find your look. See the whole package.",
+    "eyebrow": "Whole-home cabinet packages",
+    "intro": "Explore the design, package budget and included dimensions together. Coordinate your kitchen, bedroom and living room before tailoring the details.",
+    "metaTitle": "Whole-Home Cabinet Configurator | Kitchens & Wardrobes | FLASH CAST",
+    "metaDescription": "Explore 12 cabinet styles and 36 curated designs. View complete room renderings, choose door, cabinet-body and worktop colours, save and share favourites, and enquire about cabinetry in Kuala Lumpur and Selangor.",
+    "home": "Home",
+    "start": "Explore designs & packages",
+    "browse": "Explore combinations",
+    "heroAlt": "Kitchen cabinetry with cream fronts and light oak accents",
+    "packagesTitle": "A look you love. A package you can compare.",
+    "packagesIntro": "Each package pairs room renderings with a clear cabinet and dimension list. Compare the standard scope before making changes.",
+    "choosePackage": "View package & dimensions",
+    "selected": "Selected",
+    "reference": "Palette reference",
+    "packages": {
+      "kitchen-wardrobe": {
+        "title": "Kitchen & wardrobe",
+        "description": "Start with everyday storage in the kitchen and bedroom.",
+        "scope": "Kitchen cabinets · Wardrobes"
+      },
+      "whole-home": {
+        "title": "Whole-home storage",
+        "description": "Create a consistent design language from kitchen to entryway.",
+        "scope": "Kitchen · Wardrobe · TV unit · Shoe cabinet"
+      },
+      "free": {
+        "title": "Your own combination",
+        "description": "Choose just the cabinet types your home needs.",
+        "scope": "Start with an empty selection"
+      }
+    },
+    "configTitle": "Your favourite package, tailored to your home.",
+    "configIntro": "Explore rooms and colours. Changing cabinet types or the palette requires a new quotation. Your choices stay in this link.",
+    "styleStep": "Choose a style",
+    "paletteStep": "Choose a palette",
+    "moduleStep": "Choose cabinet types",
+    "sceneLabel": "Preview a space",
+    "styles": {
+      "cream": {
+        "title": "Soft cream",
+        "description": "Gentle neutrals and flat doors for a warm, uncluttered look."
+      },
+      "natural": {
+        "title": "Natural wood",
+        "description": "Continuous wood grain and open niches bring a natural feel home."
+      },
+      "grey": {
+        "title": "Warm modern",
+        "description": "Warm greys, defined storage zones and slender linear handles."
+      },
+      "walnut": {
+        "title": "Walnut vintage",
+        "description": "Walnut tones, fine metal handles and a warm balance of light and dark."
+      }
+    },
+    "palettes": {
+      "cream-oak": {
+        "name": "Cream & light oak",
+        "countertop": "Light beige fine-grain stone pairing",
+        "description": "Cream fronts with light oak accents for a soft, bright space."
+      },
+      "oat-wood": {
+        "name": "Oatmeal & light wood",
+        "countertop": "Pale warm beige stone pairing",
+        "description": "Oatmeal neutrals and light warm wood grain create gentle layers."
+      },
+      "oak-white": {
+        "name": "Light oak & warm white",
+        "countertop": "Warm white fine-grain stone pairing",
+        "description": "Light oak takes the lead, balanced by warm white accents."
+      },
+      "light-walnut": {
+        "name": "Light walnut & ivory",
+        "countertop": "Light warm limestone-look pairing",
+        "description": "Light brown wood grain and ivory create a calm, natural balance."
+      },
+      "cashmere-oak": {
+        "name": "Cashmere grey & warm oak",
+        "countertop": "Light warm grey stone pairing",
+        "description": "Warm grey-beige fronts meet the natural detail of oak grain."
+      },
+      "grey-smoke": {
+        "name": "Warm grey & smoked wood",
+        "countertop": "Pale grey fine-grain stone pairing",
+        "description": "Warm grey with deeper wood grain for a defined, balanced look."
+      },
+      "walnut-cream": {
+        "name": "Walnut & cream",
+        "countertop": "Ivory fine-grain stone pairing",
+        "description": "Rich walnut with cream accents gives the room space to breathe."
+      },
+      "dark-walnut": {
+        "name": "Dark walnut & warm grey",
+        "countertop": "Light warm grey stone pairing",
+        "description": "Deep walnut, warm greys and restrained aged-brass details."
+      }
+    },
+    "modules": {
+      "kitchen": "Kitchen cabinets",
+      "wardrobe": "Wardrobes",
+      "tv": "TV unit",
+      "shoe": "Shoe cabinet",
+      "sideboard": "Sideboard"
+    },
+    "scenes": {
+      "kitchen": "Kitchen",
+      "bedroom": "Bedroom",
+      "living": "Living room"
+    },
+    "previewLoading": "Updating the palette preview. The previous image stays visible while it loads.",
+    "previewAlt": "Room and palette preview",
+    "previewNote": "Previews show a style and material direction. Cabinet quantities, internal layouts and dimensions are planned separately for your space.",
+    "sampleNote": "Confirm colours and grain against physical samples.",
+    "paletteChanged": "The default palette for this style is selected. Your cabinet choices are retained.",
+    "recovered": "Some options in this link are no longer available. A valid selection has been restored for you to adjust.",
+    "summaryTitle": "My package & configuration",
+    "summaryHint": "Expand to review your choices",
+    "emptyModules": "Choose at least one cabinet type before enquiring about this scheme.",
+    "summary": {
+      "package": "Starting combination",
+      "modules": "Cabinet types",
+      "style": "Design style",
+      "palette": "Surface palette",
+      "countertop": "Kitchen worktop reference"
+    },
+    "enquire": "Enquire about this scheme",
+    "copy": "Copy scheme link",
+    "copied": "Scheme link copied",
+    "copyFailed": "Copy is unavailable. Please copy the link from your browser address bar.",
+    "quoteNote": "Final costs require a written quotation confirming dimensions, materials, hardware, delivery, installation and taxes.",
+    "materialsTitle": "Choose the look. Understand every layer.",
+    "materialsIntro": "Surfaces shape the look; core boards, edging, hardware and site conditions shape the final specification.",
+    "materialItems": [
+      {
+        "title": "Surfaces & colour",
+        "description": "These schemes explore prefinished surfaces and wood-grain pairings. A wood-grain finish is not solid timber; brands and product codes are confirmed against physical samples."
+      },
+      {
+        "title": "Core boards & location",
+        "description": "Kitchens, wardrobes and entryways have different conditions. Core boards, edging and suitable applications are reviewed separately; colour does not establish water resistance or an emissions rating."
+      },
+      {
+        "title": "Worktops, hardware & finishing",
+        "description": "Worktop textures are palette references. Actual worktop materials, hinges, runners, handles, lighting and installation details are specified in the agreed scope."
+      }
+    ],
+    "materialLink": "Explore cabinet materials",
+    "serviceLink": "About our cabinetry service",
+    "backToDesign": "Create a whole-home cabinet scheme",
+    "projectsTitle": "Projects & space inspiration",
+    "projectsIntro": "Explore published spaces to see how cabinetry works with the wider interior.",
+    "projectsEmpty": "Explore the project library for more space ideas.",
+    "projectsLink": "Explore projects",
+    "projectView": "View space",
+    "processTitle": "From a favourite look to a plan for your home.",
+    "process": [
+      {
+        "title": "Share your needs",
+        "description": "Bring your selection, space photos or floor plan, storage habits and priorities."
+      },
+      {
+        "title": "Measure & confirm",
+        "description": "Review site dimensions, available samples, internal layouts, hardware and installation access as required."
+      },
+      {
+        "title": "Written proposal & quotation",
+        "description": "Confirm materials, dimensions, scope and costs before arranging fabrication and installation."
+      }
+    ],
+    "faqTitle": "Before you begin",
+    "faqs": [
+      {
+        "question": "How do I request extra cabinets or different dimensions?",
+        "answer": "Add your cabinet and dimension requirements during consultation. This page lets you choose colours on the original design. A designer will confirm quantities, layout, profiles and construction details after assessing your space."
+      },
+      {
+        "question": "What does the package amount include?",
+        "answer": "Check the listed dimensions, materials and written cost scope. Cabinet changes, different palettes, dimensions beyond the standard or site changes require a new quotation. Delivery, installation and taxes must be itemised in the final quotation."
+      },
+      {
+        "question": "Are all these finishes available in stock?",
+        "answer": "The palettes are design references, not confirmation of a brand, product code or stock. Available samples and exact materials are checked when confirming your proposal."
+      },
+      {
+        "question": "Will the rendering update when I change colours?",
+        "answer": "Yes. Your colours update the applicable doors, cabinet bodies or worktops in the selected room preview. The original room and cabinet layout stay in place. Available rooms and parts depend on the design; confirm colours and textures with physical samples."
+      }
+    ],
+    "finalTitle": "Start with the package you love.",
+    "finalDescription": "Bring your package, palette and cabinet list into an enquiry. Add dimensions or other requirements for your home.",
+    "sales": {
+      "draftTitle": "Package presentation draft · Pricing approval pending",
+      "draftNote": "These are proposed package prices and specifications without cost verification or sales approval. Delivery, installation, taxes and site costs remain unconfirmed. Confirm the full scope before publication.",
+      "priceLabel": "Total package price",
+      "draftPriceLabel": "Proposed package price · Costing pending",
+      "pendingPrice": "Price to be confirmed",
+      "pendingSpecs": "Dimensions and materials will follow confirmation",
+      "includes": "Included cabinets",
+      "dimensions": "View full dimensions & scope",
+      "width": "Length",
+      "height": "Height",
+      "depth": "Depth",
+      "ft": "ft",
+      "mm": "mm",
+      "specLabels": {
+        "base": "Kitchen base units",
+        "wall": "Kitchen wall units",
+        "wardrobe": "Wardrobe",
+        "tv": "Low TV unit",
+        "shoe": "Shoe cabinet"
+      },
+      "unitsNote": "Lengths are in feet; heights and depths are in millimetres. Length is the total run for that cabinet type, not the width of each door.",
+      "materialTitle": "Boards & worktop scope",
+      "material": "Proposed: 18 mm melamine-faced boards, flat doors and a {length} ft kitchen worktop. Substrate, worktop material and hardware models remain unconfirmed. Woodgrain is a finish, not solid timber.",
+      "termsTitle": "Costs & applicable scope",
+      "terms": "Delivery, installation, taxes and site conditions are not costed yet. Appliances, sink, tap, lighting, decor, demolition and plumbing or electrical work are outside this draft scope. Confirm each item in a written quotation.",
+      "imageNote": "Style and colour reference; the dimension list defines the included scope.",
+      "wholeLabel": "Kitchen, wardrobe, TV & entry storage",
+      "essentialLabel": "Kitchen & bedroom essentials together",
+      "customTitle": "Different dimensions or cabinet needs?",
+      "customDescription": "Start with a look you love, then request a separate quotation for your own list.",
+      "customAction": "Create my own combination",
+      "customPrice": "Customised · New quotation required",
+      "customNote": "This selection no longer matches a standard package. The package amount does not apply to this list.",
+      "selectedPriceNote": "This amount applies only to the listed dimensions and palette, not unlimited customisation of the rendering.",
+      "reset": "Restore standard package",
+      "scopeDraft": "Proposed dimensions",
+      "scopeApproved": "Standard dimensions",
+      "selectedOffer": "Selected design package",
+      "compareHint": "Compare the look, dimensions and total together",
+      "heroPriceIntro": "Kitchen & wardrobe · Local layout draft",
+      "homePriceIntro": "See the whole package budget",
+      "homeDraft": "Local draft amount, not costed",
+      "names": {
+        "cream-essential": "Cream minimal · Kitchen & wardrobe",
+        "natural-home": "Natural oak · Whole home",
+        "grey-home": "Warm grey · Extended whole home",
+        "walnut-home": "Classic walnut · More whole-home storage"
+      }
+    }
+  },
+  "ms": {
+    "title": "Pilih gaya. Lihat harga satu pakej.",
+    "eyebrow": "Pakej kabinet seluruh rumah",
+    "intro": "Lihat reka bentuk, bajet pakej dan ukuran yang termasuk. Padankan dapur, bilik tidur dan ruang tamu sebelum menyesuaikan butirannya.",
+    "metaTitle": "Padanan Kabinet Seluruh Rumah | Dapur & Almari Pakaian | FLASH CAST",
+    "metaDescription": "Terokai 12 gaya kabinet dan 36 rekaan terpilih. Lihat gambar ruang penuh, padankan warna pintu, badan kabinet serta permukaan kerja, simpan dan kongsi kegemaran, kemudian dapatkan rundingan kabinet di Kuala Lumpur dan Selangor.",
+    "home": "Laman utama",
+    "start": "Lihat reka bentuk & pakej",
+    "browse": "Lihat gabungan",
+    "heroAlt": "Kabinet dapur dengan kemasan krim dan aksen oak cerah",
+    "packagesTitle": "Gaya yang disukai. Pakej yang jelas.",
+    "packagesIntro": "Setiap pakej memaparkan gambaran ruang serta senarai kabinet dan ukuran. Bandingkan skop standard sebelum membuat perubahan.",
+    "choosePackage": "Lihat pakej & ukuran",
+    "selected": "Dipilih",
+    "reference": "Rujukan padanan",
+    "packages": {
+      "kitchen-wardrobe": {
+        "title": "Dapur & almari pakaian",
+        "description": "Mulakan dengan storan harian di dapur dan bilik tidur.",
+        "scope": "Kabinet dapur · Almari pakaian"
+      },
+      "whole-home": {
+        "title": "Storan seluruh rumah",
+        "description": "Wujudkan gaya yang seragam dari dapur hingga ke pintu masuk.",
+        "scope": "Dapur · Almari pakaian · Kabinet TV · Kabinet kasut"
+      },
+      "free": {
+        "title": "Gabungan sendiri",
+        "description": "Pilih hanya jenis kabinet yang diperlukan oleh kediaman anda.",
+        "scope": "Mulakan dengan senarai kosong"
+      }
+    },
+    "configTitle": "Pakej pilihan, disesuaikan untuk kediaman anda.",
+    "configIntro": "Lihat ruang dan warna. Perubahan jenis kabinet atau warna memerlukan sebut harga baharu. Pilihan disimpan dalam pautan ini.",
+    "styleStep": "Pilih gaya",
+    "paletteStep": "Pilih padanan warna",
+    "moduleStep": "Pilih jenis kabinet",
+    "sceneLabel": "Pratonton ruang",
+    "styles": {
+      "cream": {
+        "title": "Krim ringkas",
+        "description": "Warna lembut dan pintu rata untuk suasana hangat yang kemas."
+      },
+      "natural": {
+        "title": "Kayu semula jadi",
+        "description": "Corak kayu berterusan dan ruang rak terbuka membawa suasana semula jadi."
+      },
+      "grey": {
+        "title": "Moden kelabu hangat",
+        "description": "Kelabu hangat, pembahagian storan jelas dan pemegang garis halus."
+      },
+      "walnut": {
+        "title": "Walnut klasik",
+        "description": "Tona walnut, pemegang logam halus serta imbangan warna cerah dan gelap."
+      }
+    },
+    "palettes": {
+      "cream-oak": {
+        "name": "Krim & oak cerah",
+        "countertop": "Padanan batu berbutir halus warna kuning air cerah",
+        "description": "Kemasan krim dengan aksen oak cerah untuk ruang lembut dan terang."
+      },
+      "oat-wood": {
+        "name": "Oat & kayu cerah",
+        "countertop": "Padanan batu kuning air hangat cerah",
+        "description": "Warna oat dan corak kayu cerah menghasilkan lapisan yang lembut."
+      },
+      "oak-white": {
+        "name": "Oak cerah & putih hangat",
+        "countertop": "Padanan batu putih hangat berbutir halus",
+        "description": "Oak cerah sebagai warna utama, diseimbangkan dengan aksen putih hangat."
+      },
+      "light-walnut": {
+        "name": "Walnut cerah & gading",
+        "countertop": "Padanan corak batu kapur hangat cerah",
+        "description": "Corak kayu coklat muda dan warna gading mewujudkan suasana tenang."
+      },
+      "cashmere-oak": {
+        "name": "Kelabu kasmir & oak hangat",
+        "countertop": "Padanan batu kelabu hangat cerah",
+        "description": "Kemasan kelabu kuning air hangat dipadankan dengan corak oak."
+      },
+      "grey-smoke": {
+        "name": "Kelabu hangat & kayu asap",
+        "countertop": "Padanan batu kelabu cerah berbutir halus",
+        "description": "Kelabu hangat dan corak kayu lebih gelap untuk lapisan yang seimbang."
+      },
+      "walnut-cream": {
+        "name": "Walnut & krim",
+        "countertop": "Padanan batu gading berbutir halus",
+        "description": "Walnut dengan aksen krim memberi ruang rasa lebih lapang."
+      },
+      "dark-walnut": {
+        "name": "Walnut gelap & kelabu hangat",
+        "countertop": "Padanan batu kelabu hangat cerah",
+        "description": "Walnut gelap, kelabu hangat dan sedikit perincian loyang antik."
+      }
+    },
+    "modules": {
+      "kitchen": "Kabinet dapur",
+      "wardrobe": "Almari pakaian",
+      "tv": "Kabinet TV",
+      "shoe": "Kabinet kasut",
+      "sideboard": "Kabinet ruang makan"
+    },
+    "scenes": {
+      "kitchen": "Dapur",
+      "bedroom": "Bilik tidur",
+      "living": "Ruang tamu"
+    },
+    "previewLoading": "Pratonton warna sedang dikemas kini. Imej sebelumnya dikekalkan semasa pemuatan.",
+    "previewAlt": "Pratonton ruang dan padanan warna",
+    "previewNote": "Pratonton menunjukkan gaya dan arah padanan bahan. Kuantiti kabinet, susun atur dalaman serta ukuran dirancang secara berasingan mengikut ruang anda.",
+    "sampleNote": "Sahkan warna dan corak kayu dengan sampel fizikal.",
+    "paletteChanged": "Padanan lalai untuk gaya ini telah dipilih. Pilihan jenis kabinet anda dikekalkan.",
+    "recovered": "Sesetengah pilihan dalam pautan ini tidak lagi tersedia. Pilihan yang sah telah dipulihkan untuk anda laraskan.",
+    "summaryTitle": "Pakej & konfigurasi saya",
+    "summaryHint": "Buka untuk menyemak pilihan",
+    "emptyModules": "Pilih sekurang-kurangnya satu jenis kabinet sebelum membuat pertanyaan tentang padanan ini.",
+    "summary": {
+      "package": "Gabungan permulaan",
+      "modules": "Jenis kabinet",
+      "style": "Gaya reka bentuk",
+      "palette": "Padanan kemasan",
+      "countertop": "Rujukan permukaan kerja dapur"
+    },
+    "enquire": "Tanya tentang padanan ini",
+    "copy": "Salin pautan padanan",
+    "copied": "Pautan padanan telah disalin",
+    "copyFailed": "Pautan tidak dapat disalin. Sila salin pautan daripada bar alamat pelayar anda.",
+    "quoteNote": "Kos akhir memerlukan sebut harga bertulis yang mengesahkan ukuran, bahan, perkakasan, penghantaran, pemasangan dan cukai.",
+    "materialsTitle": "Pilih rupa yang disukai. Fahami setiap lapisan.",
+    "materialsIntro": "Kemasan menentukan rupa; papan teras, kemasan tepi, perkakasan dan keadaan tapak menentukan spesifikasi akhir.",
+    "materialItems": [
+      {
+        "title": "Kemasan & warna",
+        "description": "Padanan ini meneroka permukaan siap kemasan dan corak kayu. Kemasan corak kayu bukan kayu padu; jenama serta kod produk disahkan melalui sampel fizikal."
+      },
+      {
+        "title": "Papan teras & lokasi",
+        "description": "Dapur, almari pakaian dan pintu masuk mempunyai keadaan berbeza. Papan teras, kemasan tepi serta kegunaan sesuai disemak berasingan; warna tidak menentukan ketahanan air atau penarafan pelepasan."
+      },
+      {
+        "title": "Permukaan kerja, perkakasan & kemasan akhir",
+        "description": "Tekstur permukaan kerja ialah rujukan warna. Bahan sebenar, engsel, rel laci, pemegang, lampu dan butiran pemasangan dinyatakan dalam skop yang dipersetujui."
+      }
+    ],
+    "materialLink": "Lihat bahan kabinet",
+    "serviceLink": "Tentang perkhidmatan kabinet",
+    "backToDesign": "Padankan kabinet seluruh rumah",
+    "projectsTitle": "Projek & inspirasi ruang",
+    "projectsIntro": "Lihat ruang yang diterbitkan untuk memahami padanan kabinet dengan reka bentuk dalaman.",
+    "projectsEmpty": "Terokai perpustakaan projek untuk lebih banyak idea ruang.",
+    "projectsLink": "Lihat projek",
+    "projectView": "Lihat ruang",
+    "processTitle": "Daripada gaya pilihan kepada pelan kediaman anda.",
+    "process": [
+      {
+        "title": "Kongsi keperluan",
+        "description": "Sediakan senarai pilihan, foto ruang atau pelan lantai, tabiat penyimpanan dan keutamaan anda."
+      },
+      {
+        "title": "Ukur & sahkan",
+        "description": "Semak ukuran tapak, sampel tersedia, susun atur dalaman, perkakasan serta akses pemasangan mengikut keperluan."
+      },
+      {
+        "title": "Cadangan & sebut harga bertulis",
+        "description": "Sahkan bahan, ukuran, skop dan kos sebelum mengatur pembuatan serta pemasangan."
+      }
+    ],
+    "faqTitle": "Sebelum anda bermula",
+    "faqs": [
+      {
+        "question": "Bagaimanakah saya meminta kabinet tambahan atau ukuran berbeza?",
+        "answer": "Nyatakan keperluan kabinet dan ukuran semasa rundingan. Halaman ini membolehkan anda memilih warna pada rekaan asal. Pereka akan mengesahkan kuantiti, susun atur, bentuk dan spesifikasi selepas menilai ruang anda."
+      },
+      {
+        "question": "Apakah yang termasuk dalam amaun pakej?",
+        "answer": "Semak ukuran, bahan dan skop kos bertulis. Perubahan kabinet, warna, ukuran melebihi standard atau keadaan tapak memerlukan sebut harga baharu. Penghantaran, pemasangan dan cukai mesti diperincikan dalam sebut harga akhir."
+      },
+      {
+        "question": "Adakah semua kemasan ini tersedia dalam stok?",
+        "answer": "Padanan warna ialah rujukan reka bentuk, bukan pengesahan jenama, kod produk atau stok. Sampel tersedia dan bahan sebenar disemak apabila cadangan disahkan."
+      },
+      {
+        "question": "Adakah gambar berubah apabila saya menukar warna?",
+        "answer": "Ya. Warna pilihan dikemas kini pada pintu, badan kabinet atau permukaan kerja yang sesuai dalam gambar rekaan itu. Ruang dan susun atur kabinet asal dikekalkan. Ruang serta bahagian tersedia bergantung pada rekaan; sahkan warna dan tekstur dengan sampel fizikal."
+      }
+    ],
+    "finalTitle": "Mulakan dengan pakej yang anda suka.",
+    "finalDescription": "Bawa pakej, warna dan senarai kabinet ke borang pertanyaan. Tambahkan ukuran atau keperluan kediaman anda.",
+    "sales": {
+      "draftTitle": "Draf paparan pakej · Menunggu kelulusan harga",
+      "draftNote": "Ini ialah cadangan harga pakej dan spesifikasi tanpa pengesahan kos atau kelulusan jualan. Penghantaran, pemasangan, cukai dan kos tapak belum disahkan. Sahkan skop penuh sebelum penerbitan.",
+      "priceLabel": "Jumlah harga pakej",
+      "draftPriceLabel": "Cadangan harga pakej · Kos belum disahkan",
+      "pendingPrice": "Harga belum disahkan",
+      "pendingSpecs": "Ukuran dan bahan akan dipaparkan selepas pengesahan",
+      "includes": "Kabinet yang termasuk",
+      "dimensions": "Lihat ukuran & skop penuh",
+      "width": "Panjang",
+      "height": "Tinggi",
+      "depth": "Dalam",
+      "ft": "kaki",
+      "mm": "mm",
+      "specLabels": {
+        "base": "Kabinet bawah dapur",
+        "wall": "Kabinet dinding dapur",
+        "wardrobe": "Almari pakaian",
+        "tv": "Kabinet TV rendah",
+        "shoe": "Kabinet kasut"
+      },
+      "unitsNote": "Panjang dalam kaki; tinggi dan dalam dalam milimeter. Panjang ialah jumlah bagi jenis kabinet tersebut, bukan lebar setiap pintu.",
+      "materialTitle": "Skop papan & permukaan kerja",
+      "material": "Cadangan: papan berkemasan melamina 18 mm, pintu rata dan permukaan kerja dapur {length} kaki. Bahan teras, bahan permukaan kerja dan model perkakasan belum disahkan. Corak kayu ialah kemasan, bukan kayu padu.",
+      "termsTitle": "Kos & skop yang berkenaan",
+      "terms": "Kos penghantaran, pemasangan, cukai dan keadaan tapak belum disahkan. Peralatan elektrik, sinki, pili, lampu, hiasan, perobohan serta kerja paip atau elektrik di luar skop draf ini. Sahkan setiap perkara dalam sebut harga bertulis.",
+      "imageNote": "Rujukan gaya dan warna; skop yang termasuk ditentukan oleh senarai ukuran.",
+      "wholeLabel": "Storan dapur, almari, TV & pintu masuk",
+      "essentialLabel": "Keperluan dapur & bilik tidur bersama",
+      "customTitle": "Ukuran atau keperluan kabinet berbeza?",
+      "customDescription": "Mulakan dengan gaya yang disukai, kemudian minta sebut harga berasingan untuk senarai anda.",
+      "customAction": "Buat gabungan sendiri",
+      "customPrice": "Diubah suai · Perlu sebut harga baharu",
+      "customNote": "Pilihan ini tidak lagi sepadan dengan pakej standard. Amaun pakej tidak terpakai kepada senarai ini.",
+      "selectedPriceNote": "Amaun hanya untuk ukuran dan warna yang disenaraikan, bukan penyesuaian tanpa had mengikut gambar.",
+      "reset": "Pulihkan pakej standard",
+      "scopeDraft": "Cadangan ukuran",
+      "scopeApproved": "Ukuran standard",
+      "selectedOffer": "Pakej reka bentuk dipilih",
+      "compareHint": "Bandingkan gaya, ukuran dan jumlah bersama",
+      "heroPriceIntro": "Dapur & almari · Draf paparan setempat",
+      "homePriceIntro": "Lihat bajet keseluruhan pakej",
+      "homeDraft": "Amaun draf setempat, kos belum disahkan",
+      "names": {
+        "cream-essential": "Krim ringkas · Dapur & almari",
+        "natural-home": "Oak semula jadi · Seluruh rumah",
+        "grey-home": "Kelabu hangat · Seluruh rumah lebih panjang",
+        "walnut-home": "Walnut klasik · Lebih storan seluruh rumah"
+      }
+    }
+  }
+}

@@ -90,7 +90,13 @@
     "src/i18n/furnitureShopText.ts",
     "src/i18n/schemeAText.ts",
     "src/i18n/quoteOptions.ts",
-    "src/i18n/publicUtilityText.ts"
+    "src/i18n/publicUtilityText.ts",
+    "src/i18n/cabinetPaletteText.json",
+    "src/i18n/cabinetPricingText.json",
+    "src/i18n/cabinetStudioCatalog.json",
+    "src/i18n/cabinetStudioText.json",
+    "src/i18n/customCabinetsHomeText.ts",
+    "src/i18n/customCabinetsText.json"
   ],
   "localeScopedResourceFiles": {
     "en-US": [
@@ -330,12 +336,30 @@
         "locale": "zh-CN",
         "url": "/zh/materials"
       },
-      { "locale": "zh-CN", "url": "/zh/materials/category/countertops-stone-surfaces" },
-      { "locale": "zh-CN", "url": "/zh/materials/category/countertops-stone-surfaces/porcelain-slab" },
-      { "locale": "en-US", "url": "/en/materials/category/countertops-stone-surfaces" },
-      { "locale": "en-US", "url": "/en/materials/category/countertops-stone-surfaces/porcelain-slab" },
-      { "locale": "ms-MY", "url": "/ms/materials/category/countertops-stone-surfaces" },
-      { "locale": "ms-MY", "url": "/ms/materials/category/countertops-stone-surfaces/porcelain-slab" },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/materials/category/countertops-stone-surfaces"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/materials/category/countertops-stone-surfaces/porcelain-slab"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/materials/category/countertops-stone-surfaces"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/materials/category/countertops-stone-surfaces/porcelain-slab"
+      },
+      {
+        "locale": "ms-MY",
+        "url": "/ms/materials/category/countertops-stone-surfaces"
+      },
+      {
+        "locale": "ms-MY",
+        "url": "/ms/materials/category/countertops-stone-surfaces/porcelain-slab"
+      },
       {
         "locale": "zh-CN",
         "url": "/zh/projects"
@@ -407,6 +431,18 @@
       {
         "url": "/ms/quote",
         "locale": "ms-MY"
+      },
+      {
+        "locale": "zh-CN",
+        "url": "/zh/custom-cabinets"
+      },
+      {
+        "locale": "en-US",
+        "url": "/en/custom-cabinets"
+      },
+      {
+        "locale": "ms-MY",
+        "url": "/ms/custom-cabinets"
       }
     ],
     "scanAttributes": [

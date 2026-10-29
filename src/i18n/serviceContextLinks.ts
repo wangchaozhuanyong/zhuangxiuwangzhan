@@ -61,6 +61,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "old-house-materials", label: "Materials", title: "Renovation materials library", description: "Compare published flooring, doors, cabinetry, wall finishes, and bathroom options after the repair scope is clear.", href: "/materials" },
     ],
     builtin: [
+      { id: "builtin-configurator", label: "Design studio", title: "Build your whole-home cabinet scheme", description: "Choose a combination, style and palette, then bring your cabinet selection into an enquiry.", href: "/custom-cabinets" },
       { id: "builtin-puchong", label: "Service area", title: "Puchong custom built-ins", description: "Review local planning considerations for landed homes, condos, commercial storage, measurement, and installation access.", href: "/locations/puchong" },
       { id: "builtin-bangsar", label: "Service area", title: "Bangsar custom cabinets", description: "Explore cabinet and storage planning for landed homes, strata properties, retail units, and existing site conditions.", href: "/locations/bangsar" },
       { id: "builtin-projects", label: "Project references", title: "Browse cabinet and storage references", description: "Review published project pages and confirm whether each item is completed work or a labeled planning concept.", href: "/projects" },
@@ -119,6 +120,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "old-house-materials", label: "装修材料", title: "装修材料库", description: "在必要修复范围清楚后，再比较已发布的地面、门窗、柜体、墙面和浴室材料。", href: "/materials" },
     ],
     builtin: [
+      { id: "builtin-configurator", label: "选配专区", title: "搭配你的全屋定制方案", description: "选择组合、款式与配色，再把柜体清单带入询价。", href: "/custom-cabinets" },
       { id: "builtin-puchong", label: "服务地区", title: "Puchong 定制柜", description: "了解有地住宅、公寓、商业收纳、现场测量和安装进场的当地规划事项。", href: "/locations/puchong" },
       { id: "builtin-bangsar", label: "服务地区", title: "Bangsar 定制柜", description: "查看有地住宅、分层物业、零售空间和现场条件下的柜体与收纳规划。", href: "/locations/bangsar" },
       { id: "builtin-projects", label: "项目参考", title: "浏览柜体与收纳项目参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
@@ -178,6 +180,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "old-house-materials", label: "Bahan", title: "Perpustakaan bahan pengubahsuaian", description: "Bandingkan pilihan lantai, pintu, kabinet, kemasan dinding dan bilik mandi yang diterbitkan selepas skop pembaikan jelas.", href: "/materials" },
     ],
     builtin: [
+      { id: "builtin-configurator", label: "Padanan kabinet", title: "Padankan kabinet seluruh rumah", description: "Pilih gabungan, gaya dan warna, kemudian bawa senarai kabinet ke borang pertanyaan.", href: "/custom-cabinets" },
       { id: "builtin-puchong", label: "Kawasan perkhidmatan", title: "Terbina dalam tersuai Puchong", description: "Semak pertimbangan perancangan tempatan untuk rumah bertanah, kondominium, storan komersial, pengukuran dan akses pemasangan.", href: "/locations/puchong" },
       { id: "builtin-bangsar", label: "Kawasan perkhidmatan", title: "Kabinet adat Bangsar", description: "Terokai perancangan kabinet dan storan untuk rumah bertanah, hartanah strata, unit runcit dan keadaan tapak sedia ada.", href: "/locations/bangsar" },
       { id: "builtin-projects", label: "Rujukan projek", title: "Semak imbas rujukan kabinet dan storan", description: "Semak halaman projek yang diterbitkan dan sahkan sama ada setiap item telah siap kerja atau konsep perancangan berlabel.", href: "/projects" },

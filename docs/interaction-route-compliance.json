@@ -1275,6 +1275,19 @@
       "samplePath": "/terms",
       "component": "LegacyLanguageRedirect",
       "evidence": "2026-10-03 local Vite + Cloudflare; synthetic data/MFA; normal route renders without page errors"
+    },
+    {
+      "path": "/:lang/custom-cabinets",
+      "surface": "public",
+      "source": "src/routes/publicRoutes.tsx",
+      "loading": "Lazy package showcase; loopback-only unapproved draft prices; SmartImage critical hero and recoverable previews; existing published project query boundary",
+      "refresh": "Selection in URL; retain preview while decoding replacements; scoped image retry; published references use shared refresh feedback",
+      "navigation": "Shared public chrome, localized links and data router; URL selection history and language switch retain stable IDs",
+      "editing": "URL preferences and anchored package identity; exact scope required for amount; custom changes remove package price; existing Quote form and submission guard",
+      "acceptance": "PASS_LOCAL_BROWSER",
+      "samplePath": "/zh/custom-cabinets",
+      "component": "CustomCabinets",
+      "evidence": "2026-10-29 reviewed local candidate: catalogue/details/colours, three languages, five widths, complete quote links and saved-state recovery. Production acceptance pending this release."
     }
   ],
   "validation": {

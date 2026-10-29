@@ -1,0 +1,10 @@
+.cabinet-price-breakdown { display:flex; flex-direction:column; align-items:center; gap:8px; min-width:0; width:100%; text-align:center; color:var(--public-text-secondary); font-size:12px; line-height:1.6; }
+.cabinet-price-breakdown > strong[data-campaign-amount] { color:var(--public-accent); font-size:28px; font-weight:600; line-height:1.35; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+.cabinet-price-breakdown small { font-size:11px; line-height:1.6; }
+.cabinet-price-breakdown__comparison { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; width:100%; padding-block:12px; margin-top:4px; border-block:1px solid var(--public-border); }
+.cabinet-price-breakdown__comparison > div { display:flex; flex-direction:column; justify-content:space-between; gap:5px; min-width:0; font-size:11px; }
+.cabinet-price-breakdown .cabinet-price-breakdown__comparison b { font-size:12px; line-height:1.6; font-weight:500; font-variant-numeric:tabular-nums; color:var(--public-text-primary); }
+.cabinet-price-breakdown__comparison .cabinet-price-breakdown__saving b { color:var(--public-accent); }
+.cabinet-price-breakdown__area { padding-top:2px; }
+.cabinet-price-breakdown--summary { flex-direction:row; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:4px 10px; text-align:start; }
+@media(max-width:600px) { .cabinet-price-breakdown--summary > strong[data-campaign-amount] { font-size:20px; } }
