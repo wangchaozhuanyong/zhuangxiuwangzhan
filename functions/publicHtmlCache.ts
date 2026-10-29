@@ -8,7 +8,7 @@ const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
 
 type HtmlCacheDebugState = "hit" | "stale" | "miss" | "bypass-admin" | "bypass-not-found";
 
-type PublicHtmlDeploymentEnvironment = { CF_PAGES_COMMIT_SHA?: string; CF_PAGES_URL?: string };
+type PublicHtmlDeploymentEnvironment = { CF_PAGES_COMMIT_SHA?: string; CF_PAGES_URL?: string; VITE_SUPABASE_URL?: string };
 
 export const applyHtmlNoStoreHeaders = (headers: Headers) => {
   headers.set("content-type", "text/html; charset=utf-8");
@@ -124,9 +124,17 @@ export const getPublicHtmlCacheRequest = (
   if (furniturePage > 1) cacheUrl.searchParams.set("page", String(furniturePage));
   cacheUrl.searchParams.set("__flashcast_html_v", PUBLIC_HTML_CACHE_VERSION);
   cacheUrl.searchParams.set("__flashcast_deploy_v", getPublicHtmlDeploymentVersion(env));
+  if (env.VITE_SUPABASE_URL) cacheUrl.searchParams.set("__flashcast_source_v", env.VITE_SUPABASE_URL);
   cacheUrl.searchParams.set("__flashcast_content_v", contentRevision?.trim() || "unknown");
   cacheUrl.hash = "";
   return new Request(cacheUrl.toString(), { method: "GET" });
+};
+
+export const getPublicRevisionCacheRequest = (request: Request, env: PublicHtmlDeploymentEnvironment) => {
+  const url = new URL("/__flashcast/settings-revision", request.url);
+  url.searchParams.set("deployment", getPublicHtmlDeploymentVersion(env));
+  url.searchParams.set("source", env.VITE_SUPABASE_URL || "unknown");
+  return new Request(url.toString());
 };
 
 export const getPublicHtmlFreshnessRequest = (publicHtmlCacheRequest: Request) => {

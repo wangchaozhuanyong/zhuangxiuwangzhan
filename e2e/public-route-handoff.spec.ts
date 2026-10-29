@@ -454,7 +454,8 @@ for (const width of [390, 1440]) {
     expect(input.clicks.slice(-2)).toEqual(['/en/materials', '/en/projects']);
     expect(input.nativeCalls).toBe(0);
     expect(input.sceneAnimations).toBe(0);
-    await page.locator('.scheme-a-chrome .scheme-a-language-switch a[href^="/zh/projects"]').click();
+    await page.locator('.language-selector--header').click();
+    await page.locator('.language-drawer__option[href^="/zh/projects"]').click();
     await expect(page).toHaveURL(/\/zh\/projects(?:\?|$)/); await ready(page);
     await expect(page.locator('.public-route-retained')).toHaveCount(0);
     await expectNoNavigationBrand(page);
@@ -488,7 +489,8 @@ test(`a changed critical source cannot reuse another image's ready evidence at $
     const original = await successfulRoute(page);
     await observeNavigationBrand(page);
     changed = true;
-    await page.locator('.scheme-a-chrome .scheme-a-language-switch a[href="/zh/materials"]').click();
+    await page.locator('.language-selector--header').click();
+    await page.locator('.language-drawer__option[href="/zh/materials"]').click();
     await expect(page).toHaveURL(/\/zh\/materials$/);
     await expect.poll(() => requestsHeld).toBeGreaterThan(0);
     await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state', 'waiting');
@@ -509,11 +511,13 @@ test(`a changed critical source cannot reuse another image's ready evidence at $
     expect(await retainedBitmap.evaluate((image: HTMLImageElement) => image.currentSrc || image.src)).toBe(original.images[0]);
     await expectNoNavigationBrand(page);
     // Actual navigation remains usable while the replacement source is held.
-    await page.locator('.scheme-a-chrome .scheme-a-language-switch a[href="/en/materials"]').click();
+    await page.locator('.language-selector--header').click();
+    await page.locator('.language-drawer__option[href="/en/materials"]').click();
     await expect(page).toHaveURL(/\/en\/materials$/);
     await successfulRoute(page);
     await expect(page.locator(pageFeedback)).toHaveCount(0);
-    await page.locator('.scheme-a-chrome .scheme-a-language-switch a[href="/zh/materials"]').click();
+    await page.locator('.language-selector--header').click();
+    await page.locator('.language-drawer__option[href="/zh/materials"]').click();
     await expect(page).toHaveURL(/\/zh\/materials$/);
     await expect(page.locator(regionFeedback + ' [data-loading-progress="true"]')).toBeVisible();
     await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state', 'waiting');
@@ -545,7 +549,8 @@ test(`cold-page language changes keep one page brand and release real content at
     try {
       await navigate(page, width, `/${source}/materials`);
       await expectPageNavigationBrand(page);
-      await page.locator(`.scheme-a-language-switch a[href="/${target}/materials"]`).click();
+      await page.locator('.language-selector--header').click();
+      await page.locator(`.language-drawer__option[href="/${target}/materials"]`).click();
       const feedback = await expectPageNavigationBrand(page);
       await expect(feedback.locator('.scheme-a-page-loader__brand > span')).toHaveText(label);
       const bounds = await feedback.locator('.scheme-a-page-loader__brand').boundingBox();
@@ -592,7 +597,8 @@ test('slow language data retains visible retry and cancel recovery under reduced
   try {
     await navigationLink(page,390,'/en/materials').click();
     await expectPageNavigationBrand(page);
-    await page.locator('.scheme-a-language-switch a[href="/zh/materials"]').click();
+    await page.locator('.language-selector--header').click();
+    await page.locator('.language-drawer__option[href="/zh/materials"]').click();
     await expectPageNavigationBrand(page);
     expect(await page.locator(pageFeedback + ' [data-loading-progress="true"]').evaluate(element => getComputedStyle(element, '::after').transitionDuration)).toBe('0s');
     await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state','timeout',{timeout:8000});

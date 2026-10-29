@@ -1,4 +1,4 @@
-import { ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
 import type { FocusEvent, PointerEvent } from "react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
@@ -7,8 +7,6 @@ import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { getChineseBrandDisplayName } from "@/i18n/brandIdentity";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { isRenderingConceptProject } from "@/lib/projectContentClassification";
@@ -23,9 +21,8 @@ import { homeEditorialText } from "@/i18n/homeEditorialText";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { trackCtaClick } from "@/lib/analytics";
 import PhotoEnquiryLink from "@/components/PhotoEnquiryLink";
-import { contactEntryText } from "@/i18n/contactEntryText";
 import { homeFurnitureText } from "@/i18n/homeFurnitureText";
-import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHomeSections";
 
 type SchemeAHomeProps = {
@@ -52,30 +49,10 @@ const PROJECT_CARD_DESKTOP_WIDTHS = [360, 560, 720, 900, 1200, 1600];
 const PROJECT_CARD_MOBILE_ASPECT_RATIO = { width: 4, height: 5 } as const satisfies SupabaseTargetAspectRatio;
 const PROJECT_CARD_DESKTOP_ASPECT_RATIO = { width: 16, height: 10 } as const satisfies SupabaseTargetAspectRatio;
 const PROJECT_CARD_INTRINSIC_WIDTH = 960;
-function ColorfulLivingRoomIcon() {
-  return (
-    <svg width="38" height="38" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="6" y="15" width="36" height="21" rx="5.5" fill="url(#fcHomeSofaGrad)" stroke="#B87B38" strokeWidth="1.5" />
-      <rect x="4" y="19" width="6.5" height="16" rx="3.2" fill="#D48A45" stroke="#9A561C" strokeWidth="1.2" />
-      <rect x="37.5" y="19" width="6.5" height="16" rx="3.2" fill="#D48A45" stroke="#9A561C" strokeWidth="1.2" />
-      <rect x="11.5" y="24" width="25" height="9.5" rx="3.5" fill="#FCEFD8" />
-      <ellipse cx="24" cy="39" rx="14" ry="4" fill="#3D5A45" />
-      <path d="M24 39V44" stroke="#25392A" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M38 7L42 15H34L38 7Z" fill="#F7C948" />
-      <path d="M38 15V22" stroke="#B48228" strokeWidth="1.5" />
-      <defs>
-        <linearGradient id="fcHomeSofaGrad" x1="24" y1="15" x2="24" y2="36" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#F5A962" />
-          <stop offset="1" stopColor="#E07A2B" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
 
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
-  const brandName = getChineseBrandDisplayName(useSiteSettings(), language);
+  const settings = useSiteSettings();
   const copy = schemeAHomeText[language];
   const editorial = homeEditorialText[language];
   const mediaCopy = mediaLabels[language];
@@ -158,7 +135,6 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
           </figure>
           <div className="scheme-a-hero__copy">
             <div className="scheme-a-hero__intro">
-              {brandName && <p className="scheme-a-hero__brand">{brandName}</p>}
               <h1 id="scheme-a-home-title">
                 <span>{copy.heroTitle}</span>
                 {" "}
@@ -176,26 +152,18 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                 </div>
                 <div className="scheme-a-home-furniture-entry">
                   <a className="scheme-a-home-furniture-entry__card"
-                    href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer"
+                    href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer"
                     aria-label={homeFurnitureText[language].heroShopLabel}
-                    onClick={() => trackCtaClick("furniture_shop", "home_hero", { destination: "furniture_shop" })}>
-                    <span className="scheme-a-home-furniture-entry__icon" aria-hidden="true"><ColorfulLivingRoomIcon /></span>
+                    onClick={() => trackCtaClick("whatsapp", "home_hero_furniture_perks", { destination: "whatsapp" })}>
+                    <span className="scheme-a-home-furniture-entry__icon" aria-hidden="true">
+                      <SmartImage src="/images/heroes/v20260930/furniture-showcase.webp" alt="" width={48} height={48} sizes="48px" candidateWidths={[360]} sourceWidth={1536} loading="eager" />
+                    </span>
                     <span className="scheme-a-home-furniture-entry__copy">
-                      <span className="scheme-a-home-furniture-entry__header">
-                        <span className="scheme-a-home-furniture-entry__title">{homeFurnitureText[language].heroShopTitle}</span>
-                        <span className="scheme-a-home-furniture-entry__badge">{homeFurnitureText[language].heroShopBadge}</span>
-                      </span>
-                      <span className="scheme-a-home-furniture-entry__description">
-                        {homeFurnitureText[language].heroShopDescription.split(" · ").map((item, index) => (
-                          <span key={item} className={`scheme-a-chip scheme-a-chip--${index}`}>
-                            {index === 0 ? "🛋️ " : index === 1 ? "🪑 " : "🛏️ "}{item}
-                          </span>
-                        ))}
-                      </span>
-                      {contactEntryText[language].shopLanguage && <small>{contactEntryText[language].shopLanguage}</small>}
+                      <span className="scheme-a-home-furniture-entry__title">{homeFurnitureText[language].heroShopTitle}</span>
+                      <span className="scheme-a-home-furniture-entry__description">{homeFurnitureText[language].heroShopDescription}</span>
                     </span>
                     <span className="scheme-a-home-furniture-entry__action" aria-hidden="true">
-                      <ArrowUpRight className="scheme-a-home-furniture-entry__arrow" />
+                      <span>{homeFurnitureText[language].heroShopAction}</span><ArrowRight className="scheme-a-home-furniture-entry__arrow" />
                     </span>
                   </a>
                 </div>

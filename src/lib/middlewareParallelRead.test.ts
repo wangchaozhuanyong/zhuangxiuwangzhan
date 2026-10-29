@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
-import { getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest } from "../../functions/publicHtmlCache";
+import { getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest, getPublicRevisionCacheRequest } from "../../functions/publicHtmlCache";
 
 const shell = '<!doctype html><html><head><title>FLASH CAST</title></head><body><div id="root"></div></body></html>';
 const html = (body: string) => new Response(body, { headers: { "content-type": "text/html", etag: '"fixture"' } });
@@ -9,12 +9,132 @@ const tick = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 let sequence = 0;
 const environment = () => ({
   VITE_SUPABASE_URL: `https://parallel-read-${++sequence}.supabase.co`, VITE_SUPABASE_ANON_KEY: "fixture-public-key",
-  CF_PAGES_COMMIT_SHA: "parallel-read-fixture", ASSETS: { fetch: vi.fn(async () => html(shell)) },
+  CF_PAGES_COMMIT_SHA: "parallel-read-fixture", ASSETS: { fetch: vi.fn(async (_request: Request) => html(shell)) },
 });
 beforeEach(() => vi.stubGlobal("caches", undefined));
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("public HTML dependency ordering", () => {
+  it("starts a cold shell and page reads while full settings are still pending", async () => {
+    const env = environment();
+    const requests: URL[] = [];
+    let finishSettings!: (response: Response) => void;
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input)); requests.push(url);
+      if (url.pathname.endsWith("/site_settings")) return new Promise<Response>(resolve => { finishSettings = resolve; });
+      return json([]);
+    }));
+    const entries = new Map<string, Response>();
+    vi.stubGlobal("caches", { default: {
+      match: async (request: Request) => entries.get(request.url)?.clone(),
+      put: async (request: Request, response: Response) => { entries.set(request.url, response.clone()); },
+    } });
+    const pending = onRequest({ request: new Request("https://flashcast.com.my/zh/services"), env, next: vi.fn() } as never);
+    await tick();
+    expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
+    expect(requests.some(url => url.pathname.endsWith("/site_pages"))).toBe(true);
+    expect(requests.filter(url => url.pathname.endsWith("/site_settings"))).toHaveLength(1);
+    finishSettings(json([{ updated_at: "cold-settings-revision" }]));
+    const response = await pending;
+    expect(response.status).toBe(200);
+    expect(response.headers.get("server-timing")).toMatch(/revision;dur=[\d.]+, cache;dur=[\d.]+, route;dur=[\d.]+, data;dur=[\d.]+, transform;dur=[\d.]+, total;dur=[\d.]+/);
+  });
+
+  it("coalesces concurrent cold HTML generation and clones each response body", async () => {
+    const env = environment();
+    let finishSettings!: (response: Response) => void;
+    const fetcher = vi.fn(async (input: RequestInfo | URL) => String(input).includes("/site_settings")
+      ? new Promise<Response>(resolve => { finishSettings = resolve; }) : json([]));
+    vi.stubGlobal("fetch", fetcher);
+    const entries = new Map<string, Response>();
+    vi.stubGlobal("caches", { default: {
+      match: async (request: Request) => entries.get(request.url)?.clone(),
+      put: async (request: Request, response: Response) => { entries.set(request.url, response.clone()); },
+    } });
+    const requestPage = () => onRequest({ request: new Request("https://flashcast.com.my/zh/services"), env, next: vi.fn() } as never);
+    const a = requestPage(); const b = requestPage();
+    await tick(); finishSettings(json([{ updated_at: "shared-cold-version" }]));
+    const [first, second] = await Promise.all([a, b]);
+    expect(await first.text()).toBe(await second.text());
+    expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
+    expect(fetcher.mock.calls.filter(([input]) => String(input).includes("/site_settings"))).toHaveLength(1);
+  });
+
+  it("never shares a conditional or partial app shell with a normal caller", async () => {
+    const env = environment();
+    let finishSettings!: (response: Response) => void;
+    env.ASSETS.fetch = vi.fn(async (input: Request) => input.headers.has("if-none-match") || input.headers.has("range")
+      ? new Response(null, { status: 304 }) : html(shell));
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => String(input).includes("/site_settings")
+      ? new Promise<Response>(resolve => { finishSettings = resolve; }) : json([])));
+    const entries = new Map<string, Response>();
+    vi.stubGlobal("caches", { default: {
+      match: async (request: Request) => entries.get(request.url)?.clone(),
+      put: async (request: Request, response: Response) => { entries.set(request.url, response.clone()); },
+    } });
+    const requestPage = (headers?: HeadersInit) => onRequest({ request: new Request("https://flashcast.com.my/zh/services", { headers }), env, next: vi.fn() } as never);
+    const a = requestPage({ "if-none-match": '"shell"', "if-modified-since": new Date().toUTCString(), range: "bytes=0-10", "if-range": '"shell"' });
+    const b = requestPage();
+    await tick(); finishSettings(json([{ updated_at: "shared-condition-version" }]));
+    const [first, second] = await Promise.all([a, b]);
+    expect(first.status).toBe(200); expect(second.status).toBe(200);
+    expect(await second.text()).toContain('id="root"');
+    expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
+    const internal = env.ASSETS.fetch.mock.calls[0][0] as Request;
+    expect(internal.headers.has("if-none-match")).toBe(false);
+    expect(internal.headers.has("range")).toBe(false);
+  });
+
+  it("shares speculative cold preparation when the known revision has no HTML entry", async () => {
+    const env = environment();
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => String(input).includes("/site_settings")
+      ? json([{ updated_at: "known-without-html" }]) : json([])));
+    await onRequest({ request: new Request("https://flashcast.com.my/__flashcast/version"), env, next: vi.fn() } as never);
+    const entries = new Map<string, Response>();
+    vi.stubGlobal("caches", { default: {
+      match: async (request: Request) => entries.get(request.url)?.clone(),
+      put: async (request: Request, response: Response) => { entries.set(request.url, response.clone()); },
+    } });
+    const requestPage = () => onRequest({ request: new Request("https://flashcast.com.my/zh/services"), env, next: vi.fn() } as never);
+    const [first, second] = await Promise.all([requestPage(), requestPage()]);
+    expect(first.status).toBe(200); expect(second.status).toBe(200);
+    expect(await first.text()).toBe(await second.text());
+    expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
+  });
+
+  it("shares an unpublished-blog result without reviving its static metadata", async () => {
+    const env = environment();
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => String(input).includes("/site_settings")
+      ? json([{ updated_at: "withdrawn-blog-fixture" }]) : json([])));
+    await onRequest({ request: new Request("https://flashcast.com.my/__flashcast/version"), env, next: vi.fn() } as never);
+    vi.stubGlobal("caches", { default: { match: async () => undefined, put: async () => undefined } });
+    const requestPage = () => onRequest({ request: new Request("https://flashcast.com.my/en/blog/renovation-permit-dbkl-guide"), env, next: vi.fn() } as never);
+    const responses = await Promise.all([requestPage(), requestPage()]);
+    for (const response of responses) {
+      expect(response.status).toBe(404);
+      expect(await response.text()).toContain("noindex");
+    }
+    expect(env.ASSETS.fetch).toHaveBeenCalledOnce();
+  });
+
+  it("does not store mixed HTML when full settings advance beyond the confirmed snapshot", async () => {
+    const env = environment();
+    const request = new Request("https://flashcast.com.my/zh/services");
+    const now = Date.now();
+    const entries = new Map<string, Response>([[getPublicRevisionCacheRequest(request, env).url,
+      json({ revision: "snapshot-before-save", startedAt: now, expiresAt: now + 5000 })]]);
+    vi.stubGlobal("caches", { default: {
+      match: async (cacheRequest: Request) => entries.get(cacheRequest.url)?.clone(),
+      put: async (cacheRequest: Request, response: Response) => { entries.set(cacheRequest.url, response.clone()); },
+    } });
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => String(input).includes("/site_settings")
+      ? json([{ updated_at: "full-settings-after-save" }]) : json([])));
+    const response = await onRequest({ request, env, next: vi.fn() } as never);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain("full-settings-after-save");
+    expect([...entries.keys()].some(key => key.includes("__flashcast_html_v="))).toBe(false);
+  });
+
   it.each([
     { language: "en" as const, displayOnly: false },
     { language: "zh" as const, displayOnly: false },

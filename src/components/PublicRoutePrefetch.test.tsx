@@ -4,8 +4,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PublicRoutePrefetch from "./PublicRoutePrefetch";
 
-const reads = vi.hoisted(() => ({ module: vi.fn(), content: vi.fn() }));
+const reads = vi.hoisted(() => ({ module: vi.fn(), content: vi.fn(), hint: vi.fn() }));
 vi.mock("@/lib/publicPagePrefetch", () => ({ prefetchPublicPageModule: reads.module }));
+vi.mock("@/lib/publicPageModules", () => ({ publicPageModules: { Services: reads.hint, Projects: reads.hint, Materials: reads.hint, FurnitureShowcase: reads.hint } }));
 vi.mock("@/lib/publicRoutePrefetch", () => ({ prefetchPublishedRouteContent: reads.content }));
 
 let container: HTMLDivElement;
@@ -33,6 +34,7 @@ const mount = (initialReady = false) => act(async () => root.render(<QueryClient
 beforeEach(async () => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   reads.module.mockReset().mockResolvedValue(undefined);
+  reads.hint.mockReset().mockResolvedValue(undefined);
   reads.content.mockReset().mockResolvedValue(undefined);
   window.history.replaceState({}, "", "/en");
   setConnection(undefined);
@@ -111,6 +113,7 @@ describe("public navigation intent", () => {
     announceReady();
     await act(async () => {
       point(link("services"));
+      expect(reads.hint).toHaveBeenCalledOnce();
       link("services").dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
       link("services").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }));
     });

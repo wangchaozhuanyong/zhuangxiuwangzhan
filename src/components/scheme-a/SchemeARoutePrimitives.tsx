@@ -5,11 +5,7 @@ import SmartImage from "@/components/SmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { schemeARouteHeroSupportText, schemeARouteText } from "@/i18n/schemeAText";
-import { buildLocalResponsiveSrcSet, isLocalResponsiveImageCandidate } from "@/lib/localResponsiveImage";
-import { buildSupabaseSrcSet, isSupabasePublicObjectUrl } from "@/lib/supabaseImage";
-
-const ROUTE_HERO_MOBILE_WIDTHS = [560, 720, 900, 1200, 1600];
-const ROUTE_HERO_TABLET_WIDTHS = [720, 900, 1200, 1600, 2000];
+import { getRouteHeroImageProps } from "@/lib/routeHeroImage";
 const WIDE_TITLE_CHARACTER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 
 export type SchemeARouteKind = "listing" | "detail" | "content" | "article" | "legal" | "form" | "compare";
@@ -125,42 +121,16 @@ export function SchemeARouteHero({
     0,
   );
   const usesCompactTitleScale = titleVisualLength > (hasWideTitleCharacter ? 10 : 16);
-  const mobileSrcSet = mobileImage
-    ? isSupabasePublicObjectUrl(mobileImage)
-      ? buildSupabaseSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, { targetAspectRatio: { width: 16, height: 11 }, quality: 86, resize: "cover" })
-      : isLocalResponsiveImageCandidate(mobileImage)
-        ? buildLocalResponsiveSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, mobileImageSourceWidth)
-        : undefined
-    : undefined;
-  const tabletSrcSet = tabletImage
-    ? isSupabasePublicObjectUrl(tabletImage)
-      ? buildSupabaseSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, { targetAspectRatio: { width: 16, height: 11 }, quality: 84, resize: "cover" })
-      : isLocalResponsiveImageCandidate(tabletImage)
-        ? buildLocalResponsiveSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, tabletImageSourceWidth)
-        : undefined
-    : undefined;
-
+  const heroImageProps = getRouteHeroImageProps({ image, imageSourceWidth, tabletImage, tabletImageSourceWidth, mobileImage, mobileImageSourceWidth, showIntro });
   const MediaTag = imageCaption ? "figure" : "div";
   const heroImage = (
     <SmartImage
-      src={image || mobileImage || ""}
-      pictureSources={[
-        ...(mobileImage ? [{ media: "(max-width: 767px)", srcSet: mobileSrcSet || mobileImage, sizes: "100vw" }] : []),
-        ...(tabletImage ? [{ media: "(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)", srcSet: tabletSrcSet || tabletImage, sizes: "100vw" }] : []),
-      ]}
+      {...heroImageProps}
       critical
-      sourceWidth={imageSourceWidth}
       alt={imageAlt}
-      width={showIntro ? 1600 : 2160}
-      height={showIntro ? 1100 : 720}
-      targetAspectRatio={showIntro ? { width: 16, height: 11 } : { width: 3, height: 1 }}
-      resize="cover"
       loading="eager"
       fetchPriority="high"
       revealOnLoad
-      sizes={showIntro ? "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw" : "(min-width: 1536px) 1440px, (min-width: 1024px) 94vw, 100vw"}
-      candidateWidths={[560, 720, 960, 1200, 1600]}
-      quality={86}
     />
   );
 

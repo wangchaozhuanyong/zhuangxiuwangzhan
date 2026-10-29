@@ -9,7 +9,10 @@ import {
   HOME_SERVICE_AREAS_SELECT, HOME_SERVICE_AREAS_LIMIT, HOME_SERVICE_AREAS_ORDER,
   projectHomeJournalPosts, projectHomeServiceAreas,
 } from "../src/lib/homeDiscoveryData";
-import { applyHtmlNoStoreHeaders, applyPublicHtmlEdgeCacheHeaders, createHtmlEtag, createPublicHtmlBrowserResponse, withHtmlCacheDebugHeader, getEdgeCache, getPublicHtmlDeploymentVersion, getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest, createPublicHtmlFreshnessResponse, PUBLIC_HTML_CACHE_TAG } from "./publicHtmlCache";
+import { applyHtmlNoStoreHeaders, applyPublicHtmlEdgeCacheHeaders, createHtmlEtag, createPublicHtmlBrowserResponse, withHtmlCacheDebugHeader, getEdgeCache, getPublicHtmlDeploymentVersion, getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest, getPublicRevisionCacheRequest, createPublicHtmlFreshnessResponse, PUBLIC_HTML_CACHE_TAG } from "./publicHtmlCache";
+import { createPublicSettingsReader } from "./publicSettingsSnapshot";
+import { createPublicServerTiming } from "./publicServerTiming";
+import { createPublicHtmlGenerationCoalescer, createUnconditionalPublicShellRequest } from "./publicHtmlGeneration";
 import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreloads";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
@@ -153,7 +156,6 @@ const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_SITE_URL = "https://flashcast.com.my";
 const PUBLIC_VERSION_PATH = "/__flashcast/version";
-const SITE_SETTINGS_CACHE_TTL_MS = 5 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 0;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 0;
 const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 60 * 1000;
@@ -205,13 +207,8 @@ const CSP_DIRECTIVES = (scriptSrc: string[]) => [
 ];
 const INLINE_SCRIPT_PATTERN = /<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
 
-let siteSettingsCache:
-  | {
-      key: string;
-      value: SiteSettingsHead | null;
-      expiresAt: number;
-    }
-  | null = null;
+const publicSettingsReader = createPublicSettingsReader<SiteSettingsHead>();
+const settingsReadKey = (env: Record<string, string | undefined>) => `${env.VITE_SUPABASE_URL}:${getPublicHtmlDeploymentVersion(env)}`;
 
 let projectSummariesCache:
   | {
@@ -239,6 +236,21 @@ let homeContentBundleCache:
 
 const publicRowsCache = new Map<string, { value: PublicDataRow[] | null; expiresAt: number }>();
 const publicHtmlRefreshes = new Map<string, Promise<void>>();
+type PublicHtmlGeneration = { response: Response; cacheWrite: Promise<void> | null; state?: "miss" | "bypass-admin" | "bypass-not-found" };
+const coalescePublicHtmlGeneration = createPublicHtmlGenerationCoalescer<PublicHtmlGeneration>();
+type PublicHtmlPreparation = {
+  settings: Promise<SiteSettingsHead | null>;
+  route: Promise<[DynamicRouteState | null, Response]>;
+  pageBundle: Promise<Awaited<ReturnType<typeof fetchPublicSitePageBundle>>> | null;
+  furniture: Promise<Awaited<ReturnType<typeof fetchHomeFurniture>>> | null;
+  journal: Promise<Awaited<ReturnType<typeof fetchHomeDiscoveryRows>>> | null;
+  areas: Promise<Awaited<ReturnType<typeof fetchHomeDiscoveryRows>>> | null;
+  footerCta: Promise<Awaited<ReturnType<typeof fetchPublicCtaBlock>>> | null;
+  furnitureSetting: ReturnType<typeof fetchFurnitureCatalogSetting> | undefined;
+  unpublishedBlog: { value: boolean };
+  finishData: () => void;
+};
+const publicHtmlPreparations = new Map<string, PublicHtmlPreparation>();
 
 const PROJECT_SUMMARY_SELECT = [
   "id",
@@ -904,20 +916,14 @@ const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "", brand
   return html.replace(/<body([^>]*)>/i, `<body$1>\n    ${summary}`);
 };
 
-const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
+const readSiteSettingsSource = async (env: Record<string, string | undefined>, revisionOnly = false) => {
   const supabaseUrl = env.VITE_SUPABASE_URL;
   const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) return null;
-  const cacheKey = supabaseUrl;
-  const now = Date.now();
-  if (siteSettingsCache?.key === cacheKey && siteSettingsCache.expiresAt > now) {
-    return siteSettingsCache.value;
-  }
-
   try {
     const response = await fetchWithEdgeTimeout(
-      `${supabaseUrl}/rest/v1/site_settings?select=id,company_name,brand_name,logo_url,favicon_url,og_image_url,phone_e164,phone_display,whatsapp_number,email,address_en,address_zh,map_latitude,map_longitude,facebook_url,instagram_url,tiktok_url,xiaohongshu_url,updated_at&id=eq.default&limit=1`,
+      `${supabaseUrl}/rest/v1/site_settings?select=${revisionOnly ? "updated_at" : "id,company_name,brand_name,logo_url,favicon_url,og_image_url,phone_e164,phone_display,whatsapp_number,email,address_en,address_zh,map_latitude,map_longitude,facebook_url,instagram_url,tiktok_url,xiaohongshu_url,updated_at"}&id=eq.default&limit=1`,
       {
         headers: {
           apikey: supabaseAnonKey,
@@ -932,16 +938,16 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
     const rows = (await response.json()) as SiteSettingsHead[];
     const row = rows[0] ?? null;
     const value = row ? { ...row, logo_url: normalizeBuiltInLogoUrl(row.logo_url) } : null;
-    siteSettingsCache = {
-      key: cacheKey,
-      value,
-      expiresAt: now + SITE_SETTINGS_CACHE_TTL_MS,
-    };
     return value;
   } catch {
     return null;
   }
 };
+
+const fetchSiteSettings = (env: Record<string, string | undefined>) => publicSettingsReader.full({
+  key: settingsReadKey(env), readFull: () => readSiteSettingsSource(env),
+  readRevision: async () => (await readSiteSettingsSource(env, true))?.updated_at || null,
+});
 
 const fetchProjectSummaries = async (env: Record<string, string | undefined>) => {
   const supabaseUrl = env.VITE_SUPABASE_URL;
@@ -2149,6 +2155,21 @@ export const onRequest: PagesFunction = async (context) => {
   if (url.hostname === "www.flashcast.com.my") {
     url.hostname = "flashcast.com.my";
     url.protocol = "https:";
+    url.pathname = getExactLegacyRedirectPath(url.pathname)
+      || getProductsToMaterialsRedirectPath(url.pathname)
+      || getLandingToServiceRedirectPath(url.pathname)
+      || url.pathname;
+    const publicPath = getUnprefixedPublicPath(url.pathname);
+    if (publicPath) {
+      const language = getRequestLanguage(request);
+      url.pathname = publicPath === "/" ? `/${language}` : `/${language}${publicPath}`;
+      url.pathname = getExactLegacyRedirectPath(url.pathname)
+        || getProductsToMaterialsRedirectPath(url.pathname)
+        || getLandingToServiceRedirectPath(url.pathname)
+        || url.pathname;
+      // A visitor's preferred language must never become a shared 301 cache.
+      return languageRedirect(url);
+    }
     return permanentRedirect(url);
   }
 
@@ -2208,50 +2229,76 @@ export const onRequest: PagesFunction = async (context) => {
   const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...localizeMalayMaterialFallback(englishMeta, key), lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
   const isPublicLanguagePath = /^\/(?:en|zh|ms)(?:\/|$)/.test(key);
   const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;
+  const timing = createPublicServerTiming();
+  const stringEnv = env as Record<string, string | undefined>;
+  const background = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
+  const knownRevision = publicSettingsReader.peek(settingsReadKey(stringEnv))?.revision;
+  const preparationKey = `${request.method}:${settingsReadKey(stringEnv)}:${getPublicHtmlCacheRequest(request, env, knownRevision).url}`;
+  let acceptingSpeculation = true;
+  let preparation: PublicHtmlPreparation | undefined;
+  const footerCtaBlockKey = getPathWithoutLanguage(key) === "/about" ? "about_final" : "home_final";
+  const preparePublicHtml = () => {
+    if (preparation) return preparation;
+    const shared = publicHtmlPreparations.get(preparationKey);
+    if (shared) { preparation = shared; return shared; }
+    const shellRequest = createUnconditionalPublicShellRequest(request);
+    const unpublishedBlog = { value: false };
+    const earlyHome = Boolean(staticMeta && isHomeDataPageKey(key));
+    const earlyPageKey = staticMeta ? getTopLevelPublicPageKey(key) : null;
+    const earlyFurnitureDetailSlug = key.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
+    const earlyFurnitureSetting = earlyFurnitureDetailSlug ? fetchFurnitureCatalogSetting(stringEnv) : undefined;
+    const settings = fetchSiteSettings(stringEnv);
+    const finishData = timing.start("data");
+    const pageBundle = earlyPageKey ? fetchPublicSitePageBundle(stringEnv, earlyPageKey) : null;
+    const furniture = earlyHome ? fetchHomeFurniture(stringEnv) : null;
+    const journal = earlyHome ? fetchHomeDiscoveryRows(stringEnv, "journal") : null;
+    const areas = earlyHome ? fetchHomeDiscoveryRows(stringEnv, "areas") : null;
+    const footerCta = staticMeta && shouldPreloadFooterCtaBlock(key) ? fetchPublicCtaBlock(stringEnv, footerCtaBlockKey) : null;
+    const route = timing.measure("route", () => Promise.all([
+      fetchDynamicRouteState(stringEnv, key, staticMeta, () => { unpublishedBlog.value = true; }, earlyFurnitureSetting),
+      env.ASSETS ? env.ASSETS.fetch(shellRequest) : next(shellRequest),
+    ]));
+    // A speculative cold preparation may finish before its generation owns it.
+    void route.catch(() => undefined);
+    preparation = { settings, route, pageBundle, furniture, journal, areas, footerCta, furnitureSetting: earlyFurnitureSetting, unpublishedBlog, finishData };
+    publicHtmlPreparations.set(preparationKey, preparation);
+    return preparation;
+  };
   // Look up the last known revision while settings are revalidated. This is
   // speculative only: a changed revision must select a different cache entry.
-  const knownRevision = siteSettingsCache && siteSettingsCache.key === env.VITE_SUPABASE_URL
-    ? siteSettingsCache.value?.updated_at : undefined;
-  const speculativeCacheRequest = edgeCache ? getPublicHtmlCacheRequest(request, env, knownRevision) : null;
-  const speculativeCacheRead = edgeCache && speculativeCacheRequest ? Promise.all([
+  const speculativeCacheRequest = edgeCache && knownRevision ? getPublicHtmlCacheRequest(request, env, knownRevision) : null;
+  const speculativeCacheRead = edgeCache && speculativeCacheRequest ? timing.measure("cache", () => Promise.all([
     edgeCache.match(speculativeCacheRequest),
     edgeCache.match(getPublicHtmlFreshnessRequest(speculativeCacheRequest)),
-  ]).catch(() => [undefined, undefined] as const) : null;
-  const prefetchedSiteSettings = edgeCache
-    ? await fetchSiteSettings(env as Record<string, string | undefined>)
-    : undefined;
-  const publicHtmlCacheRequest = edgeCache
-    ? getPublicHtmlCacheRequest(request, env, prefetchedSiteSettings?.updated_at)
+  ])).catch(() => [undefined, undefined] as const) : null;
+  if (speculativeCacheRead) void speculativeCacheRead.then(([cached]) => { if (!cached && acceptingSpeculation) preparePublicHtml(); });
+  const confirmRevision = () => timing.measure("revision", () => publicSettingsReader.revision({
+    key: settingsReadKey(stringEnv), cache: edgeCache, snapshotRequest: getPublicRevisionCacheRequest(request, env),
+    readFull: () => readSiteSettingsSource(stringEnv),
+    readRevision: async () => (await readSiteSettingsSource(stringEnv, true))?.updated_at || null,
+    background, onColdRead: preparePublicHtml,
+  }));
+  let confirmedRevision = edgeCache ? await confirmRevision() : null;
+  let publicHtmlCacheRequest = edgeCache && confirmedRevision
+    ? getPublicHtmlCacheRequest(request, env, confirmedRevision)
     : null;
-  const publicHtmlFreshnessRequest = publicHtmlCacheRequest
+  let publicHtmlFreshnessRequest = publicHtmlCacheRequest
     ? getPublicHtmlFreshnessRequest(publicHtmlCacheRequest)
     : null;
 
   let currentDynamicRoute: DynamicRouteState | null = null;
   const generatePublicHtml = async (existingLastModified?: string | null) => {
-    let unpublishedBlog = false;
-    const appShellUrl = new URL(request.url);
-    appShellUrl.pathname = "/";
-    appShellUrl.search = "";
-    const earlyHome = Boolean(staticMeta && isHomeDataPageKey(key));
-    const earlyFurnitureDetailSlug = key.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
-    const earlyFurnitureSetting = earlyFurnitureDetailSlug ? fetchFurnitureCatalogSetting(env as Record<string, string | undefined>) : undefined;
-    const earlyPageKey = staticMeta ? getTopLevelPublicPageKey(key) : null;
-    const footerCtaBlockKey = getPathWithoutLanguage(key) === "/about" ? "about_final" : "home_final";
-    // These independent projections are still included in the same document;
-    // start them before route metadata instead of adding another serial round.
-    const earlyPageBundle = earlyPageKey ? fetchPublicSitePageBundle(env as Record<string, string | undefined>, earlyPageKey) : null;
-    const earlyHomeFurniture = earlyHome ? fetchHomeFurniture(env as Record<string, string | undefined>) : null;
-    const earlyHomeJournal = earlyHome ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : null;
-    const earlyHomeAreas = earlyHome ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : null;
-    const earlyFooterCtaBlock = staticMeta && shouldPreloadFooterCtaBlock(key)
-      ? fetchPublicCtaBlock(env as Record<string, string | undefined>, footerCtaBlockKey) : null;
-    const [dynamicRouteState, response] = await Promise.all([
-      fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta, () => { unpublishedBlog = true; }, earlyFurnitureSetting),
-      env.ASSETS ? env.ASSETS.fetch(new Request(appShellUrl.toString(), request)) : next("/"),
-    ]);
+    const prepared = preparePublicHtml();
+    const earlyPageBundle = prepared.pageBundle;
+    const earlyHomeFurniture = prepared.furniture;
+    const earlyHomeJournal = prepared.journal;
+    const earlyHomeAreas = prepared.areas;
+    const [dynamicRouteState, shellResponse] = await prepared.route;
+    const response = shellResponse.clone();
+    const resolvedMeta = prepared.unpublishedBlog.value || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
+    const earlyFooterCtaBlock = prepared.footerCta;
+    const earlyFurnitureSetting = prepared.furnitureSetting;
     currentDynamicRoute = dynamicRouteState;
-    const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
     // Match the page's published FAQ projection; use its reviewed locale fallback
     // only when the public service record is unavailable, not for an empty locale.
     const oldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
@@ -2276,7 +2323,7 @@ export const onRequest: PagesFunction = async (context) => {
 	    applyHtmlNoStoreHeaders(headers);
 	    await applyHtmlSecurityHeaders(headers, transformed);
 	    return {
-        response: withHtmlCacheDebugHeader(new Response(transformed, { status: response.status, headers }), "bypass-admin"),
+        response: new Response(transformed, { status: response.status, headers }), state: "bypass-admin" as const,
         cacheWrite: null,
       };
 	  }
@@ -2316,9 +2363,7 @@ export const onRequest: PagesFunction = async (context) => {
     homeServiceAreas,
     processSteps,
   ] = await Promise.all([
-    prefetchedSiteSettings !== undefined
-      ? Promise.resolve(prefetchedSiteSettings)
-      : fetchSiteSettings(env as Record<string, string | undefined>),
+    prepared.settings,
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProjectSummaries ? fetchProjectSummaries(env as Record<string, string | undefined>) : Promise.resolve(null),
     projectDetailSlug
@@ -2350,6 +2395,8 @@ export const onRequest: PagesFunction = async (context) => {
       url.searchParams.set("status", "eq.published"); url.searchParams.set("order", "step_number.asc");
     }) : Promise.resolve(null),
   ]);
+  prepared.finishData();
+  const finishTransform = timing.start("transform");
 
   const furnitureListingRoute = getFurnitureListingRoute(key);
   const furnitureListing = furnitureListingRoute && furniturePreload
@@ -2461,19 +2508,19 @@ export const onRequest: PagesFunction = async (context) => {
     applyHtmlNoStoreHeaders(headers);
   }
   await applyHtmlSecurityHeaders(headers, transformed);
+  finishTransform();
 
   const generatedResponse = new Response(transformed, { status: meta ? response.status : 404, headers });
-  const finalResponse = meta
-    ? createPublicHtmlBrowserResponse(generatedResponse.clone(), request, "miss")
-    : withHtmlCacheDebugHeader(generatedResponse, "bypass-not-found");
-  const cacheWrite = meta && edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest
+  // A revision change during generation must not mix old keys with new settings.
+  const cacheWrite = meta && confirmedRevision && siteSettings?.updated_at === confirmedRevision
+    && edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest
     ? Promise.all([
         edgeCache.put(publicHtmlCacheRequest, generatedResponse.clone()),
         edgeCache.put(publicHtmlFreshnessRequest, createPublicHtmlFreshnessResponse()),
       ]).then(() => undefined).catch(() => undefined)
     : null;
 
-  return { response: finalResponse, cacheWrite };
+  return { response: generatedResponse, cacheWrite, state: meta ? "miss" as const : "bypass-not-found" as const };
   };
 
   const generatePublicHtmlWithFallback = async (existingLastModified?: string | null) => {
@@ -2486,12 +2533,10 @@ export const onRequest: PagesFunction = async (context) => {
         { category: "transform", durationMs: Date.now() - startedAt },
       );
 
-      const appShellUrl = new URL(request.url);
-      appShellUrl.pathname = "/";
-      appShellUrl.search = "";
+      const shellRequest = createUnconditionalPublicShellRequest(request);
       const appShellResponse = env.ASSETS
-        ? await env.ASSETS.fetch(new Request(appShellUrl.toString(), request))
-        : await next("/");
+        ? await env.ASSETS.fetch(shellRequest)
+        : await next(shellRequest);
       const contentType = appShellResponse.headers.get("content-type") || "";
       if (!contentType.includes("text/html")) {
         return { response: appShellResponse, cacheWrite: null };
@@ -2506,8 +2551,8 @@ export const onRequest: PagesFunction = async (context) => {
           ? { ...staticMeta, faqs: mapPublicServiceFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
           : staticMeta;
       let transformed = fallbackMeta
-        ? injectSeo(html, fallbackMeta, prefetchedSiteSettings)
-        : injectNoIndexNotFound(html, prefetchedSiteSettings, key);
+        ? injectSeo(html, fallbackMeta, await preparePublicHtml().settings)
+        : injectNoIndexNotFound(html, await preparePublicHtml().settings, key);
       // Keep the existing metadata/readable fallback unchanged, but do not
       // discard an already successful current-record read when an optional
       // HTML transformation fails (including incomplete Malay no-script labels).
@@ -2535,24 +2580,53 @@ export const onRequest: PagesFunction = async (context) => {
         headers,
       });
       return {
-        response: fallbackMeta
-          ? createPublicHtmlBrowserResponse(fallbackResponse, request, "miss")
-          : withHtmlCacheDebugHeader(fallbackResponse, "bypass-not-found"),
+        response: fallbackResponse, state: fallbackMeta ? "miss" as const : "bypass-not-found" as const,
         cacheWrite: null,
       };
     }
   };
 
+  const generateSharedHtml = async (lastModified?: string | null) => {
+    try {
+      return await coalescePublicHtmlGeneration(
+        `${request.method}:${settingsReadKey(stringEnv)}:${getPublicHtmlCacheRequest(request, env, confirmedRevision).url}`,
+        () => generatePublicHtmlWithFallback(lastModified),
+      );
+    } finally {
+      // Joiners can have different speculative identities from the flight owner.
+      acceptingSpeculation = false;
+      if (publicHtmlPreparations.get(preparationKey) === preparation) publicHtmlPreparations.delete(preparationKey);
+      preparation = undefined;
+    }
+  };
+
   if (edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest) {
-    const [cachedPublicHtml, freshnessMarker] = speculativeCacheRequest?.url === publicHtmlCacheRequest.url && speculativeCacheRead
-      ? await speculativeCacheRead
-      : await Promise.all([edgeCache.match(publicHtmlCacheRequest), edgeCache.match(publicHtmlFreshnessRequest)]);
+    let cachedPublicHtml: Response | undefined;
+    let freshnessMarker: Response | undefined;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      [cachedPublicHtml, freshnessMarker] = attempt === 0 && speculativeCacheRequest?.url === publicHtmlCacheRequest.url && speculativeCacheRead
+        ? await speculativeCacheRead
+        : await timing.measure("cache", () => Promise.all([edgeCache.match(publicHtmlCacheRequest!), edgeCache.match(publicHtmlFreshnessRequest!)]));
+      const lease = publicSettingsReader.peek(settingsReadKey(stringEnv));
+      if (lease?.revision === confirmedRevision && lease.expiresAt > Date.now()) break;
+      // Cache I/O can cross the hard lease deadline. Confirm again before use,
+      // never restart the five-second clock merely because a lookup was slow.
+      cachedPublicHtml = undefined; freshnessMarker = undefined;
+      confirmedRevision = attempt === 0 ? await confirmRevision() : null;
+      publicHtmlCacheRequest = confirmedRevision ? getPublicHtmlCacheRequest(request, env, confirmedRevision) : null;
+      publicHtmlFreshnessRequest = publicHtmlCacheRequest ? getPublicHtmlFreshnessRequest(publicHtmlCacheRequest) : null;
+      if (!publicHtmlCacheRequest) break;
+    }
     if (cachedPublicHtml) {
+      acceptingSpeculation = false;
+      // A changed confirmed version may hit a different entry after the old
+      // candidate missed; retire only this unused speculative preparation.
+      if (preparation && publicHtmlPreparations.get(preparationKey) === preparation && freshnessMarker) publicHtmlPreparations.delete(preparationKey);
       if (!freshnessMarker) {
         const refreshKey = publicHtmlCacheRequest.url;
         let refreshPromise = publicHtmlRefreshes.get(refreshKey);
         if (!refreshPromise) {
-          refreshPromise = generatePublicHtmlWithFallback(cachedPublicHtml.headers.get("last-modified"))
+          refreshPromise = generateSharedHtml(cachedPublicHtml.headers.get("last-modified"))
             .then(async (generated) => {
               if (generated.cacheWrite) await generated.cacheWrite;
             })
@@ -2571,15 +2645,21 @@ export const onRequest: PagesFunction = async (context) => {
         }
       }
 
-      return createPublicHtmlBrowserResponse(
-        cachedPublicHtml,
-        request,
-        freshnessMarker ? "hit" : "stale",
-      );
+      const returnLease = publicSettingsReader.peek(settingsReadKey(stringEnv));
+      if (returnLease?.revision === confirmedRevision && returnLease.expiresAt > Date.now()) {
+        return timing.finish(createPublicHtmlBrowserResponse(
+          cachedPublicHtml,
+          request,
+          freshnessMarker ? "hit" : "stale",
+        ));
+      }
+      // Runtimes without waitUntil can await refresh above. If that crossed the
+      // lease, generate a fresh response rather than returning this old entry.
+      confirmedRevision = null; publicHtmlCacheRequest = null; publicHtmlFreshnessRequest = null;
     }
   }
 
-  const generated = await generatePublicHtmlWithFallback();
+  const generated = await generateSharedHtml();
   if (generated.cacheWrite) {
     const waitUntil = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
     if (typeof waitUntil === "function") {
@@ -2588,5 +2668,7 @@ export const onRequest: PagesFunction = async (context) => {
       await generated.cacheWrite;
     }
   }
-  return generated.response;
+  return timing.finish(generated.state === "miss"
+    ? createPublicHtmlBrowserResponse(generated.response, request, "miss")
+    : generated.state ? withHtmlCacheDebugHeader(generated.response, generated.state) : generated.response);
 };
