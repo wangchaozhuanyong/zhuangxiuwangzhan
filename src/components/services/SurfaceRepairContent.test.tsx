@@ -10,7 +10,10 @@ import { confirmProtectedNavigation, hasProtectedChanges, NAVIGATION_CONFIRM_EVE
 const state = vi.hoisted(() => ({ language: "zh" as "zh" | "en" }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: state.language }) }));
 vi.mock("@/contexts/PublicChromeContext", () => ({ usePageConsultation: () => undefined }));
-vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettings: () => ({ whatsapp_url: (text: string) => `https://wa.me/601128853888?text=${encodeURIComponent(text)}` }) }));
+vi.mock("@/hooks/useSiteSettings", async () => {
+  const { resolveSiteSettings } = await import("@/lib/siteSettingsApi");
+  return { useSiteSettings: () => resolveSiteSettings({ whatsapp_number: "601128853888" }, state.language) };
+});
 vi.mock("@/lib/analytics", () => ({ trackCtaClick: vi.fn() }));
 vi.mock("@/components/SmartImage", () => ({ default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} /> }));
 vi.mock("@/components/ImmersiveHero", () => ({ default: ({ children }: { children: React.ReactNode }) => <section>{children}</section> }));

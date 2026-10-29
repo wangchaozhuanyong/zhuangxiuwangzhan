@@ -236,6 +236,17 @@ describe("lead analytics events", () => {
     });
   });
 
+  it.each(["wechat_copy", "wechat_qr_open"])("keeps %s as an observation and attaches bounded browser source reference", async eventName => {
+    const { analytics, gtag } = await loadAnalytics("/zh/contact?utm_source=chatgpt&utm_medium=cpc&email=synthetic%40example.invalid");
+    analytics.trackPageView({ path: "/zh/contact", language: "zh" });
+    analytics.trackCtaClick(eventName, "contact_panel", { destination: "wechat" });
+    expect(getEventPayload(gtag, "page_view")).toMatchObject({ inquiry_source_first: "chatgpt_paid", inquiry_source_last: "chatgpt_paid" });
+    expect(getEventPayload(gtag, eventName)).toMatchObject({ cta_name: eventName, inquiry_source_first: "chatgpt_paid", inquiry_source_last: "chatgpt_paid" });
+    expect(JSON.stringify(getEventPayload(gtag, eventName))).not.toMatch(/email|synthetic|utm_|gclid/);
+    expect(getEventNames(gtag)).not.toContain("generate_lead");
+    expect(getEventNames(gtag)).not.toContain("conversion");
+  });
+
   it("never promotes a WhatsApp click to a lead or Ads conversion", async () => {
     vi.stubEnv("VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL", "legacy-whatsapp-label");
     const { analytics, gtag } = await loadAnalytics("/zh/services/renovation");

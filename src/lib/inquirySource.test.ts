@@ -6,7 +6,7 @@ import { formatSourcePath } from "./leadSourceText";
 import { buildAdminLeadReport } from "./adminLeadReports";
 import { resolveSiteSettings } from "./siteSettingsApi";
 import { withInquiryWhatsAppHref } from "./contactLinks";
-import { contactEntryText } from "@/i18n/contactEntryText";
+import { whatsappOpeningText } from "@/i18n/whatsappOpeningText";
 
 const origin = "https://flashcast.com.my/en/contact";
 beforeEach(() => { window.sessionStorage.clear(); window.history.replaceState({}, "", "/en/contact"); });
@@ -108,16 +108,16 @@ describe("browser enquiry source references", () => {
     }
     expect(isEnglishAcceptancePage(buildInquirySourcePath("/en/contact"), "contact")).toBe(true);
   });
-  it.each(["en", "zh", "ms"] as const)("preserves WhatsApp business number, message and encoding with %s source text", (language) => {
+  it.each(["en", "zh", "ms"] as const)("uses a generic %s opening while retaining the business number and private source reference", (language) => {
     window.history.replaceState({}, "", `/${language}/services/builtin?utm_source=chatgpt&utm_medium=cpc&gclid=invalid`);
     window.history.replaceState({}, "", `/${language}/services/builtin?utm_source=chatgpt&utm_medium=cpc`);
-    const original = contactEntryText[language].message("Kitchen & cabinets");
+    const original = "Kitchen & cabinets, location: __, site photos required";
     const href = resolveSiteSettings({ whatsapp_number: "601128853888" }, language).whatsapp_url(original);
     const url = new URL(href); expect(url.pathname).toBe("/601128853888");
-    const text = url.searchParams.get("text")!; expect(text.startsWith(original + "\n\n")).toBe(true);
-    expect(text).toContain(language === "zh" ? "ChatGPT广告" : language === "ms" ? "Iklan ChatGPT" : "ChatGPT ad");
+    const text = url.searchParams.get("text")!;
+    expect(text).toBe(whatsappOpeningText(language, "chatgpt_paid"));
     expect(withInquiryWhatsAppHref(href, language)).toBe(href);
-    expect(text).not.toMatch(/gclid|utm_|invalid/);
+    expect(text).not.toMatch(/gclid|utm_|invalid|Kitchen|__|browser reference|浏览器参考/);
   });
   it("formats channels for all admin surfaces and separates same-title report rows", () => {
     const a = buildInquirySourcePath("/en/quote?source=service&title=Kitchen", { first: "chatgpt_paid", last: "chatgpt_paid" });
