@@ -14,8 +14,9 @@ describe("site settings contact links", () => {
     expect(settings.phone_href).toBe("tel:+601128853888");
     const chineseUrl = new URL(settings.whatsapp_url());
     expect(chineseUrl.origin + chineseUrl.pathname).toBe("https://wa.me/601128853888");
-    expect(chineseUrl.searchParams.get("text")).toBe("你好 FLASH CAST，我想咨询装修/翻新服务。我的项目在马来西亚，想先了解施工范围、预算估算和下一步安排。\n\n来源（浏览器参考）: 不确定");
-    expect(new URL(settings.whatsapp_url("Hello")).searchParams.get("text")).toBe("Hello\n\n来源（浏览器参考）: 不确定");
+    expect(chineseUrl.searchParams.get("text")).toBe("你好，需要咨询装修方面的事情。");
+    expect(new URL(settings.whatsapp_url("Old page-specific message")).searchParams.get("text")).toBe("你好，需要咨询装修方面的事情。");
+    expect(new URL(settings.whatsapp_url("Hello", { mode: "user-composed" })).searchParams.get("text")).toBe("Hello");
 
     const englishSettings = resolveSiteSettings(
       {
@@ -24,7 +25,7 @@ describe("site settings contact links", () => {
       },
       "en",
     );
-    expect(new URL(englishSettings.whatsapp_url()).searchParams.get("text")).toBe("Hi FLASH CAST, I'd like to ask about renovation services. My project is in Malaysia. Could you advise on the suitable scope, estimated budget, and next steps?\n\nSource (browser reference): Unknown");
+    expect(new URL(englishSettings.whatsapp_url()).searchParams.get("text")).toBe("Hi, I'd like to ask about renovation.");
   });
 
   it("normalizes built-in logo settings to the cache-safe WebP URL", () => {

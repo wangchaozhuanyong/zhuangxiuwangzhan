@@ -95,6 +95,16 @@
   transition: border-color var(--motion-control) var(--motion-ease), background var(--motion-control) var(--motion-ease), transform var(--motion-control) var(--motion-ease);
 }
 
+html[data-public-theme] #root .fc-route-page .fc-route-hero-actions a.fc-route-hero-action-secondary {
+  background: transparent;
+  color: var(--public-accent);
+  border: 1px solid var(--public-accent);
+}
+
+html[data-public-theme] #root .fc-route-page .fc-route-hero-actions a.fc-route-hero-action-secondary:hover {
+  background: color-mix(in srgb, var(--public-accent) 8%, transparent);
+}
+
 .scheme-a-public-shell .fc-route-page .fc-route-hero-actions svg {
   width: 16px;
   height: 16px;
