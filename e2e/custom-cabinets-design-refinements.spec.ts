@@ -5,7 +5,7 @@ import p from '../src/i18n/cabinetPaletteText.json' with { type: 'json' };
 import t from '../src/i18n/cabinetStudioText.json' with { type: 'json' };
 import l from '../src/i18n/cabinetStudioCatalog.json' with { type: 'json' };
 
-const evidence = resolve('reports/custom-cabinets-20261024/design-fixes-20261028/browser');
+const evidence = resolve(process.env.CABINET_EVIDENCE_DIR || 'reports/custom-cabinets-20261024/design-fixes-20261028/browser');
 mkdirSync(evidence, { recursive: true });
 type Language = 'zh' | 'en' | 'ms';
 test.beforeEach(async ({ page }) => {
@@ -21,8 +21,16 @@ test.beforeEach(async ({ page }) => {
 const ready = (page: Page) => expect(page.locator('.studio-product [data-room-render-state]')).toHaveAttribute('data-room-render-state', 'ready');
 async function open(page: Page, lang: Language) {
   await page.goto(`/${lang}/custom-cabinets?fc_test=1&view=inspire`);
-  await page.locator('[data-scheme="natural-1"] .studio-card__actions button').click();
+  const card = page.locator('[data-scheme="natural-1"]');
+  const quote = card.locator('[data-price-state="quote"]');
+  if (await quote.count()) {
+    expect(await quote.evaluate(element => element.getBoundingClientRect().height)).toBeLessThan(30);
+    const gap = await card.evaluate(element => element.querySelector('.studio-card__actions button')!.getBoundingClientRect().top - element.querySelector('.studio-price > span')!.getBoundingClientRect().bottom);
+    expect(gap).toBeLessThanOrEqual(32);
+  }
+  await card.locator('.studio-card__actions button').click();
   await ready(page);
+  await expect.poll(() => page.getByRole('dialog').evaluate(element => getComputedStyle(element).opacity)).toBe('1');
 }
 const order = (page: Page) => page.locator('[data-finish]').evaluateAll(elements => elements.map(element => element.getAttribute('data-finish')));
 
@@ -60,13 +68,28 @@ for (const [lang, width, height] of [
   });
   expect(ratio).toBeCloseTo(1.5, 2);
   if (width <= 600) {
-    const space = await page.locator('.studio-product__layout').evaluate(element => {
-      const visual = element.querySelector('.studio-product__visual')!.getBoundingClientRect();
-      return element.clientHeight - visual.height;
+    const layout = await page.locator('.studio-product__layout').evaluate(element => {
+      const visual = element.querySelector('.studio-product__visual')!;
+      const frame = visual.querySelector('.studio-room-preview__frame')!;
+      return { width: frame.getBoundingClientRect().width, visualWidth: visual.getBoundingClientRect().width,
+        position: getComputedStyle(visual).position, scrollbar: getComputedStyle(element).scrollbarWidth,
+        webkitScrollbar: getComputedStyle(element, '::-webkit-scrollbar').display };
     });
-    expect(space).toBeGreaterThan(280);
+    expect(layout.width).toBeGreaterThanOrEqual(layout.visualWidth - 1);
+    expect(layout.position).toBe('static');
+    expect(layout.scrollbar).toBe('none');
+    expect(layout.webkitScrollbar).toBe('none');
+    expect(await page.getByRole('dialog').evaluate(element => getComputedStyle(element).overflowY)).toBe('hidden');
+    const footer = await page.locator('.studio-product__footer').boundingBox();
+    expect(footer!.y + footer!.height).toBeLessThanOrEqual(height);
+    // Only the content region scrolls, and the image can return fully into view.
+    await page.locator('.studio-product__layout').evaluate(element => { element.scrollTop = 0; });
+    await expect(page.locator('.studio-product .studio-room-preview__frame')).toBeInViewport({ ratio: 1 });
+    await page.screenshot({ path: resolve(evidence, `full-preview-${lang}-${width}.png`) });
   }
   await page.getByRole('button', { name: t[lang].share, exact: true }).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('button', { name: t[lang].share, exact: true })).toBeInViewport();
+  if (width <= 600) expect(await page.locator('.studio-product__layout').evaluate(element => element.scrollTop)).toBeGreaterThan(0);
   const tools = await page.locator('.studio-product__tools button').evaluateAll(elements => elements.map(element => {
     const range = document.createRange(); range.selectNodeContents(element);
     const textRects = [...range.getClientRects()].filter(rect => rect.width > 0 && rect.height > 0);
