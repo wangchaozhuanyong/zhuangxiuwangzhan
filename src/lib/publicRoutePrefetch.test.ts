@@ -5,6 +5,9 @@ const keysFor = (pathname: string, language: "zh" | "en") =>
   getPublicRoutePrefetchTasks(pathname, language).map((task) => task.queryKey);
 
 describe("public route language prefetch", () => {
+  it("does not fetch CMS data for the static cabinet catalogue", () => {
+    for (const lang of ["zh", "en", "ms"] as const) expect(getPublicRoutePrefetchTasks(`/${lang}/custom-cabinets`, lang)).toEqual([]);
+  });
   it("matches the home and listing query keys used by the public hooks", () => {
     expect(keysFor("/zh", "en")).toEqual([
       ["published", "home_bundle", "en"],

@@ -32,6 +32,7 @@ const Privacy = lazy(publicPageModules.Privacy);
 const Terms = lazy(publicPageModules.Terms);
 const OldHouseRenovation = lazy(publicPageModules.OldHouseRenovation);
 const NotFound = lazy(publicPageModules.NotFound);
+const CustomCabinets = lazy(publicPageModules.CustomCabinets);
 
 const withLanguageSync = (page: JSX.Element, preparePage?: () => Promise<unknown>) => (
   <LanguageRouteSync preparePage={preparePage}>{page}</LanguageRouteSync>
@@ -52,6 +53,7 @@ export const publicRoutes = (
     <Route path="/" element={<RootLanguageRedirect />} />
     <Route path="/:lang" element={withLanguageSync(<Index />, publicPageModules.Index)} />
     <Route path="/:lang/about" element={withLanguageSync(<About />)} />
+    <Route path="/:lang/custom-cabinets" element={withLanguageSync(<CustomCabinets />)} />
     <Route path="/:lang/services" element={withLanguageSync(<Services />)} />
     <Route path="/:lang/services/old-house" element={withLanguageSync(<OldHouseRenovation />)} />
     <Route path="/:lang/services/:slug" element={withLanguageSync(<ServiceDetail />)} />

@@ -1,0 +1,38 @@
+{
+  "zh": {
+    "standard": "尺寸计价",
+    "campaign": "活动套餐价",
+    "draftCampaign": "活动试算价 · 待核价",
+    "area": "正面面积 {area} 平方英尺",
+    "rate": "RM{rate}／平方英尺",
+    "saving": "活动期间减{percent}% · 节省{amount}",
+    "basis": "按柜体正面宽×高计算，上下柜分别计面积；内部板材不重复计算。按未舍入的总面积计价，金额最后四舍五入至分。深度沿用所列规格，超出规格另核价。",
+    "scope": "石材台面、特殊门板、升级五金、运输安装及税费另行确认，不默认包含在本次柜体试算内。",
+    "discount": "活动期间减{percent}%",
+    "savingsLabel": "节省"
+  },
+  "en": {
+    "standard": "Size-based price",
+    "campaign": "Campaign package price",
+    "draftCampaign": "Campaign estimate · Costing pending",
+    "area": "Front elevation {area} sq ft",
+    "rate": "RM{rate}/sq ft",
+    "saving": "{percent}% off during the campaign · Save {amount}",
+    "basis": "Calculated from cabinet front width × height, with base and wall units measured separately. Internal panels are not counted again. Prices use the unrounded total area and are rounded to cents at the end. Listed depths apply; changes require a new quote.",
+    "scope": "Stone worktops, special door designs, upgraded hardware, delivery, installation and taxes require separate confirmation and are not automatically included in this cabinet estimate.",
+    "discount": "{percent}% off during the campaign",
+    "savingsLabel": "Save"
+  },
+  "ms": {
+    "standard": "Harga mengikut saiz",
+    "campaign": "Harga pakej promosi",
+    "draftCampaign": "Anggaran promosi · Kos belum disahkan",
+    "area": "Luas muka hadapan {area} kaki persegi",
+    "rate": "RM{rate}/kaki persegi",
+    "saving": "Diskaun {percent}% semasa promosi · Jimat {amount}",
+    "basis": "Dikira mengikut lebar × tinggi muka hadapan kabinet. Kabinet bawah dan kabinet dinding dikira berasingan tanpa mengira semula panel dalaman. Harga menggunakan jumlah luas tanpa pembundaran dan dibundarkan kepada sen pada akhir pengiraan. Kedalaman mengikut spesifikasi; perubahan memerlukan sebut harga baharu.",
+    "scope": "Permukaan kerja batu, reka bentuk pintu khas, perkakasan naik taraf, penghantaran, pemasangan dan cukai perlu disahkan berasingan dan tidak termasuk secara automatik dalam anggaran kabinet ini.",
+    "discount": "Diskaun {percent}% semasa promosi",
+    "savingsLabel": "Jimat"
+  }
+}

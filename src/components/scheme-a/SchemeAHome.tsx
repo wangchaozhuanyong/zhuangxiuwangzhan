@@ -16,6 +16,7 @@ import { resolveSchemeAHomePresentation } from "@/lib/schemeAHomePresentation";
 import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
 import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import SchemeAHomeRenovation from "@/components/scheme-a/SchemeAHomeRenovation";
+import SchemeAHomeCabinets from "@/components/scheme-a/SchemeAHomeCabinets";
 import SchemeAHomeFurniture from "@/components/scheme-a/SchemeAHomeFurniture";
 import { HomeJournal, HomeServiceAreas } from "@/components/scheme-a/SchemeAHomeDiscovery";
 import { homeEditorialText } from "@/i18n/homeEditorialText";
@@ -203,6 +204,8 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
           </div>
         </div>
       </ImmersiveHero>
+
+      <SchemeAHomeCabinets />
 
       <section className="scheme-a-project" data-home-section="projects" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-section-head">

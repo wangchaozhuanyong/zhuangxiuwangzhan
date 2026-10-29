@@ -4,6 +4,7 @@ import { prepareMalayContent } from "@/components/LanguageRouteSync";
 
 type PublicPageName = keyof typeof publicPageModules;
 const directoryPages: Record<string, PublicPageName> = {
+  "custom-cabinets": "CustomCabinets",
   about: "About", services: "Services", materials: "Materials", products: "Materials",
   furniture: "FurnitureShowcase", promotions: "Promotions", locations: "Locations",
   projects: "Projects", "before-after": "BeforeAfter", process: "Process", faq: "FAQ",
