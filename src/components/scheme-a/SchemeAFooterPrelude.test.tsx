@@ -41,7 +41,7 @@ describe("published home/about invitation delivery", () => {
   });
   it("retains the original invitation when no published record is available", async () => {
     fixture.cta = null; await render("/en/about"); expect(node.querySelector("h2")).toHaveTextContent(schemeAChromeText.en.footerTitle);
-    expect(node.querySelectorAll("a")[1]).toHaveAttribute("href", "https://wa.me/60123456789?text=Source+%28browser+reference%29%3A+Unknown");
+    expect(node.querySelectorAll("a")[1]).toHaveAttribute("href", "https://wa.me/60123456789");
   });
   it("does not render another invitation when the page already has consultation", async () => {
     fixture.consultation = true; await render("/en/about"); expect(node).toBeEmptyDOMElement();
@@ -50,6 +50,6 @@ describe("published home/about invitation delivery", () => {
     fixture.cta = { ...fixture.cta!, primary_url: "javascript:alert(1)", secondary_url: "data:text/html,private", image_url: "javascript:alert(2)" };
     await render("/en/about"); expect(node.innerHTML).not.toContain("javascript:"); expect(node.innerHTML).not.toContain("data:text/html");
     expect(node.querySelectorAll("a")[0]).toHaveAttribute("href", "/en/quote#quote-form");
-    expect(node.querySelectorAll("a")[1]).toHaveAttribute("href", "https://wa.me/60123456789?text=Source+%28browser+reference%29%3A+Unknown");
+    expect(node.querySelectorAll("a")[1]).toHaveAttribute("href", "https://wa.me/60123456789");
   });
 });

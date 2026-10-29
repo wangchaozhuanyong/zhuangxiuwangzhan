@@ -1,4 +1,5 @@
 import { isLeadTestPage } from "@/lib/leadTest";
+import { currentInquirySources } from "@/lib/inquirySource";
 
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
@@ -34,6 +35,13 @@ const productionAnalyticsHosts = new Set(["flashcast.com.my", "www.flashcast.com
 const directObservationCtaEvents: Record<string, string> = {
   whatsapp: "whatsapp_click",
   phone: "phone_click",
+  wechat_copy: "wechat_copy",
+  wechat_qr_open: "wechat_qr_open",
+};
+
+const inquiryReferenceParams = () => {
+  const sources = currentInquirySources();
+  return { inquiry_source_first: sources.first, inquiry_source_last: sources.last };
 };
 
 declare global {
@@ -333,6 +341,7 @@ export const trackPageView = ({
         page_location: pageLocation,
         page_path: path,
         language,
+        ...inquiryReferenceParams(),
       }),
       ...publicReferrerOverride(),
     },
@@ -391,6 +400,7 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
     cta_name: ctaName,
     cta_location: ctaLocation,
     page_path: currentPagePath(),
+    ...inquiryReferenceParams(),
     ...params,
   });
 
@@ -402,6 +412,7 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
       cta_name: ctaName,
       cta_location: ctaLocation,
       page_path: currentPagePath(),
+      ...inquiryReferenceParams(),
       ...params,
     });
   }

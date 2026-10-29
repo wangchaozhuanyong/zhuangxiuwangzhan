@@ -44,6 +44,15 @@ describe("localized navigation after the router upgrade", () => {
     },
   );
 
+  it("replaces a company CMS WhatsApp template but leaves another recipient untouched", async () => {
+    window.history.replaceState({}, "", "/zh/projects?utm_source=chatgpt&utm_medium=cpc");
+    const company = await render("https://wa.me/601128853888?text=Old%20project%20template", "_blank");
+    expect(new URL(company.href).searchParams.get("text")).toBe("你好，我在ChatGPT看到您的公司，需要咨询装修方面的事情。");
+    const otherHref = "https://wa.me/601100000001?text=Other%20business";
+    const other = await render(otherHref, "_blank");
+    expect(other.getAttribute("href")).toBe(otherHref);
+  });
+
   it.each([{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }])(
     "leaves modifier clicks to the browser %s", async (modifiers) => {
       const link = await render("/contact");

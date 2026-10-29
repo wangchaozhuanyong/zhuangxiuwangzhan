@@ -9,6 +9,8 @@ import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.t
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
 import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
+import { WARDROBE15_BUILTIN_TARGETS } from "./wardrobe15-builtin-targets.ts";
+import { ENGLISH_KITCHEN_EN2_TARGETS } from "./english-kitchen-en2-targets.ts";
 import { TWO_ORIGINAL_MATERIAL_BODY_TARGETS } from "./two-original-material-body-targets.ts";
 export { ORG020_V7_TARGETS, TWO_ORIGINAL_MATERIAL_BODY_TARGETS };
 
@@ -46,9 +48,11 @@ const PAID_THREE_PAGE_NATIVE_FIELDS = [
 
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
+  ...ENGLISH_KITCHEN_EN2_TARGETS,
   ...SHOP_OFFICE_SIX_FIELD_TARGETS,
   ...NEXT8_TWO_RECORD_TARGETS,
   ...NEXT12_FIVE_RECORD_TARGETS,
+  ...WARDROBE15_BUILTIN_TARGETS,
   ...BUILTIN_WARDROBE_TARGETS,
   ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),

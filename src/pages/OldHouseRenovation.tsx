@@ -2,6 +2,7 @@ import { DeferredSmartImage } from "@/components/DeferredSmartImage";
 import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import PhotoEnquiryLink from "@/components/PhotoEnquiryLink";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
 import { usePageConsultation } from "@/contexts/PublicChromeContext";
@@ -63,7 +64,7 @@ const OldHouseRenovation = () => {
       <JsonLdService name={t.title} description={t.description} />
       {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}
 
-      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<Link to={quotePath} onClick={() => trackCtaClick("quote", "old_house_hero", { destination: quotePath })}>{t.assessment}</Link>} />
+      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<><PhotoEnquiryLink source="old_house_hero" /><Link to={quotePath} className="fc-route-hero-action-secondary" onClick={() => trackCtaClick("quote", "old_house_hero", { destination: quotePath })}>{t.assessment}</Link></>} />
 
       <SchemeASection title={t.introTitle} description={t.intro.join(" ")}>
         <div className="fc-route-tagline">{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>

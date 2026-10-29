@@ -91,7 +91,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero?.querySelector("img")).toHaveAttribute("alt", alt);
     const heroLinks = hero!.querySelectorAll("a");
     expect(heroLinks).toHaveLength(3);
-    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "发照片，先聊需求" : "Share photos, discuss your plans");
+    expect(heroLinks[0]).toHaveTextContent(language === "zh" ? "WhatsApp咨询" : "Chat on WhatsApp");
     expect(heroLinks[0]).toHaveAttribute("href", state.whatsappHref);
     expect(heroLinks[0]).toHaveAttribute("target", "_blank");
     expect(heroLinks[0]).toHaveAttribute("rel", "noopener noreferrer");

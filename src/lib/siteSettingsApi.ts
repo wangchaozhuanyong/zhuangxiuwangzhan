@@ -1,4 +1,4 @@
-import { withInquiryWhatsAppHref } from "@/lib/contactLinks";
+import { withInquiryWhatsAppHref, type WhatsAppMessageOptions } from "@/lib/contactLinks";
 import { siteConfig } from "@/config/site";
 
 
@@ -49,11 +49,6 @@ const DEFAULT_LOGO_PNG_PATH = "/logo-flashcast.png";
 const DEFAULT_LOGO_WEBP_PATH = "/logo-flashcast.webp";
 const DEFAULT_LOGO_VERSIONED_WEBP_PATH = "/logo-flashcast-20260605.webp";
 const STATIC_SITE_HOSTS = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
-const DEFAULT_WHATSAPP_MESSAGES = {
-  ms: "Hai FLASH CAST, saya ingin bertanya tentang perkhidmatan pengubahsuaian anda.",
-  en: "Hi FLASH CAST, I'd like to ask about renovation services. My project is in Malaysia. Could you advise on the suitable scope, estimated budget, and next steps?",
-  zh: "你好 FLASH CAST，我想咨询装修/翻新服务。我的项目在马来西亚，想先了解施工范围、预算估算和下一步安排。",
-};
 
 const getConfiguredSiteHost = () => {
   try {
@@ -167,7 +162,8 @@ export const fallbackSiteSettings: SiteSettings = {
 
 export type ResolvedSiteSettings = SiteSettings & {
   phone_href: string;
-  whatsapp_url: (message?: string) => string;
+  /** Default ignores legacy page templates; user-composed preserves customer-confirmed text. */
+  whatsapp_url: (message?: string, options?: Pick<WhatsAppMessageOptions, "mode">) => string;
   address: string;
   short_address: string;
 };
@@ -187,10 +183,10 @@ export const resolveSiteSettings = (
     ...merged,
     logo_url: logoUrl,
     phone_href: normalizePhoneHref(phoneE164),
-    whatsapp_url: (message?: string) => {
+    whatsapp_url: (message?: string, options = {}) => {
       const baseUrl = `https://wa.me/${whatsappNumber}`;
-      const whatsappMessage = (message || DEFAULT_WHATSAPP_MESSAGES[language]).trim();
-      return withInquiryWhatsAppHref(whatsappMessage ? `${baseUrl}?text=${encodeURIComponent(whatsappMessage)}` : baseUrl, language);
+      const href = message ? `${baseUrl}?text=${encodeURIComponent(message)}` : baseUrl;
+      return withInquiryWhatsAppHref(href, language, { ...options, businessNumber: whatsappNumber });
     },
     address,
     short_address: shortAddress,

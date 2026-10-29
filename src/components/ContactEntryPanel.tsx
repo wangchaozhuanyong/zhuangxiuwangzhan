@@ -76,6 +76,7 @@ export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus, 
     try {
       await navigator.clipboard.writeText(wechatId);
       setCopyStatus("copied");
+      trackCtaClick("wechat_copy", "contact_panel", { destination: "wechat" });
     } catch {
       setCopyStatus("failed");
     } finally {
@@ -111,7 +112,11 @@ export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus, 
           <p className="fc-contact-panel__note fc-contact-panel__copy-status" role="status" aria-live="polite">
             {copyStatus === "failed" ? text.wechatCopyFailed : ""}
           </p>
-          <details className="fc-contact-panel__qr" open={qrOpen} onToggle={event => setQrOpen(event.currentTarget.open)}>
+          <details className="fc-contact-panel__qr" open={qrOpen} onToggle={event => {
+            const nextOpen = event.currentTarget.open;
+            if (nextOpen && !qrOpen) trackCtaClick("wechat_qr_open", "contact_panel", { destination: "wechat" });
+            setQrOpen(nextOpen);
+          }}>
             <summary>{text.showWechatQr}<ChevronDown aria-hidden="true" /></summary>
             <figure>
               <SmartImage src={siteConfig.wechatQrUrl} alt={text.wechatQrAlt} width={668} height={668}

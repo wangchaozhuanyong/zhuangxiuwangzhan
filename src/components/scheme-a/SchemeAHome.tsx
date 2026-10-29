@@ -167,7 +167,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
               <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
               <div className="scheme-a-hero__actions-group">
                 <div className="scheme-a-actions">
-                  <PhotoEnquiryLink className="scheme-a-button scheme-a-button--paper" source="home_hero" />
+                  <PhotoEnquiryLink className="scheme-a-button scheme-a-button--paper" source="home_hero" compactOnMobile />
                   <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
                     {copy.projectsCta}
                     <ArrowUpRight aria-hidden="true" />

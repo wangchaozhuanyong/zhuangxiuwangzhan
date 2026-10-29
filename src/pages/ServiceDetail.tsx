@@ -88,6 +88,7 @@ export default function ServiceDetail() {
   });
   const contextLinks = getServiceContextLinks(service.slug, language);
   const projectGuidance = getServiceProjectGuidance(service.slug, language);
+  const hasDirectConsultation = ["kitchen", "builtin", "renovation"].includes(service.slug);
   const quotePath = buildQuotePath({
     source: "service",
     title,
@@ -108,7 +109,7 @@ export default function ServiceDetail() {
         label={[copy.services, conceptLabel].filter(Boolean).join(" · ")}
         title={title}
         description={summary}
-        actions={<>{["kitchen", "builtin"].includes(service.slug) && <PhotoEnquiryLink service={title} source="service_hero" />}<Link to={quotePath}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link></>}
+        actions={<>{hasDirectConsultation && <PhotoEnquiryLink source="service_hero" />}<Link to={quotePath} className={hasDirectConsultation ? "fc-route-hero-action-secondary" : undefined}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link></>}
       />
       <SchemeAFacts items={copy.facts} />
       <SchemeASection title={copy.overview} description={richDescription ? undefined : display(rawDescription)} className="fc-route-service-overview">
