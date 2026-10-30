@@ -18,6 +18,10 @@ on:
         default: all-20260906
         type: choice
         options:
+          - current-stage-source-21a1a1ad2a3b66a30ac7b011
+          - current-stage-source-621f604c3a2e460c60b61438
+          - current-stage-source-0f31548d5b630ef286d45894
+          - current-stage-source-18538003e7a4ec9d9c54533b
           - english-kitchen-en2-exact-v1
           - contact-three-locale-title-4c328eda-cms-v1
           - next8-renovation-11ab9ac6-cms-v1
@@ -219,6 +223,17 @@ jobs:
             fi
             case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
           fi
+          case "$PUBLISH_TARGET" in
+            current-stage-source-21a1a1ad2a3b66a30ac7b011|current-stage-source-621f604c3a2e460c60b61438|current-stage-source-0f31548d5b630ef286d45894|current-stage-source-18538003e7a4ec9d9c54533b)
+              test "$MANAGED_OPERATION" = "publish" || exit 1
+              test -z "$PARENT_RUN_ID" || exit 1
+              if [ "$PUBLISH_MODE" = "publish" ]; then
+                [[ "$MANAGED_PERMIT_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]] || exit 1
+              else
+                test "$PUBLISH_MODE" = "dry-run" && test -z "$MANAGED_PERMIT_ID" || exit 1
+              fi
+              ;;
+          esac
           if [ "$MANAGED_OPERATION" = "rollback" ]; then
             case "$PUBLISH_TARGET" in
               shop-office-shop-six-v4-ba79401d2ed2-20261025-v1|shop-office-office-six-v4-eb6eef35d390-20261025-v1|paid-three-page-builtin-exact-fields-v1|paid-three-page-kitchen-exact-fields-v1|paid-three-page-renovation-exact-fields-v1|builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1|kitchen-r1-cms-row-20260924-v1|design-r1-cms-row-20260924-v1|selangor-service-area-r1-v4|org-017-bathroom-faq-parity-reconciliation-v4|blog-kitchen-cabinet-cost-r1-v1|blog-renovation-quotation-links-r1-v1|blog-office-checklist-links-r1-v1|office-service-scope-r1-v1|kl-location-intent-r1-v2|design-framework-cms-content-v4|kitchen-initial-framework-body-v1|bathroom-initial-framework-body-v1|c01-bilingual-body-v1|c02-bilingual-body-v1|c03-bilingual-body-v1|c04-bilingual-body-v1|c05-bilingual-body-v1|c06-bilingual-body-v1|c07-bilingual-body-v1|c08-bilingual-body-v1|c09-bilingual-body-v1|c10-bilingual-body-v1|c11-bilingual-body-v1|c12-bilingual-body-v1|c13-bilingual-body-v1|c14-bilingual-body-v1|c15-bilingual-body-v1) ;;

@@ -7,6 +7,7 @@ type ContentPublishQueryBuilder = PromiseLike<ContentPublishQueryResult<unknown[
   select: (columns?: string) => ContentPublishQueryBuilder;
   eq: (field: string, value: unknown) => ContentPublishQueryBuilder;
   is: (field: string, value: null) => ContentPublishQueryBuilder;
+  limit: (count: number) => ContentPublishQueryBuilder;
   maybeSingle: () => Promise<ContentPublishQueryResult<unknown | null>>;
   single: () => Promise<ContentPublishQueryResult<unknown>>;
   insert: (payload: Record<string, unknown> | Record<string, unknown>[]) => ContentPublishQueryBuilder;

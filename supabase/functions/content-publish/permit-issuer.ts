@@ -1,6 +1,7 @@
 import { MANAGED_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 import type { ContentPublishClient } from "./types.ts";
+import { PAID_FOUR_CURRENT_TARGETS } from "../_shared/paid-four-current-targets.ts";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA256 = /^[0-9a-f]{64}$/;
@@ -129,6 +130,51 @@ export async function readManagedPermit(client: ContentPublishClient, permitId: 
     taskId: row.task_id, actionId: row.action_id, candidateVersion: row.candidate_version,
     githubRunId: row.github_run_id, githubRunAttempt: row.github_run_attempt,
     savedId: row.saved_id, savedUpdatedAt: row.saved_updated_at,
+  };
+}
+
+export type ManagedPermitLookup = {
+  controlAction: "lookup";
+  taskId: string;
+  actionId: string;
+  candidateVersion: string;
+  scope: string;
+  recordId: string;
+  slug: string;
+};
+
+/** Discover permits only for an exact registered object in its original task.
+ * Old action/version/scope are returned as facts, never relabelled as this action.
+ */
+export async function readManagedPermitHistory(client: ContentPublishClient, input: ManagedPermitLookup) {
+  const keys = ["actionId", "candidateVersion", "controlAction", "recordId", "scope", "slug", "taskId"];
+  const target = PAID_FOUR_CURRENT_TARGETS.find(value => value.id === input.recordId && value.slug === input.slug);
+  if (!target || input.controlAction !== "lookup" || Object.keys(input).sort().join() !== keys.join()
+      || input.taskId !== target.taskId || input.actionId !== target.actionId
+      || input.candidateVersion !== target.candidateVersion || input.scope !== target.scope) {
+    throw new Error("Exact registered four-row permit lookup tuple required");
+  }
+  const { data, error } = await client.from("managed_cms_release_permits")
+    .select("permit_id,status,operation,task_id,action_id,candidate_version,scope,record_id,slug,github_run_id,github_run_attempt,saved_id,saved_updated_at")
+    .eq("task_id", target.taskId).eq("record_id", target.id).eq("slug", target.slug).limit(26);
+  if (error || !Array.isArray(data)) throw new Error("Permit namespace lookup failed; original effects remain unknown");
+  const matches = data as Array<Record<string, unknown>>;
+  if (matches.some(row => row.task_id !== target.taskId || row.record_id !== target.id || row.slug !== target.slug
+      || typeof row.action_id !== "string" || !row.action_id || typeof row.candidate_version !== "string" || !row.candidate_version
+      || typeof row.scope !== "string" || !row.scope || typeof row.permit_id !== "string" || !UUID.test(row.permit_id))) {
+    throw new Error("Permit lookup returned an unexpected identity; original effects remain unknown");
+  }
+  return {
+    performed_write: false, taskId: target.taskId, actionId: target.actionId, candidateVersion: target.candidateVersion,
+    recordId: target.id, slug: target.slug, scope: target.scope,
+    auditStatus: matches.length > 25 ? "INCOMPLETE_TOO_MANY_MATCHES" : matches.length ? "MATCHES_OBSERVED" : "NO_ORIGINAL_TASK_OBJECT_RECORDS",
+    completeForOriginalTaskObject: matches.length <= 25,
+    historicalOrOtherNamespaceEffects: "UNKNOWN",
+    permits: matches.slice(0, 25).map(row => ({ permitId: row.permit_id, status: row.status, operation: row.operation,
+      actionId: row.action_id, candidateVersion: row.candidate_version, scope: row.scope,
+      matchesRequestedNamespace: row.action_id === target.actionId && row.candidate_version === target.candidateVersion && row.scope === target.scope,
+      githubRunId: row.github_run_id, githubRunAttempt: row.github_run_attempt,
+      savedId: row.saved_id, savedUpdatedAt: row.saved_updated_at })),
   };
 }
 

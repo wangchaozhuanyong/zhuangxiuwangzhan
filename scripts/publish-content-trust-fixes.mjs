@@ -22,6 +22,7 @@ import { lockedWardrobe15BuiltinCandidates } from "./managed-cms-targets-wardrob
 import { lockedPaid6KitchenCandidates } from "./managed-cms-targets-paid6-kitchen-v1.mjs";
 
 import { lockedEnglishKitchenEn2Candidates } from "./managed-cms-targets-english-kitchen-en2-v1.mjs";
+import { lockedPaidFourCurrentCandidates } from "./managed-cms-targets-paid-four-current-v1.mjs";
 
 import { lockedContactCmsPageTitleCandidate } from "./managed-cms-targets-contact-three-titles-v1.mjs";
 
@@ -999,7 +1000,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates, ...lockedNext12FiveRecordCandidates, ...lockedWardrobe15BuiltinCandidates, ...lockedEnglishKitchenEn2Candidates, ...lockedPaid6KitchenCandidates, ...lockedContactCmsPageTitleCandidate }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates, ...lockedNext12FiveRecordCandidates, ...lockedWardrobe15BuiltinCandidates, ...lockedEnglishKitchenEn2Candidates, ...lockedPaid6KitchenCandidates, ...lockedContactCmsPageTitleCandidate, ...lockedPaidFourCurrentCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
       keyField: locked.keyField || "slug",
