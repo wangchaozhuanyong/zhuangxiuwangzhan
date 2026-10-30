@@ -19,6 +19,7 @@ on:
         type: choice
         options:
           - english-kitchen-en2-exact-v1
+          - contact-three-locale-title-4c328eda-cms-v1
           - next8-renovation-11ab9ac6-cms-v1
           - next8-design-11ab9ac6-cms-v1
           - next12-warehouse-fbe13ee7-cms-v1

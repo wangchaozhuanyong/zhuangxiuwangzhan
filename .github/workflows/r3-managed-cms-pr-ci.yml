@@ -8,6 +8,10 @@ on:
       - supabase/functions/_shared/english-kitchen-en2-targets.ts
       - drafts/publishing/fc-20261011-english-kitchen-actual-publication-goal-v1/frozen-current-english-kitchen-en2-candidate.json
       - src/lib/contentPublishEnglishKitchenEn2.test.ts
+      - scripts/managed-cms-targets-contact-three-titles-v1.mjs
+      - supabase/functions/_shared/contact-cms-page-title-targets.ts
+      - drafts/publishing/fc-20261019-contact-conversion-malay-followthrough-v1/frozen-contact-cms-pages-three-titles.json
+      - src/lib/contentPublishContactThreeTitles.test.ts
       - src/data/locations.ts
       - src/i18n/locationContextLinks.ts
       - src/i18n/malayFallbackText.json
@@ -208,6 +212,7 @@ jobs:
             src/lib/contentPublishWardrobe15Builtin.test.ts \
             src/lib/contentPublishEnglishKitchenEn2.test.ts \
             src/lib/contentPublishPaid6Kitchen.test.ts \
+            src/lib/contentPublishContactThreeTitles.test.ts \
             src/lib/contentPublishSeoCabinetTwoAnchors.test.ts \
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \

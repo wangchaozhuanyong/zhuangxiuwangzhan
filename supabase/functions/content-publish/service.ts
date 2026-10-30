@@ -19,7 +19,7 @@ import {
   resolvePublishedContentLink,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus, PublishContext } from "./types.ts";
-import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
+import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 import { pendingContentPaths, validateContentLinks } from "../_shared/content-links.mjs";
@@ -1882,6 +1882,75 @@ async function publishOrg020ExactPatch(
 
 const MALAY_TRANSLATION_APPROVAL_ID = "owner-authorized-malay-cms-completion-20261019";
 
+// Existing site_page request shape; this one registered target writes cms_pages,
+// without sending a sparse title patch through the legacy site_pages normalizer.
+async function publishExactContactTitles(
+  input: ContentPublishRequest, client: ContentPublishClient, context: PublishContext,
+  mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
+): Promise<ContentPublishResult> {
+  const record = input.record!;
+  const operation = (input.managedPermit || input.managedCandidate)?.operation;
+  const inverse = operation === "rollback";
+  if ((operation !== "publish" && !inverse) || nextStatus !== "published"
+      || target.table !== "cms_pages" || record.id !== target.id || record.page_key !== "contact") {
+    return errorResult("Contact titles require the exact original row and reviewed operation.", 403);
+  }
+  const existing = await fetchRecordByField(client, "cms_pages", "id", target.id);
+  if (!existing) return errorResult("The exact published Contact page was not found.", 404);
+  const expected = String(input.expectedUpdatedAt || "");
+  if (!samePgTimestamp(existing.updated_at, expected) || (inverse
+      ? samePgTimestamp(expected, target.expectedUpdatedAt) : !samePgTimestamp(expected, target.expectedUpdatedAt))) {
+    return errorResult("Contact page CAS differs. Read the actual row before continuing.", 409);
+  }
+  const projection = target.baselineProjectionFields!;
+  const retained = Object.fromEntries(target.retainedProjectionFields!.map(field => [field, existing[field]]));
+  const currentTitles = Object.fromEntries(target.changedFields!.map(field => [field, existing[field]]));
+  if (existing.page_key !== "contact" || existing.path !== "/contact" || existing.status !== "published" || existing.deleted_at !== null
+      || Object.keys(existing).length !== projection.length || projection.some(field => existing[field] === undefined)
+      || (inverse ? await sha256(retained) !== target.retainedFieldsSha256 || await sha256(currentTitles) !== target.desiredFieldsSha256
+        : await sha256(Object.fromEntries(projection.map(field => [field, existing[field]]))) !== target.baselineFieldsSha256)) {
+    return errorResult("Contact page full24 baseline or protected19 fields differ.", 409);
+  }
+  const fields = new Set(target.changedFields);
+  if (Object.entries(record).some(([field, value]) => !projection.includes(field)
+      || !fields.has(field) && JSON.stringify(stableValue(value)) !== JSON.stringify(stableValue(existing[field])))
+      || target.changedFields!.some(field => typeof record[field] !== "string" || !record[field]
+        || cleanText(record[field], 240) !== record[field])) {
+    return errorResult("Only the exact three Contact title fields may change.", 403);
+  }
+  const patch = Object.fromEntries(target.changedFields!.map(field => [field, record[field]]));
+  const expectedDigest = inverse ? target.rollbackFieldsSha256 : target.desiredFieldsSha256;
+  if (await sha256(patch) !== expectedDigest) return errorResult("Contact title bytes differ from the frozen approved operation.", 403);
+  const warnings: string[] = [];
+  const common = { ok: true, dry_run: mode === "dry-run", content_type: "site_page", action: "update", operation,
+    slug: "contact", existing_id: target.id, status: "published", warnings, auth_mode: context.authMode || "admin" };
+  if (mode === "dry-run") return { body: { ...common, payload_preview: patch, performed_write: false } };
+  if (!cleanText(input.approvalId, 180)) return errorResult("Contact title publication requires approvalId.", 403);
+  const denied = await beginManagedCmsWrite(input, client, context, target, existing, target.slug, patch, expected, patch);
+  if (denied) return denied;
+  let saved: ContentRow | null;
+  try { saved = await updateContentRecordAtVersion(client, "cms_pages", target.id, expected, patch); }
+  catch (error) {
+    await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, null);
+    return errorResult(error instanceof Error ? error.message : "Contact title result is unknown. Read back before retrying.", 500, { uncertain: true });
+  }
+  if (!saved || samePgTimestamp(saved.updated_at, expected) || !samePgTimestamp(saved.updated_at, String(saved.updated_at || ""))
+      || !Number.isSafeInteger(saved.version) || Number(saved.version) < Number(existing.version)
+      || Object.keys(saved).length !== projection.length || projection.some(field => saved[field] === undefined)
+      || await sha256(Object.fromEntries(target.changedFields!.map(field => [field, saved[field]]))) !== expectedDigest
+      || await sha256(Object.fromEntries(target.retainedProjectionFields!.map(field => [field, saved[field]]))) !== target.retainedFieldsSha256) {
+    await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, null);
+    return errorResult("Contact title Saved/CAS/protected-field readback is unconfirmed. Reconcile before retrying.", 409, { uncertain: true });
+  }
+  if (!await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, saved)) {
+    return errorResult("Contact titles were Saved but permit completion is unknown. Read back before retrying.", 409,
+      { uncertain: true, saved_id: saved.id, saved_updated_at: saved.updated_at });
+  }
+  try { await insertAdminAuditLog(client, { adminUserId: context.adminUserId || null, action: "update", tableName: "cms_pages",
+    recordId: target.id, oldValue: existing, newValue: saved }); } catch { warnings.push("Contact title audit log could not be confirmed."); }
+  return { body: { ...common, performed_write: true, saved_id: saved.id, saved_updated_at: saved.updated_at, saved_version: saved.version } };
+}
+
 function isBlankMalayValue(value: unknown): boolean {
   if (value === null || value === undefined) return true;
   if (typeof value === "string") return value.trim().length === 0;
@@ -2037,6 +2106,10 @@ export async function publishContent(
   }
   const selection = input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined);
   const exact = selection ? findManagedTarget(MANAGED_TARGETS, String(input.record.id || ""), managedRecordKey(input), selection) : undefined;
+  const exactContactRow = input.contentType === "site_page" && CONTACT_CMS_PAGE_TITLE_TARGETS.some(target => target.id === String(input.record?.id || "").toLowerCase());
+  if (exactContactRow && !CONTACT_CMS_PAGE_TITLE_TARGETS.some(target => target === exact)) {
+    return errorResult("This CMS Contact page requires its exact registered three-title tuple.", 403);
+  }
   const newManagedRow = ORG020_V7_TARGETS.some((target) => target.contentType === input.contentType
     && (target.id === input.record?.id || target.slug === managedRecordKey(input)));
   if (mode === "publish" && newManagedRow && !context.managedIdentity) {
@@ -2088,6 +2161,7 @@ export async function publishContent(
     return publishMalayTranslationPatch(input, client, context, mode,
       exact?.contentType === "translation_patch" ? exact : undefined);
   }
+  if (exact && CONTACT_CMS_PAGE_TITLE_TARGETS.includes(exact)) return publishExactContactTitles(input, client, context, mode, nextStatus, exact);
   if (exact && (ORG020_V7_TARGETS.includes(exact) || SHOP_OFFICE_SIX_FIELD_TARGETS.includes(exact)
       || isSparseNativeBodyPatch(exact, input.record, selection?.operation))) {
     return publishOrg020ExactPatch(input, client, context, mode, nextStatus, exact);

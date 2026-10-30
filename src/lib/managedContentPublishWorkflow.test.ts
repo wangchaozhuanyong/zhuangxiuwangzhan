@@ -282,6 +282,7 @@ describe("three locked CMS targets in the existing protected workflow", () => {
         "wardrobe15-builtin-5507da74-cms-v1",
         "english-kitchen-en2-exact-v1",
         "paid6-kitchen-content-zh-native-save-v1",
+        "contact-three-locale-title-4c328eda-cms-v1",
         "seo-cabinet-two-anchors-8520112a-v1",
         "shop-office-shop-six-v4-ba79401d2ed2-20261025-v1", "shop-office-office-six-v4-eb6eef35d390-20261025-v1",
         "paid-three-page-builtin-exact-fields-v1", "paid-three-page-kitchen-exact-fields-v1", "paid-three-page-renovation-exact-fields-v1",
