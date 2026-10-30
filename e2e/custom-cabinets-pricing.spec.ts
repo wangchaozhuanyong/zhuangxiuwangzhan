@@ -74,21 +74,15 @@ for (const lang of ['zh', 'en', 'ms'] as const) {
     await expect(page.locator('#quote-form')).toBeInViewport();
   });
 
-  test(`all four homepage prices and linked details agree ${lang}`, async ({ page }) => {
-    await page.setViewportSize({ width: lang === 'en' ? 1440 : 390, height: 1000 });
+  test(`homepage cabinet entry moves to navigation ${lang}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(`/${lang}?fc_test=1`);
-    const packages = page.locator('.home-cabinets__packages a');
-    await expect(packages).toHaveCount(4);
-    const expected = ['RM 9,574.80', 'RM 14,582.68', 'RM 16,913.39', 'RM 20,220.47'];
-    const hrefs = await packages.evaluateAll(elements => elements.map(element => element.getAttribute('href')!));
-    for (let index = 0; index < expected.length; index++) {
-      await expect(packages.nth(index).locator('[data-campaign-amount]')).toHaveText(expected[index]);
-      expect(await packages.nth(index).locator('[data-campaign-amount]').evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(24);
-    }
-    for (let index = 0; index < hrefs.length; index++) {
-      await page.goto(hrefs[index]);
-      await expect(page.getByRole('dialog').locator('[data-campaign-amount]')).toHaveText(expected[index]);
-    }
-    await page.screenshot({ path: resolve(evidence, `package-${lang}.png`) });
+    await expect(page.locator('[data-home-section="custom-cabinets"]')).toHaveCount(0);
+    await expect(page.locator('.home-cabinets__packages')).toHaveCount(0);
+    const entry = page.locator('.scheme-a-chrome__primary a[href$="/custom-cabinets"]');
+    await expect(entry).toBeVisible();
+    await entry.click();
+    await expect(page).toHaveURL(new RegExp(`/${lang}/custom-cabinets$`));
+    await expect(page.locator('.studio-card').first()).toBeVisible();
   });
 }
