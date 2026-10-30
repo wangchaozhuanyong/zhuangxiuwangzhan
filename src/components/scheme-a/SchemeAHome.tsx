@@ -1,9 +1,10 @@
-import { ArrowRight, ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
+import { ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
 import type { FocusEvent, PointerEvent } from "react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
@@ -163,7 +164,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                       <span className="scheme-a-home-furniture-entry__description">{homeFurnitureText[language].heroShopDescription}</span>
                     </span>
                     <span className="scheme-a-home-furniture-entry__action" aria-hidden="true">
-                      <span>{homeFurnitureText[language].heroShopAction}</span><ArrowRight className="scheme-a-home-furniture-entry__arrow" />
+                      <WhatsAppIcon className="scheme-a-home-furniture-entry__whatsapp" /><span>{homeFurnitureText[language].heroShopAction}</span>
                     </span>
                   </a>
                 </div>
