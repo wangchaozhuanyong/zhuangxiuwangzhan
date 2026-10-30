@@ -204,19 +204,31 @@ describe("topic-cluster Blog publish records", () => {
     const wardrobeTarget = "builtin-wardrobe-layout-content-zh-20261014-v1";
     const shopOfficeTargets = ["shop-office-shop-six-v4-ba79401d2ed2-20261025-v1", "shop-office-office-six-v4-eb6eef35d390-20261025-v1"];
     const publishTargets = [...shopOfficeTargets, wardrobeTarget, ...paidThreeTargets, ...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets, ...unifiedTargets];
+    const currentFourTargets = ["current-stage-source-21a1a1ad2a3b66a30ac7b011",
+      "current-stage-source-621f604c3a2e460c60b61438", "current-stage-source-0f31548d5b630ef286d45894",
+      "current-stage-source-18538003e7a4ec9d9c54533b"];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
-    expect(cases).toHaveLength(2);
-    expect(cases[0]).toEqual([...shopOfficeTargets, ...paidThreeTargets, ...rollbackTargets]);
-    expect(cases[1]).toEqual(publishTargets);
-    expect(cases[1]).not.toContain("malay-cms-continuation-20261019");
-    expect(cases[0]).not.toContain("content-link-repair-20261024");
+    expect(cases).toHaveLength(3);
+    expect(cases[0]).toEqual(currentFourTargets);
+    expect(cases[1]).toEqual([...shopOfficeTargets, ...paidThreeTargets, ...rollbackTargets]);
+    expect(cases[2]).toEqual(publishTargets);
+    expect(cases[2]).not.toContain("malay-cms-continuation-20261019");
     expect(cases[1]).not.toContain("content-link-repair-20261024");
+    expect(cases[2]).not.toContain("content-link-repair-20261024");
+    const currentFourGate = workflow.split('case "$PUBLISH_TARGET" in')[1].split("esac")[0];
+    expect(currentFourGate).toContain('test "$MANAGED_OPERATION" = "publish" || exit 1');
+    expect(currentFourGate).toContain('test -z "$PARENT_RUN_ID" || exit 1');
+    for (const target of currentFourTargets) {
+      expect(cases[1]).not.toContain(target);
+      expect(cases[2]).not.toContain(target);
+      expect(workflow).toContain(`          - ${target}`);
+    }
     expect(workflow).toContain('"$APPROVAL_ID" != "owner-authorized-content-link-repair-20261024"');
     expect(workflow).toContain("run: node --experimental-strip-types scripts/publish-malay-cms-continuation-20261019.mjs --mode=publish");
     for (const target of publishTargets) expect(workflow).toContain(`          - ${target}`);
-    for (const target of mediaTargets) expect(cases[0]).not.toContain(target);
-    for (const target of [wardrobeTarget, ...publisherThreeTargets, ...unifiedTargets]) expect(cases[0]).not.toContain(target);
+    for (const target of mediaTargets) expect(cases[1]).not.toContain(target);
+    for (const target of [wardrobeTarget, ...publisherThreeTargets, ...unifiedTargets]) expect(cases[1]).not.toContain(target);
     for (const targets of cases) for (const fixedBatch of ["remaining-completion-20261009", "remaining-completion-after-37893433883", "remaining-completion-after-37898568406", "remaining-completion-after-37903094390", "remaining-completion-after-38037667102", "paid-three-page-native-20261010"]) expect(targets).not.toContain(fixedBatch);
     expect(workflow).toContain('if [ "$PUBLISH_TARGET" = "remaining-completion-20261009" ]; then');
     expect(workflow).toContain('[ "$APPROVAL_ID" != "owner-authorized-remaining-completion-20261009" ]');

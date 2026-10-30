@@ -15,6 +15,7 @@ import { PAID6_KITCHEN_TARGETS } from "./paid6-kitchen-targets.ts";
 
 import { CONTACT_CMS_PAGE_TITLE_TARGETS } from "./contact-cms-page-title-targets.ts";
 export { ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS };
+import { PAID_FOUR_CURRENT_TARGETS } from "./paid-four-current-targets.ts";
 
 export type ManagedTarget = {
   id: string;
@@ -50,6 +51,7 @@ const PAID_THREE_PAGE_NATIVE_FIELDS = [
 
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
+  ...PAID_FOUR_CURRENT_TARGETS,
   ...ENGLISH_KITCHEN_EN2_TARGETS,
   ...SHOP_OFFICE_SIX_FIELD_TARGETS,
   ...NEXT8_TWO_RECORD_TARGETS,
