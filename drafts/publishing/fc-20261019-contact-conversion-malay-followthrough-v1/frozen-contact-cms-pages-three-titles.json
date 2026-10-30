@@ -1,0 +1,178 @@
+{
+  "schema": "contact-exact-cms-pages-three-title-frozen-source/v1",
+  "task_id": "fc-20261019-contact-conversion-malay-followthrough-v1",
+  "business_scope": "project:flashcast:contact-conversion-malay:20261019:v1",
+  "execution_department": "publishing",
+  "owner": "seo-content-research",
+  "code_executor": "designated-development",
+  "registration_grants_write_authority": false,
+  "current_implementation_choice": "cms_pages titles only; site_pages and sections untouched; WEB fallback five values separate",
+  "source_pins": [
+    {
+      "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/reports/contact-malay-current-remainder-20261027-v1/ACTUAL-CURRENT-CONTACT-CMS-LEGACY-SECTIONS-READONLY-v1.json",
+      "sha256": "ec28bb789990bbdb3728eb7368765b2c9412121a57a8259509f27343a95866df",
+      "size": 4949
+    },
+    {
+      "path": "/Users/wangchao/Desktop/装修公司虚拟员工/drafts/seo/fc-20261019-contact-conversion-malay-followthrough-v1/seo-content-research/resume-original-contact-malay-20261027-v1/ACTUAL-ORIGINAL-CONTACT-MALAY-OBLIGATION-AND-PUBLIC-DIFFERENCE-v1.json",
+      "sha256": "7e3b14ca87e388e07e3b0c0a6ecf79591c8427c63bc4f1093c9b44deabf721e1",
+      "size": 13909
+    }
+  ],
+  "before": {
+    "id": "4c328eda-a21d-4c34-bd5a-895d90122b23",
+    "path": "/contact",
+    "status": "published",
+    "version": 3,
+    "page_key": "contact",
+    "title_en": "Contact Us",
+    "title_ms": "Hubungi Kami",
+    "title_zh": "联系我们",
+    "created_at": "2026-05-30T06:59:02.880827+00:00",
+    "created_by": null,
+    "deleted_at": null,
+    "sort_order": 30,
+    "updated_at": "2026-10-19T13:34:37.637764+00:00",
+    "updated_by": null,
+    "published_at": "2026-05-30T06:59:02.880827+00:00",
+    "seo_title_en": "Contact FLASH CAST | Renovation Company Kuala Lumpur",
+    "seo_title_ms": "Hubungi FLASH CAST | Syarikat Ubah Suai Kuala Lumpur",
+    "seo_title_zh": "联系 FLASH CAST | 吉隆坡装修公司",
+    "seo_keywords_en": "contact renovation company KL, FLASH CAST address, renovation enquiry Kuala Lumpur",
+    "seo_keywords_ms": "hubungi syarikat pengubahsuaian KL, alamat FLASH CAST, pertanyaan pengubahsuaian Kuala Lumpur",
+    "seo_keywords_zh": "联系吉隆坡装修公司, FLASH CAST 地址, 雪兰莪装修咨询",
+    "seo_description_en": "Get in touch with FLASH CAST SDN. BHD. for your renovation project in Kuala Lumpur and Selangor.",
+    "seo_description_ms": "Hubungi FLASH CAST SDN. BHD. untuk projek pengubahsuaian anda di Kuala Lumpur dan Selangor.",
+    "seo_description_zh": "联系 FLASH CAST SDN. BHD. 咨询吉隆坡、雪兰莪与巴生谷住宅装修、商业空间、厨房、浴室、旧屋翻新和定制家具项目，获取中文沟通与免费报价建议。"
+  },
+  "desired": {
+    "title_zh": "联系 FLASH CAST",
+    "title_en": "Contact FLASH CAST",
+    "title_ms": "Hubungi FLASH CAST"
+  },
+  "runtime_target": {
+    "id": "4c328eda-a21d-4c34-bd5a-895d90122b23",
+    "slug": "contact",
+    "contentType": "site_page",
+    "table": "cms_pages",
+    "taskId": "fc-20261019-contact-conversion-malay-followthrough-v1",
+    "actionId": "contact-conversion-first-batch-content-save",
+    "candidateVersion": "contact-three-locale-title-4c328eda-cms-v1",
+    "scope": "flashcast.com.my:cms_pages:4c328eda-a21d-4c34-bd5a-895d90122b23:title_zh,title_en,title_ms",
+    "changedFields": [
+      "title_zh",
+      "title_en",
+      "title_ms"
+    ],
+    "baselineProjectionFields": [
+      "created_at",
+      "created_by",
+      "deleted_at",
+      "id",
+      "page_key",
+      "path",
+      "published_at",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_keywords_en",
+      "seo_keywords_ms",
+      "seo_keywords_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "sort_order",
+      "status",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "updated_by",
+      "version"
+    ],
+    "baselineFieldsSha256": "5517664fde299aa6c4e667f5d3bd0f13bfc8eccbe810b8bd56d5aed8aa615e27",
+    "desiredFieldsSha256": "b31fef3d37b58527d902c50f809c22d593e741999a8bb0028f2829a452633005",
+    "rollbackFieldsSha256": "5c5c6478b476604dd3683df4bae19a9b84e727fce89072e7ddbcf94835f597a1",
+    "expectedUpdatedAt": "2026-10-19T13:34:37.637764+00:00",
+    "retainedProjectionFields": [
+      "created_at",
+      "created_by",
+      "deleted_at",
+      "id",
+      "page_key",
+      "path",
+      "published_at",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_keywords_en",
+      "seo_keywords_ms",
+      "seo_keywords_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "sort_order",
+      "status",
+      "updated_by"
+    ],
+    "retainedFieldsSha256": "5ddc3d5b4bb89a6384b71043275d1c513c0f602b44244a4221b3735fce6a3089",
+    "rollbackAllowed": true,
+    "requiresParentRun": true
+  },
+  "baseline_is_future_Save_CAS": false,
+  "forward_tuple": {
+    "task_id": "fc-20261019-contact-conversion-malay-followthrough-v1",
+    "action_id": "contact-conversion-first-batch-content-save",
+    "scope": "flashcast.com.my:cms_pages:4c328eda-a21d-4c34-bd5a-895d90122b23:title_zh,title_en,title_ms",
+    "candidate_version": "contact-three-locale-title-4c328eda-cms-v1",
+    "table": "cms_pages",
+    "record_id": "4c328eda-a21d-4c34-bd5a-895d90122b23",
+    "fields": [
+      "title_zh",
+      "title_en",
+      "title_ms"
+    ],
+    "operation": "publish"
+  },
+  "conditional_inverse": {
+    "action_id": "rollback-contact-three-locale-title-4c328eda-cms-v1",
+    "candidate_version": "contact-three-locale-title-4c328eda-cms-v1-rollback-v1",
+    "requiresParentRun": true,
+    "parentPermitId": null,
+    "parentRunId": null,
+    "postSaveCAS": null,
+    "future_values_not_filled": true
+  },
+  "public_paths": [
+    {
+      "path": "/zh/contact",
+      "expected": "联系闪铸装饰 FLASH CAST | 吉隆坡装修咨询",
+      "strictMetadataTitle": true,
+      "unchanged_metadata_source": {
+        "path": "/Users/wangchao/Desktop/装修公司虚拟员工/drafts/seo/fc-20261019-contact-conversion-malay-followthrough-v1/seo-content-research/resume-original-contact-malay-20261027-v1/public-zh_contact.json",
+        "sha256": "2db65d1b1d490f1d7d9e08a2b4cfc726adfa42010abbb18245893f3a0d27932e",
+        "size": 7908
+      }
+    },
+    {
+      "path": "/en/contact",
+      "expected": "Contact FLASH CAST | Renovation Company Kuala Lumpur",
+      "strictMetadataTitle": true,
+      "unchanged_metadata_source": {
+        "path": "/Users/wangchao/Desktop/装修公司虚拟员工/drafts/seo/fc-20261019-contact-conversion-malay-followthrough-v1/seo-content-research/resume-original-contact-malay-20261027-v1/public-en_contact.json",
+        "sha256": "7347fb0f72f85d33ade2e833117a68f86237d7664eb9b77bac05afacb5f415f5",
+        "size": 7484
+      }
+    },
+    {
+      "path": "/ms/contact",
+      "expected": "Hubungi FLASH CAST | Syarikat Ubah Suai Kuala Lumpur",
+      "strictMetadataTitle": true,
+      "unchanged_metadata_source": {
+        "path": "/Users/wangchao/Desktop/装修公司虚拟员工/drafts/seo/fc-20261019-contact-conversion-malay-followthrough-v1/seo-content-research/resume-original-contact-malay-20261027-v1/public-ms_contact.json",
+        "sha256": "45018df88cbd7118d14762c0874b0db8ec800636de36da500c7039147f10a6a3",
+        "size": 7746
+      }
+    }
+  ]
+}

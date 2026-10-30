@@ -7,7 +7,7 @@ import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { translateDisplayText } from "@/i18n/displayLabels";
+import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { isRenderingConceptProject } from "@/lib/projectContentClassification";
@@ -84,7 +84,6 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
     { image: "/images/blog/editorial-concepts-20260926-v1/kitchen-cabinet-price-malaysia/kitchen-materials-hardware.webp", alt: editorial.materialsDetailAlt, label: editorial.materialsDetailLabel, disclosure: mediaCopy.materialPalette, width: 1536, height: 1024 },
     { image: "/images/services/design/material-board-v2-1200.webp", alt: editorial.materialsPaletteAlt, label: editorial.materialsPaletteLabel, disclosure: mediaCopy.materialPalette, width: 1200, height: 1200 },
   ];
-  const displayText = (value: string) => language === "zh" ? translateDisplayText(value, language) : value;
   const resolvedServices = copy.serviceFallbacks.map((fallback) => {
     const slug = fallback.path.split("/").filter(Boolean).at(-1);
     const publishedService = content?.services.find((service) => service.slug === slug);
@@ -93,8 +92,10 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
       : fallback;
   });
   const featuredProjectIsConcept = isRenderingConceptProject(featuredProject);
+  const displayProjectType = (value: string) => language === "ms"
+    ? translateProjectType(value, language) : language === "zh" ? translateDisplayText(value, language) : value;
   const projectMeta = featuredProject
-    ? [displayText(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
+    ? [displayProjectType(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
     : copy.projectFallbackMeta;
   return (
     <div className="scheme-a-home scheme-a-home--atelier scheme-a-home--editorial">
@@ -258,7 +259,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                     </span>
                     <span className="scheme-a-project__collection-copy">
                       <strong>{project.title}</strong>
-                      <small>{[displayText(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
+                      <small>{[displayProjectType(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
                     </span>
                   </LocalizedLink>
                 );

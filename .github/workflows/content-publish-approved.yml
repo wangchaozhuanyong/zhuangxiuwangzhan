@@ -19,6 +19,7 @@ on:
         type: choice
         options:
           - english-kitchen-en2-exact-v1
+          - contact-three-locale-title-4c328eda-cms-v1
           - next8-renovation-11ab9ac6-cms-v1
           - next8-design-11ab9ac6-cms-v1
           - next12-warehouse-fbe13ee7-cms-v1
@@ -27,6 +28,7 @@ on:
           - next12-artistic-coating-fbe13ee7-cms-v1
           - next12-approval-fbe13ee7-cms-v1
           - wardrobe15-builtin-5507da74-cms-v1
+          - paid6-kitchen-content-zh-native-save-v1
           - seo-cabinet-two-anchors-8520112a-v1
           - surface-repair-20260927
           - clinic-zh-copy-20261003

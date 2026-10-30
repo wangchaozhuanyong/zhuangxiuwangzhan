@@ -11,7 +11,10 @@ import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
 import { WARDROBE15_BUILTIN_TARGETS } from "./wardrobe15-builtin-targets.ts";
 import { ENGLISH_KITCHEN_EN2_TARGETS } from "./english-kitchen-en2-targets.ts";
-export { ORG020_V7_TARGETS };
+import { PAID6_KITCHEN_TARGETS } from "./paid6-kitchen-targets.ts";
+
+import { CONTACT_CMS_PAGE_TITLE_TARGETS } from "./contact-cms-page-title-targets.ts";
+export { ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS };
 
 export type ManagedTarget = {
   id: string;
@@ -52,6 +55,7 @@ export const MANAGED_SERVICES: readonly ManagedTarget[] = [
   ...NEXT8_TWO_RECORD_TARGETS,
   ...NEXT12_FIVE_RECORD_TARGETS,
   ...WARDROBE15_BUILTIN_TARGETS,
+  ...PAID6_KITCHEN_TARGETS,
   ...BUILTIN_WARDROBE_TARGETS,
   ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),
@@ -142,6 +146,7 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_TARGETS: readonly ManagedTarget[] = [
+  ...CONTACT_CMS_PAGE_TITLE_TARGETS,
   ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
 
@@ -213,5 +218,5 @@ export function isProtectedContentRecord(table: string, record: Record<string, u
   };
   return MANAGED_TARGETS.some((target) => (target.table || tables[target.contentType]) === table
     && (record.id === target.id || (Boolean(target.slug) && (record.slug === target.slug
-      || (table === "site_pages" && record.page_key === target.slug)))));
+      || ((table === "site_pages" || (table === "cms_pages" && target.contentType === "site_page")) && record.page_key === target.slug)))));
 }
