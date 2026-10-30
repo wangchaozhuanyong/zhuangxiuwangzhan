@@ -11,6 +11,7 @@ import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
 import { WARDROBE15_BUILTIN_TARGETS } from "./wardrobe15-builtin-targets.ts";
 import { ENGLISH_KITCHEN_EN2_TARGETS } from "./english-kitchen-en2-targets.ts";
+import { PAID6_KITCHEN_TARGETS } from "./paid6-kitchen-targets.ts";
 export { ORG020_V7_TARGETS };
 
 export type ManagedTarget = {
@@ -52,6 +53,7 @@ export const MANAGED_SERVICES: readonly ManagedTarget[] = [
   ...NEXT8_TWO_RECORD_TARGETS,
   ...NEXT12_FIVE_RECORD_TARGETS,
   ...WARDROBE15_BUILTIN_TARGETS,
+  ...PAID6_KITCHEN_TARGETS,
   ...BUILTIN_WARDROBE_TARGETS,
   ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),

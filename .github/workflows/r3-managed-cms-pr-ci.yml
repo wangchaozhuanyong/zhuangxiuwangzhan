@@ -101,6 +101,10 @@ on:
       - supabase/functions/_shared/wardrobe15-builtin-targets.ts
       - drafts/publishing/fc-20261015-industry-keywords-site-coverage-plan-v1/frozen-wardrobe15-single-row-candidate.json
       - src/lib/contentPublishWardrobe15Builtin.test.ts
+      - scripts/managed-cms-targets-paid6-kitchen-v1.mjs
+      - supabase/functions/_shared/paid6-kitchen-targets.ts
+      - drafts/publishing/fc-20261017-six-keyword-matching-original-resume-v1/frozen-paid6-kitchen-channel-source.json
+      - src/lib/contentPublishPaid6Kitchen.test.ts
       - scripts/managed-cms-targets-seo-cabinet-two-anchors-v1.mjs
       - src/lib/contentPublishSeoCabinetTwoAnchors.test.ts
       - scripts/publish-malay-cms-single-target.mjs
@@ -203,6 +207,7 @@ jobs:
             src/lib/contentPublishNext12FiveRecord.test.ts \
             src/lib/contentPublishWardrobe15Builtin.test.ts \
             src/lib/contentPublishEnglishKitchenEn2.test.ts \
+            src/lib/contentPublishPaid6Kitchen.test.ts \
             src/lib/contentPublishSeoCabinetTwoAnchors.test.ts \
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \
