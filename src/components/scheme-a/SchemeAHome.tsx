@@ -4,7 +4,6 @@ import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
@@ -15,7 +14,6 @@ import { resolveSchemeAHomePresentation } from "@/lib/schemeAHomePresentation";
 import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
 import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import SchemeAHomeRenovation from "@/components/scheme-a/SchemeAHomeRenovation";
-import SchemeAHomeCabinets from "@/components/scheme-a/SchemeAHomeCabinets";
 import SchemeAHomeFurniture from "@/components/scheme-a/SchemeAHomeFurniture";
 import { HomeJournal, HomeServiceAreas } from "@/components/scheme-a/SchemeAHomeDiscovery";
 import { homeEditorialText } from "@/i18n/homeEditorialText";
@@ -23,7 +21,7 @@ import { mediaLabels } from "@/i18n/mediaLabels";
 import { trackCtaClick } from "@/lib/analytics";
 import PhotoEnquiryLink from "@/components/PhotoEnquiryLink";
 import { homeFurnitureText } from "@/i18n/homeFurnitureText";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
 import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHomeSections";
 
 type SchemeAHomeProps = {
@@ -53,7 +51,6 @@ const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
-  const settings = useSiteSettings();
   const copy = schemeAHomeText[language];
   const editorial = homeEditorialText[language];
   const mediaCopy = mediaLabels[language];
@@ -154,9 +151,9 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                 </div>
                 <div className="scheme-a-home-furniture-entry">
                   <a className="scheme-a-home-furniture-entry__card"
-                    href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer"
+                    href={furnitureShopUrl} target="_blank" rel="noopener noreferrer"
                     aria-label={homeFurnitureText[language].heroShopLabel}
-                    onClick={() => trackCtaClick("whatsapp", "home_hero_furniture_perks", { destination: "whatsapp" })}>
+                    onClick={() => trackCtaClick("furniture_shop", "home_hero_furniture_perks", { destination: furnitureShopUrl })}>
                     <span className="scheme-a-home-furniture-entry__icon" aria-hidden="true">
                       <SmartImage src="/images/heroes/v20260930/furniture-showcase.webp" alt="" width={48} height={48} sizes="48px" candidateWidths={[360]} sourceWidth={1536} loading="eager" />
                     </span>
@@ -165,7 +162,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                       <span className="scheme-a-home-furniture-entry__description">{homeFurnitureText[language].heroShopDescription}</span>
                     </span>
                     <span className="scheme-a-home-furniture-entry__action" aria-hidden="true">
-                      <WhatsAppIcon className="scheme-a-home-furniture-entry__whatsapp" /><span>{homeFurnitureText[language].heroShopAction}</span>
+                      <ArrowUpRight size={16} /><span>{homeFurnitureText[language].heroShopAction}</span>
                     </span>
                   </a>
                 </div>
@@ -175,7 +172,6 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
         </div>
       </ImmersiveHero>
 
-      <SchemeAHomeCabinets />
 
       <section className="scheme-a-project" data-home-section="projects" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-section-head">

@@ -103,7 +103,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(heroLinks[1]).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
     expect(heroLinks[1]).toHaveAttribute("href", `/${language}/projects`);
     expect(heroLinks[1]).toHaveClass("scheme-a-button--glass");
-    expect(heroLinks[2]).toHaveAttribute("href", state.whatsappHref);
+    expect(heroLinks[2]).toHaveAttribute("href", "https://shop.flashcast.com.my/");
     expect(heroLinks[2]).toHaveAttribute("target", "_blank");
     expect(heroLinks[2]).toHaveAttribute("rel", "noopener noreferrer");
     expect(heroLinks[2]).toHaveAttribute("aria-label", homeFurnitureText[language].heroShopLabel);
@@ -120,7 +120,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     state.whatsappHref = "https://wa.me/601100000001?text=Updated%20message";
     render({ ...content, heroSlides: [{ ...content.heroSlides[0], buttonUrl: "/contact" }] });
     expect(container.querySelector('[data-home-section="hero"] a[target="_blank"]')).toHaveAttribute("href", state.whatsappHref);
-    expect(container.querySelector(".scheme-a-home-furniture-entry__card")).toHaveAttribute("href", state.whatsappHref);
+    expect(container.querySelector(".scheme-a-home-furniture-entry__card")).toHaveAttribute("href", "https://shop.flashcast.com.my/");
     expect(container.querySelector(`[data-home-section="hero"] a[href="/${language}/contact"]`)).toBeNull();
   });
 
