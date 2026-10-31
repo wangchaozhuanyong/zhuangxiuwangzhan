@@ -137,3 +137,18 @@ test("navigation adapts to enlarged text and changing labels without losing menu
   await expect(page.locator(".scheme-a-directory")).toHaveAttribute("data-state", "closed");
   await expect(enlargedTextTrigger).toBeFocused();
 });
+
+test("compact navigation stays usable when its optional layout module cannot load", async ({ page }) => {
+  await page.route("**/*schemeANavigationLayout*", (route) => route.abort());
+  await page.setViewportSize({ width: 1920, height: 900 });
+  await ready(page, "/zh/services");
+  const trigger = page.locator(".scheme-a-chrome__menu-trigger--compact");
+  await expect(page.locator(".scheme-a-chrome__primary")).toBeHidden();
+  await expect(trigger).toBeVisible();
+  await expect.poll(() => layoutProblems(page)).toEqual([]);
+  await trigger.click();
+  await expect(page.locator(".scheme-a-directory")).toHaveAttribute("data-state", "open");
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".scheme-a-directory")).toHaveAttribute("data-state", "closed");
+  await expect(trigger).toBeFocused();
+});
