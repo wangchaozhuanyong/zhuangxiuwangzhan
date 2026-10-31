@@ -50,7 +50,7 @@ import { getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } fro
 import { stripLanguagePrefix, type Language } from "@/i18n/routes";
 import { languageTag } from "@/i18n/languageDetection";
 import { trackCtaClick } from "@/lib/analytics";
-import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
+import type { RgbColor } from "@/lib/colorContrast";
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
 import { QUOTE_FORM_PATH } from "@/lib/quoteFormTarget";
 import { isSafeContentUrl } from "@/lib/safeContentUrl";
@@ -218,123 +218,145 @@ export const SchemeANavbar = () => {
 
   useLayoutEffect(() => {
     const header = headerRef.current;
+    if (!header) return;
+    header.setAttribute("data-navigation-compact", "");
+    let cancelled = false;
+    let dispose: (() => void) | undefined;
+    void import("./schemeANavigationLayout").then(({ observeSchemeANavigationLayout }) => {
+      if (!cancelled) dispose = observeSchemeANavigationLayout(header, desktopTriggerRef.current, compactTriggerRef.current);
+    }).catch(() => {
+      // The compact menu remains usable if its layout enhancement cannot load.
+    });
+    return () => { cancelled = true; dispose?.(); };
+  }, [language, logo, headerBrandName]);
+
+  useLayoutEffect(() => {
+    const header = headerRef.current;
     const main = document.getElementById("main-content");
     if (!overlay || !header || !main || window.matchMedia("(forced-colors: active)").matches) return;
-    const targets = Array.from(header.querySelectorAll<HTMLElement>(
-      ".scheme-a-chrome__brand",
-    ));
-    const preferred = getComputedStyle(header).color;
-    const previous = new Map<HTMLElement, string>();
-    const pixels = new WeakMap<HTMLImageElement, { source: string; data: ImageData | null }>();
-    const imageStyles = new WeakMap<HTMLImageElement, { objectFit: string; objectPosition: string }>();
-    const targetBackgrounds = new WeakMap<HTMLElement, RgbColor | null>();
-    let frame = 0;
-    let disposed = false;
-    const clear = (target: HTMLElement) => {
-      delete target.dataset.headerContrast;
-      delete target.dataset.headerOutline;
-      previous.delete(target);
-    };
-    const readPixels = (img: HTMLImageElement) => {
-      const source = `${img.currentSrc}:${img.naturalWidth}:${img.naturalHeight}`;
-      const cached = pixels.get(img);
-      if (cached?.source === source) return cached.data;
-      let data: ImageData | null = null;
-      try {
-        // Sample an already decoded image; no extra request or full-size canvas.
-        const canvas = document.createElement("canvas");
-        const scale = Math.min(1, 256 / Math.max(img.naturalWidth, img.naturalHeight));
-        canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
-        canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
-        const context = canvas.getContext("2d", { willReadFrequently: true });
-        if (context) {
-          context.drawImage(img, 0, 0, canvas.width, canvas.height);
-          data = context.getImageData(0, 0, canvas.width, canvas.height);
-        }
-      } catch {
-        // Cross-origin or unavailable logo pixels keep the authored color plus a glyph outline.
-      }
-      pixels.set(img, { source, data });
-      return data;
-    };
-    const update = () => {
-      frame = 0;
-      if (disposed) return;
-      const images = Array.from(main.querySelectorAll<HTMLImageElement>(
-        '[data-immersive-hero="true"] img:not(.smart-image-previous)',
-      )).filter((img) => img.complete && img.naturalWidth > 0 && getComputedStyle(img).visibility !== "hidden");
-      targets.forEach((target) => {
-        if (!target.getClientRects().length) { clear(target); return; }
-        const label = target.querySelector<HTMLElement>("img, span") || target;
-        const rect = label.getBoundingClientRect();
-        if (!rect.width || !rect.height) { clear(target); return; }
-        // Standard split heroes sit below the header and keep the regular skin color.
-        const img = images.find((candidate) => {
-          const box = candidate.getBoundingClientRect();
-          return rect.left >= box.left && rect.right <= box.right && rect.top >= box.top && rect.bottom <= box.bottom;
-        });
-        if (!img) { clear(target); return; }
-        const box = img.getBoundingClientRect();
-        let imageStyle = imageStyles.get(img);
-        if (!imageStyle) {
-          const computed = getComputedStyle(img);
-          imageStyle = { objectFit: computed.objectFit, objectPosition: computed.objectPosition };
-          imageStyles.set(img, imageStyle);
-        }
-        let background = targetBackgrounds.get(target);
-        if (background === undefined) {
-          background = parseCssColor(getComputedStyle(target).backgroundColor);
-          targetBackgrounds.set(target, background);
-        }
-        const data = readPixels(img);
-        const samples: (RgbColor | null)[] = [];
-        for (const x of [0.15, 0.5, 0.85]) {
-          for (const y of [0.2, 0.5, 0.8]) {
-            const point = getImageSourcePoint({
-              width: box.width, height: box.height, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight,
-              fit: imageStyle.objectFit, position: imageStyle.objectPosition,
-            }, rect.left + rect.width * x - box.left, rect.top + rect.height * y - box.top);
-            if (!data || !point) { samples.push(null); continue; }
-            const column = Math.min(data.width - 1, Math.floor(point.x / img.naturalWidth * data.width));
-            const row = Math.min(data.height - 1, Math.floor(point.y / img.naturalHeight * data.height));
-            const offset = (row * data.width + column) * 4;
-            const pixel = { r: data.data[offset], g: data.data[offset + 1], b: data.data[offset + 2], a: data.data[offset + 3] / 255 };
-            samples.push(background ? compositeColors(background, pixel) : null);
+    let cancelled = false;
+    let dispose: (() => void) | undefined;
+    void import("@/lib/colorContrast").then(({ chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor }) => {
+      if (cancelled) return;
+      const targets = Array.from(header.querySelectorAll<HTMLElement>(
+        ".scheme-a-chrome__brand",
+      ));
+      const preferred = getComputedStyle(header).color;
+      const previous = new Map<HTMLElement, string>();
+      const pixels = new WeakMap<HTMLImageElement, { source: string; data: ImageData | null }>();
+      const imageStyles = new WeakMap<HTMLImageElement, { objectFit: string; objectPosition: string }>();
+      const targetBackgrounds = new WeakMap<HTMLElement, RgbColor | null>();
+      let frame = 0;
+      let disposed = false;
+      const clear = (target: HTMLElement) => {
+        delete target.dataset.headerContrast;
+        delete target.dataset.headerOutline;
+        previous.delete(target);
+      };
+      const readPixels = (img: HTMLImageElement) => {
+        const source = `${img.currentSrc}:${img.naturalWidth}:${img.naturalHeight}`;
+        const cached = pixels.get(img);
+        if (cached?.source === source) return cached.data;
+        let data: ImageData | null = null;
+        try {
+          // Sample an already decoded image; no extra request or full-size canvas.
+          const canvas = document.createElement("canvas");
+          const scale = Math.min(1, 256 / Math.max(img.naturalWidth, img.naturalHeight));
+          canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+          const context = canvas.getContext("2d", { willReadFrequently: true });
+          if (context) {
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            data = context.getImageData(0, 0, canvas.width, canvas.height);
           }
+        } catch {
+          // Cross-origin or unavailable logo pixels keep the authored color plus a glyph outline.
         }
-        const result = chooseAdaptiveTextColor(samples, preferred, previous.get(target));
-        previous.set(target, result.color);
-        if (result.color === "#ffffff") target.dataset.headerContrast = "light";
-        else if (result.color === "#000000") target.dataset.headerContrast = "dark";
-        else delete target.dataset.headerContrast;
-        if (result.outline) target.dataset.headerOutline = "true";
-        else delete target.dataset.headerOutline;
-      });
-    };
-    const schedule = () => {
-      if (!disposed && !frame) frame = window.requestAnimationFrame(update);
-    };
-    const observer = new MutationObserver(schedule);
-    observer.observe(main, { subtree: true, childList: true, attributes: true, attributeFilter: ["src", "srcset", "data-image-state"] });
-    const resizeObserver = new ResizeObserver(schedule);
-    targets.forEach((target) => resizeObserver.observe(target));
-    main.addEventListener("load", schedule, true);
-    main.addEventListener("error", schedule, true);
-    window.addEventListener("resize", schedule, { passive: true });
-    window.addEventListener("scroll", schedule, { passive: true });
-    void document.fonts.ready.then(schedule);
-    update();
-    return () => {
-      disposed = true;
-      window.cancelAnimationFrame(frame);
-      observer.disconnect();
-      resizeObserver.disconnect();
-      main.removeEventListener("load", schedule, true);
-      main.removeEventListener("error", schedule, true);
-      window.removeEventListener("resize", schedule);
-      window.removeEventListener("scroll", schedule);
-      targets.forEach(clear);
-    };
+        pixels.set(img, { source, data });
+        return data;
+      };
+      const update = () => {
+        frame = 0;
+        if (disposed) return;
+        const images = Array.from(main.querySelectorAll<HTMLImageElement>(
+          '[data-immersive-hero="true"] img:not(.smart-image-previous)',
+        )).filter((img) => img.complete && img.naturalWidth > 0 && getComputedStyle(img).visibility !== "hidden");
+        targets.forEach((target) => {
+          if (!target.getClientRects().length) { clear(target); return; }
+          const label = target.querySelector<HTMLElement>("img, span") || target;
+          const rect = label.getBoundingClientRect();
+          if (!rect.width || !rect.height) { clear(target); return; }
+          // Standard split heroes sit below the header and keep the regular skin color.
+          const img = images.find((candidate) => {
+            const box = candidate.getBoundingClientRect();
+            return rect.left >= box.left && rect.right <= box.right && rect.top >= box.top && rect.bottom <= box.bottom;
+          });
+          if (!img) { clear(target); return; }
+          const box = img.getBoundingClientRect();
+          let imageStyle = imageStyles.get(img);
+          if (!imageStyle) {
+            const computed = getComputedStyle(img);
+            imageStyle = { objectFit: computed.objectFit, objectPosition: computed.objectPosition };
+            imageStyles.set(img, imageStyle);
+          }
+          let background = targetBackgrounds.get(target);
+          if (background === undefined) {
+            background = parseCssColor(getComputedStyle(target).backgroundColor);
+            targetBackgrounds.set(target, background);
+          }
+          const data = readPixels(img);
+          const samples: (RgbColor | null)[] = [];
+          for (const x of [0.15, 0.5, 0.85]) {
+            for (const y of [0.2, 0.5, 0.8]) {
+              const point = getImageSourcePoint({
+                width: box.width, height: box.height, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight,
+                fit: imageStyle.objectFit, position: imageStyle.objectPosition,
+              }, rect.left + rect.width * x - box.left, rect.top + rect.height * y - box.top);
+              if (!data || !point) { samples.push(null); continue; }
+              const column = Math.min(data.width - 1, Math.floor(point.x / img.naturalWidth * data.width));
+              const row = Math.min(data.height - 1, Math.floor(point.y / img.naturalHeight * data.height));
+              const offset = (row * data.width + column) * 4;
+              const pixel = { r: data.data[offset], g: data.data[offset + 1], b: data.data[offset + 2], a: data.data[offset + 3] / 255 };
+              samples.push(background ? compositeColors(background, pixel) : null);
+            }
+          }
+          const result = chooseAdaptiveTextColor(samples, preferred, previous.get(target));
+          previous.set(target, result.color);
+          if (result.color === "#ffffff") target.dataset.headerContrast = "light";
+          else if (result.color === "#000000") target.dataset.headerContrast = "dark";
+          else delete target.dataset.headerContrast;
+          if (result.outline) target.dataset.headerOutline = "true";
+          else delete target.dataset.headerOutline;
+        });
+      };
+      const schedule = () => {
+        if (!disposed && !frame) frame = window.requestAnimationFrame(update);
+      };
+      const observer = new MutationObserver(schedule);
+      observer.observe(main, { subtree: true, childList: true, attributes: true, attributeFilter: ["src", "srcset", "data-image-state"] });
+      const resizeObserver = new ResizeObserver(schedule);
+      targets.forEach((target) => resizeObserver.observe(target));
+      main.addEventListener("load", schedule, true);
+      main.addEventListener("error", schedule, true);
+      window.addEventListener("resize", schedule, { passive: true });
+      window.addEventListener("scroll", schedule, { passive: true });
+      void document.fonts.ready.then(schedule);
+      update();
+      dispose = () => {
+        disposed = true;
+        window.cancelAnimationFrame(frame);
+        observer.disconnect();
+        resizeObserver.disconnect();
+        main.removeEventListener("load", schedule, true);
+        main.removeEventListener("error", schedule, true);
+        window.removeEventListener("resize", schedule);
+        window.removeEventListener("scroll", schedule);
+        targets.forEach(clear);
+      };
+    }).catch(() => {
+      // Preserve the authored header skin when optional image sampling cannot load.
+    });
+    return () => { cancelled = true; dispose?.(); };
   }, [overlay, location.pathname, language]);
 
   useEffect(() => {
