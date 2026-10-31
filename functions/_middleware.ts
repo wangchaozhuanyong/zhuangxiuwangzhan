@@ -33,7 +33,7 @@ import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { stripHtml } from "../src/lib/text";
 import { getSocialProfileUrls } from "../src/lib/socialProfiles";
-import { getPublicSiteName, getPublicBrandAliases, getChineseBrandLine, withChineseBrandMetadata } from "../src/i18n/brandIdentity";
+import { getPublicSiteName, getPublicBrandAliases, getChineseBrandLine, getChineseBrandAssociation, withChineseBrandMetadata } from "../src/i18n/brandIdentity";
 import {
   PUBLIC_LANGUAGE_COOKIE,
   readCookieValue,
@@ -1826,7 +1826,12 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
   out = injectHeadIcons(out, favicon, touchIcon);
   out = injectEdgeStructuredData(out, safeMeta, siteSettings);
-  out = injectGeoSummary(out, safeMeta, readableBody, getChineseBrandLine(siteSettings, meta.lang), dynamicRouteState);
+  const brandSummary = [
+    getChineseBrandLine(siteSettings, meta.lang),
+    /^\/zh(?:\/about)?$/.test(new URL(safeMeta.canonical).pathname)
+      ? getChineseBrandAssociation(siteSettings, meta.lang) : null,
+  ].filter(Boolean).join(" ");
+  out = injectGeoSummary(out, safeMeta, readableBody, brandSummary, dynamicRouteState);
 
   return out;
 };
