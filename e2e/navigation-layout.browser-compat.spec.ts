@@ -117,6 +117,14 @@ test("navigation adapts to enlarged text and changing labels without losing menu
   await expect(navigation).toBeVisible();
   await expect(desktopTrigger).toBeFocused();
 
+  await page.locator(".scheme-a-chrome__quote").focus();
+  await firstLink.evaluate((element) => { element.textContent = "Laman utama ".repeat(15); });
+  await expect(compactTrigger).toBeVisible();
+  await expect(compactTrigger).toBeFocused();
+  await firstLink.evaluate((element, label) => { element.textContent = label; }, originalLabel);
+  await expect(navigation).toBeVisible();
+  await expect(desktopTrigger).toBeFocused();
+
   await page.setViewportSize({ width: 1180, height: 900 });
   await page.addStyleTag({ content: ".scheme-a-chrome__primary a, .scheme-a-chrome__nav-more { font-size: 20px !important; }" });
   await expect.poll(() => layoutProblems(page)).toEqual([]);

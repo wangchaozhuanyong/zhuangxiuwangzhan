@@ -245,7 +245,7 @@ export const SchemeANavbar = () => {
       }
       // A resize or language switch must not leave keyboard focus on a hidden trigger.
       if (active instanceof HTMLElement && !active.getClientRects().length) {
-        if (navigation.contains(active)) compactTriggerRef.current?.focus({ preventScroll: true });
+        if (navigation.contains(active) || active.matches(".scheme-a-chrome__quote")) compactTriggerRef.current?.focus({ preventScroll: true });
         else if (active === compactTriggerRef.current) desktopTriggerRef.current?.focus({ preventScroll: true });
       }
     };
@@ -270,7 +270,6 @@ export const SchemeANavbar = () => {
       header.removeAttribute("data-navigation-compact");
     };
   }, [language, logo, headerBrandName]);
-
 
   useLayoutEffect(() => {
     const header = headerRef.current;
