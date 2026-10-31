@@ -9,10 +9,13 @@ import { homeFurnitureText } from "@/i18n/homeFurnitureText";
 import { loadMalayContent } from "@/i18n/malayContentRuntime";
 import { mapPublishedProjectSummary } from "@/lib/contentApi";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { getChineseBrandAssociation } from "@/i18n/brandIdentity";
+import { schemeAHomeText } from "@/i18n/schemeAText";
 
 const state = vi.hoisted(() => ({
   language: "en" as "en" | "zh" | "ms",
   whatsappHref: "https://wa.me/601100000000?text=Configured%20message",
+  companyName: "FLASH CAST SDN. BHD.",
   query: { data: [], isLoading: false, isFetching: false, isInitialError: false, refetch: vi.fn() },
 }));
 
@@ -24,7 +27,7 @@ vi.mock("@/hooks/usePublishedContent", () => ({
 }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: state.language }) }));
 vi.mock("@/hooks/useSiteSettings", () => ({
-  useSiteSettings: () => ({ whatsapp_url: () => state.whatsappHref }),
+  useSiteSettings: () => ({ company_name: state.companyName, whatsapp_url: () => state.whatsappHref }),
 }));
 
 // Match the existing presentation tests' complete bundle shape so omissions do
@@ -68,6 +71,7 @@ describe("SchemeAHome composed CMS behavior", () => {
 
   beforeEach(() => {
     state.language = "en";
+    state.companyName = "FLASH CAST SDN. BHD.";
     state.whatsappHref = "https://wa.me/601100000000?text=Configured%20message";
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -77,6 +81,32 @@ describe("SchemeAHome composed CMS behavior", () => {
   afterEach(() => {
     act(() => root.unmount());
     container.remove();
+  });
+
+  it("adds the existing Chinese association once inside the current introduction without replacing the heading or copy", () => {
+    state.language = "zh";
+    render(bundle());
+    const association = getChineseBrandAssociation(undefined, "zh")!;
+    const summary = container.querySelector(".scheme-a-home-summary__description");
+    expect(summary?.textContent).toBe(`${schemeAHomeText.zh.summaryDescription} ${association}`);
+    expect(container.textContent?.split(association)).toHaveLength(2);
+    expect(container.querySelector("h1")?.textContent).toBe(`${schemeAHomeText.zh.heroTitle} ${schemeAHomeText.zh.heroTitleAccent}`);
+    expect(container.querySelectorAll('[data-home-section="summary"]')).toHaveLength(1);
+  });
+
+  it.each(["en", "ms"] as const)("preserves the original %s introduction without the new Chinese association", language => {
+    state.language = language;
+    render(bundle());
+    expect(container.querySelector(".scheme-a-home-summary__description")?.textContent).toBe(schemeAHomeText[language].summaryDescription);
+    expect(container.textContent).not.toContain(getChineseBrandAssociation(undefined, "zh"));
+  });
+
+  it("does not attach the association to another configured company", () => {
+    state.language = "zh";
+    state.companyName = "Other Company Sdn. Bhd.";
+    render(bundle());
+    expect(container.querySelector(".scheme-a-home-summary__description")?.textContent).toBe(schemeAHomeText.zh.summaryDescription);
+    expect(container.textContent).not.toContain(getChineseBrandAssociation(undefined, "zh"));
   });
 
   it.each(["zh", "en"] as const)("preserves the custom CMS hero and all original service paths in %s", (language) => {

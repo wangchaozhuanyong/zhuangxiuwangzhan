@@ -6,6 +6,8 @@ import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { getChineseBrandAssociation } from "@/i18n/brandIdentity";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
@@ -51,6 +53,7 @@ const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const copy = schemeAHomeText[language];
   const editorial = homeEditorialText[language];
   const mediaCopy = mediaLabels[language];
@@ -274,7 +277,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
             <h2 id="scheme-a-home-summary-title">
               <span>{copy.summaryTitle}</span>{" "}<span>{copy.summaryTitleAccent}</span>
             </h2>
-            <p className="scheme-a-home-summary__description">{copy.summaryDescription}</p>
+            <p className="scheme-a-home-summary__description">{[copy.summaryDescription, getChineseBrandAssociation(settings, language)].filter(Boolean).join(" ")}</p>
           </header>
           {presentation.stats.length > 0 && (
             <div className="scheme-a-home-summary__metrics" role="list" data-content-source={presentation.statsSource} aria-label={copy.summaryCardsLabel}>
