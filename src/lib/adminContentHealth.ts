@@ -172,6 +172,29 @@ const healthSelectFields = (source: HealthSource) => {
   return Array.from(fields).join(",");
 };
 
+// These built-in routes render their body from lists, forms or dedicated
+// sections, and provide localized introductory copy. Keep this explicit:
+// unfamiliar/dynamic page paths must still be checked for real English gaps.
+const builtInOptionalEnglishPaths = new Set([
+  "/", "/blog", "/faq", "/services", "/quote", "/projects",
+  "/materials", "/process", "/contact", "/locations", "/promotions",
+]);
+
+const sitePagePath = (row: Record<string, unknown>) => {
+  const savedPath = String(row.path || "").trim();
+  const path = savedPath || (row.page_key === "home" ? "/" : row.page_key ? `/${String(row.page_key)}` : "");
+  return path.split(/[?#]/)[0].replace(/^\/(?:en|zh|ms)(?=\/|$)/, "").replace(/\/+$/, "") || (path ? "/" : "");
+};
+
+const englishFieldsForRow = (source: HealthSource, row: Record<string, unknown>) => {
+  if (source.table !== "site_pages") return source.englishFields;
+  const path = sitePagePath(row);
+  if (path === "/products") return source.englishFields.filter((field) => field === "title_en");
+  return builtInOptionalEnglishPaths.has(path)
+    ? source.englishFields.filter((field) => field !== "description_en" && field !== "content_en")
+    : source.englishFields;
+};
+
 const formatAdminContentHealthText = (text: string, values: Record<string, string | number>) =>
   text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 
@@ -207,6 +230,7 @@ export type AdminContentHealthItem = {
   missingSeo: string[];
   missingMedia: string[];
   issues: string[];
+  notice?: string;
 };
 
 const buildEditHref = (source: HealthSource, row: Record<string, unknown>) => {
@@ -234,11 +258,12 @@ const buildFrontHref = (source: HealthSource, row: Record<string, unknown>) => {
 const buildHealthItem = (source: HealthSource, row: Record<string, unknown>, language: AdminLang): AdminContentHealthItem => {
   const text = adminContentHealthCoreText[language];
   const title = source.titleFields.map((field) => row[field]).find((value) => !isBlankAdminValue(value));
-  const missingRequired = source.requiredFields.filter((field) => isBlankAdminValue(row[field]));
-  const missingEnglish = source.englishFields.filter((field) => isBlankAdminValue(row[field]));
-  const missingSeo = source.seoFields.filter((field) => isBlankAdminValue(row[field]));
+  const readFailed = row.status === "error";
+  const missingRequired = readFailed ? [] : source.requiredFields.filter((field) => isBlankAdminValue(row[field]));
+  const missingEnglish = readFailed ? [] : englishFieldsForRow(source, row).filter((field) => isBlankAdminValue(row[field]));
+  const missingSeo = readFailed ? [] : source.seoFields.filter((field) => isBlankAdminValue(row[field]));
   const missingMedia =
-    source.imageFields.length > 0 && source.imageFields.every((field) => isBlankAdminValue(row[field]))
+    !readFailed && source.imageFields.length > 0 && source.imageFields.every((field) => isBlankAdminValue(row[field]))
       ? source.imageFields
       : [];
   const issues = [
@@ -262,6 +287,11 @@ const buildHealthItem = (source: HealthSource, row: Record<string, unknown>, lan
     missingSeo,
     missingMedia,
     issues,
+    ...(!readFailed && source.table === "site_pages" && sitePagePath(row) === "/products"
+      ? { notice: text.redirectRecord }
+      : !readFailed && source.table === "site_pages" && builtInOptionalEnglishPaths.has(sitePagePath(row))
+        ? { notice: text.builtInEnglishFields }
+        : {}),
   };
 };
 

@@ -13,6 +13,7 @@ import { adminLeadReportsText } from "@/i18n/adminLeadReportsText";
 import { adminUsersText } from "@/i18n/adminUsersText";
 import { adminCmsBuilderText } from "@/i18n/adminCmsBuilderText";
 import { adminDashboardText } from "@/i18n/adminDashboardText";
+import { adminPublishCenterText } from "@/i18n/adminPublishCenterText";
 import { interactionText } from "@/i18n/interactionText";
 import AdminSimpleCms from "./AdminSimpleCms";
 import AdminEnglishCenter from "./AdminEnglishCenter";
@@ -20,6 +21,7 @@ import AdminLeadReports from "./AdminLeadReports";
 import AdminUsers from "./AdminUsers";
 import AdminCmsBuilder from "./AdminCmsBuilder";
 import AdminDashboard from "./AdminDashboard";
+import AdminPublishCenter from "./AdminPublishCenter";
 
 // The components, observers, service composition, forms, permissions and shared
 // recovery feedback are real. Repository reads and the Auth-context fixture are
@@ -192,6 +194,69 @@ describe("independent English and source-level health confirmation", () => {
     await act(async () => { void client.invalidateQueries({ queryKey: healthKey }); }); await settle();
     expect(client.getQueryState(healthKey)?.fetchStatus).toBe("paused"); expect(cardValue(adminDashboardText.contentHealth.zh)).toBe("0");
     expect(cardValue(adminDashboardText.publishCenter.zh)).toBe("0"); expect(client.getQueryData(["admin", "dashboard", "stats"])).toMatchObject({ counts: { todayLeads: 7 } });
+  });
+});
+
+describe("direct content-health consumers share active-record and source-error rules", () => {
+  const currentProject = { id: "current-project", title_zh: "当前缺英文案例", status: "draft" };
+  const archivedProject = { id: "archived-project", title_zh: "归档缺英文案例", status: "archived" };
+
+  it("Dashboard excludes archived gaps from active content and English counters", async () => {
+    reads.health.mockImplementation(async (table: string) => table === "projects" ? [currentProject, archivedProject] : []);
+    await mount(<AdminDashboard />);
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 930)); }); await settle();
+    expect(cardValue(adminDashboardText.contentHealth.zh)).toBe("1");
+    expect(cardValue(adminDashboardText.englishCenter.zh)).toBe("1");
+    expect(cardValue(adminDashboardText.publishCenter.zh)).toBe("1");
+  });
+
+  it("English Center excludes archived records from the list and actual batch targets", async () => {
+    reads.health.mockImplementation(async (table: string) => table === "projects" ? [archivedProject, currentProject] : []);
+    await mount(<AdminEnglishCenter />);
+    expect(cardValue(adminEnglishCenterText.missingEnglishContent.zh)).toBe("1");
+    expect(cardValue(adminEnglishCenterText.batchAvailable.zh)).toBe("1");
+    expect(container.textContent).toContain(currentProject.title_zh); expect(container.textContent).not.toContain(archivedProject.title_zh);
+    await act(async () => button(adminEnglishCenterText.batchGenerateMissing.zh).click()); await settle();
+    expect(reads.generate).toHaveBeenCalledExactlyOnceWith({ table: "projects", id: currentProject.id, force: false });
+  });
+
+  it("Publish Center retains archived history but excludes it from active publishing risks", async () => {
+    reads.health.mockImplementation(async (table: string) => table === "projects" ? [currentProject, archivedProject] : []);
+    await mount(<AdminPublishCenter />);
+    expect(cardValue(adminPublishCenterText.totalContent.zh)).toBe("2");
+    expect(cardValue(adminPublishCenterText.archived.zh)).toBe("1");
+    expect(cardValue(adminPublishCenterText.publishRisk.zh)).toBe("1");
+    expect(container.querySelectorAll("article")).toHaveLength(2);
+  });
+
+  it("Publish Center omits unread sources and keeps real rows without showing zero risk", async () => {
+    reads.health.mockImplementation(async (table: string) => {
+      if (table === "services") throw new Error("Synthetic unread source");
+      return table === "projects" ? [currentProject] : [];
+    });
+    await mount(<AdminPublishCenter />);
+    expect(cardValue(adminPublishCenterText.totalContent.zh)).toBe("…");
+    expect(cardValue(adminPublishCenterText.publishRisk.zh)).toBe("…");
+    expect(container.textContent).toContain("统计尚未确认"); expect(container.textContent).toContain("服务项目");
+    expect(container.textContent).toContain(currentProject.title_zh);
+    expect(container.querySelectorAll("article")).toHaveLength(1);
+    expect(container.textContent).not.toContain("服务项目 读取失败");
+    expect(container.textContent).not.toContain("Synthetic unread source");
+  });
+
+  it("Publish Center never claims empty or zero risk after all reads fail and recovers on retry", async () => {
+    reads.health.mockRejectedValue(new Error("Synthetic all sources failed"));
+    await mount(<AdminPublishCenter />);
+    expect(cardValue(adminPublishCenterText.totalContent.zh)).toBe("…");
+    expect(cardValue(adminPublishCenterText.publishRisk.zh)).toBe("…");
+    expect(container.textContent).toContain(adminPublishCenterText.incompleteEmpty.zh);
+    expect(container.textContent).not.toContain(adminPublishCenterText.empty.zh);
+    expect(container.querySelectorAll("article")).toHaveLength(0);
+    reads.health.mockResolvedValue([]);
+    await act(async () => button(adminPublishCenterText.refreshStatus.zh).click()); await settle();
+    expect(cardValue(adminPublishCenterText.totalContent.zh)).toBe("0");
+    expect(cardValue(adminPublishCenterText.publishRisk.zh)).toBe("0");
+    expect(container.textContent).toContain(adminPublishCenterText.empty.zh);
   });
 });
 
