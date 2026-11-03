@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { adminEnglishCenterText } from "@/i18n/adminEnglishCenterText";
 import { interactionText } from "@/i18n/interactionText";
 import { getAdminHealthFieldLabel, useAdminContentHealth } from "@/lib/adminContentHealth";
+import { matchesAdminAuditScope } from "@/lib/adminAuditScope";
 import { getAdminLang } from "@/lib/adminLocale";
 import { useAdminTranslationJobs } from "@/lib/adminSystemQueries";
 import { friendlyTranslationError, translationDeliveryNotice, translationEnabledTables } from "@/lib/adminTranslation";
@@ -67,7 +68,7 @@ export default function AdminEnglishCenter() {
   const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
 
   const missingEnglish = useMemo(
-    () => items.filter((item) => item.status !== "error" && item.missingEnglish.length > 0 && translationEnabledTables.some((table) => table === item.table)),
+    () => items.filter((item) => matchesAdminAuditScope(item.status, "active") && item.missingEnglish.length > 0 && translationEnabledTables.some((table) => table === item.table)),
     [items],
   );
   const failedJobs = jobs.filter((job) => job.status === "failed");

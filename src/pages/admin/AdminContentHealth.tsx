@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { RefreshCw, Search } from "lucide-react";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminAlert from "@/components/admin/AdminAlert";
 import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
@@ -10,48 +11,54 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminContentHealthFilters, adminContentHealthText } from "@/i18n/adminContentHealthText";
+import { adminAuditScopeText } from "@/i18n/adminAuditScopeText";
 import { useAdminContentHealth } from "@/lib/adminContentHealth";
-import { getAdminLang } from "@/lib/adminLocale";
+import { useAdminLang } from "@/lib/adminLocale";
+import { adminAuditScopes, matchesAdminAuditScope, resolveAdminAuditScope } from "@/lib/adminAuditScope";
 
 type AdminContentHealthTextKey = keyof typeof adminContentHealthText;
 type AdminContentHealthFilterKey = (typeof adminContentHealthFilters)[number]["key"];
 
-const A = (key: AdminContentHealthTextKey) => adminContentHealthText[key][getAdminLang()];
-
-const formatA = (key: AdminContentHealthTextKey, values: Record<string, string>) =>
-  Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
-
 const emptyContentHealthItems: NonNullable<ReturnType<typeof useAdminContentHealth>["data"]> = [];
 
 export default function AdminContentHealth() {
-  const { data, isLoading, isFetching, refetch } = useAdminContentHealth();
+  const language = useAdminLang();
+  const A = (key: AdminContentHealthTextKey) => adminContentHealthText[key][language];
+  const formatA = (key: AdminContentHealthTextKey, values: Record<string, string>) =>
+    Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
+  const { data, isLoading, isFetching, isInitialError, refreshError, refetch } = useAdminContentHealth();
   const items = data ?? emptyContentHealthItems;
-  const initialLoading = isLoading;
+  const initialLoading = isLoading || (data === undefined && !isInitialError);
   const list = useAdminListingState();
+  const scope = resolveAdminAuditScope(list.filter("scope") as string);
   const filter = list.filter("filter") as AdminContentHealthFilterKey;
   const setFilter = (value: AdminContentHealthFilterKey) => list.setFilter("filter", value);
   const { search, setSearch } = list;
   const filters = adminContentHealthFilters.map((item) => ({
     key: item.key,
-    label: item.label[getAdminLang()],
+    label: item.label[language],
   }));
+  const failedSources = useMemo(() => items.filter((item) => item.status === "error"), [items]);
+  const scopedItems = useMemo(() => items.filter((item) => item.status !== "error" && matchesAdminAuditScope(item.status, scope)), [items, scope]);
+  const incomplete = failedSources.length > 0;
+  const displayCount = (count: number) => data === undefined || incomplete && count === 0 ? A("pendingCount") : count;
 
   const summary = useMemo(() => {
-    const broken = items.filter((item) => item.issues.length > 0);
+    const broken = scopedItems.filter((item) => item.issues.length > 0);
     return {
-      total: items.length,
+      total: scopedItems.length,
       broken: broken.length,
-      required: items.filter((item) => item.missingRequired.length > 0).length,
-      english: items.filter((item) => item.missingEnglish.length > 0).length,
-      seo: items.filter((item) => item.missingSeo.length > 0).length,
-      media: items.filter((item) => item.missingMedia.length > 0).length,
-      ok: items.length - broken.length,
+      required: scopedItems.filter((item) => item.missingRequired.length > 0).length,
+      english: scopedItems.filter((item) => item.missingEnglish.length > 0).length,
+      seo: scopedItems.filter((item) => item.missingSeo.length > 0).length,
+      media: scopedItems.filter((item) => item.missingMedia.length > 0).length,
+      ok: scopedItems.length - broken.length,
     };
-  }, [items]);
+  }, [scopedItems]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return items.filter((item) => {
+    return scopedItems.filter((item) => {
       const matchesFilter =
         filter === "all" ||
         (filter === "required" && item.missingRequired.length > 0) ||
@@ -62,10 +69,10 @@ export default function AdminContentHealth() {
       const haystack = [item.tableLabel, item.table, item.title, item.status, ...item.issues].join(" ").toLowerCase();
       return matchesFilter && (!q || haystack.includes(q));
     });
-  }, [filter, items, search]);
+  }, [filter, scopedItems, search]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy={isFetching}>
       <AdminPageHeader
         title={A("pageTitle")}
         description={A("pageDescription")}
@@ -80,17 +87,24 @@ export default function AdminContentHealth() {
 
       {initialLoading ? (
         <AdminLoadingState label={A("checking")} />
+      ) : isInitialError ? (
+        <AdminAlert tone="error">{A("loadFailed")}</AdminAlert>
       ) : (
       <>
 
+      <p className="text-sm text-muted-foreground">{adminAuditScopeText.recordNotice[language]}</p>
+      {incomplete && (
+        <AdminAlert tone="warning">{formatA("incompleteRead", { sources: failedSources.map((item) => item.tableLabel).join(language === "zh" ? "、" : ", ") })}</AdminAlert>
+      )}
+      {refreshError && <AdminAlert tone="error">{A("refreshFailed")}</AdminAlert>}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
-        <AdminStatCard label={A("totalContent")} value={summary.total} helpText={A("totalContentHelp")} />
-        <AdminStatCard label={A("brokenContent")} value={summary.broken} helpText={A("brokenContentHelp")} className={summary.broken ? "border-destructive/30" : ""} />
-        <AdminStatCard label={A("requiredMissing")} value={summary.required} helpText={A("requiredMissingHelp")} />
-        <AdminStatCard label={A("englishMissing")} value={summary.english} helpText={A("englishMissingHelp")} href="/admin/english-center" />
-        <AdminStatCard label={A("seoMissing")} value={summary.seo} helpText={A("seoMissingHelp")} href="/admin/seo" />
-        <AdminStatCard label={A("mediaMissing")} value={summary.media} helpText={A("mediaMissingHelp")} />
-        <AdminStatCard label={A("healthy")} value={summary.ok} helpText={A("healthyHelp")} />
+        <AdminStatCard label={A("totalContent")} value={displayCount(summary.total)} helpText={A("totalContentHelp")} />
+        <AdminStatCard label={A("brokenContent")} value={displayCount(summary.broken)} helpText={A("brokenContentHelp")} className={summary.broken ? "border-destructive/30" : ""} />
+        <AdminStatCard label={A("requiredMissing")} value={displayCount(summary.required)} helpText={A("requiredMissingHelp")} />
+        <AdminStatCard label={A("englishMissing")} value={displayCount(summary.english)} helpText={A("englishMissingHelp")} href="/admin/english-center" />
+        <AdminStatCard label={A("seoMissing")} value={displayCount(summary.seo)} helpText={A("seoMissingHelp")} href="/admin/seo" />
+        <AdminStatCard label={A("mediaMissing")} value={displayCount(summary.media)} helpText={A("mediaMissingHelp")} />
+        <AdminStatCard label={A("healthy")} value={displayCount(summary.ok)} helpText={A("healthyHelp")} />
       </div>
 
       <section className="rounded-xl border border-border bg-card p-5 shadow-sm" aria-labelledby="content-health-filter-title">
@@ -98,10 +112,23 @@ export default function AdminContentHealth() {
           <div className="min-w-0">
             <h2 id="content-health-filter-title" className="text-base font-semibold">{A("filterTitle")}</h2>
             <p className="mt-1 text-sm text-muted-foreground" aria-live="polite">
-              {formatA("currentCount", { filtered: String(filtered.length), total: String(items.length) })}
+              {incomplete && scopedItems.length === 0
+                ? A("incompleteEmptyTitle")
+                : formatA("currentCount", { filtered: String(filtered.length), total: String(scopedItems.length) })}
             </p>
           </div>
           <div className="flex flex-1 flex-col gap-3 lg:max-w-4xl lg:flex-row lg:items-center lg:justify-end">
+            <label className="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground">
+              {adminAuditScopeText.scopeLabel[language]}
+              <select
+                aria-label={adminAuditScopeText.scopeLabel[language]}
+                value={scope}
+                onChange={(event) => list.setFilter("scope", event.target.value)}
+                className="h-10 max-w-full rounded-md border border-input bg-background px-3 text-sm text-foreground"
+              >
+                {adminAuditScopes.map((value) => <option key={value} value={value}>{adminAuditScopeText[value][language]}</option>)}
+              </select>
+            </label>
             <div className="relative min-w-0 lg:w-80">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
               <Input
@@ -147,6 +174,7 @@ export default function AdminContentHealth() {
             <div className="min-w-0">
               <p className="truncate font-semibold text-foreground">{item.title}</p>
               <p className="mt-1 text-xs text-muted-foreground lg:hidden">{item.tableLabel}</p>
+              {item.notice && <p className="mt-2 break-words text-xs text-muted-foreground">{item.notice}</p>}
             </div>
             <p className="hidden text-sm text-muted-foreground lg:block">{item.tableLabel}</p>
             <div>
@@ -179,7 +207,7 @@ export default function AdminContentHealth() {
         ))}
         {filtered.length === 0 && (
           <div className="p-6">
-            <AdminEmptyState title={A("emptyTitle")} description={A("emptyDescription")} />
+            <AdminEmptyState title={A(incomplete ? "incompleteEmptyTitle" : "emptyTitle")} description={A(incomplete ? "incompleteEmptyDescription" : "emptyDescription")} />
           </div>
         )}
       </section>

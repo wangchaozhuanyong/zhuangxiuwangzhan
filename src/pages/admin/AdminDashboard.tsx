@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdminContentHealth } from "@/lib/adminContentHealth";
+import { matchesAdminAuditScope } from "@/lib/adminAuditScope";
 import { useAdminDashboardStats } from "@/lib/adminDashboardQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
@@ -47,8 +48,9 @@ const AdminDashboard = () => {
   const counts = data?.counts ?? {};
   const healthConfirmed = healthQuery.data !== undefined && !healthItems.some((item) => item.status === "error");
   const healthValue = (value: number) => (loadHealthCards && healthConfirmed ? value : "…");
-  const contentIssues = healthItems.filter((item) => item.issues.length > 0).length;
-  const missingEnglish = healthItems.filter((item) => item.missingEnglish.length > 0).length;
+  const activeHealthItems = healthItems.filter((item) => matchesAdminAuditScope(item.status, "active"));
+  const contentIssues = activeHealthItems.filter((item) => item.issues.length > 0).length;
+  const missingEnglish = activeHealthItems.filter((item) => item.missingEnglish.length > 0).length;
   const draftContent = healthItems.filter((item) => item.status === "draft").length;
 
   useEffect(() => {

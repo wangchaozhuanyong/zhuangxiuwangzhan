@@ -5,8 +5,8 @@ export const adminEnglishCenterText = {
   batchCompleted: { en: "Batch English generation complete: {success} succeeded, {failed} failed.", zh: "批量英文生成完成：成功 {success} 条，失败 {failed} 条。" },
   pageTitle: { en: "English generation center", zh: "英文生成中心" },
   pageDescription: {
-    en: "Handle English-site content here. The system finds services, projects, materials, blog posts, and page content missing English. You can generate one item or generate in batches.",
-    zh: "这里专门处理英文站内容。系统会找出缺英文的服务、案例、材料、博客和页面内容，你可以单条生成，也可以批量生成。",
+    en: "Find unarchived services, projects, materials, blog posts, and page records with missing required English fields. Generate one record or handle a batch.",
+    zh: "查找未归档的服务、案例、材料、博客和页面记录中需要补齐的英文字段，支持单条或批量生成。",
   },
   pageHelpText: {
     en: "By default, only empty English fields are filled and manually edited English is not overwritten. Force regeneration overwrites existing English.",
@@ -17,7 +17,7 @@ export const adminEnglishCenterText = {
   generatingPercent: { en: "Generating {percent}%", zh: "生成中 {percent}%" },
   batchGenerateMissing: { en: "Batch generate missing English", zh: "批量生成缺失英文" },
   missingEnglishContent: { en: "Content missing English", zh: "缺英文内容" },
-  missingEnglishContentHelp: { en: "English title, summary, or body copy is still missing for these items.", zh: "这些内容的英文标题、摘要或正文还没补齐。" },
+  missingEnglishContentHelp: { en: "Unarchived records with missing required English fields. Optional built-in page fields do not become translation tasks.", zh: "未归档记录中需要的英文字段未填齐；内置页面的可选字段不进入翻译待办。" },
   failedRecords: { en: "Failed records", zh: "失败记录" },
   failedRecordsHelp: { en: "Recent automatic English generation failures.", zh: "最近自动英文生成失败的记录数量。" },
   processing: { en: "Processing", zh: "处理中" },
@@ -56,8 +56,8 @@ export const adminEnglishCenterText = {
   justGenerated: { en: "Just generated", zh: "刚生成" },
   review: { en: "Review", zh: "去复核" },
   missingEnglishSectionDescription: {
-    en: "Handle published content first, then drafts. After English generation completes, return to the original editor for manual tweaks.",
-    zh: "先处理已发布内容，再处理草稿内容。英文生成完成后，可以回到原编辑页手动微调。",
+    en: "Handle published content first, then drafts. Archived records are excluded from this list and from batch targets. Review generated copy in the original editor.",
+    zh: "先处理已发布内容，再处理草稿；归档记录不进入此列表或批次目标。生成后请回原编辑器人工复核。",
   },
   missingFields: { en: "Missing fields: {fields}", zh: "缺失字段：{fields}" },
   edit: { en: "Edit", zh: "编辑" },
@@ -70,5 +70,5 @@ export const adminEnglishCenterText = {
   },
   forceDialogConfirm: { en: "Regenerate", zh: "重新生成" },
   forceRegenerate: { en: "Force regenerate", zh: "强制重新生成" },
-  noMissingEnglish: { en: "There is currently no content missing English.", zh: "暂时没有缺英文的内容。" },
+  noMissingEnglish: { en: "No unarchived records currently need required English fields filled.", zh: "当前未归档记录没有需要补齐的英文字段。" },
 } as const;

@@ -14,6 +14,14 @@ const ADMIN_HEAVY_STALE_TIME = 10 * 60 * 1000;
 const ADMIN_QUERY_GC_TIME = 30 * 60 * 1000;
 
 export { adminSeoSources };
+export {
+  adminSeoPageTables,
+  buildAdminSeoIssues,
+  checkAdminSeoRows,
+  type AdminSeoAuditIssue,
+  type AdminSeoIssueCategory,
+  type AdminSeoIssueSeverity,
+} from "@/backend/modules/seo/service/seoAuditRules";
 export type AdminSeoAuditRow = RawAdminSeoAuditRow & { source: RawAdminSeoAuditRow["source"] & { label: string } };
 
 export function useAdminSeoAudit() {

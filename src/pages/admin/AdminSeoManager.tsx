@@ -4,6 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminAlert from "@/components/admin/AdminAlert";
 import AdminLoadingState from "@/components/admin/AdminLoadingState";
+import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminStatCard from "@/components/admin/AdminStatCard";
 import { Button } from "@/components/ui/button";
 import {
   adminSeoGuidanceByTableText,
@@ -14,27 +16,10 @@ import {
   adminSeoTechnicalWorkflowText,
 } from "@/i18n/adminSeoManagerText";
 import { adminStatusLabel, getAdminLang, useAdminLang } from "@/lib/adminLocale";
-import { type AdminSeoAuditRow, useAdminSeoAudit } from "@/lib/adminSeoAudit";
+import { adminSeoPageTables, checkAdminSeoRows, useAdminSeoAudit } from "@/lib/adminSeoAudit";
+import { adminAuditScopes, matchesAdminAuditScope, resolveAdminAuditScope } from "@/lib/adminAuditScope";
+import { adminAuditScopeText } from "@/i18n/adminAuditScopeText";
 import { formatUserFacingError } from "@/lib/userFacingText";
-
-type IssueCategory = "zh" | "geo" | "ai" | "technical" | "en";
-
-type AuditIssue = {
-  label: string;
-  category: IssueCategory;
-};
-
-type CheckedSeoRow = AdminSeoAuditRow & {
-  issues: AuditIssue[];
-};
-
-const zhGeoTerms = ["吉隆坡", "雪兰莪", "巴生谷", "马来西亚", "Kuala Lumpur", "Selangor", "Klang Valley", "KL"];
-const pageTables = new Set(["site_pages", "cms_pages"]);
-const geoRequiredTables = new Set(["site_pages", "cms_pages", "services", "service_areas", "landing_pages"]);
-const zhDescriptionMin = 55;
-const enDescriptionMin = 80;
-const zhTitleMax = 40;
-const enTitleMax = 70;
 
 const strategyCardKeys = ["zhFirst", "geoSignal", "aiReadable"] as const;
 
@@ -75,18 +60,8 @@ const technicalWorkflow = [
 ] as const;
 
 type AdminSeoManagerTextKey = keyof typeof adminSeoManagerText;
-type AdminSeoIssueLabelKey = keyof typeof adminSeoIssueLabels;
-type AdminSeoLanguage = keyof typeof adminSeoManagerText[AdminSeoManagerTextKey];
 
 const emptySeoRows: NonNullable<ReturnType<typeof useAdminSeoAudit>["data"]> = [];
-
-const localizedIssueLabel = (key: AdminSeoIssueLabelKey, language: AdminSeoLanguage) => adminSeoIssueLabels[key][language];
-
-const readText = (row: AdminSeoAuditRow, key: keyof AdminSeoAuditRow) => String(row[key] || "").trim();
-const hasChinese = (value: string) => /[\u4e00-\u9fff]/.test(value);
-const hasGeoSignal = (value: string) => zhGeoTerms.some((term) => value.toLowerCase().includes(term.toLowerCase()));
-const hasField = (row: AdminSeoAuditRow, key: keyof AdminSeoAuditRow) => Object.prototype.hasOwnProperty.call(row, key);
-const addIssue = (issues: AuditIssue[], category: IssueCategory, label: string) => issues.push({ category, label });
 
 const getChinesePreviewUrl = (frontPath: string) => {
   if (!frontPath || frontPath === "/") return "/zh";
@@ -182,36 +157,6 @@ const AdminSeoTechnicalFiles = () => {
   );
 };
 
-const buildRowIssues = (row: AdminSeoAuditRow, language: AdminSeoLanguage): AuditIssue[] => {
-  const issues: AuditIssue[] = [];
-  const zhTitle = readText(row, "seo_title_zh");
-  const zhDescription = readText(row, "seo_description_zh");
-  const zhKeywords = readText(row, "seo_keywords_zh");
-  const enTitle = readText(row, "seo_title_en");
-  const enDescription = readText(row, "seo_description_en");
-  const geoText = [zhTitle, zhDescription, zhKeywords, readText(row, "title_zh"), readText(row, "path"), readText(row, "slug")].join(" ");
-  const image = readText(row, "image_url") || readText(row, "cover_image_url") || readText(row, "hero_image_url");
-
-  if (row.error) addIssue(issues, "technical", formatUserFacingError(row.error, language));
-  if (!zhTitle) addIssue(issues, "zh", localizedIssueLabel("missingZhTitle", language));
-  if (zhTitle && !hasChinese(zhTitle)) addIssue(issues, "zh", localizedIssueLabel("zhTitleNoChinese", language));
-  if (zhTitle.length > zhTitleMax) addIssue(issues, "zh", localizedIssueLabel("zhTitleTooLong", language));
-  if (!zhDescription) addIssue(issues, "zh", localizedIssueLabel("missingZhDescription", language));
-  if (zhDescription && !hasChinese(zhDescription)) addIssue(issues, "zh", localizedIssueLabel("zhDescriptionNoChinese", language));
-  if (zhDescription && zhDescription.length < zhDescriptionMin) addIssue(issues, "zh", localizedIssueLabel("zhDescriptionTooShort", language));
-  if (pageTables.has(row.table) && !zhKeywords) addIssue(issues, "zh", localizedIssueLabel("missingZhKeywords", language));
-  if (geoRequiredTables.has(row.table) && !hasGeoSignal(geoText)) addIssue(issues, "geo", localizedIssueLabel("missingGeoTerms", language));
-  if (zhDescription && !/[，。、；：,.]/.test(zhDescription)) addIssue(issues, "ai", localizedIssueLabel("zhDescriptionWeakAi", language));
-  if (image && hasField(row, "alt_zh") && !readText(row, "alt_zh")) addIssue(issues, "ai", localizedIssueLabel("missingImageAltZh", language));
-  if (!pageTables.has(row.table) && !row.slug) addIssue(issues, "technical", localizedIssueLabel("missingSlug", language));
-  if (!enTitle) addIssue(issues, "en", localizedIssueLabel("missingEnTitle", language));
-  if (enTitle.length > enTitleMax) addIssue(issues, "en", localizedIssueLabel("enTitleTooLong", language));
-  if (!enDescription) addIssue(issues, "en", localizedIssueLabel("missingEnDescription", language));
-  if (enDescription && enDescription.length < enDescriptionMin) addIssue(issues, "en", localizedIssueLabel("enDescriptionTooShort", language));
-
-  return issues;
-};
-
 const AdminSeoAuditView = () => {
   const language = useAdminLang();
   const A = useCallback((key: AdminSeoManagerTextKey): string => adminSeoManagerText[key][language], [language]);
@@ -222,67 +167,48 @@ const AdminSeoAuditView = () => {
   );
   const strategyCards = strategyCardKeys.map((key) => adminSeoStrategyCards[language][key]);
   const guidanceByTable = adminSeoGuidanceByTableText[language];
-  const { data, isLoading, isFetching, isInitialError: isError, error, refetch } = useAdminSeoAudit();
+  const { data, isLoading, isFetching, isInitialError, error, refreshError, refetch } = useAdminSeoAudit();
   const rows = data ?? emptySeoRows;
-  const initialLoading = isLoading;
   const list = useAdminListingState();
-  const status = list.filter("status") as string;
-  const setStatus = (value: string) => list.setFilter("status", value);
-
-  const checkedRows = useMemo<CheckedSeoRow[]>(() => rows.map((row) => ({ ...row, issues: buildRowIssues(row, language) })), [language, rows]);
-
-  const duplicateSlugs = useMemo(() => {
-    const seen = new Map<string, number>();
-    checkedRows.forEach((row) => {
-      if (row.slug) seen.set(`${row.table}:${row.slug}`, (seen.get(`${row.table}:${row.slug}`) || 0) + 1);
-    });
-    return seen;
-  }, [checkedRows]);
-
-  const rowsWithDuplicates = useMemo<CheckedSeoRow[]>(
-    () =>
-      checkedRows.map((row) => {
-        const duplicate = row.slug && (duplicateSlugs.get(`${row.table}:${row.slug}`) || 0) > 1;
-        return duplicate ? { ...row, issues: [...row.issues, { category: "technical", label: A("duplicateSlug") }] } : row;
-      }),
-    [A, checkedRows, duplicateSlugs],
+  const status = list.filter("status");
+  const scope = resolveAdminAuditScope(list.filter("scope"));
+  const sourceErrors = useMemo(() => rows.filter((row) => row.error || row.status === "error"), [rows]);
+  const records = useMemo(() => rows.filter((row) => !row.error && row.status !== "error"), [rows]);
+  const checkedRows = useMemo(
+    () => checkAdminSeoRows(records.filter((row) => matchesAdminAuditScope(row.status, scope))),
+    [records, scope],
   );
-
-  const summary = useMemo(() => {
-    const hasCategory = (row: CheckedSeoRow, category: IssueCategory) => row.issues.some((issue) => issue.category === category);
-    return {
-      total: rowsWithDuplicates.length,
-      missing: rowsWithDuplicates.filter((row) => row.issues.length > 0).length,
-      zh: rowsWithDuplicates.filter((row) => hasCategory(row, "zh")).length,
-      geo: rowsWithDuplicates.filter((row) => hasCategory(row, "geo")).length,
-      ai: rowsWithDuplicates.filter((row) => hasCategory(row, "ai")).length,
-      ok: rowsWithDuplicates.filter((row) => row.issues.length === 0).length,
-    };
-  }, [rowsWithDuplicates]);
-
-  const filtered = rowsWithDuplicates.filter((row) => {
-    if (status === "missing") return row.issues.length > 0;
-    if (status === "zh") return row.issues.some((issue) => issue.category === "zh");
-    if (status === "geo") return row.issues.some((issue) => issue.category === "geo");
-    if (status === "ai") return row.issues.some((issue) => issue.category === "ai");
+  const complete = data !== undefined && sourceErrors.length === 0;
+  const summary = useMemo(() => ({
+    total: checkedRows.length,
+    missing: checkedRows.filter((row) => row.issues.some((issue) => issue.severity === "missing")).length,
+    suggestions: checkedRows.filter((row) => row.issues.some((issue) => issue.severity === "suggestion")).length,
+    errors: checkedRows.filter((row) => row.issues.some((issue) => issue.severity === "error")).length,
+    ok: checkedRows.filter((row) => row.issues.length === 0).length,
+  }), [checkedRows]);
+  const stat = (value: number) => complete ? value : "…";
+  const filtered = checkedRows.filter((row) => {
+    if (status === "missing") return row.issues.some((issue) => issue.severity === "missing");
+    if (status === "suggestions") return row.issues.some((issue) => issue.severity === "suggestion");
+    if (status === "errors") return row.issues.some((issue) => issue.severity === "error");
+    if (status === "zh" || status === "geo" || status === "ai") return row.issues.some((issue) => issue.category === status);
     if (status === "ok") return row.issues.length === 0;
     return true;
   });
-
-  const loadMessage = isError
-    ? formatUserFacingError(error, language)
-    : isFetching
-      ? A("loading")
-      : "";
+  const severityLabels = {
+    missing: A("severityMissing"),
+    suggestion: A("severitySuggestion"),
+    error: A("severityError"),
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy={isFetching}>
       <AdminPageHeader
         title={A("auditPageTitle")}
         description={A("auditPageDescription")}
         helpText={A("auditPageHelp")}
         actions={
-          <div className="flex flex-wrap gap-2">
+          <div className="flex min-w-0 flex-wrap gap-2">
             <Button asChild type="button" variant="outline" size="sm">
               <Link to="/admin/seo#sitemap">{A("sitemapRobots")}</Link>
             </Button>
@@ -290,13 +216,23 @@ const AdminSeoAuditView = () => {
               {isFetching ? A("refreshing") : A("refresh")}
             </Button>
             <select
+              value={scope}
+              onChange={(event) => list.setFilter("scope", event.target.value)}
+              aria-label={adminAuditScopeText.scopeLabel[language]}
+              className="flex h-10 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2 text-sm sm:w-auto"
+            >
+              {adminAuditScopes.map((value) => <option key={value} value={value}>{adminAuditScopeText[value][language]}</option>)}
+            </select>
+            <select
               value={status}
-              onChange={(event) => setStatus(event.target.value)}
+              onChange={(event) => list.setFilter("status", event.target.value)}
               aria-label={A("filterLabel")}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="flex h-10 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2 text-sm sm:w-auto"
             >
               <option value="all">{A("filterAll")}</option>
               <option value="missing">{A("filterMissing")}</option>
+              <option value="suggestions">{A("filterSuggestions")}</option>
+              <option value="errors">{A("filterErrors")}</option>
               <option value="zh">{A("filterZh")}</option>
               <option value="geo">{A("filterGeo")}</option>
               <option value="ai">{A("filterAi")}</option>
@@ -305,94 +241,91 @@ const AdminSeoAuditView = () => {
           </div>
         }
       />
-
-      {initialLoading ? (
+      {isInitialError && <AdminAlert tone="error">{formatUserFacingError(error, language)}</AdminAlert>}
+      {refreshError && <AdminAlert tone="warning">{formatUserFacingError(refreshError, language)}</AdminAlert>}
+      {sourceErrors.length > 0 && (
+        <AdminAlert tone="warning">
+          {formatA("incompleteSources", { sources: sourceErrors.map((row) => row.source.label).join(language === "zh" ? "、" : ", ") })}
+        </AdminAlert>
+      )}
+      {isLoading ? (
         <AdminLoadingState label={A("loading")} />
       ) : (
-      <>
-
-      <div className="grid gap-3 md:grid-cols-5">
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">{A("checkContent")}</p>
-          <p className="mt-1 text-2xl font-bold">{summary.total}</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">{A("missing")}</p>
-          <p className="mt-1 text-2xl font-bold admin-text-error">{summary.missing}</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">{A("zhSeo")}</p>
-          <p className="mt-1 text-2xl font-bold">{summary.zh}</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">{A("geoRegion")}</p>
-          <p className="mt-1 text-2xl font-bold">{summary.geo}</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">{A("passed")}</p>
-          <p className="mt-1 text-2xl font-bold text-accent">{summary.ok}</p>
-        </div>
-      </div>
-
-      <section className="rounded-xl border border-border bg-card p-5">
-        <div className="grid gap-4 md:grid-cols-3">
-          {strategyCards.map((card) => (
-            <div key={card.title} className="rounded-lg border border-border/70 bg-muted/30 p-4">
-              <h2 className="font-semibold">{card.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{card.body}</p>
-              <p className="mt-3 text-xs text-foreground/75">{card.example}</p>
+        <>
+          {data === undefined && !isInitialError && <AdminAlert>{A("unconfirmed")}</AdminAlert>}
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <AdminStatCard label={A("checkContent")} value={stat(summary.total)} />
+            <AdminStatCard label={A("missing")} value={stat(summary.missing)} helpText={A("missingHelp")} />
+            <AdminStatCard label={A("suggestions")} value={stat(summary.suggestions)} helpText={A("suggestionsHelp")} />
+            <AdminStatCard label={A("configurationIssues")} value={stat(summary.errors)} helpText={A("errorsHelp")} />
+            <AdminStatCard label={A("passed")} value={stat(summary.ok)} helpText={A("noAlertsHelp")} />
+          </div>
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p>{adminAuditScopeText.recordNotice[language]}</p>
+            {complete && <p>{formatA("archivedSummary", {
+              total: String(records.length),
+              archived: String(records.filter((row) => row.status === "archived").length),
+            })}</p>}
+          </div>
+          <section className="rounded-xl border border-border bg-card p-5">
+            <div className="grid gap-4 md:grid-cols-3">
+              {strategyCards.map((card) => (
+                <div key={card.title} className="min-w-0 rounded-lg border border-border/70 bg-muted/30 p-4">
+                  <h2 className="font-semibold">{card.title}</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">{card.body}</p>
+                  <p className="mt-3 text-xs text-foreground/75">{card.example}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-
-      {loadMessage && <AdminAlert tone={isError ? "error" : "info"}>{loadMessage}</AdminAlert>}
-
-      <div className="space-y-3">
-        {filtered.map((row) => {
-          const rowRecord = row as typeof row & { path?: string; page_key?: string };
-          const isPageTable = pageTables.has(row.table);
-          const editUrl = isPageTable ? row.source.route : `${row.source.route}/${row.id}`;
-          const frontPath = isPageTable ? String(rowRecord.path || row.source.front || "/") : row.slug ? `${row.source.front}/${row.slug}` : row.source.front;
-          const frontUrl = getChinesePreviewUrl(frontPath);
-          const guidance = guidanceByTable[row.table];
-
-          return (
-            <article key={`${row.table}-${row.id || row.error}`} className="rounded-xl border border-border bg-card p-4">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">{row.title_zh || row.title_en || row.name || rowRecord.page_key || row.slug || row.source.label}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {row.source.label} · {rowRecord.path || row.slug || "-"} · {adminStatusLabel("default", row.status || "-")}
-                  </p>
-                  {guidance && (
-                    <div className="mt-3 rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
-                      <p className="font-medium text-foreground">{formatA("guidanceFormula", { title: guidance.title, formula: guidance.formula })}</p>
-                      <p className="mt-1">{formatA("guidanceMustInclude", { mustInclude: guidance.mustInclude })}</p>
+          </section>
+          {isFetching && <AdminAlert>{A("loading")}</AdminAlert>}
+          <div className="space-y-3">
+            {filtered.map((row) => {
+              const isPageTable = adminSeoPageTables.has(row.table);
+              const editUrl = isPageTable ? row.source.route : `${row.source.route}/${row.id}`;
+              const frontPath = isPageTable ? String(row.path || row.source.front || "/") : row.slug ? `${row.source.front}/${row.slug}` : row.source.front;
+              const frontUrl = frontPath.includes(":") ? null : getChinesePreviewUrl(frontPath);
+              const guidance = guidanceByTable[row.table];
+              return (
+                <article key={`${row.table}-${row.id}`} className="rounded-xl border border-border bg-card p-4">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="break-words font-semibold">{row.title_zh || row.title_en || row.name || row.page_key || row.slug || row.source.label}</p>
+                      <p className="mt-1 break-all text-xs text-muted-foreground">
+                        {row.source.label} · {row.path || row.slug || "-"} · {adminStatusLabel("default", row.status || "-")}
+                      </p>
+                      {guidance && (
+                        <div className="mt-3 rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
+                          <p className="font-medium text-foreground">{formatA("guidanceFormula", { title: guidance.title, formula: guidance.formula })}</p>
+                          <p className="mt-1">{formatA("guidanceMustInclude", { mustInclude: guidance.mustInclude })}</p>
+                        </div>
+                      )}
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {row.issues.length ? row.issues.map((issue) => (
+                          <span
+                            key={issue.key}
+                            className={`max-w-full break-words rounded-full px-2 py-1 text-xs ${issue.severity === "suggestion" ? "admin-tone-warning" : "admin-tone-error"}`}
+                          >
+                            {severityLabels[issue.severity]} · {adminSeoIssueLabels[issue.key][language]}
+                          </span>
+                        )) : (
+                          <span className="rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">{A("seoGeoPassed")}</span>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {row.issues.length ? (
-                      row.issues.map((issue) => (
-                        <span key={`${issue.category}-${issue.label}`} className={`rounded-full px-2 py-1 text-xs ${issue.category === "geo" ? "admin-tone-warning" : issue.category === "ai" ? "admin-tone-info" : issue.category === "en" ? "bg-muted text-muted-foreground" : "admin-tone-error"}`}>
-                          {issue.label}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">{A("seoGeoPassed")}</span>
-                    )}
+                    <div data-admin-card-actions className="flex shrink-0 flex-wrap gap-2">
+                      <Button asChild size="sm" variant="outline">
+                        <Link to={editUrl} aria-disabled={isFetching} onClick={(event) => { if (isFetching) event.preventDefault(); }}>{A("edit")}</Link>
+                      </Button>
+                      {frontUrl && <Button asChild size="sm" variant="outline"><Link to={frontUrl}>{A("chineseFrontendPage")}</Link></Button>}
+                    </div>
                   </div>
-                </div>
-                <div data-admin-card-actions className="flex shrink-0 gap-2">
-                  <Button asChild size="sm" variant="outline"><Link to={editUrl}>{A("edit")}</Link></Button>
-                  <Button asChild size="sm" variant="outline"><Link to={frontUrl}>{A("chineseFrontendPage")}</Link></Button>
-                </div>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      </>
+                </article>
+              );
+            })}
+            {complete && filtered.length === 0 && <AdminEmptyState title={A("emptyTitle")} description={A("emptyDescription")} />}
+          </div>
+        </>
       )}
     </div>
   );
