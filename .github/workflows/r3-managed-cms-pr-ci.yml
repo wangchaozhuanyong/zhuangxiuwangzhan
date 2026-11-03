@@ -101,6 +101,10 @@ on:
       - supabase/functions/_shared/next8-two-record-targets.ts
       - drafts/publishing/fc-20261016-industry-keyword-next-eight-pages-v1/frozen-next8-two-row-candidates.json
       - src/lib/contentPublishNext8TwoRecord.test.ts
+      - scripts/managed-cms-target-next8-renovation-zh05971.mjs
+      - supabase/functions/_shared/next8-renovation-zh05971-target.ts
+      - drafts/publishing/fc-20261016-industry-keyword-next-eight-pages-v1/frozen-next8-renovation-zh05971-candidate.json
+      - src/lib/contentPublishNext8RenovationZh05971.test.ts
       - scripts/managed-cms-targets-next12-five-record-v1.mjs
       - supabase/functions/_shared/next12-five-record-targets.ts
       - drafts/publishing/fc-20261016-industry-keyword-next-twelve-pages-v1/frozen-next12-five-row-candidates.json
@@ -212,6 +216,7 @@ jobs:
         run: |
           npm test -- \
             src/lib/contentPublishNext8TwoRecord.test.ts \
+            src/lib/contentPublishNext8RenovationZh05971.test.ts \
             src/lib/contentPublishNext12FiveRecord.test.ts \
             src/lib/contentPublishWardrobe15Builtin.test.ts \
             src/lib/contentPublishPaidFourCurrent.test.ts \

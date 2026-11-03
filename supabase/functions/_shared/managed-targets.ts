@@ -8,6 +8,7 @@ import { MALAY_TRANSLATION_TARGETS } from "./malay-translation-targets.ts";
 import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.ts";
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
 import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
+import { NEXT8_RENOVATION_ZH05971_TARGETS } from "./next8-renovation-zh05971-target.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
 import { WARDROBE15_BUILTIN_TARGETS } from "./wardrobe15-builtin-targets.ts";
 import { ENGLISH_KITCHEN_EN2_TARGETS } from "./english-kitchen-en2-targets.ts";
@@ -55,6 +56,7 @@ export const MANAGED_SERVICES: readonly ManagedTarget[] = [
   ...ENGLISH_KITCHEN_EN2_TARGETS,
   ...SHOP_OFFICE_SIX_FIELD_TARGETS,
   ...NEXT8_TWO_RECORD_TARGETS,
+  ...NEXT8_RENOVATION_ZH05971_TARGETS,
   ...NEXT12_FIVE_RECORD_TARGETS,
   ...WARDROBE15_BUILTIN_TARGETS,
   ...PAID6_KITCHEN_TARGETS,

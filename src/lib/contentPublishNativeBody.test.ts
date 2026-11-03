@@ -61,7 +61,7 @@ describe("19 exact original-identity multilingual body targets", () => {
     expect(NATIVE_BODY_TARGETS.filter((t) => t.contentType === "service")).toHaveLength(8);
     const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
-    expect(historicalTargets).toHaveLength(91); // Preserves current registrations and adds Paid6 Kitchen plus four current Paid1 targets.
+    expect(historicalTargets).toHaveLength(92); // Adds the separate NEXT8 KW-05971 target; historical targets are unchanged.
     const workflow = readFileSync(".github/workflows/content-publish-approved.yml", "utf8");
     for (const name of names) {
       const locked = lockedNativeBodyCandidates[name]; const row = frozenRow(name);
