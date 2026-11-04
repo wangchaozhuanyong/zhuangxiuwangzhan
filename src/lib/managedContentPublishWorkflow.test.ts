@@ -278,6 +278,7 @@ describe("three locked CMS targets in the existing protected workflow", () => {
     expect(Object.keys(targetConfigs).filter((target) => targetConfigs[target].lockedCandidate).sort())
       .toEqual([...lockedTargets.map((item) => item.name), ...newTargets.map((item) => item.name),
         "next8-renovation-11ab9ac6-cms-v1", "next8-design-11ab9ac6-cms-v1",
+        "next8-renovation-zh-05971-67e79c93-cms-v1",
         "next12-warehouse-fbe13ee7-cms-v1", "next12-bathroom-fbe13ee7-cms-v1", "next12-flooring-fbe13ee7-cms-v1", "next12-artistic-coating-fbe13ee7-cms-v1", "next12-approval-fbe13ee7-cms-v1",
         "wardrobe15-builtin-5507da74-cms-v1",
         "english-kitchen-en2-exact-v1",
