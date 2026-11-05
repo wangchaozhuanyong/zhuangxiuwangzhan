@@ -46,11 +46,11 @@ async function record() {
   const saved = [];
   for (const operation of operations) {
     const fingerprint = sha256(Buffer.from(JSON.stringify({ severity: operation.severity, metadata: operation.metadata })));
-    const existing = await client.from("system_event_logs").select("severity,metadata").eq("source", "ops").eq("event_type", operation.event_type)
+    const existing = await client.from("system_event_logs").select("severity,metadata").eq("source", "ops").eq("trusted_backup_evidence", true).eq("event_type", operation.event_type)
       .eq("metadata->>backup_folder", base.backup_folder).order("created_at", { ascending: false }).limit(1);
     if (existing.error) throw new Error("Operational record lookup failed.");
     if (existing.data?.[0]?.metadata?.receipt_fingerprint === fingerprint) { saved.push({ event_type: operation.event_type, severity: operation.severity, already_recorded: true }); continue; }
-    const result = await client.from("system_event_logs").insert({ ...operation, source: "ops", actor_id: null, metadata: { ...operation.metadata, receipt_fingerprint: fingerprint } }).select("id,event_type,severity,metadata").single();
+    const result = await client.from("system_event_logs").insert({ ...operation, source: "ops", actor_id: null, trusted_backup_evidence: true, metadata: { ...operation.metadata, receipt_fingerprint: fingerprint } }).select("id,event_type,severity,metadata").single();
     if (result.error || result.data?.metadata?.receipt_fingerprint !== fingerprint) throw new Error("Operational record save/readback failed.");
     saved.push({ event_type: result.data.event_type, severity: result.data.severity, saved_and_read_back: true });
   }

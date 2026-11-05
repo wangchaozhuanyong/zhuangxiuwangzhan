@@ -41,6 +41,7 @@ export async function logSystemHealthEvent(event, root = process.cwd()) {
       message: truncate(event.message, 1000),
       metadata: safeMetadata(event.metadata || {}),
       actor_id: null,
+      trusted_backup_evidence: true,
     });
     if (error) throw error;
   } catch (error) {

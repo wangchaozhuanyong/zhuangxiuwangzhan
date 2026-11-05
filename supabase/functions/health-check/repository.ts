@@ -39,6 +39,7 @@ export async function fetchBackupEvents(client: HealthClient, eventTypes: string
     .from("system_event_logs")
     .select(eventSelect)
     .eq("source", "ops")
+    .eq("trusted_backup_evidence", true)
     .in("event_type", eventTypes)
     .order("created_at", { ascending: false })
     .limit(20);

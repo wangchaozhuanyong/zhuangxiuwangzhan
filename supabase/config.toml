@@ -375,6 +375,12 @@ verify_jwt = false
 [functions.health-check]
 verify_jwt = false
 
+[functions.growth-export]
+verify_jwt = false
+
+[functions.growth-notify]
+verify_jwt = false
+
 [functions.sitemap]
 verify_jwt = false
 

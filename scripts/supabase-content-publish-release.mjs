@@ -4,8 +4,14 @@ import { lstat, readFile, readdir } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
+const edgeTargets = [
+  'content-publish', 'generate-english-content', 'submit-lead', 'notification-settings',
+  'maintenance-reminder', 'health-check', 'growth-export', 'growth-notify',
+];
+const noGatewayJwt = new Set(['content-publish', 'submit-lead', 'health-check', 'growth-export', 'growth-notify']);
+
 export const EDGE_FUNCTION = process.env.EDGE_FUNCTION || 'content-publish';
-if (!['content-publish', 'generate-english-content', 'submit-lead', 'notification-settings', 'maintenance-reminder'].includes(EDGE_FUNCTION)) throw new Error('Unsupported Edge release target');
+if (!edgeTargets.includes(EDGE_FUNCTION)) throw new Error('Unsupported Edge release target');
 export const PROJECT_REF = 'rbsnyexjifounogswrjp';
 export const MIGRATION_VERSION = '20260921194000';
 export const MIGRATION_FILE = `${MIGRATION_VERSION}_managed_cms_release_permits.sql`;
@@ -94,7 +100,7 @@ export function verifyReleaseApproval({ allowlistJson, taskId, actionId, actionC
 }
 
 export function verifyEdgeScope(scope, functionName = EDGE_FUNCTION) {
-  assert(['content-publish', 'generate-english-content', 'submit-lead', 'notification-settings', 'maintenance-reminder'].includes(functionName), 'unsupported Edge release target');
+  assert(edgeTargets.includes(functionName), 'unsupported Edge release target');
   if (functionName !== 'content-publish') {
     assert(typeof scope === 'string' && scope.startsWith(`flashcast.com.my:edge/${functionName}:`),
       'Edge release requires its exact function scope');
@@ -144,7 +150,7 @@ export function functionVersion(output) {
   const matches = functions.filter((item) => item?.slug === EDGE_FUNCTION);
   assert(matches.length === 1, 'content-publish function must appear exactly once');
   const { status, version } = matches[0];
-  assert(!('verify_jwt' in matches[0]) || matches[0].verify_jwt === !['content-publish', 'submit-lead'].includes(EDGE_FUNCTION),
+  assert(!('verify_jwt' in matches[0]) || matches[0].verify_jwt === !noGatewayJwt.has(EDGE_FUNCTION),
     'Edge JWT policy differs from the existing function policy');
   assert(status === 'ACTIVE', 'content-publish function is not active');
   assert(Number.isSafeInteger(version) && version > 0, 'content-publish version is invalid');
@@ -163,13 +169,13 @@ const EDGE_ENTRYPOINT = `${EDGE_FUNCTION}/index.ts`;
 function runtimeSourceRoot(directory) {
   const root = resolve(directory);
   // Keep the existing CLI's downloaded content-publish directory argument usable.
-  return ['content-publish', 'generate-english-content', 'submit-lead', 'notification-settings', 'maintenance-reminder'].includes(basename(root)) ? dirname(root) : root;
+  return edgeTargets.includes(basename(root)) ? dirname(root) : root;
 }
 
 function ownedSourcePath(root, file) {
   const path = relative(root, resolve(root, file)).split(sep).join('/');
   assert(!isAbsolute(path) && path !== '..' && !path.startsWith('../')
-    && /^(content-publish|generate-english-content|submit-lead|notification-settings|maintenance-reminder|_shared)\/.+\.(?:ts|mjs|mts)$/.test(path),
+    && [...edgeTargets, "_shared"].includes(path.split("/")[0]) && /\/.+\.(?:ts|mjs|mts)$/.test(path),
   'Edge source dependency escapes its owned TypeScript directories');
   return path;
 }

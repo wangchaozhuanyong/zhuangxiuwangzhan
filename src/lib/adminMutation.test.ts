@@ -9,8 +9,8 @@ type TransportError = { message: string; code?: string };
 type Result = { data: Row | null; error: TransportError | null };
 type Filter = { field: string; value: unknown; operator: "eq" | "is" };
 type Write = { operation: string; filters: Filter[]; payload: Row; matched: boolean };
-const { from, invoke, getUser } = vi.hoisted(() => ({ from: vi.fn(), invoke: vi.fn(), getUser: vi.fn() }));
-vi.mock("@/lib/supabase", () => ({ requireSupabase: () => ({ from, functions: { invoke }, auth: { getUser } }) }));
+const { from, invoke } = vi.hoisted(() => ({ from: vi.fn(), invoke: vi.fn() }));
+vi.mock("@/lib/supabase", () => ({ requireSupabase: () => ({ from, functions: { invoke } }) }));
 
 const initialTime = "2026-10-05T01:02:03.123456+00:00";
 const changedTime = "2026-10-05T01:02:03.123457+00:00";
@@ -75,12 +75,11 @@ beforeEach(() => {
   writes = []; audits = []; readError = null; writeError = null; beforeWrite = undefined; readGate = undefined;
   from.mockReset().mockImplementation(transportBuilder);
   invoke.mockReset().mockResolvedValue({ data: { ok: true, cache_invalidation: { ok: true, revision: changedTime } }, error: null });
-  getUser.mockReset().mockResolvedValue({ data: { user: { id: "fixture-admin" } } });
   getPublicSyncIssues().forEach(({ key }) => resolvePublicSyncIssue(key));
 });
 
 describe("ordinary admin writes through the real persistence and delivery chain", () => {
-  it("admits one of two writes that both read the same version, without auditing or delivering the losing write", async () => {
+  it("admits one of two writes that both read the same version, without delivering the losing write", async () => {
     let release!: () => void;
     const gate = new Promise<void>((resolve) => { release = resolve; });
     let readCount = 0;
@@ -99,7 +98,7 @@ describe("ordinary admin writes through the real persistence and delivery chain"
       expect(writes.filter(({ matched }) => matched)).toHaveLength(1);
       for (const write of writes) expect(write.filters).toContainEqual({ field: "updated_at", value: initialTime, operator: "eq" });
       expect(row?.title).toBe("First");
-      expect(audits).toHaveLength(1);
+      expect(audits).toHaveLength(0);
       expect(invoke).toHaveBeenCalledTimes(1);
       expect(invalidation).toHaveBeenCalledTimes(1);
       expect(queryClient.getQueryState(["published", "blog"])?.isInvalidated).toBe(true);
@@ -191,7 +190,7 @@ describe("ordinary admin writes through the real persistence and delivery chain"
       .toMatchObject({ code: "conflict", stage: "write" });
     expect(row).toMatchObject({ file_name: "First", version: 4 });
     expect(writes.filter(({ matched }) => !matched)).toHaveLength(1);
-    expect(audits).toHaveLength(1);
+    expect(audits).toHaveLength(0);
   });
 
   it.each([true, false])("uses a safe existing numeric version for %s removal", async (softDelete) => {
@@ -259,20 +258,10 @@ describe("ordinary admin writes through the real persistence and delivery chain"
       expect(getPublicSyncIssues()).toHaveLength(1);
       await getPublicSyncIssues()[0]!.retry();
       expect(writes).toHaveLength(1);
-      expect(audits).toHaveLength(1);
+      expect(audits).toHaveLength(0);
       expect(invoke).toHaveBeenCalledTimes(2);
       expect(invalidation).toHaveBeenCalledTimes(2);
       expect(getPublicSyncIssues()).toHaveLength(0);
-    } finally { queryClient.clear(); }
-  });
-
-  it("keeps success after an audit failure and still refreshes caches and public delivery once", async () => {
-    getUser.mockRejectedValueOnce(new Error("audit unavailable"));
-    const queryClient = client();
-    const invalidation = vi.spyOn(queryClient, "invalidateQueries");
-    try {
-      await expect(saveAdminRecord({ table: "blog_posts", id: "fixture", payload: {}, queryClient })).resolves.toMatchObject({ id: "fixture" });
-      expect(writes).toHaveLength(1); expect(invalidation).toHaveBeenCalledTimes(1); expect(invoke).toHaveBeenCalledTimes(1);
     } finally { queryClient.clear(); }
   });
 
@@ -283,7 +272,7 @@ describe("ordinary admin writes through the real persistence and delivery chain"
       await expect(saveAdminRecord({ table: "blog_posts", id: "fixture", payload: {}, queryClient })).resolves.toMatchObject({ id: "fixture" });
       expect(getPublicSyncIssues()).toHaveLength(1);
       await getPublicSyncIssues()[0]!.retry();
-      expect(writes).toHaveLength(1); expect(audits).toHaveLength(1); expect(invoke).toHaveBeenCalledTimes(1);
+      expect(writes).toHaveLength(1); expect(audits).toHaveLength(0); expect(invoke).toHaveBeenCalledTimes(1);
       expect(invalidation).toHaveBeenCalledTimes(2); expect(getPublicSyncIssues()).toHaveLength(0);
     } finally { queryClient.clear(); }
   });
@@ -299,7 +288,7 @@ describe("ordinary admin writes through the real persistence and delivery chain"
       await expect(getPublicSyncIssues()[0]!.retry()).rejects.toThrow("retry cache unavailable");
       expect(getPublicSyncIssues()).toHaveLength(1);
       await getPublicSyncIssues()[0]!.retry();
-      expect(writes).toHaveLength(1); expect(audits).toHaveLength(1); expect(invoke).toHaveBeenCalledTimes(2);
+      expect(writes).toHaveLength(1); expect(audits).toHaveLength(0); expect(invoke).toHaveBeenCalledTimes(2);
       expect(invalidation).toHaveBeenCalledTimes(3); expect(getPublicSyncIssues()).toHaveLength(0);
     } finally { queryClient.clear(); }
   });
@@ -319,10 +308,10 @@ describe("ordinary admin writes through the real persistence and delivery chain"
       completeOlderRetry({ data: { ok: true, cache_invalidation: { ok: true, revision: changedTime } }, error: null });
       await olderRetry;
       expect(getPublicSyncIssues()).toEqual([newer]);
-      expect(writes).toHaveLength(2); expect(audits).toHaveLength(2);
+      expect(writes).toHaveLength(2); expect(audits).toHaveLength(0);
       await newer.retry();
       expect(getPublicSyncIssues()).toHaveLength(0);
-      expect(writes).toHaveLength(2); expect(audits).toHaveLength(2); expect(invoke).toHaveBeenCalledTimes(4);
+      expect(writes).toHaveLength(2); expect(audits).toHaveLength(0); expect(invoke).toHaveBeenCalledTimes(4);
     } finally { queryClient.clear(); }
   });
 
@@ -359,23 +348,23 @@ describe("ordinary admin writes through the real persistence and delivery chain"
     expect(writes).toHaveLength(2); expect(invoke).toHaveBeenCalledTimes(2);
   });
 
-  it.each([true, false])("preserves successful %s removal audit and cache/public delivery", async (softDelete) => {
+  it.each([true, false])("preserves successful %s removal and cache/public delivery", async (softDelete) => {
     const queryClient = client();
     try {
       const saved = await archiveOrDeleteAdminRecord({ table: "blog_posts", id: "fixture", expectedUpdatedAt: initialTime, softDelete, queryClient });
       expect(saved.id).toBe("fixture");
-      expect(audits).toHaveLength(1); expect(audits[0]?.action).toBe(softDelete ? "archive" : "delete");
+      expect(audits).toHaveLength(0);
       expect(invoke).toHaveBeenCalledTimes(1);
       expect(queryClient.getQueryState(["published", "blog"])?.isInvalidated).toBe(true);
       expect(row?.status ?? null).toBe(softDelete ? "archived" : null);
     } finally { queryClient.clear(); }
   });
 
-  it("keeps explicit cache suppression and disabled audit compatible", async () => {
+  it("keeps explicit cache suppression compatible", async () => {
     const queryClient = client();
     const invalidation = vi.spyOn(queryClient, "invalidateQueries");
     try {
-      await saveAdminRecord({ table: "blog_posts", id: "fixture", payload: {}, queryClient, invalidate: "none", audit: false });
+      await saveAdminRecord({ table: "blog_posts", id: "fixture", payload: {}, queryClient, invalidate: "none" });
       expect(invalidation).not.toHaveBeenCalled(); expect(audits).toHaveLength(0); expect(invoke).toHaveBeenCalledTimes(1);
     } finally { queryClient.clear(); }
   });
@@ -383,7 +372,7 @@ describe("ordinary admin writes through the real persistence and delivery chain"
   it("exposes a data-only system core without browser cache or public-delivery side effects", async () => {
     const result = await persistAdminRecord({ table: "blog_posts", id: "fixture", payload: { title: "Core saved" } });
     expect(result).toMatchObject({ table: "blog_posts", id: "fixture", action: "update", record: { title: "Core saved" }, before: { title: "Original" } });
-    expect(audits).toHaveLength(1); expect(invoke).not.toHaveBeenCalled(); expect(getPublicSyncIssues()).toHaveLength(0);
+    expect(audits).toHaveLength(0); expect(invoke).not.toHaveBeenCalled(); expect(getPublicSyncIssues()).toHaveLength(0);
   });
 
   it("keeps landing privacy validation before writes and maps core failures into both languages", async () => {

@@ -588,14 +588,14 @@ test('translation deployment uses its own exact function scope and complete sour
 
 test('each existing function retains its deployed JWT gateway policy', async () => {
   const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /jwt_args=\(\)\n\s+if \[ "\$EDGE_FUNCTION" = content-publish \] \|\| \[ "\$EDGE_FUNCTION" = submit-lead \]; then jwt_args\+=\(--no-verify-jwt\); fi/);
+  assert.match(workflow, /content-publish\|submit-lead\|health-check\|growth-export\|growth-notify\) jwt_args\+=\(--no-verify-jwt\)/);
   assert.match(workflow, /supabase functions deploy "\$EDGE_FUNCTION"[^\n]*"\$\{jwt_args\[@\]\}"/);
   const helper = fileURLToPath(new URL('./supabase-content-publish-release.mjs', import.meta.url));
   const code = `import { functionVersion } from ${JSON.stringify(new URL('./supabase-content-publish-release.mjs', import.meta.url).href)}; functionVersion(JSON.stringify([{slug:process.env.EDGE_FUNCTION,status:'ACTIVE',version:10,verify_jwt:process.env.CHECK_JWT==='true'}]));`;
-  for (const fn of ['content-publish','generate-english-content','submit-lead','notification-settings','maintenance-reminder']) {
+  for (const fn of ['content-publish','generate-english-content','submit-lead','notification-settings','maintenance-reminder','health-check','growth-export','growth-notify']) {
     for (const jwt of [true,false]) {
       const result=spawnSync(process.execPath,['--input-type=module','-e',code],{encoding:'utf8',env:{...process.env,EDGE_FUNCTION:fn,CHECK_JWT:String(jwt)}});
-      assert.equal(result.status===0,jwt===!['content-publish','submit-lead'].includes(fn),result.stderr);
+      assert.equal(result.status===0,jwt===!['content-publish','submit-lead','health-check','growth-export','growth-notify'].includes(fn),result.stderr);
     }
   }
   assert.ok(helper);
@@ -644,7 +644,7 @@ test('submit-lead release requires its exact scope and the complete reviewed sou
   assert.notEqual(rejected.status, 0);
   assert.match(rejected.stderr, /Unsupported Edge release target/);
   const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /options: \[content-publish, generate-english-content, submit-lead, notification-settings, maintenance-reminder\]/);
+  assert.match(workflow, /options: \[content-publish, generate-english-content, submit-lead, notification-settings, maintenance-reminder, health-check, growth-export, growth-notify\]/);
 });
 
 for (const target of ['notification-settings', 'maintenance-reminder']) {
