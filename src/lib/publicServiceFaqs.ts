@@ -1,4 +1,5 @@
 import { stripHtml } from "./text";
+import { oldHouseEnglishFaqRenderingCopy as renderingCopy } from "../i18n/oldHouseRenovationPageText";
 
 export type PublicServiceFaq = { question: string; answer: string };
 
@@ -18,13 +19,10 @@ export function mapPublicServiceFaqs(value: unknown): PublicServiceFaq[] {
 
 export function mapOldHousePublicFaqs(value: unknown): PublicServiceFaq[] {
   return mapPublicServiceFaqs(value).map((faq) =>
-    faq.question === "What counts as before-and-after evidence for an old-house renovation?"
+    faq.question === renderingCopy.question
       ? {
           ...faq,
-          answer: faq.answer.replace(
-            "The before-and-proposed visuals on this page are labelled as AI-generated planning concepts; they should not be read as a client project or construction result.",
-            "The comparison on this page shows an illustrated starting layout and a proposed design rendering.",
-          ),
+          answer: faq.answer.replace(renderingCopy.previous, renderingCopy.current),
         }
       : faq,
   );
