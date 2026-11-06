@@ -23,7 +23,7 @@ import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteCont
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { usePublishedServiceBySlug } from "@/hooks/usePublishedContent";
-import { mapPublicServiceFaqs } from "@/lib/publicServiceFaqs";
+import { mapOldHousePublicFaqs } from "@/lib/publicServiceFaqs";
 
 const oldHouseComparisonMedia = {
   "terrace-living": {
@@ -49,7 +49,7 @@ const OldHouseRenovation = () => {
   // The existing query also returns local service fallbacks (without CMS status).
   // Keep this page's reviewed fallback until a real published record is available.
   const hasPublishedRecord = cmsService && "status" in cmsService && cmsService.status === "published";
-  const faqs = mapPublicServiceFaqs(hasPublishedRecord ? cmsService.faqs : t.faqs);
+  const faqs = mapOldHousePublicFaqs(hasPublishedRecord ? cmsService.faqs : t.faqs);
   const contextLinks = getServiceContextLinks("old-house", language);
   const quotePath = buildQuotePath({
     source: "service",

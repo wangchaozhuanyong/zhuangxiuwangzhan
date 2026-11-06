@@ -15,7 +15,7 @@ import { mediaLabels } from "../src/i18n/mediaLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory, translateProjectScopedLabel, translateSpaceLabel } from "../src/i18n/displayLabels";
 import { getMaterialSubcategoryGuidance } from "../src/i18n/materialSubcategoryGuidance";
-import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
+import { mapOldHousePublicFaqs, mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
 import { isRenderingConceptProject } from "../src/lib/projectContentClassification";
 import { stripHtml } from "../src/lib/text";
 
@@ -44,7 +44,7 @@ const wrap = (body: string, lang: Lang) => body && body.length <= 262144
 
 function oldHouseBody(row: Row | null | undefined, lang: Lang) {
   const copy = oldHouseRenovationPageText[lang];
-  const faqItems = mapPublicServiceFaqs(row?.status === "published" ? row[`faqs_${lang}`] : copy.faqs);
+  const faqItems = mapOldHousePublicFaqs(row?.status === "published" ? row[`faqs_${lang}`] : copy.faqs);
   let body = `<h1>${escape(copy.title)}</h1>${paragraph(mediaLabels[lang].renderingConcept)}${paragraph(copy.description)}`;
   body += heading(copy.introTitle) + copy.intro.map(paragraph).join("");
   body += heading(copy.comparisonsTitle) + paragraph(copy.comparisonsDescription)

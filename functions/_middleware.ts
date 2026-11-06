@@ -26,7 +26,7 @@ import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
 import { notFoundPageText } from "../src/i18n/notFoundPageText";
-import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
+import { mapOldHousePublicFaqs } from "../src/lib/publicServiceFaqs";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { materialCatalogText } from "../src/i18n/materialCatalogText";
 import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
@@ -2308,7 +2308,7 @@ export const onRequest: PagesFunction = async (context) => {
     // only when the public service record is unavailable, not for an empty locale.
     const oldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
     let meta = resolvedMeta && oldHouseLanguage
-      ? { ...resolvedMeta, faqs: mapPublicServiceFaqs(dynamicRouteState?.kind === "service"
+      ? { ...resolvedMeta, faqs: mapOldHousePublicFaqs(dynamicRouteState?.kind === "service"
           ? dynamicRouteState.row[`faqs_${oldHouseLanguage}`]
           : oldHouseRenovationPageText[oldHouseLanguage].faqs) }
       : resolvedMeta;
@@ -2553,7 +2553,7 @@ export const onRequest: PagesFunction = async (context) => {
       const fallbackMeta = staticMeta && isHomePageKey(key)
         ? { ...staticMeta, faqs: [] }
         : staticMeta && fallbackOldHouseLanguage
-          ? { ...staticMeta, faqs: mapPublicServiceFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
+          ? { ...staticMeta, faqs: mapOldHousePublicFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
           : staticMeta;
       let transformed = fallbackMeta
         ? injectSeo(html, fallbackMeta, await preparePublicHtml().settings)

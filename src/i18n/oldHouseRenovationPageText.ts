@@ -1,3 +1,9 @@
+export const oldHouseEnglishFaqRenderingCopy = {
+  question: "What counts as before-and-after evidence for an old-house renovation?",
+  previous: "The before-and-proposed visuals on this page are labelled as AI-generated planning concepts; they should not be read as a client project or construction result.",
+  current: "The comparison on this page shows an illustrated starting layout and a proposed design rendering.",
+} as const;
+
 export const oldHouseRenovationPageText = {
   en: {
     metaTitle: "Old House Renovation Kuala Lumpur | FLASH CAST",
