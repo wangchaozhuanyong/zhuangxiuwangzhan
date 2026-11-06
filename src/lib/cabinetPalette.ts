@@ -70,10 +70,13 @@ export function paletteQuotePath(design: StudioDesign, language: Language, hostn
   const scheme = schemeById(design.scheme)!;
   const { offer, exact } = studioPrice(design, hostname);
   const specs = visiblePaletteOffer(design, hostname);
+  const room = palettePreview(design).scene;
+  const cabinet = room === 'bedroom' ? l.kinds.wardrobe : room === 'kitchen' ? l.scenes.kitchen : l.scenes.living;
+  const title = `${l.styles[scheme.style]} ${String(scheme.variant).padStart(2, '0')} · ${cabinet}`;
   // submit-lead stores at most 4000 characters. Reserve the complete, lossless
   // share state before adding optional human-readable detail, never cut a URL.
   const required = [
-    `${l.styles[scheme.style]} · ${String(scheme.variant).padStart(2, '0')}`,
+    title,
     ...(offer && exact ? cabinetPricingSummary(offer, language) : [exact ? t.quote : t.adjusted]),
     `${p.consult} · ${p.promotionPeriod}`,
     `https://flashcast.com.my${studioSharePath(design, language)}`,
@@ -91,5 +94,5 @@ export function paletteQuotePath(design: StudioDesign, language: Language, hostn
   for (const line of descriptions) {
     if (details.length + line.length + 1 <= 4000) details += `\n${line}`;
   }
-  return buildQuotePath({ source: 'service', title: t.eyebrow, projectType: 'Custom Built-In Furniture', details });
+  return buildQuotePath({ source: 'cabinet', title, projectType: 'Custom Built-In Furniture', details });
 }

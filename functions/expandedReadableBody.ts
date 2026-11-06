@@ -1,5 +1,6 @@
 import { readableBodyPaths, sanitizeReadableContent } from "./readablePublicBody";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
+import customCabinetsText from "../src/i18n/customCabinetsText.json";
 import { processPageText } from "../src/i18n/processPageText";
 import { designServicePageText } from "../src/i18n/designServicePageText";
 import { surfaceRepairPageText } from "../src/i18n/surfaceRepairPageText";
@@ -83,6 +84,10 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
   const match = key.match(/^\/(en|zh|ms)(\/.*)$/);
   if (!match) return "";
   const lang = match[1] as Lang, path = match[2];
+  if (path === "/custom-cabinets") {
+    const copy = customCabinetsText[lang];
+    return wrap(`<h1>${escape(copy.landingTitle)}</h1>${paragraph(copy.landingIntro)}`, lang);
+  }
   if (path === "/services/old-house") return oldHouseBody(sources.row, lang);
   if (path === "/process") return processBody(sources, lang);
   if (readableBodyPaths.some(reviewed => reviewed === path)) return "";
