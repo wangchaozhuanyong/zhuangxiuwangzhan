@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getLanguageFromPath } from "@/i18n/routes";
+import { publicPageModules } from "@/lib/publicPageModules";
 
 type PrefetchConnection = { saveData?: boolean; effectiveType?: string };
 const INTENT_COOLDOWN = 1_000;
 const MAX_REMEMBERED_PATHS = 64;
+const directoryModules = { services: publicPageModules.Services, projects: publicPageModules.Projects, materials: publicPageModules.Materials, furniture: publicPageModules.FurnitureShowcase };
 
 /** Warm only the route the visitor points to, focuses, or touches. */
 export default function PublicRoutePrefetch() {
@@ -40,6 +42,11 @@ export default function PublicRoutePrefetch() {
       if (warmedAt.size > MAX_REMEMBERED_PATHS) warmedAt.delete(warmedAt.keys().next().value!);
       // Start code/CSS and data together. No navigation waits for speculation.
       void Promise.all([
+        // Start first-wave directory code before the general prefetch helper downloads.
+        (() => {
+          const directory = path.match(/^\/(?:en|zh|ms)\/(services|projects|materials|furniture)\/?$/)?.[1] as keyof typeof directoryModules | undefined;
+          return directory ? directoryModules[directory]() : undefined;
+        })(),
         import("@/lib/publicPagePrefetch")
           .then(({ prefetchPublicPageModule }) => prefetchPublicPageModule(path)),
         import("@/lib/publicRoutePrefetch")

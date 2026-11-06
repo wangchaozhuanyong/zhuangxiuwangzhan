@@ -299,6 +299,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    column-gap: 8px;
     height: 64px;
     width: 100%;
     max-width: var(--scheme-a-frame);
@@ -347,8 +348,18 @@
     max-width: none;
   }
 
-  .scheme-a-chrome__wordmark-copy { display: grid; gap: 4px; }
-  .scheme-a-chrome__wordmark-english { font: 600 10px/1 "Inter Tight Local", var(--font-body); letter-spacing: 0.08em; white-space: nowrap; }
+  .scheme-a-chrome__wordmark-copy {
+    display: grid;
+    gap: 4px;
+  }
+
+  .scheme-a-chrome__wordmark-english {
+    display: flex;
+    justify-content: space-between;
+    font: 500 11px/1 "Inter Local", var(--font-body);
+    letter-spacing: 0;
+    white-space: pre;
+  }
 
   .scheme-a-chrome__wordmark-name {
     font-family: var(--font-display);
@@ -366,14 +377,27 @@
     letter-spacing: 0.055em;
   }
 
+  .scheme-a-chrome__wordmark-name:lang(zh) {
+    /* Let both lines share the actual name width, without trailing tracking. */
+    letter-spacing: 0;
+  }
+
   .scheme-a-chrome__primary {
     display: flex;
-    min-width: 0;
     align-items: center;
     justify-content: center;
     gap: clamp(1.4rem, 2.4vw, 2.9rem);
-    flex: 1 1 auto;
+    flex: 1 0 auto;
     margin-inline: 2rem;
+  }
+
+  .scheme-a-chrome[data-navigation-compact] .scheme-a-chrome__primary,
+  .scheme-a-chrome[data-navigation-compact] .scheme-a-chrome__quote {
+    display: none;
+  }
+
+  .scheme-a-chrome[data-navigation-compact] .scheme-a-chrome__menu-trigger--compact {
+    display: inline-flex;
   }
 
   .scheme-a-chrome__primary a,
@@ -1407,7 +1431,7 @@
     display: none;
   }
 
-  @media (min-width: 1180px) and (max-width: 1535px) {
+  @media (min-width: 1180px) and (max-width: 1365px) {
     .scheme-a-chrome__brand img {
       height: 34px;
       max-height: 34px;
@@ -1488,6 +1512,7 @@
     .scheme-a-chrome__wordmark--localized { gap: 8px; }
     .scheme-a-chrome__symbol { width: 35px; height: 32px; }
     .scheme-a-chrome__wordmark-name { font-size: 20px; }
+    .scheme-a-chrome__wordmark-english { font-size: 10px; }
     .scheme-a-chrome__wordmark-name:is(:lang(en), :lang(ms)) { font-size: 15px; letter-spacing: 0.02em; }
 
     .scheme-a-chrome__actions {
@@ -1902,6 +1927,7 @@
     .scheme-a-chrome__symbol { width: 26px; height: 24px; }
     .scheme-a-chrome__symbol img { height: 24px !important; max-height: 24px !important; }
     .scheme-a-chrome__wordmark-name { font-size: 15.5px; letter-spacing: 0.025em; }
+    .scheme-a-chrome__wordmark-english { font-size: 9px; }
     .scheme-a-chrome__wordmark-name:is(:lang(en), :lang(ms)) { font-size: 12px; letter-spacing: -0.03em; }
 
     .scheme-a-chrome__language {

@@ -13,7 +13,7 @@ import { servicesData } from "@/data/services";
 import { usePublishedServiceBySlug, usePublishedServices } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { getServiceProjectGuidance, serviceDetailPageText } from "@/i18n/serviceDetailPageText";
+import { getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
@@ -88,6 +88,7 @@ export default function ServiceDetail() {
   });
   const contextLinks = getServiceContextLinks(service.slug, language);
   const projectGuidance = getServiceProjectGuidance(service.slug, language);
+  const residential = service.slug === "renovation" ? residentialLandingText[language] : null;
   const hasDirectConsultation = ["kitchen", "builtin", "renovation"].includes(service.slug);
   const quotePath = buildQuotePath({
     source: "service",
@@ -109,9 +110,17 @@ export default function ServiceDetail() {
         label={[copy.services, conceptLabel].filter(Boolean).join(" · ")}
         title={title}
         description={summary}
-        actions={<>{hasDirectConsultation && <PhotoEnquiryLink source="service_hero" />}<Link to={quotePath} className={hasDirectConsultation ? "fc-route-hero-action-secondary" : undefined}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link></>}
+        actions={<>{hasDirectConsultation && <PhotoEnquiryLink source="service_hero" label={residential?.photoCta} />}<Link to={quotePath} className={hasDirectConsultation ? "fc-route-hero-action-secondary" : undefined}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link></>}
       />
       <SchemeAFacts items={copy.facts} />
+      {residential && <>
+        <SchemeASection title={residential.scopeHeading} description={residential.scope}>
+          <Link className="font-medium text-accent underline" to="/locations">{residential.areas}</Link>
+        </SchemeASection>
+        <SchemeASection title={residential.heading} description={residential.answer}>
+          <Link className="font-medium text-accent underline" to="/blog/malaysia-renovation-budget-guide">{residential.budgetGuide}</Link>
+        </SchemeASection>
+      </>}
       <SchemeASection title={copy.overview} description={richDescription ? undefined : display(rawDescription)} className="fc-route-service-overview">
         {richDescription ? <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: richDescription }} /> : null}
         <div className="fc-route-scope-grid">

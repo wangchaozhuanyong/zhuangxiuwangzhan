@@ -3,7 +3,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { readRecoveryEnv } from "./lib/backup-env.mjs";
 import { decryptBackup, sha256, assertArchivePath } from "./lib/private-backup.mjs";
-import { postgresInvocation } from "./lib/database-recovery.mjs";
+import { postgresInvocation, assertAuditTriggerArchive } from "./lib/database-recovery.mjs";
 
 export function verifyFullPackage(folder, root = process.cwd(), options = {}) {
   const manifest = JSON.parse(fs.readFileSync(path.join(folder, "manifest.json"), "utf8"));
@@ -13,6 +13,7 @@ export function verifyFullPackage(folder, root = process.cwd(), options = {}) {
   const env = readRecoveryEnv(root, options);
   const payload = JSON.parse(decryptBackup(bytes, env.SUPABASE_DB_PASSWORD).toString());
   const archive = Buffer.from(payload.archive, "base64");
+  assertAuditTriggerArchive(archive, payload.metadata.structure, options);
   const invocation = postgresInvocation("pg_restore", ["--data-only", "--file", "-"], options);
   const dump = (options.execute || spawnSync)(invocation.executable, invocation.args, { input: archive, maxBuffer: 256 * 1024 * 1024, timeout: 60000 });
   if (dump.status !== 0) throw new Error("Postgres archive cannot be parsed.");

@@ -40,16 +40,48 @@ const checks = [
     patterns: ["admin_user_identity_change_forbidden", "before update of user_id, role, active or delete"],
   },
   {
+    file: "supabase/migrations/20261105174151_trusted_audit_writes.sql",
+    patterns: [
+      "trusted_backup_evidence boolean not null default false",
+      "revoke insert on public.admin_audit_logs, public.cms_revisions from public, anon, authenticated",
+      'drop policy if exists "Admins can create audit logs" on public.admin_audit_logs',
+      'drop policy if exists "System can create cms revisions" on public.cms_revisions',
+      "create function private.audit_admin_record_change()",
+      "security definer\nset search_path = ''",
+      "actor uuid := auth.uid()",
+      "if actor is null or not public.is_admin() then",
+      "insert into public.admin_audit_logs(admin_user_id, action, table_name, record_id, old_value, new_value)",
+      "values (actor, row_action, tg_table_name, row_id, before_row, after_row)",
+      "after insert or update or delete on public.%I",
+      "revoke all on function private.audit_admin_record_change() from public, anon, authenticated",
+      "actor_id = (select auth.uid())",
+      "and not trusted_backup_evidence",
+    ],
+  },
+  {
+    file: "supabase/tests/trusted_audit_writes.sql",
+    patterns: [
+      "browser audit forgery accepted",
+      "browser CMS revision forgery accepted",
+      "browser backup evidence forgery accepted",
+      "browser diagnostic actor forgery accepted",
+      "actual admin edit did not create an actor-bound audit",
+      "legacy and trusted server evidence were not distinguished",
+    ],
+  },
+  {
     file: "src/lib/adminMutation.ts",
     patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "AdminMutationError"],
   },
   {
     file: "src/backend/modules/system/service/adminMutationService.ts",
-    patterns: ["persistAdminRecord", "persistAdminRecordRemoval", "expectedUpdatedAt", "insertAdminAuditLog"],
+    patterns: ["persistAdminRecord", "persistAdminRecordRemoval", "expectedUpdatedAt"],
+    forbidden: [/\binsertAdminAuditLog\b/u],
   },
   {
     file: "src/backend/modules/system/repository/adminMutationRepository.ts",
-    patterns: ["admin_audit_logs", "fetchAdminMutationRecord", "archiveAdminMutationRecord"],
+    patterns: ["fetchAdminMutationRecord", "archiveAdminMutationRecord"],
+    forbidden: [/\binsertAdminAuditLog\b|\.from\s*\(\s*["'](?:admin_audit_logs|cms_revisions)["']\s*\)/u],
   },
   {
     file: "src/lib/systemLog.ts",
@@ -112,6 +144,19 @@ const checks = [
     patterns: ["backupViaRest", "site-images", "manifest.json"],
   },
   {
+    file: "scripts/lib/system-health-events.mjs",
+    patterns: ["logSystemHealthEvent", 'source: "ops"'],
+    forbidden: [/\btrusted_backup_evidence\s*:/u],
+  },
+  {
+    file: "scripts/record-recovery-status.mjs",
+    patterns: ["verifyFullPackage(folder, root, options)", "receipt_fingerprint", "trusted_backup_evidence: true"],
+  },
+  {
+    file: "supabase/functions/health-check/repository.ts",
+    patterns: ['.eq("trusted_backup_evidence", true)'],
+  },
+  {
     file: "scripts/restore-supabase-backup.mjs",
     patterns: ["RESTORE_CONFIRM", "--dry-run"],
   },
@@ -136,6 +181,9 @@ for (const check of checks) {
   const content = read(check.file);
   for (const pattern of check.patterns) {
     if (!content.includes(pattern)) failures.push(`${check.file} missing: ${pattern}`);
+  }
+  for (const pattern of check.forbidden ?? []) {
+    if (pattern.test(content)) failures.push(`${check.file} contains forbidden pattern: ${pattern}`);
   }
 }
 

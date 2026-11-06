@@ -1,6 +1,5 @@
 import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
-import type { Json } from "@/lib/database.types";
 import type { ManagedPreviewCandidate } from "../../../../../supabase/functions/_shared/managed-targets.ts";
 import { publishedContentLinkExists, type ContentLinkClient } from "../../../../../supabase/functions/_shared/content-link-repository.ts";
 import type { ContentLinkTarget } from "../../../../../supabase/functions/_shared/content-links.mjs";
@@ -84,25 +83,6 @@ export async function requestPublicContentInvalidation(args: {
   }
 
   return data;
-}
-
-export async function insertAdminAuditLog(args: {
-  table: string;
-  action: string;
-  id?: string | number | null;
-  oldValue?: AdminMutationDbRecord | null;
-  newValue?: AdminMutationDbRecord | null;
-}) {
-  const supabase = requireSupabase();
-  const { data: userData } = await supabase.auth.getUser();
-  await supabase.from("admin_audit_logs").insert({
-    admin_user_id: userData.user?.id || null,
-    action: args.action,
-    table_name: args.table,
-    record_id: args.id == null ? null : String(args.id),
-    old_value: (args.oldValue || null) as Json | null,
-    new_value: (args.newValue || null) as Json | null,
-  });
 }
 
 export async function fetchAdminMutationRecord(table: string, idField: string, id: string | number, signal?: AbortSignal) {

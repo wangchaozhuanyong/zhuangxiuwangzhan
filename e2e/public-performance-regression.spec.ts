@@ -107,7 +107,7 @@ test("before-and-after fallback stays interactive while CMS is pending", async (
   const comparison = page.locator(".scheme-a-transformation__compare input[type='range']").first();
   try {
     await expect(list).toHaveAttribute("data-content-source", "fallback");
-    await expect(list).toHaveAttribute("aria-busy", "true");
+    await expect(page.locator("[data-public-results]")).toHaveAttribute("aria-busy", "true");
     await expect(comparison).toBeVisible();
     await expect(comparison).toHaveCSS("touch-action", "pan-y");
   } finally {

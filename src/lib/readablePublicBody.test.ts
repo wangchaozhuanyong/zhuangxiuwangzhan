@@ -73,8 +73,10 @@ describe("reviewed service no-JS primary content", () => {
         const main = dom.window.document.querySelector("main[data-flashcast-readable-body]");
         expect(main).not.toBeNull();
         expect(main?.querySelectorAll("script,svg,img,iframe,form,[onclick],[onerror],[onload]")).toHaveLength(0);
-        expect(main?.querySelectorAll("a[href]")).toHaveLength(1);
-        expect(main?.querySelector("a[href]")?.getAttribute("href")).toBe("/" + lang + "/quote?x=1&y=2");
+        const expectedLinks = ["/" + lang + "/quote?x=1&y=2"];
+        if (slug === "renovation") expectedLinks.unshift("/" + lang + "/locations", "/" + lang + "/blog/malaysia-renovation-budget-guide");
+        const links: NodeListOf<HTMLAnchorElement> | undefined = main?.querySelectorAll("a[href]");
+        expect(Array.from(links ?? [], link => link.getAttribute("href"))).toEqual(expectedLinks);
         expect(main?.textContent).toContain("Visible reviewed paragraph.");
         expect(main?.textContent).toContain("<img src=x onerror=evil()>");
         expect(html).not.toContain("</noscript>");

@@ -23,7 +23,6 @@ export function saveAdminUser(
     action: existing ? "admin_user_update" : "admin_user_insert",
     queryClient,
     invalidate: "none",
-    audit: false,
   });
 }
 

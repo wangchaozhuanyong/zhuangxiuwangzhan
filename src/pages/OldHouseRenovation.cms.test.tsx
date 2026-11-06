@@ -38,6 +38,17 @@ const questions = () => Array.from(container.querySelectorAll(".fc-route-faq but
 const fixture = (value: unknown) => mapPublishedService({ id: "test-published-record", slug: "old-house", status: "published", [`faqs_${state.language}`]: value }, state.language);
 
 describe("old-house published CMS FAQ / client schema parity", () => {
+  it("describes the comparison as a design rendering in the visible CMS FAQ and schema", async () => {
+    state.language = "en";
+    const question = "What counts as before-and-after evidence for an old-house renovation?";
+    state.data = fixture([{ q: question, a: "Ask which work was completed. The before-and-proposed visuals on this page are labelled as AI-generated planning concepts; they should not be read as a client project or construction result." }]);
+    await render();
+    const answer = "Ask which work was completed. The comparison on this page shows an illustrated starting layout and a proposed design rendering.";
+    expect(schema()).toEqual([{ question, answer }]);
+    expect(container).toHaveTextContent(answer);
+    expect(container).not.toHaveTextContent("AI-generated");
+  });
+
   for (const language of ["en", "zh"] as const) {
     it(`${language}: uses only the selected published locale and safely filters incomplete entries`, async () => {
       state.language = language;

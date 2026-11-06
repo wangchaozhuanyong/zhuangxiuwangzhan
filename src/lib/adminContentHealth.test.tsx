@@ -2,7 +2,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getAdminHealthFieldLabel, useAdminContentHealth } from "@/lib/adminContentHealth";
+import { getAdminHealthFieldLabel, useAdminContentHealth, type AdminContentHealthItem } from "@/lib/adminContentHealth";
 import { setAdminLang } from "@/lib/adminLocale";
 
 const { fetchRows } = vi.hoisted(() => ({ fetchRows: vi.fn() }));
@@ -22,7 +22,7 @@ describe("content health language cache", () => {
     setAdminLang("zh");
     fetchRows.mockReset();
     fetchRows.mockImplementation(async (table: string) => table === "site_pages" ? [{
-      id: "fixture-page", page_key: "faq", path: "/faq", status: "published",
+      id: "fixture-page", page_key: "fixture_dynamic_page", path: "/fixture-dynamic-page", status: "published",
       title_zh: "测试页面", title_en: "Fixture page", description_en: "", content_en: "",
       seo_title_zh: "测试页面", seo_description_zh: "测试说明",
       seo_title_en: "Fixture page", seo_description_en: "Fixture description", image_url: "/fixture.webp",
@@ -77,6 +77,8 @@ describe("content health language cache", () => {
     });
     const { container } = await mount();
     await vi.waitFor(() => expect(container.textContent).toContain("服务项目 读取失败"));
+    const [failedItem] = JSON.parse(container.textContent || "[]") as AdminContentHealthItem[];
+    expect(failedItem).toMatchObject({ status: "error", missingRequired: [], missingEnglish: [], missingSeo: [], missingMedia: [], issues: [] });
     const initialReads = fetchRows.mock.calls.length;
 
     await act(async () => setAdminLang("en"));
@@ -94,5 +96,27 @@ describe("content health language cache", () => {
     const second = await mount(client);
     await vi.waitFor(() => expect(second.container.textContent).toContain("English missing: English description"));
     expect(fetchRows).toHaveBeenCalledTimes(initialReads);
+  });
+
+  it("allows optional old English fields on built-in routes while keeping dynamic gaps", async () => {
+    const rows = [
+      { id: "builtin", page_key: "faq", path: "/en/faq/" },
+      { id: "dynamic", page_key: "new-guide", path: "/new-guide" },
+      { id: "changed-path", page_key: "faq", path: "/custom-faq-guide" },
+      { id: "redirect", page_key: "products", path: "/products" },
+      { id: "missing-title", page_key: "services", path: "/services", title_en: "" },
+    ].map((row) => ({ status: "published", title_zh: "测试记录", title_en: "Fixture record", description_en: "", content_en: "", image_url: "/fixture.webp", ...row }));
+    fetchRows.mockImplementation(async (table: string) => table === "site_pages" ? rows : []);
+    const { container } = await mount();
+    await vi.waitFor(() => expect(container.textContent).toContain('"id":"builtin"'));
+    const items = JSON.parse(container.textContent || "[]") as AdminContentHealthItem[];
+    const item = (id: string) => items.find((entry) => entry.id === id)!;
+    expect(item("builtin").missingEnglish).toEqual([]);
+    expect(item("builtin").notice).toContain("可不填写");
+    expect(item("dynamic").missingEnglish).toEqual(["description_en", "content_en"]);
+    expect(item("changed-path").missingEnglish).toEqual(["description_en", "content_en"]);
+    expect(item("redirect").missingEnglish).toEqual([]);
+    expect(item("redirect").notice).toContain("旧重定向入口");
+    expect(item("missing-title").missingEnglish).toEqual(["title_en"]);
   });
 });

@@ -8,11 +8,16 @@ import { MALAY_TRANSLATION_TARGETS } from "./malay-translation-targets.ts";
 import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.ts";
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
 import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
+import { NEXT8_RENOVATION_ZH05971_TARGETS } from "./next8-renovation-zh05971-target.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
 import { WARDROBE15_BUILTIN_TARGETS } from "./wardrobe15-builtin-targets.ts";
 import { ENGLISH_KITCHEN_EN2_TARGETS } from "./english-kitchen-en2-targets.ts";
+import { PAID6_KITCHEN_TARGETS } from "./paid6-kitchen-targets.ts";
+
+import { CONTACT_CMS_PAGE_TITLE_TARGETS } from "./contact-cms-page-title-targets.ts";
 import { TWO_ORIGINAL_MATERIAL_BODY_TARGETS } from "./two-original-material-body-targets.ts";
-export { ORG020_V7_TARGETS, TWO_ORIGINAL_MATERIAL_BODY_TARGETS };
+export { ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS, TWO_ORIGINAL_MATERIAL_BODY_TARGETS };
+import { PAID_FOUR_CURRENT_TARGETS } from "./paid-four-current-targets.ts";
 
 export type ManagedTarget = {
   id: string;
@@ -48,11 +53,14 @@ const PAID_THREE_PAGE_NATIVE_FIELDS = [
 
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
+  ...PAID_FOUR_CURRENT_TARGETS,
   ...ENGLISH_KITCHEN_EN2_TARGETS,
   ...SHOP_OFFICE_SIX_FIELD_TARGETS,
   ...NEXT8_TWO_RECORD_TARGETS,
+  ...NEXT8_RENOVATION_ZH05971_TARGETS,
   ...NEXT12_FIVE_RECORD_TARGETS,
   ...WARDROBE15_BUILTIN_TARGETS,
+  ...PAID6_KITCHEN_TARGETS,
   ...BUILTIN_WARDROBE_TARGETS,
   ...UNIFIED_CONTENT_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),
@@ -144,6 +152,7 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
 
 export const MANAGED_TARGETS: readonly ManagedTarget[] = [
   ...TWO_ORIGINAL_MATERIAL_BODY_TARGETS,
+  ...CONTACT_CMS_PAGE_TITLE_TARGETS,
   ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
 
@@ -215,5 +224,5 @@ export function isProtectedContentRecord(table: string, record: Record<string, u
   };
   return MANAGED_TARGETS.some((target) => (target.table || tables[target.contentType]) === table
     && (record.id === target.id || (Boolean(target.slug) && (record.slug === target.slug
-      || (table === "site_pages" && record.page_key === target.slug)))));
+      || ((table === "site_pages" || (table === "cms_pages" && target.contentType === "site_page")) && record.page_key === target.slug)))));
 }

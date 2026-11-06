@@ -29,6 +29,7 @@ export function createPublicPageLoader(
 // This registry is shared by route rendering and intent-based prefetch. These
 // are dynamic imports: creating the registry does not download every page.
 export const publicPageModules = {
+  CustomCabinets: createPublicPageLoader(() => import("@/pages/CustomCabinets")),
   Index: createPublicPageLoader(() => import("@/pages/Index")),
   About: createPublicPageLoader(() => import("@/pages/About")),
   Services: createPublicPageLoader(() => import("@/pages/Services")),

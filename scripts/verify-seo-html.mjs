@@ -19,6 +19,9 @@ const brandMetadata = RUN_CONTENT_MATCH_CHECKS ? await (async () => {
 })() : null;
 
 const paths = [
+  "/zh/custom-cabinets",
+  "/en/custom-cabinets",
+  "/ms/custom-cabinets",
   "/zh",
   "/en",
   "/zh/services",
@@ -77,15 +80,16 @@ const fetchText = async (url, init = {}) => {
 for (const path of paths) {
   const url = `${BASE}${path}`;
   const { res, html } = await fetchText(url);
-  const lang = path.startsWith("/zh") ? "zh" : "en";
-  const expectedLang = lang === "zh" ? 'lang="zh-CN"' : 'lang="en"';
+  const lang = path.startsWith("/ms") ? "ms" : path.startsWith("/zh") ? "zh" : "en";
+  const expectedLang = lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en";
+  const actualHtmlLang = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i)?.[1];
 
   if (!res.ok) failures.push(`${path}: HTTP ${res.status}`);
   if (!html.includes("<title")) failures.push(`${path}: missing <title>`);
   if (!html.includes('name="description"')) failures.push(`${path}: missing description`);
   if (!html.includes('rel="canonical"')) failures.push(`${path}: missing canonical`);
   if (!html.includes('hreflang="en"') || !html.includes('hreflang="zh-CN"')) failures.push(`${path}: missing hreflang`);
-  if (!html.includes(expectedLang)) failures.push(`${path}: expected ${expectedLang} on <html>`);
+  if (actualHtmlLang !== expectedLang) failures.push(`${path}: expected lang="${expectedLang}" on <html>, got ${actualHtmlLang || "missing"}`);
   if (!html.includes('property="og:title"')) failures.push(`${path}: missing og:title`);
 
   const expected = manifest[normalizePath(path)];

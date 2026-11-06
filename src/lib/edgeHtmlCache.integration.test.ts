@@ -40,7 +40,7 @@ class MemoryEdgeCache {
 
   getPublicHtmlEntry() {
     const entry = Array.from(this.entries.entries())
-      .find(([key]) => !key.includes("__flashcast_html_fresh=1"));
+      .find(([key]) => key.includes("__flashcast_html_v=") && !key.includes("__flashcast_html_fresh=1"));
     return entry?.[1].clone();
   }
 }
@@ -81,6 +81,7 @@ describe("public Edge HTML cache", () => {
 
   afterEach(async () => {
     await Promise.all(pendingTasks.splice(0));
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
     supabaseFetch.mockClear();
     if (originalCachesDescriptor) {
@@ -97,6 +98,7 @@ describe("public Edge HTML cache", () => {
     supabaseUrl = "https://example.supabase.co",
     headers,
     assetHeaders,
+    handler = onRequest,
   }: {
     deploymentVersion?: string;
     html?: string;
@@ -104,9 +106,10 @@ describe("public Edge HTML cache", () => {
     supabaseUrl?: string;
     headers?: HeadersInit;
     assetHeaders?: Record<string, string>;
+    handler?: typeof onRequest;
   } = {}) => {
     const request = new Request(`https://flashcast.com.my${path}`, { headers });
-    return onRequest({
+    return handler({
       request,
       env: {
         CF_PAGES_COMMIT_SHA: deploymentVersion,
@@ -763,5 +766,72 @@ describe("public Edge HTML cache", () => {
     expect(revisedResponse.status).toBe(200);
     expect(revisedResponse.headers.get("x-flashcast-html-cache")).toBe("miss");
     expect(revisedResponse.headers.get("etag")).not.toBe(firstEtag);
+  });
+
+  it("reuses a five-second Edge revision snapshot after an isolate restart without reading settings", async () => {
+    const supabaseUrl = "https://snapshot-new-isolate.supabase.co";
+    await requestPage({ supabaseUrl });
+    await Promise.all(pendingTasks.splice(0));
+    const before = supabaseFetch.mock.calls.length;
+    vi.resetModules();
+    const freshIsolate = await import("../../functions/_middleware");
+    const response = await requestPage({ supabaseUrl, handler: freshIsolate.onRequest });
+    expect(response.headers.get("x-flashcast-html-cache")).toBe("hit");
+    expect(supabaseFetch).toHaveBeenCalledTimes(before);
+    expect(response.headers.get("server-timing")).toContain("route;dur=0.0");
+    expect(response.headers.get("server-timing")).toContain("transform;dur=0.0");
+  });
+
+  it("revalidates an expired known version using only updated_at on a cache hit", async () => {
+    let now = Date.now();
+    vi.spyOn(Date, "now").mockImplementation(() => now);
+    const supabaseUrl = "https://revision-only-hit.supabase.co";
+    await requestPage({ supabaseUrl });
+    await Promise.all(pendingTasks.splice(0));
+    supabaseFetch.mockClear(); now += 6000;
+    const response = await requestPage({ supabaseUrl });
+    expect(response.headers.get("x-flashcast-html-cache")).toBe("hit");
+    expect(supabaseFetch).toHaveBeenCalledOnce();
+    expect(new URL(String(supabaseFetch.mock.calls[0][0])).searchParams.get("select")).toBe("updated_at");
+  });
+
+  it("does not authorize stale HTML or a renewed lease when version confirmation fails", async () => {
+    let now = Date.now();
+    vi.spyOn(Date, "now").mockImplementation(() => now);
+    const supabaseUrl = "https://revision-failed-confirmation.supabase.co";
+    const first = await requestPage({ supabaseUrl });
+    await Promise.all(pendingTasks.splice(0));
+    now += 6000;
+    supabaseFetch.mockImplementation(async () => new Response("unavailable", { status: 503 }));
+    const failed = await requestPage({ supabaseUrl, headers: { "if-none-match": first.headers.get("etag") || "" } });
+    expect(failed.headers.get("x-flashcast-html-cache")).not.toBe("hit");
+    expect(failed.headers.get("x-flashcast-html-cache")).not.toBe("stale");
+    expect(failed.status).not.toBe(304);
+    supabaseFetch.mockClear();
+    await requestPage({ supabaseUrl });
+    expect(supabaseFetch).toHaveBeenCalled();
+  });
+
+  it("confirms again when a cache lookup finishes after the five-second lease", async () => {
+    let now = 1000;
+    vi.spyOn(Date, "now").mockImplementation(() => now);
+    const supabaseUrl = "https://revision-lookup-deadline.supabase.co";
+    const first = await requestPage({ supabaseUrl });
+    await Promise.all(pendingTasks.splice(0));
+    now = 5900;
+    const match = edgeCache.match.bind(edgeCache);
+    let delayed = false;
+    vi.spyOn(edgeCache, "match").mockImplementation(async request => {
+      const value = await match(request);
+      if (!delayed && request.url.includes("__flashcast_html_v=") && !request.url.includes("__flashcast_html_fresh=")) {
+        delayed = true; now = 6100; siteSettingsRevision = "revision-after-lookup-deadline";
+      }
+      return value;
+    });
+    const response = await requestPage({ supabaseUrl, headers: { "if-none-match": first.headers.get("etag")! } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-flashcast-html-cache")).toBe("miss");
+    expect(await response.text()).toContain(siteSettingsRevision);
+    expect(supabaseFetch.mock.calls.some(([input]) => new URL(String(input)).searchParams.get("select") === "updated_at")).toBe(true);
   });
 });

@@ -5,8 +5,8 @@ import { corsHeadersFor, handleCorsPreflight, isAllowedCorsOrigin } from "../_sh
 import { BodyTooLargeError, readJsonBody } from "../_shared/request-body.ts";
 import { syncPublicContent } from "../_shared/public-content-sync.ts";
 import { verifyGithubOidcToken } from "./github-oidc.ts";
-import { issueManagedPermit, readManagedPermit, revokeManagedPermit } from "./permit-issuer.ts";
-import type { ManagedPermitIssue } from "./permit-issuer.ts";
+import { issueManagedPermit, readManagedPermit, readManagedPermitHistory, revokeManagedPermit } from "./permit-issuer.ts";
+import type { ManagedPermitIssue, ManagedPermitLookup } from "./permit-issuer.ts";
 import { verifyManagedIssuerSecret } from "./permit-auth.ts";
 import { publishContent } from "./service.ts";
 import type { ContentPublishRequest } from "./types.ts";
@@ -16,7 +16,8 @@ import type { ContentPublishRequest } from "./types.ts";
 // the decoded 5 MiB limit.
 const MAX_BODY_BYTES = 7 * 1024 * 1024;
 type ManagedControlRequest = ({ controlAction: "issue" } & ManagedPermitIssue)
-  | { controlAction: "status" | "revoke"; permitId: string };
+  | { controlAction: "status" | "revoke"; permitId: string }
+  | ManagedPermitLookup;
 
 
 const json = (req: Request, body: Record<string, unknown>, status = 200) =>
@@ -57,6 +58,8 @@ serve(async (req) => {
           ? await issueManagedPermit(client, control)
           : control.controlAction === "status"
           ? await readManagedPermit(client, control.permitId)
+          : control.controlAction === "lookup"
+          ? await readManagedPermitHistory(client, control)
           : control.controlAction === "revoke"
           ? await revokeManagedPermit(client, control.permitId)
           : null;

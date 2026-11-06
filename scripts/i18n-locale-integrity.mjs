@@ -223,6 +223,7 @@ const parseSourceFile = (filePath, source) => {
     extension === ".tsx" ? ts.ScriptKind.TSX :
     extension === ".jsx" ? ts.ScriptKind.JSX :
     extension === ".js" ? ts.ScriptKind.JS :
+    extension === ".json" ? ts.ScriptKind.JSON :
     ts.ScriptKind.TS;
   return ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, kind);
 };

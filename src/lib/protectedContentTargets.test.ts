@@ -18,6 +18,12 @@ describe("shared protected content admission", () => {
       if (target.contentType === "site_page") expect(isProtectedContentRecord(table, { page_key: target.slug })).toBe(true);
     }
   });
+  it("keeps the Contact page-key alias scoped to its exact CMS table", () => {
+    expect(isProtectedContentRecord("cms_pages", { page_key: "contact" })).toBe(true);
+    expect(isProtectedContentRecord("cms_pages", { page_key: "ordinary-page" })).toBe(false);
+    expect(isProtectedContentRecord("services", { page_key: "contact" })).toBe(false);
+    expect(isProtectedContentRecord("cms_sections", { page_key: "contact" })).toBe(false);
+  });
   it("leaves an ordinary content record outside the managed publication permit scope", () => {
     expect(isProtectedContentRecord("blog_posts", { id: "ordinary-row", slug: "ordinary-article" })).toBe(false);
     expect(isProtectedContentRecord("faqs", {})).toBe(false);

@@ -1,0 +1,564 @@
+{
+  "schema": "original-professional-CMS-increment-WEB-loading-input/v1",
+  "task_id": "fc-20261017-six-keyword-matching-original-resume-v1",
+  "business_scope": "project:flashcast:original-six-keyword-source-resume:v1",
+  "original_professional_owner": "paid-growth-data",
+  "original_goal_contract": {
+    "path": "logs/handoffs/2026-10-10-goal-delivery-assistant-runtime-v1/operations-assistant3-business-next-v2/assistant3-continuation/event-followthrough/paid-six-keyword-message-repair-return-20261017-v1/original-source-resume-PREPARED-v1/complete-original-resume-goal-PREPARED.json",
+    "sha256": "71b02401039058515382823cf97e1e8ff2ce1912b7eeaaa41e483c4deb9a43f8",
+    "size": 9534
+  },
+  "original_human_authorization": {
+    "path": "logs/handoffs/2026-10-10-goal-delivery-assistant-runtime-v1/operations-assistant3-business-next-v2/assistant3-continuation/event-followthrough/paid-six-keyword-message-repair-return-20261017-v1/original-source-resume-PREPARED-v1/original-exact-human-source-mapping-PREPARED.json",
+    "sha256": "85e735040427f940738b4b84d5aa58eb407a27f06dcaae6548199cba3bd408ec",
+    "size": 4031
+  },
+  "registration_input": {
+    "path": "logs/handoffs/2026-10-27-six-keyword-kitchen-original-source-v1/system-development-v1/EXACT-ORIGINAL-KITCHEN-SOURCE-REGISTRATION-v1.json",
+    "sha256": "4e27c3d504899bb5d96236a22af2bd70d6b0dc7daac6d5cf23a130cddba0cde7",
+    "size": 635
+  },
+  "owner_source": {
+    "path": "drafts/google-ads/fc-20260920-google-ads-rm100-budget-plan/original-two-goals-closeout-20261027-v1/six-independent-kitchen-source-followthrough-20261027-v1/EXACT-INDEPENDENT-KITCHEN-SOURCE-ISSUER-LOADING-INPUT-v1.json",
+    "sha256": "9e7ca89a199a8043c7b16b553e7d5bc2b47a1224eed243c9da361a55814a5c47",
+    "size": 11945
+  },
+  "current_PUB": {
+    "task_id": "01a158a9-2521-75f0-aa5a-41dc706bfc40",
+    "title": "FLASH CAST｜后台发布部｜2026-10｜接续1020",
+    "project_id": "934ba50b-f6e8-4798-8703-0efbc9cd0de7",
+    "cwd": "/Users/wangchao/Desktop/装修公司虚拟员工",
+    "host_id": "local",
+    "sidebar_section_id": "24a24d49-6044-4a23-b85b-c60281aba68c",
+    "status": "bound_and_visible",
+    "reply_health": "healthy_visible_reply_verified",
+    "dispatch_eligible": true,
+    "last_reply_ref": "msg_0df37763fd2f993a016adfaa27b5e48191b8d925214814723d",
+    "last_reply_sha256": "7a3c8c8122ba64226fd6d7108743892d5bb00db5dcb5ca158170cb893e6c06c3",
+    "last_verified_at": "2026-10-26T19:29:49+00:00",
+    "last_health_check_at": "2026-10-26T19:29:49+00:00",
+    "last_run_status": "success",
+    "consecutive_empty_reply_turns": 0,
+    "consecutive_failures": 0,
+    "rotation_record": {
+      "path": "logs/handoffs/2026-10-20-clean-department-window-rotation-v1/runtime-migration/records/publishing-v2.json",
+      "sha256": "f7e1b1efb71161d73daeb5c5a16d485b44a4090bdb6c5bfe91c50f9d6722cc94",
+      "size": 3758
+    },
+    "last_health_check_task_id": "department-health-publishing-20261027",
+    "failure_class": "",
+    "next_retry_at": "",
+    "last_success_at": "2026-10-26T19:29:49+00:00"
+  },
+  "external_WEB": {
+    "project_id": "local-f188ce238826dea5a8905c7d796554c2",
+    "project_name": "装修网站开发",
+    "thread_id": "01a158aa-ad30-7a81-902e-f1fa729a4ea9",
+    "title": "FLASH CAST｜专用开发部｜网站与部门系统｜接续1020",
+    "cwd": "/Users/wangchao/Desktop/装修网站",
+    "existing_authorization_required": true,
+    "allowed_scope": [
+      "website task only with its own actual human or existing exact standing authorization",
+      "historical company-system tasks assigned before system-development onboarding retain their exact original task, executor and authorization, including fc-20261010-department-system-adopted-source-push-v18"
+    ],
+    "company_role_health_inherited": false,
+    "generic_cross_project_access_allowed": false,
+    "runtime_goal_authorization_required": true,
+    "task_id": "01a158aa-ad30-7a81-902e-f1fa729a4ea9",
+    "host_id": "local",
+    "sidebar_section_id": null,
+    "status": "bound_and_visible",
+    "reply_health": "healthy_visible_reply_verified",
+    "dispatch_eligible": true,
+    "last_reply_ref": "msg_08490e63a76918cb016ad73643d884819a92a692364058038f",
+    "last_reply_sha256": "08264b254a2722e11d48ee578933eb196563d69fe0f67f59069516de9943cf18",
+    "last_verified_at": "2026-10-20T09:53:36.635955+00:00",
+    "last_health_check_at": "2026-10-20T09:53:36.635960+00:00",
+    "last_run_status": "success",
+    "consecutive_empty_reply_turns": 0,
+    "consecutive_failures": 0,
+    "rotation_record": {
+      "path": "logs/handoffs/2026-10-20-clean-department-window-rotation-v1/runtime-migration/records/designated-development-v2.json",
+      "sha256": "93508315ed8cb7a989165bd13e32492920994e4d7ad7055faf436b385f4fcce1",
+      "size": 3490
+    },
+    "production_write_allowed": false
+  },
+  "runtime_target": {
+    "id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+    "slug": "kitchen",
+    "contentType": "service",
+    "table": "services",
+    "taskId": "fc-20261017-six-keyword-matching-original-resume-v1",
+    "actionId": "paid6-kitchen-content-zh-native-save-v1",
+    "candidateVersion": "paid6-kitchen-content-zh-native-save-v1",
+    "scope": "flashcast.com.my:services/kitchen:content_zh:six-keyword-message-repair",
+    "changedFields": [
+      "content_zh"
+    ],
+    "baselineProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "baselineFieldsSha256": "0c82294add9d453a671fe2597a80494b2ab38456bfb2490bf81652c424c879d5",
+    "desiredFieldsSha256": "1c675229a325d16a9f721cf00f571049535780e3e950475aadf2b1f041e9c8a3",
+    "rollbackFieldsSha256": "084ce60c9688d62c96a2e1f070cc240ed31eb916a45503c40a8bc6122b39ab71",
+    "expectedUpdatedAt": "2026-10-19T13:39:00.867332+00:00",
+    "retainedProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh"
+    ],
+    "retainedFieldsSha256": "d2ed15c0637c595b13cca744b3d9e7d041881e260b7e4de8df2e32fadbeea319",
+    "rollbackAllowed": true,
+    "requiresParentRun": true
+  },
+  "forward_tuple": {
+    "task_id": "fc-20261017-six-keyword-matching-original-resume-v1",
+    "action_id": "paid6-kitchen-content-zh-native-save-v1",
+    "action_class": "cms_write",
+    "scope": "flashcast.com.my:services/kitchen:content_zh:six-keyword-message-repair",
+    "business_scope": "project:flashcast:original-six-keyword-source-resume:v1",
+    "candidate_version": "paid6-kitchen-content-zh-native-save-v1",
+    "table": "services",
+    "record_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+    "slug": "kitchen",
+    "changed_fields": [
+      "content_zh"
+    ],
+    "execution_department": "publishing"
+  },
+  "before": {
+    "id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+    "slug": "kitchen",
+    "alt_en": "Kitchen renovation and custom cabinet design concept in Kuala Lumpur showing wet and dry kitchen layout, countertop and storage planning",
+    "alt_ms": "Pengubahsuaian dapur dan konsep reka bentuk kabinet tersuai di Kuala Lumpur menunjukkan susun atur dapur basah dan kering, kaunter dan perancangan penyimpanan",
+    "alt_zh": "吉隆坡厨房装修与橱柜定制效果图方案，展示干湿厨房、台面和收纳规划",
+    "status": "published",
+    "faqs_en": [
+      {
+        "a": "FLASH CAST can help review condo and landed-home kitchens, dry and wet kitchen zoning, cabinet layouts, countertop options, appliance points, plumbing, wet works, and related coordination. Final scope follows the real site and written quotation.",
+        "q": "What kitchen renovation work can FLASH CAST help with?"
+      },
+      {
+        "a": "Key factors include cabinet size, countertop choice, hardware, appliance points, plumbing changes, wet-work scope, wall and floor finishes, demolition, and installation complexity.",
+        "q": "What affects a kitchen renovation quotation?"
+      },
+      {
+        "a": "Yes, the cabinet and countertop scope can be reviewed first. If plumbing, electrical points, wall or floor finishes, or waterproofing-related work is involved, the construction boundary should be confirmed together.",
+        "q": "Can I update only kitchen cabinets and countertops?"
+      },
+      {
+        "a": "Planning should consider cooking frequency, smoke and grease, storage, natural light, dining flow, and the appliance list. Wet kitchens usually support heavier cooking, while dry kitchens can support prep, display, and storage.",
+        "q": "How should dry and wet kitchen zones be planned?"
+      },
+      {
+        "a": "No. Clearly labeled rendering concepts are planning references, not proof of a completed customer project. Final decisions depend on the real site and approved materials.",
+        "q": "Are rendering concepts on the page completed projects?"
+      },
+      {
+        "a": "Share kitchen dimensions or site photos, existing plumbing and electrical points, and the base, wall or tall cabinets and appliances you need. Cabinet dimensions, materials, hardware, countertops and installation scope should be checked on site and included in a written quotation. Storage for other rooms can be discussed under the custom built-in furniture service.",
+        "q": "What should I prepare before planning custom kitchen cabinets?"
+      }
+    ],
+    "faqs_ms": [
+      {
+        "a": "Harga bergantung pada panjang kabinet, bahan papan, kemasan pintu, permukaan kaunter, perkakasan dan aksesori. Kami menyediakan sebut harga terperinci selepas pengukuran.",
+        "q": "Bagaimanakah harga kabinet dikira?"
+      }
+    ],
+    "faqs_zh": [
+      {
+        "a": "可以协助检查公寓与有地住宅厨房、干湿厨房分区、橱柜布局、台面选择、家电点位、给排水、湿作和相关协调。最终范围以真实现场和书面报价为准。",
+        "q": "FLASH CAST 可以协助哪些厨房装修范围？"
+      },
+      {
+        "a": "主要取决于橱柜尺寸、台面选择、五金、家电点位、给排水调整、湿作范围、墙地面处理、拆除和安装复杂度。",
+        "q": "厨房装修报价会受什么影响？"
+      },
+      {
+        "a": "可以先评估橱柜、台面和家电点位是否能单独更新；如果涉及水电、墙地面或防水相关范围，需要一起确认施工边界。",
+        "q": "是否可以只做厨房橱柜和台面？"
+      },
+      {
+        "a": "建议根据煮食频率、油烟、收纳、采光、用餐动线和家电清单规划。湿厨房偏实际烹饪，干厨房可承担备餐、展示和收纳功能。",
+        "q": "干厨房和湿厨房应该怎么规划？"
+      },
+      {
+        "a": "不是。清楚标注的效果图只是规划参考，不作为真实客户完工项目证明。最终以现场与确认材料为准。",
+        "q": "页面里的效果图方案是真实完工案例吗？"
+      },
+      {
+        "a": "先提供厨房平面尺寸或现场照片、现有水电点位，以及地柜、吊柜、高柜和家电需求。柜体尺寸、材料、五金、台面与安装范围需按现场核对并写入书面报价；其他空间的整体收纳需求可另行讨论定制家具服务。",
+        "q": "定制厨房橱柜前需要确认什么？"
+      }
+    ],
+    "version": 1,
+    "title_en": "Kitchen Renovation in Kuala Lumpur & Selangor",
+    "title_ms": "Ubah Suai Dapur di Kuala Lumpur & Selangor",
+    "title_zh": "吉隆坡与雪兰莪定制橱柜及厨房装修",
+    "image_url": "/images/services/kitchen-renovation.webp",
+    "content_en": "<p>Kitchen renovation should address daily workflow, storage, countertop use, appliance points, plumbing, and wet-work scope together. FLASH CAST can begin with site measurements, existing service points, dry and wet kitchen zoning, cabinet structure, material direction, and quotation scope. Final scope follows the real site and written quotation.</p><h2>How should appliances and site information be prepared before cabinet planning?</h2><p>List the fridge, hob, oven and other appliances you plan to keep or replace, including their dimensions and current positions. Share these with kitchen photos, key dimensions, plumbing and electrical points before discussing base, wall and tall cabinets, worktops and storage. Final dimensions, points and installation coordination require a site check.</p><h2>How can kitchen renovation quotations be compared fairly?</h2><p>Compare cabinet dimensions and configuration, door and material direction, worktops, hardware, appliance points, plumbing, wet works, demolition and installation separately. Clarify retained items, owner-supplied items, optional work and matters awaiting inspection so quotations cover a similar scope. A per-foot rate or headline total alone does not explain that scope.</p><h2>How should kitchen cabinetry connect with storage in other rooms?</h2><p>Plan kitchen cabinetry around cooking, preparation, washing, appliances and worktops. Bedroom wardrobes, TV units, shoe cabinets and storage across other rooms can be discussed under the built-in furniture service. Confirm each room’s materials, hardware, fabrication and installation scope against the site.</p><p>Continue planning: <a href=\"/en/services/builtin\">Built-in furniture and storage</a>; <a href=\"/en/services/design\">Interior design and space planning</a>; <a href=\"/en/quote\">Kitchen renovation enquiry</a></p>",
+    "content_ms": "<p>Pengubahsuaian dapur harus menangani aliran kerja harian, penyimpanan, penggunaan permukaan kaunter, titik sambungan peralatan, paip dan skop kerja basah bersama-sama. FLASH CAST boleh bermula dengan ukuran tapak, titik servis sedia ada, pengezonan dapur kering dan basah, struktur kabinet, arah bahan dan skop sebut harga. Skop akhir mengikut tapak sebenar dan sebut harga bertulis.</p><h2>Bagaimanakah peralatan dan maklumat tapak perlu disediakan sebelum perancangan kabinet?</h2><p>Senaraikan peti sejuk, dapur memasak, ketuhar dan peralatan lain yang anda rancang untuk simpan atau ganti, termasuk dimensi dan kedudukan semasanYa. Kongsi ini dengan foto dapur, dimensi utama, paip dan titik elektrik sebelum membincangkan asas, dinding dan kabinet tinggi, permukaan kaunter dan storan. Dimensi akhir, titik dan penyelarasan pemasangan memerlukan pemeriksaan tapak.</p><h2>Bagaimanakah sebut harga pengubahsuaian dapur boleh dibandingkan dengan adil?</h2><p>Bandingkan dimensi dan konfigurasi kabinet, arah pintu dan bahan, bahagian permukaan kaunter, perkakasan, titik sambungan peralatan, paip, kerja basah, perobohan dan pemasangan secara berasingan. Jelaskan item yang disimpan, item yang dibekalkan pemilik, kerja pilihan dan perkara yang menunggu pemeriksaan supaya sebut harga meliputi skop yang sama. Kadar setiap kaki atau jumlah tajuk sahaja tidak menjelaskan skop tersebut.</p><h2>Bagaimanakah kabinet dapur harus disambungkan dengan storan di bilik lain?</h2><p>Rancang kabinet dapur sekitar memasak, penyediaan, mencuci, perkakas dan meja kerja. Almari pakaian bilik tidur, unit TV, kabinet kasut dan storan di seluruh bilik lain boleh dibincangkan di bawah perkhidmatan perabot terbina dalam. Sahkan skop bahan, perkakasan, fabrikasi dan pemasangan setiap bilik terhadap tapak.</p><p>Teruskan perancangan: <a href=\"/ms/services/builtin\">Perabot dan storan terbina dalam</a>; <a href=\"/ms/services/design\">Reka bentuk dalaman dan perancangan ruang</a>; <a href=\"/ms/quote\">Pertanyaan pengubahsuaian dapur</a></p>",
+    "content_zh": "<p>厨房装修不只是换橱柜，而是重新整理日常使用动线、收纳、台面、家电点位、给排水和湿作范围。FLASH CAST 可从现场测量、现有水电点位、干湿厨房分区、柜体结构、材料方向和报价范围开始整理；最终范围以真实现场与书面报价为准。</p><h2>橱柜规划前怎样整理家电与现场资料？</h2><p>先整理拟保留或更换的冰箱、灶具、烤箱和其他家电清单，以及尺寸与现有位置。连同厨房照片、主要尺寸、给排水和插座位置交给团队核对，再讨论地柜、吊柜、高柜、台面及收纳。最终尺寸、点位和安装衔接须经现场确认。</p><h2>怎样比较厨房装修的报价范围？</h2><p>比较方案时，把橱柜尺寸与配置、门板和材料方向、台面、五金、家电点位、给排水、湿作、拆除与安装分别核对。写清保留项目、业主自备项目、可选项目和待检查事项，让两份报价按相近范围比较；不要只看每尺价格或总价。</p><h2>厨房与其他空间收纳应怎样衔接？</h2><p>厨房橱柜应围绕煮食、备餐、清洗、家电和台面规划；卧室衣柜、电视柜、鞋柜和跨房间收纳则可由全屋定制服务继续讨论。共同确认柜体与现场条件，分别列出各空间的材料、五金、制作及安装范围。</p><p>继续了解：<a href=\"/zh/services/builtin\">全屋定制与其他空间收纳</a>；<a href=\"/zh/services/design\">室内设计与空间规划</a>；<a href=\"/zh/quote\">厨房装修报价咨询</a></p>",
+    "created_at": "2026-05-25T10:58:29.820388+00:00",
+    "excerpt_en": "Plan kitchen layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and written quotation scope around the real site.",
+    "excerpt_ms": "Rancang susun atur dapur, storan, kabinet, pilihan permukaan kaunter, titik sambungan peralatan, paip, keadaan kerja basah dan skop sebut harga bertulis di sekitar tapak sebenar.",
+    "excerpt_zh": "根据真实现场规划定制橱柜、台面、厨房收纳与干湿厨房动线；再核对家电点位、给排水、材料、五金、安装条件及书面报价范围。",
+    "sort_order": 20,
+    "updated_at": "2026-10-19T13:39:00.867332+00:00",
+    "seo_title_en": "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+    "seo_title_ms": "Ubah Suai Dapur Kuala Lumpur & Selangor | FLASH CAST",
+    "seo_title_zh": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+    "scope_items_en": [
+      "Site measurement and existing point checking",
+      "Dry kitchen, wet kitchen, or open kitchen layout planning",
+      "Base cabinet, wall cabinet, tall unit, island, or peninsula storage planning",
+      "Countertop, cabinet door, hardware, backsplash, wall, and floor material advice",
+      "Sink, hob, hood, fridge, dishwasher, and appliance point coordination",
+      "Plumbing, waterproofing-related, tile, and wet-work scope review",
+      "Quotation scope review, site coordination, and handover checking",
+      "Kitchen renovation rendering concept, not a completed project photo"
+    ],
+    "scope_items_ms": [
+      "Pengukuran tapak",
+      "Perancangan aliran kerja dan ruang simpanan",
+      "Pembuatan kabinet dan permukaan kaunter",
+      "Pemasangan dan kerja kemasan"
+    ],
+    "scope_items_zh": [
+      "现场测量与现有水电点位确认",
+      "干厨房、湿厨房或开放式厨房布局建议",
+      "地柜、吊柜、高柜、岛台或半岛台收纳规划",
+      "台面、柜门、五金、背板和墙地面材料建议",
+      "水槽、炉具、抽油烟机、冰箱、洗碗机等家电点位规划",
+      "给排水、防水相关范围、瓷砖与湿作范围评估",
+      "报价范围检查、施工协调和交付检查",
+      "厨房装修设计方案效果图，不代表真实完工案例"
+    ],
+    "suitable_for_en": [
+      "Homeowners with old cabinets, damaged countertops, or poor kitchen storage",
+      "Condo owners who want a more practical kitchen layout",
+      "Landed-house owners planning wet and dry kitchen zones, island counters, or tall cabinets",
+      "Old-house renovation clients coordinating kitchen, bathroom, wiring, plumbing, and cabinet work",
+      "Homeowners who need cabinet, appliance, plumbing, and wet-work scope coordinated before quotation"
+    ],
+    "suitable_for_ms": [
+      "Dapur kering dan dapur basah",
+      "Dapur berkonsep terbuka",
+      "Dapur di kondo",
+      "Dapur di rumah teres"
+    ],
+    "suitable_for_zh": [
+      "旧厨房橱柜老化、台面损坏或收纳不足的业主",
+      "想把公寓厨房升级成更实用布局的屋主",
+      "有地住宅需要规划干湿厨房、岛台或高柜系统的客户",
+      "准备旧屋翻新，同时需要厨房、浴室、水电和柜体一起协调的客户",
+      "希望在报价前把柜体、家电、水电和湿作范围一起确认的屋主"
+    ],
+    "process_steps_en": [
+      {
+        "desc": "Confirm kitchen dimensions, wall limits, drainage, electrical points, sink position, ventilation path, and existing condition.",
+        "title": "Site Measurement"
+      },
+      {
+        "desc": "Plan wet and dry kitchen zones, workflow, cabinet positions, countertop direction, storage, and appliance placement.",
+        "title": "Layout Planning"
+      },
+      {
+        "desc": "Review cabinet finish, cabinet board, hardware, drawers, countertop, backsplash, wall tiles, and floor tiles.",
+        "title": "Material Direction"
+      },
+      {
+        "desc": "Confirm whether plumbing, electrical, waterproofing, demolition, tiles, cabinets, appliances, or rendering concepts are included.",
+        "title": "Scope & Quotation"
+      },
+      {
+        "desc": "Coordinate the confirmed kitchen scope after site conditions, materials, and quotation are approved.",
+        "title": "Renovation Coordination"
+      }
+    ],
+    "process_steps_ms": [
+      {
+        "desc": "Sahkan saiz kabinet, sinki, dapur memasak, perkakas, soket dan keperluan aliran kerja.",
+        "title": "Pengukuran"
+      },
+      {
+        "desc": "Bandingkan bahan badan kabinet, kemasan pintu, permukaan kaunter dan perkakasan serta semak keperluan penyelenggaraan.",
+        "title": "Pemilihan bahan"
+      },
+      {
+        "desc": "Selaraskan pembuatan kabinet, kerja permukaan kaunter, titik M&E dan kemasan akhir.",
+        "title": "Pembuatan dan pemasangan"
+      }
+    ],
+    "process_steps_zh": [
+      {
+        "desc": "确认厨房尺寸、墙体限制、排水位置、电箱和插座、水槽位置、排风路径和现有屋况。",
+        "title": "现场测量"
+      },
+      {
+        "desc": "规划干湿厨房、使用动线、橱柜位置、台面方向、收纳和电器摆放。",
+        "title": "Layout 规划"
+      },
+      {
+        "desc": "讨论柜门饰面、柜体板材、五金、抽屉、台面、backsplash、墙砖和地砖。",
+        "title": "材料方向"
+      },
+      {
+        "desc": "确认是否包含给排水、电工、防水、拆除、墙地砖、橱柜、电器整合或效果图方案。",
+        "title": "范围与报价"
+      },
+      {
+        "desc": "在现场条件、材料和报价确认后，协调已确认的厨房装修范围。",
+        "title": "装修协调"
+      }
+    ],
+    "common_projects_en": [
+      "Old condo kitchen upgrades",
+      "Landed-home dry and wet kitchen renovation",
+      "Kitchen storage and appliance-point improvements",
+      "Kitchen cabinet and countertop option review",
+      "Open kitchen or dining-kitchen layout planning",
+      "Partial dining and kitchen upgrade work",
+      "Kitchen and dining circulation planning",
+      "Clearly labeled kitchen rendering or cabinet-planning concepts"
+    ],
+    "common_projects_ms": [
+      "Kabinet dapur tersuai",
+      "Permukaan kaunter kuarza",
+      "Jubin dinding dan lantai dapur",
+      "Titik sambungan paip dan perkakas"
+    ],
+    "common_projects_zh": [
+      "公寓旧厨房翻新",
+      "有地住宅干湿厨房改造",
+      "厨房收纳与家电点位优化",
+      "厨房橱柜与台面选择评估",
+      "餐厨一体或开放式厨房规划",
+      "厨房与饭厅局部升级",
+      "厨房与饭厅使用动线规划",
+      "清楚标注的厨房效果图或柜体规划概念"
+    ],
+    "seo_description_en": "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope.",
+    "seo_description_ms": "Rancang pengubahsuaian dapur di Kuala Lumpur dan Selangor di sekitar susun atur sebenar, storan, kabinet, pilihan permukaan kaunter, titik sambungan peralatan, paip, keadaan kerja basah dan skop sebut harga yang disahkan.",
+    "seo_description_zh": "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。"
+  },
+  "desired": {
+    "content_zh": "<p>厨房装修不只是换橱柜，而是重新整理日常使用动线、收纳、台面、家电点位、给排水和湿作范围。FLASH CAST 可从现场测量、现有水电点位、干湿厨房分区、柜体结构、材料方向和报价范围开始整理；最终范围以真实现场与书面报价为准。</p><h2>厨房橱柜内部设计：先安排收纳，再确定柜体</h2><p>锅具、餐具、调味品和小家电放在哪里，会影响每天取用是否顺手。FLASH CAST 可按厨房尺寸、煮食习惯和现有家电，讨论地柜、吊柜与高柜的内部配置，让橱柜规划对应实际收纳需求。</p><h3>四个收纳区，按你的厨房组合</h3><p><strong>锅具与备餐地柜</strong>：先列出炒锅、汤锅、锅盖和备餐工具，再讨论抽屉、层板或拉篮。较常用物品放在哪里、柜门能否完整打开，需结合现场位置和使用者习惯一起核对。</p><p><strong>餐具与小物分区</strong>：碗碟、餐具、保鲜盒和日常小物可分别整理，讨论抽屉内分隔和可调整层板，避免只按外观确定内部空间。</p><p><strong>吊柜与日常取用</strong>：结合使用者身高、台面位置、柜门形式和照明，讨论常用物品的取放位置。吊柜高度与内部配置按现场测量确认，不套用一套固定尺寸。</p><p><strong>高柜与家电衔接</strong>：先确认冰箱、烤箱、微波炉或其他家电的型号与安装要求，再讨论高柜、备粮区和小家电收纳；所需插座、给排水、散热及检修条件分别核对。</p><h3>内部配置示意</h3><p>上层可讨论餐具与日常用品吊柜；中间按现场安排备餐台面、清洗和煮食区域；下层按需要安排锅具抽屉、餐具分隔及层板；高柜可另行组合备粮区与家电位。示意只用于沟通柜体分区，不是施工图、固定尺寸或本公司完工案例。</p><h3>门板、柜体、五金和台面，分开比较</h3><p>可讨论 Melamine、Acrylic、Solid Wood 等材料方向与可选饰面，具体供应和适用范围在报价前确认。不要只比较门板颜色：柜体材料、背板、铰链、抽屉、拉篮、台面及安装范围应分别列清，结合使用频率、清洁习惯与预算选择。不把某种材料名称当成统一防水等级或未经确认的性能保证。</p><h3>带这些资料，开始厨房收纳咨询</h3><p>准备厨房照片或平面图、大约尺寸、现有水电点位、家电型号，以及最想改善的三项收纳问题。我们据此讨论柜体组合、内部配置与安装范围，再整理免费报价；最终配置、材料和费用以现场资料及书面报价为准。</p><p><a href=\"/zh/quote?source=service&amp;title=%E5%8E%A8%E6%88%BF%E6%94%B6%E7%BA%B3%E6%96%B9%E6%A1%88&amp;projectType=Kitchen+Cabinet#quote-form\">咨询厨房收纳方案</a></p><p>公司30公里以内免费上门量房，超过30公里的费用先确认。设计服务费用按具体范围确认，免费报价不等于免费设计。</p><h2>橱柜规划前怎样整理家电与现场资料？</h2><p>先整理拟保留或更换的冰箱、灶具、烤箱和其他家电清单，以及尺寸与现有位置。连同厨房照片、主要尺寸、给排水和插座位置交给团队核对，再讨论地柜、吊柜、高柜、台面及收纳。最终尺寸、点位和安装衔接须经现场确认。</p><h2>怎样比较厨房装修的报价范围？</h2><p>比较方案时，把橱柜尺寸与配置、门板和材料方向、台面、五金、家电点位、给排水、湿作、拆除与安装分别核对。写清保留项目、业主自备项目、可选项目和待检查事项，让两份报价按相近范围比较；不要只看每尺价格或总价。</p><h2>厨房与其他空间收纳应怎样衔接？</h2><p>厨房橱柜应围绕煮食、备餐、清洗、家电和台面规划；卧室衣柜、电视柜、鞋柜和跨房间收纳则可由全屋定制服务继续讨论。共同确认柜体与现场条件，分别列出各空间的材料、五金、制作及安装范围。</p><p>继续了解：<a href=\"/zh/services/builtin\">全屋定制与其他空间收纳</a>；<a href=\"/zh/services/design\">室内设计与空间规划</a>；<a href=\"/zh/quote\">厨房装修报价咨询</a></p>"
+  },
+  "original_MD": {
+    "path": "drafts/google-ads/fc-20260920-google-ads-rm100-budget-plan/six-keyword-message-repair-20261016-v1/kitchen-content-zh-insert.md",
+    "sha256": "59e4e7fb8f5ab754e3dd2d0e20d035ad49e5f05980d30230e23f0fb04d906ff5",
+    "size": 2607
+  },
+  "original_HTML_fragment": {
+    "path": "drafts/publishing/fc-20261017-six-keyword-matching-original-resume-v1/current-native-preparation-20261017-v1/kitchen.native-HTML-increment-NOT-SAVED.html",
+    "sha256": "a619b503b3e5e19f20d7852806122a7632d59dc34ad35d620c7524a396e9bcf8",
+    "size": 2721
+  },
+  "existing_current_one_field_patch": {
+    "path": "drafts/publishing/fc-20261017-six-keyword-matching-original-resume-v1/original-two-content-zh-current-route-20261027-v1/kitchen/CURRENT-KITCHEN-ONE-FIELD-INCREMENT-PREPARED-NOT-SAVEABLE.json",
+    "sha256": "7c5ad2d244eb3b60700ea0fddb46a21108194fe1036784a517a9683c0da659b9",
+    "size": 4334
+  },
+  "protected_fields": {
+    "not_written_fields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "server_CAS_metadata": [
+      "updated_at",
+      "version"
+    ],
+    "stable_business_readback_fields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh"
+    ]
+  },
+  "baseline_only_not_execution_CAS": true,
+  "conditional_inverse": {
+    "action_id": "rollback-paid6-kitchen-content-zh-native-save-v1",
+    "candidate_version": "paid6-kitchen-content-zh-native-save-v1-rollback-v1",
+    "scope": "flashcast.com.my:services/kitchen:content_zh:six-keyword-message-repair",
+    "table": "services",
+    "record_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+    "changed_fields": [
+      "content_zh"
+    ],
+    "restore_only_original_field": {
+      "content_zh": "<p>厨房装修不只是换橱柜，而是重新整理日常使用动线、收纳、台面、家电点位、给排水和湿作范围。FLASH CAST 可从现场测量、现有水电点位、干湿厨房分区、柜体结构、材料方向和报价范围开始整理；最终范围以真实现场与书面报价为准。</p><h2>橱柜规划前怎样整理家电与现场资料？</h2><p>先整理拟保留或更换的冰箱、灶具、烤箱和其他家电清单，以及尺寸与现有位置。连同厨房照片、主要尺寸、给排水和插座位置交给团队核对，再讨论地柜、吊柜、高柜、台面及收纳。最终尺寸、点位和安装衔接须经现场确认。</p><h2>怎样比较厨房装修的报价范围？</h2><p>比较方案时，把橱柜尺寸与配置、门板和材料方向、台面、五金、家电点位、给排水、湿作、拆除与安装分别核对。写清保留项目、业主自备项目、可选项目和待检查事项，让两份报价按相近范围比较；不要只看每尺价格或总价。</p><h2>厨房与其他空间收纳应怎样衔接？</h2><p>厨房橱柜应围绕煮食、备餐、清洗、家电和台面规划；卧室衣柜、电视柜、鞋柜和跨房间收纳则可由全屋定制服务继续讨论。共同确认柜体与现场条件，分别列出各空间的材料、五金、制作及安装范围。</p><p>继续了解：<a href=\"/zh/services/builtin\">全屋定制与其他空间收纳</a>；<a href=\"/zh/services/design\">室内设计与空间规划</a>；<a href=\"/zh/quote\">厨房装修报价咨询</a></p>"
+    },
+    "requiresParentRun": true,
+    "requires_completed_own_publish_permit_and_run": true,
+    "parentPermitId": null,
+    "parentRunId": null,
+    "saved_updated_at": null,
+    "requires_exact_current_postSave_full41_and_stable38_MS11": true,
+    "requires_new_single_use_inverse_permit": true,
+    "server_fields_never_written": [
+      "updated_at",
+      "version"
+    ]
+  },
+  "Node_CLI": {
+    "target": "paid6-kitchen-content-zh-native-save-v1",
+    "record_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+    "scope": "flashcast.com.my:services/kitchen:content_zh:six-keyword-message-repair",
+    "workflow": ".github/workflows/content-publish-approved.yml",
+    "entrypoint": "scripts/publish-content-trust-fixes.mjs"
+  },
+  "schema_is_not_WEB_completed_delivery_or_production_source": true,
+  "new_permission_issued": false,
+  "remote_loaded": false,
+  "production_READY": false,
+  "CMS_Save": 0
+}

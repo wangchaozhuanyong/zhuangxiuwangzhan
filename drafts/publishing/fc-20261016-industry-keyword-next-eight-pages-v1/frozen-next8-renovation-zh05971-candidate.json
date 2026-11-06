@@ -1,0 +1,359 @@
+{
+  "schema": "next8-renovation-zh05971-single-field-frozen-source/v1",
+  "task_id": "fc-20261016-industry-keyword-next-eight-pages-v1",
+  "business_scope": "project:flashcast:industry-keyword-next-eight-pages:v1",
+  "execution_department": "publishing",
+  "registration_grants_write_authority": false,
+  "source_registration": {
+    "path": "backups/fc-20261024-original-flow-recovery-execution-stage-v1/next8-zh05971-source-20261104-v1/SYS-ORIGINAL-SINGLE-FIELD-SOURCE-REGISTRATION-INPUT-v1.json",
+    "sha256": "793d3c39e9d589a417752ac1b2b4975648d8a3aba75332a9cfaa101b806987ee",
+    "size": 1679
+  },
+  "source_event_id": "032f02d8-0a09-4434-a7d6-65742f4f6090",
+  "source_readback": {
+    "path": "backups/fc-20261024-original-flow-recovery-execution-stage-v1/next8-zh05971-source-20261104-v1/ACTUAL-NORMAL-ISSUER-CATALOG-AND-WEB-CONTINUATION-v1.json",
+    "sha256": "3ce3ccb7cf2280c2b1325d068aa6b23613239782d625b7cb60ce372942285555",
+    "size": 11542
+  },
+  "candidate_source": {
+    "path": "drafts/seo/fc-20261016-industry-keyword-next-eight-pages-v1/seo-content-research/resume-original15732-20261027-v1/corrected-content-v2/SEO2-NEXT8-0506-ZH-MINIMAL-NECESSITY-AND-HISTORICAL-FIELD-20261104-v1.json",
+    "sha256": "5e006ad04bb56a5aeec4478d172763a42cf883268584cecd8ca1bc82c96c6623",
+    "size": 12491
+  },
+  "baseline_source": {
+    "path": "drafts/publishing/fc-20261016-industry-keyword-next-eight-pages-v1/renovation-zh-05971-readonly-20261104-v1/AUTHENTICATED-FULL41-RAW-BEFORE.json",
+    "sha256": "409e0b74dfc1b44e6955e9d1141a77390b5dc852f0bd04f921ec58f4b56d0bf5",
+    "size": 18424
+  },
+  "runtime_target": {
+    "id": "0d947129-0595-43ef-baa1-0fd9d8b870e6",
+    "slug": "renovation",
+    "table": "services",
+    "contentType": "service",
+    "taskId": "fc-20261016-industry-keyword-next-eight-pages-v1",
+    "actionId": "publish-next8-renovation-zh-05971-67e79c93-cms-v1",
+    "candidateVersion": "next8-renovation-zh-05971-67e79c93-cms-v1",
+    "scope": "flashcast.com.my:services:0d947129-0595-43ef-baa1-0fd9d8b870e6:content_zh",
+    "changedFields": [
+      "content_zh"
+    ],
+    "baselineProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "baselineFieldsSha256": "a8f944c077427b3a289b1530e1421cdb67c7b552b9a7af0bf33c0b5be3bb8de0",
+    "desiredFieldsSha256": "5eed5bace927dbce997964634a2aefacdec6485cede075cf5998feea8a4b8529",
+    "rollbackFieldsSha256": "4e9c1257f79e8eff7c2c6dbd64bac498a61e91df7f26e00fb60699bd998c33ea",
+    "expectedUpdatedAt": "2026-10-26T23:06:10.588679+00:00",
+    "retainedProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh"
+    ],
+    "retainedFieldsSha256": "4217dd86c317d13f25e759964147cbeb539d9fdc41bb180a9727ddc9e6104ade",
+    "rollbackAllowed": false,
+    "requiresParentRun": true
+  },
+  "before": {
+    "id": "0d947129-0595-43ef-baa1-0fd9d8b870e6",
+    "slug": "renovation",
+    "title_zh": "吉隆坡公寓装修、住宅翻新与旧屋装修",
+    "title_en": "Residential Renovation in Kuala Lumpur and Selangor",
+    "excerpt_zh": "为吉隆坡、雪兰莪与巴生谷业主规划公寓装修、有地住宅及旧屋翻新，整理空间、材料与施工协调范围。先准备照片、面积、屋况、管理处要求和装修目标，再确认范围与报价方向。",
+    "excerpt_en": "Residential renovation for condos and landed homes across Kuala Lumpur, Selangor, and Klang Valley, planned around the real site, confirmed work scope, materials, and trade coordination.",
+    "content_zh": "<section><h2>适合哪些住宅装修需求</h2><p>本页适合正在规划公寓装修、有地住宅翻新、旧屋局部更新、厨房与浴室配套改善、客餐厅收纳规划、墙地面更新、灯光与木作协调的业主。FLASH CAST 会先了解空间状态、使用需求、材料方向和报价前资料，再协助整理下一步装修范围。</p>\n<h3>先确认装修范围与整屋/分阶段边界</h3><p>比较整屋与分阶段装修时，逐阶段列明空间和工序、报价包含/不含、保留或暂缓项目、共用区域与进场/保护条件、阶段接口及各阶段确认人；具体顺序、日期、承接范围和金额须结合现场条件并由公司书面确认。未核实前不承诺承接、规格或施工日期。</p>\n</section><section><h2>书房、卧室与局部空间更新</h2><p>书房可先核对使用人数、工作台或书柜尺寸、插座、灯光、采光和收纳；卧室、客餐厅或整套公寓可按保留与需更新项目分别列范围。定制书柜、衣柜及跨房间收纳应进入 <a href=\"/zh/services/builtin\">全屋定制与定制家具服务</a>；既有屋况问题较多时，先查看 <a href=\"/zh/services/old-house\">旧屋翻新规划</a>。局部施工能否与居住同时进行，需确认隔离、出入和施工条件。</p></section><section><h2>装修前要准备什么</h2><p>建议先准备房屋照片、平面图、面积、位置、当前屋况、管理处要求、预算方向和希望完成的范围。资料越清楚，越容易判断哪些是必要工程、哪些是可选升级。</p></section><section><h2>现场评估重点</h2><p>住宅装修通常需要检查水电、防水、墙地面、木作、照明、收纳、动线和材料耐用度。旧屋或长期出租单位还应优先确认隐藏问题，再决定美观升级。</p></section><section><h2>预算影响因素</h2><p>实际报价会受面积、拆除量、基础工程、材料等级、木作数量、现场限制、管理处要求和施工协调复杂度影响。页面不承诺固定价格或固定工期，最终以现场资料和确认范围为准。</p>\n<h3>装修报价如何按项目核算</h3><p>报价还应逐项说明包含、不包含、业主自备及待确认内容。报价免费；上门量房需预约：距公司/服务点30公里以内免费，超过30公里收费，具体金额预约前确认。</p>\n</section><section><h2>设计方案与效果图规划</h2><p>如果需要视觉方向，可以先准备概念设计、效果图方案、材料 mood board 或空间规划示例。所有概念图和效果图都应清楚标注为规划示例，不当作真实完工案例、客户照片或 before/after 证明。</p>\n<h3>装修设计方案与材料选择要核对什么</h3><p>设计方案先按空间用途、实测尺寸与现况、门窗/现有点位、动线、收纳和不可改条件核对。若比较材料或饰面，另列使用位置、外观目标、预算和维护偏好，并逐项记录候选产品型号、实物样板、制造商/供应商资料及适用限制。性能只按具体型号资料或相应合资格专业结论说明；未核实现场和产品前不作性能保证。设计阶段、图纸/效果图交付物、费用及与施工范围的衔接须书面确认；效果图不等于施工资料或已完成实绩。</p>\n</section><section><h2>相关服务与下一步</h2><p>如果重点在厨房，可查看 <a href=\"/zh/services/kitchen\">厨房装修与橱柜规划</a>；如果重点在湿区，可查看 <a href=\"/zh/services/bathroom\">浴室装修与防水工程</a>；也可以浏览 <a href=\"/zh/projects\">装修案例与设计参考</a>。准备好照片、面积、位置和装修目标后，可前往 <a href=\"/zh/quote\">获取住宅装修报价</a>。</p>\n<h3>装修交付时如何留下检查记录</h3><p>可按双方确认的工作清单核对完成范围、表面观感及门柜五金等可操作项目；对发现事项记录位置、日期、照片和双方约定的跟进方式。涉及电气、防水、结构或其他专业性能的判断，应由相应专业人员按适用规范检查。本文是记录方法，不构成保修期限或缺陷责任承诺。</p>\n</section>",
+    "content_en": "<p>Residential renovation can involve demolition, masonry, electrical, plumbing, waterproofing, carpentry, ceilings, flooring, painting, kitchens, bathrooms, and other selected work. FLASH CAST starts by reviewing the property type, current condition, intended use, items to keep or remove, site access, management requirements, and budget direction.</p><p>Before quotation, the scope should separate essential work from optional upgrades and record exclusions, owner-supplied items, material choices, trade dependencies, responsibilities, programme assumptions, progress communication, and handover items. Final pricing and timing depend on the confirmed scope and actual site conditions; this page does not promise a fixed price, fixed completion date, approval outcome, or structural conclusion.</p>\n<h3>Confirm renovation scope and full-versus-staged boundaries</h3><p>To compare a full-home and staged approach, list spaces and work by stage, inclusions/exclusions, retained or deferred items, shared-area and access/protection conditions, dependencies between stages, and who confirms each stage. Actual sequence, dates, accepted scope and price require site review and written company confirmation. Do not promise acceptance, specifications or dates before that review.</p>\n<h3>Confirm site protection and removal responsibilities before work</h3><p>Before work, list surfaces/items to protect, furniture/fixtures to retain, move or remove, and waste/packaging to clear. The written scope states whether protection, packing, moving, dismantling, hauling and disposal are included or excluded, who supplies/arranges/carries each item, who pays separately quoted charges, and applicable access rules. The client identifies items/priorities; the company project contact confirms contract inclusions/exclusions; property management confirms building access rules; the contractor confirms only work assigned in the agreed scope. Do not assume responsibilities or fees.</p>\n<h3>What to confirm in a renovation design brief and material choice</h3><p>Start with the space use, measured dimensions and current condition, doors/windows and existing service points, circulation, storage and fixed constraints. For material or finish comparisons, record the intended location, appearance target, budget and maintenance preference, then identify each product model, physical sample, manufacturer/supplier source and limitation. State performance only when supported by exact product documentation or an appropriately qualified professional; do not promise it from a style or product name. Confirm the design stage, drawings/visualisations, fees and link to the renovation scope in writing. A visualisation is not construction information or proof of completed work.</p>\n<h3>Keep pre-renovation key handover records separate from renovation completion</h3><p>A new-condo key handover before renovation records existing condition: where available, compare visible items with the developer/property handover list, note location/date, take photos, and submit/retain the record under the relevant process before site work changes the condition. This is separate from post-renovation completion, which checks only items in the agreed renovation contract and records outstanding items with the company. Confirm deadlines/responsibility with developer/property management and renovation scope/follow-up terms with the company in writing. This checklist makes no legal or warranty determination.</p>\n<p>For condos and managed properties, management or authority requirements vary by property and work scope. FLASH CAST can coordinate documented preparation where it is included in the agreed scope, but approval is not guaranteed. Kitchen, bathroom, old-house, and custom built-in work should be assessed under their relevant specialist scope and measured before quotation.</p>",
+    "image_url": "/images/services/renovation-works.webp",
+    "alt_zh": "吉隆坡住宅装修现场与空间规划参考",
+    "alt_en": "Residential renovation and space planning reference in Kuala Lumpur",
+    "suitable_for_zh": [
+      "公寓装修",
+      "有地住宅翻新",
+      "旧屋局部更新",
+      "入住前住宅装修",
+      "厨房浴室配套改善",
+      "收纳与木作规划"
+    ],
+    "suitable_for_en": [
+      "Condo or apartment owners planning a partial or whole-unit renovation",
+      "Landed, terrace, semi-D, or bungalow owners coordinating several rooms or trades",
+      "Families moving into a new, subsale, or older property",
+      "Landlords or property owners preparing a practical upgrade for rent or sale"
+    ],
+    "common_projects_zh": [
+      "客餐厅更新",
+      "厨房动线改善",
+      "浴室防水重做",
+      "木作与收纳规划",
+      "墙地面与灯光更新"
+    ],
+    "common_projects_en": [
+      "Partial or whole-unit condo and apartment renovation",
+      "Landed-home living, dining, bedroom, and common-area upgrades",
+      "Kitchen and bathroom renovation coordinated with the wider home scope",
+      "Flooring, ceiling, lighting, painting, carpentry, and storage upgrades",
+      "Rewiring, replumbing, waterproofing-related, and reinstatement scope review"
+    ],
+    "process_steps_zh": [
+      {
+        "desc": "准备照片、面积、位置、屋况、管理处要求和装修目标。",
+        "title": "整理资料"
+      },
+      {
+        "desc": "确认水电、防水、墙地面、木作、收纳、动线和材料方向。",
+        "title": "现场评估"
+      },
+      {
+        "desc": "把必要工程和可选升级拆开，按确认范围准备报价与下一步安排。",
+        "title": "范围与报价"
+      }
+    ],
+    "process_steps_en": [
+      {
+        "desc": "Confirm the property type, location, current condition, intended use, main issues, and rooms or items to keep or remove.",
+        "title": "Requirement Review"
+      },
+      {
+        "desc": "Measure the site and review visible conditions, access, management requirements, existing services, and coordination constraints.",
+        "title": "Site Assessment"
+      },
+      {
+        "desc": "Separate essential work, suitable upgrades, material options, owner-supplied items, exclusions, and dependencies.",
+        "title": "Scope and Material Direction"
+      },
+      {
+        "desc": "Itemize the confirmed scope and record responsibilities, programme assumptions, approval needs, and progress communication.",
+        "title": "Quotation and Scheduling"
+      },
+      {
+        "desc": "Coordinate the agreed trades, review milestone items, and record outstanding work, documents, and after-sales terms at handover.",
+        "title": "Work Coordination and Handover"
+      }
+    ],
+    "scope_items_zh": [
+      "现场测量与需求确认",
+      "空间规划与材料建议",
+      "水电、防水、墙地面与木作范围整理",
+      "报价前资料清单与施工协调建议"
+    ],
+    "scope_items_en": [
+      "Site measurement, property-condition, access, and requirement review",
+      "Demolition, preliminary protection, masonry, and reinstatement scope where confirmed",
+      "Electrical, plumbing, waterproofing, flooring, ceiling, painting, door, and window coordination",
+      "Kitchen and bathroom work coordinated with the wider residential scope",
+      "Built-in carpentry coordination based on measurements, materials, hardware, and installation scope",
+      "Material options, owner-supplied items, exclusions, and trade dependencies",
+      "Management or permit-document coordination where required, without an approval guarantee",
+      "Written quotation scope, responsibilities, programme assumptions, progress communication, and handover items"
+    ],
+    "faqs_zh": [
+      {
+        "a": "建议先准备房屋照片、面积、位置、平面图、屋况问题、预算方向和希望完成的范围。",
+        "q": "住宅装修前要准备什么？"
+      },
+      {
+        "a": "可以准备概念设计、效果图方案和材料方向，但必须清楚标注为规划示例，不当作真实完工案例。",
+        "q": "可以先看设计方案或效果图方向吗？"
+      },
+      {
+        "a": "面积、拆除量、水电、防水、木作、材料等级和管理处要求都会影响范围和报价。",
+        "q": "报价为什么需要现场资料？"
+      }
+    ],
+    "faqs_en": [
+      {
+        "a": "Share the property location and type, approximate floor area, site photos, a layout plan if available, current-condition concerns, priorities, budget direction, and the rooms or work you want assessed.",
+        "q": "What should I prepare before requesting a residential renovation quotation?"
+      },
+      {
+        "a": "Area, demolition, hidden conditions, wet works, wiring, plumbing, waterproofing, carpentry, material grade, site access, management rules, and trade dependencies can change the scope, quotation, and programme. Final figures require confirmed site information and work scope.",
+        "q": "What affects residential renovation cost and timing?"
+      },
+      {
+        "a": "Support can include document preparation and coordination when it is part of the agreed scope. Requirements vary by property, management, work scope, and current authority process, so approval and timing cannot be guaranteed.",
+        "q": "Can FLASH CAST help with condo management or permit requirements?"
+      },
+      {
+        "a": "An old-house assessment is relevant when recurring wiring, plumbing, waterproofing, layout, deterioration, or hidden-condition issues need to be reviewed before cosmetic upgrades are planned.",
+        "q": "When should I request an old-house renovation assessment?"
+      },
+      {
+        "a": "Built-in cabinets should be assessed from site measurements, storage needs, materials, hardware, finishes, and installation scope. Kitchen cabinets and wider built-in furniture remain separate specialist owner scopes even when coordinated with the renovation.",
+        "q": "How are custom cabinets handled within a renovation quotation?"
+      },
+      {
+        "a": "Site measurement is free within 30 km of the company or service point. Locations beyond 30 km may incur a fee, so share the project location first for confirmation.",
+        "q": "Is site measurement free?"
+      }
+    ],
+    "seo_title_zh": "吉隆坡住宅装修与旧屋翻新 | FLASH CAST",
+    "seo_title_en": "Residential Renovation Kuala Lumpur & Selangor | FLASH CAST",
+    "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与巴生谷住宅装修、旧屋翻新、空间规划、材料建议与报价咨询。先提交照片、面积和装修目标，获取下一步建议。",
+    "seo_description_en": "Plan residential renovation in Kuala Lumpur or Selangor with FLASH CAST. Review scope, materials, site condition, budget factors, and quotation steps before starting.",
+    "status": "published",
+    "sort_order": 10,
+    "created_at": "2026-05-25T10:58:29.820388+00:00",
+    "updated_at": "2026-10-26T23:06:10.588679+00:00",
+    "version": 1,
+    "title_ms": "Pengubahsuaian Kediaman di Kuala Lumpur dan Selangor",
+    "excerpt_ms": "Pengubahsuaian kediaman untuk kondo dan rumah bertanah di seluruh Kuala Lumpur, Selangor dan Lembah Klang, yang dirancang di sekitar tapak sebenar, mengesahkan skop kerja, bahan dan penyelarasan perdagangan.",
+    "content_ms": "<p>Pengubahsuaian kediaman boleh melibatkan perobohan, batu, elektrik, paip, kalis air, pertukangan kayu, siling, lantai, mengecat, dapur, bilik mandi dan kerja terpilih lain. FLASH CAST bermula dengan menyemak jenis hartanah, keadaan semasa, kegunaan yang dimaksudkan, item untuk disimpan atau dialih keluar, akses tapak, keperluan pengurusan dan hala tuju belanjawan.</p><p>Sebelum sebut harga, skop harus memisahkan kerja penting daripada peningkatan pilihan dan pengecualian, item yang dibekalkan pemilik, pilihan bahan, urutan kerja antara kontraktor, tanggungjawab, jadual kemajuan dan item penyerahan. Harga dan masa akhir bergantung pada skop yang disahkan dan keadaan tapak sebenar; halaman ini tidak menjanjikan harga tetap, tarikh siap tetap, hasil kelulusan atau kesimpulan struktur.</p><p>Untuk kondo dan hartanah terurus, keperluan pengurusan atau pihak berkuasa berbeza mengikut harta dan skop kerja. FLASH CAST boleh menyelaraskan penyediaan yang didokumenkan di mana ia termasuk dalam skop yang dipersetujui, tetapi kelulusan tidak dijamin. Dapur, bilik mandi, rumah lama dan kerja terbina dalam tersuai hendaklah dinilai di bawah skop pakar yang berkaitan dan diukur sebelum sebut harga.</p>",
+    "alt_ms": "Pengubahsuaian kediaman dan rujukan perancangan ruang di Kuala Lumpur",
+    "suitable_for_ms": [
+      "Pengubahsuaian kondo",
+      "Pengubahsuaian rumah teres",
+      "Pengubahsuaian rumah lama",
+      "Pengubahsuaian sebelum berpindah masuk"
+    ],
+    "common_projects_ms": [
+      "Pengubahsuaian rumah sepenuhnya",
+      "Penggantian pendawaian elektrik dan paip",
+      "Pemasangan lantai dan kerja mengecat",
+      "Naik taraf dapur dan bilik mandi"
+    ],
+    "process_steps_ms": [
+      {
+        "desc": "Periksa keadaan tapak dan fahami keperluan anda.",
+        "title": "Penilaian tapak"
+      },
+      {
+        "desc": "Sediakan sebut harga dengan pecahan kos bagi setiap skop kerja.",
+        "title": "Sebut harga terperinci"
+      },
+      {
+        "desc": "Uruskan permit yang diperlukan dan sediakan jadual projek.",
+        "title": "Permit dan jadual kerja"
+      },
+      {
+        "desc": "Laksanakan kerja dan berikan kemas kini kemajuan secara berkala.",
+        "title": "Kerja pengubahsuaian"
+      },
+      {
+        "desc": "Jalankan pemeriksaan akhir, bersihkan tapak dan serahkan projek.",
+        "title": "Penyerahan"
+      }
+    ],
+    "scope_items_ms": [
+      "Pengukuran tapak dan perancangan bajet",
+      "Kerja perobohan dan kerja asas",
+      "Kerja elektrik, paip, kalis air dan kerja basah",
+      "Kerja pertukangan dan kemasan"
+    ],
+    "faqs_ms": [
+      {
+        "a": "Kerja separa lazimnya mengambil masa 2 hingga 4 minggu. Pengubahsuaian penuh biasanya mengambil masa 8 hingga 12 minggu, bergantung pada saiz, bahan dan kelulusan.",
+        "q": "Berapa lamakah tempoh pengubahsuaian rumah?"
+      },
+      {
+        "a": "Ya. Kami membezakan kerja penting daripada naik taraf pilihan berdasarkan keadaan dan keperluan tapak.",
+        "q": "Bolehkah anda membantu merancang bajet terlebih dahulu?"
+      }
+    ],
+    "seo_title_ms": "Ubah Suai Kediaman Kuala Lumpur & Selangor | FLASH CAST",
+    "seo_description_ms": "Rancang pengubahsuaian kediaman di Kuala Lumpur atau Selangor dengan FLASH CAST. Semak skop, bahan, keadaan tapak, faktor belanjawan dan langkah sebut harga sebelum bermula."
+  },
+  "desired": {
+    "content_zh": "<section><h2>适合哪些住宅装修需求</h2><p>本页适合正在规划公寓装修、有地住宅翻新、旧屋局部更新、厨房与浴室配套改善、客餐厅收纳规划、墙地面更新、灯光与木作协调的业主。FLASH CAST 会先了解空间状态、使用需求、材料方向和报价前资料，再协助整理下一步装修范围。</p>\n<h3>先确认装修范围与整屋/分阶段边界</h3><p>比较整屋与分阶段装修时，逐阶段列明空间和工序、报价包含/不含、保留或暂缓项目、共用区域与进场/保护条件、阶段接口及各阶段确认人；具体顺序、日期、承接范围和金额须结合现场条件并由公司书面确认。未核实前不承诺承接、规格或施工日期。</p>\n</section><section><h2>书房、卧室与局部空间更新</h2><p>书房可先核对使用人数、工作台或书柜尺寸、插座、灯光、采光和收纳；卧室、客餐厅或整套公寓可按保留与需更新项目分别列范围。定制书柜、衣柜及跨房间收纳应进入 <a href=\"/zh/services/builtin\">全屋定制与定制家具服务</a>；既有屋况问题较多时，先查看 <a href=\"/zh/services/old-house\">旧屋翻新规划</a>。局部施工能否与居住同时进行，需确认隔离、出入和施工条件。</p></section><section><h2>装修前要准备什么</h2><p>建议先准备房屋照片、平面图、面积、位置、当前屋况、管理处要求、预算方向和希望完成的范围。资料越清楚，越容易判断哪些是必要工程、哪些是可选升级。</p><p>有地住宅咨询时，如已发现屋面排水或外墙问题，可连同照片或图纸记录位置、出现时间和仍不确定的情况，供后续现场沟通；隐蔽状况不能仅凭照片判断。</p></section><section><h2>现场评估重点</h2><p>住宅装修通常需要检查水电、防水、墙地面、木作、照明、收纳、动线和材料耐用度。旧屋或长期出租单位还应优先确认隐藏问题，再决定美观升级。</p></section><section><h2>预算影响因素</h2><p>实际报价会受面积、拆除量、基础工程、材料等级、木作数量、现场限制、管理处要求和施工协调复杂度影响。页面不承诺固定价格或固定工期，最终以现场资料和确认范围为准。</p>\n<h3>装修报价如何按项目核算</h3><p>报价还应逐项说明包含、不包含、业主自备及待确认内容。报价免费；上门量房需预约：距公司/服务点30公里以内免费，超过30公里收费，具体金额预约前确认。</p>\n</section><section><h2>设计方案与效果图规划</h2><p>如果需要视觉方向，可以先准备概念设计、效果图方案、材料 mood board 或空间规划示例。所有概念图和效果图都应清楚标注为规划示例，不当作真实完工案例、客户照片或 before/after 证明。</p>\n<h3>装修设计方案与材料选择要核对什么</h3><p>设计方案先按空间用途、实测尺寸与现况、门窗/现有点位、动线、收纳和不可改条件核对。若比较材料或饰面，另列使用位置、外观目标、预算和维护偏好，并逐项记录候选产品型号、实物样板、制造商/供应商资料及适用限制。性能只按具体型号资料或相应合资格专业结论说明；未核实现场和产品前不作性能保证。设计阶段、图纸/效果图交付物、费用及与施工范围的衔接须书面确认；效果图不等于施工资料或已完成实绩。</p>\n</section><section><h2>相关服务与下一步</h2><p>如果重点在厨房，可查看 <a href=\"/zh/services/kitchen\">厨房装修与橱柜规划</a>；如果重点在湿区，可查看 <a href=\"/zh/services/bathroom\">浴室装修与防水工程</a>；也可以浏览 <a href=\"/zh/projects\">装修案例与设计参考</a>。准备好照片、面积、位置和装修目标后，可前往 <a href=\"/zh/quote\">获取住宅装修报价</a>。</p>\n<h3>装修交付时如何留下检查记录</h3><p>可按双方确认的工作清单核对完成范围、表面观感及门柜五金等可操作项目；对发现事项记录位置、日期、照片和双方约定的跟进方式。涉及电气、防水、结构或其他专业性能的判断，应由相应专业人员按适用规范检查。本文是记录方法，不构成保修期限或缺陷责任承诺。</p>\n</section>"
+  },
+  "inverse_values": {
+    "content_zh": "<section><h2>适合哪些住宅装修需求</h2><p>本页适合正在规划公寓装修、有地住宅翻新、旧屋局部更新、厨房与浴室配套改善、客餐厅收纳规划、墙地面更新、灯光与木作协调的业主。FLASH CAST 会先了解空间状态、使用需求、材料方向和报价前资料，再协助整理下一步装修范围。</p>\n<h3>先确认装修范围与整屋/分阶段边界</h3><p>比较整屋与分阶段装修时，逐阶段列明空间和工序、报价包含/不含、保留或暂缓项目、共用区域与进场/保护条件、阶段接口及各阶段确认人；具体顺序、日期、承接范围和金额须结合现场条件并由公司书面确认。未核实前不承诺承接、规格或施工日期。</p>\n</section><section><h2>书房、卧室与局部空间更新</h2><p>书房可先核对使用人数、工作台或书柜尺寸、插座、灯光、采光和收纳；卧室、客餐厅或整套公寓可按保留与需更新项目分别列范围。定制书柜、衣柜及跨房间收纳应进入 <a href=\"/zh/services/builtin\">全屋定制与定制家具服务</a>；既有屋况问题较多时，先查看 <a href=\"/zh/services/old-house\">旧屋翻新规划</a>。局部施工能否与居住同时进行，需确认隔离、出入和施工条件。</p></section><section><h2>装修前要准备什么</h2><p>建议先准备房屋照片、平面图、面积、位置、当前屋况、管理处要求、预算方向和希望完成的范围。资料越清楚，越容易判断哪些是必要工程、哪些是可选升级。</p></section><section><h2>现场评估重点</h2><p>住宅装修通常需要检查水电、防水、墙地面、木作、照明、收纳、动线和材料耐用度。旧屋或长期出租单位还应优先确认隐藏问题，再决定美观升级。</p></section><section><h2>预算影响因素</h2><p>实际报价会受面积、拆除量、基础工程、材料等级、木作数量、现场限制、管理处要求和施工协调复杂度影响。页面不承诺固定价格或固定工期，最终以现场资料和确认范围为准。</p>\n<h3>装修报价如何按项目核算</h3><p>报价还应逐项说明包含、不包含、业主自备及待确认内容。报价免费；上门量房需预约：距公司/服务点30公里以内免费，超过30公里收费，具体金额预约前确认。</p>\n</section><section><h2>设计方案与效果图规划</h2><p>如果需要视觉方向，可以先准备概念设计、效果图方案、材料 mood board 或空间规划示例。所有概念图和效果图都应清楚标注为规划示例，不当作真实完工案例、客户照片或 before/after 证明。</p>\n<h3>装修设计方案与材料选择要核对什么</h3><p>设计方案先按空间用途、实测尺寸与现况、门窗/现有点位、动线、收纳和不可改条件核对。若比较材料或饰面，另列使用位置、外观目标、预算和维护偏好，并逐项记录候选产品型号、实物样板、制造商/供应商资料及适用限制。性能只按具体型号资料或相应合资格专业结论说明；未核实现场和产品前不作性能保证。设计阶段、图纸/效果图交付物、费用及与施工范围的衔接须书面确认；效果图不等于施工资料或已完成实绩。</p>\n</section><section><h2>相关服务与下一步</h2><p>如果重点在厨房，可查看 <a href=\"/zh/services/kitchen\">厨房装修与橱柜规划</a>；如果重点在湿区，可查看 <a href=\"/zh/services/bathroom\">浴室装修与防水工程</a>；也可以浏览 <a href=\"/zh/projects\">装修案例与设计参考</a>。准备好照片、面积、位置和装修目标后，可前往 <a href=\"/zh/quote\">获取住宅装修报价</a>。</p>\n<h3>装修交付时如何留下检查记录</h3><p>可按双方确认的工作清单核对完成范围、表面观感及门柜五金等可操作项目；对发现事项记录位置、日期、照片和双方约定的跟进方式。涉及电气、防水、结构或其他专业性能的判断，应由相应专业人员按适用规范检查。本文是记录方法，不构成保修期限或缺陷责任承诺。</p>\n</section>"
+  },
+  "baseline_is_current_CAS": false,
+  "issuer_contract": null,
+  "runtime_loaded": "NOT_OBSERVED",
+  "original_key_effect": "UNKNOWN",
+  "conditional_inverse": {
+    "only_field": "content_zh",
+    "must_equal_own_forward_after_SHA": "67e79c93385582a8f289ea08b31dee45ffe3ce119ebf1aa3d88fa0dd6aa5f6f8",
+    "inverse_value_SHA": "58ea3cee4547169885bb78067fe1b90b777a4aac873f5ffbcf9d2116a6522ea8",
+    "required_own_completed_forward_permit_id": null,
+    "required_own_completed_forward_run_id": null,
+    "required_actual_postSaveCAS": null,
+    "required_actual_postSaveVersion": null,
+    "required_new_independent_inverse_permission": null,
+    "inverse_issued_or_allowed": false
+  },
+  "original_35_fact_status": "HOLD",
+  "public_paths": [
+    {
+      "path": "/zh/services/renovation",
+      "expected": "闪铸装修 | 吉隆坡住宅装修与旧屋翻新 | FLASH CAST",
+      "strictMetadataTitle": true
+    }
+  ],
+  "EN_and_MS_unchanged": true
+}

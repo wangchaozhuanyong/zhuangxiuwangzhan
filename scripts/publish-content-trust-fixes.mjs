@@ -17,11 +17,16 @@ import { lockedBuiltinWardrobeCandidates } from "./managed-cms-targets-builtin-w
 import { lockedShopOfficeSixFieldCandidates } from "./managed-cms-targets-shop-office-six-field-v4.mjs";
 import { lockedSeoCabinetTwoAnchorCandidates } from "./managed-cms-targets-seo-cabinet-two-anchors-v1.mjs";
 import { lockedNext8TwoRecordCandidates } from "./managed-cms-targets-next8-two-record-v1.mjs";
+import { lockedNext8RenovationZh05971Candidate } from "./managed-cms-target-next8-renovation-zh05971.mjs";
 import { lockedNext12FiveRecordCandidates } from "./managed-cms-targets-next12-five-record-v1.mjs";
 import { lockedTwoOriginalMaterialBodyCandidates } from "./managed-cms-targets-two-original-material-bodies-v1.mjs";
 import { lockedWardrobe15BuiltinCandidates } from "./managed-cms-targets-wardrobe15-builtin-v1.mjs";
+import { lockedPaid6KitchenCandidates } from "./managed-cms-targets-paid6-kitchen-v1.mjs";
 
 import { lockedEnglishKitchenEn2Candidates } from "./managed-cms-targets-english-kitchen-en2-v1.mjs";
+import { lockedPaidFourCurrentCandidates } from "./managed-cms-targets-paid-four-current-v1.mjs";
+
+import { lockedContactCmsPageTitleCandidate } from "./managed-cms-targets-contact-three-titles-v1.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -997,7 +1002,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates, ...lockedNext12FiveRecordCandidates, ...lockedTwoOriginalMaterialBodyCandidates, ...lockedWardrobe15BuiltinCandidates, ...lockedEnglishKitchenEn2Candidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates, ...lockedOwnerPublisherThreeCandidates, ...lockedUnifiedContentCandidates, ...lockedPaidThreePageCandidates, ...lockedBuiltinWardrobeCandidates, ...lockedShopOfficeSixFieldCandidates, ...lockedSeoCabinetTwoAnchorCandidates, ...lockedNext8TwoRecordCandidates, ...lockedNext8RenovationZh05971Candidate, ...lockedNext12FiveRecordCandidates, ...lockedTwoOriginalMaterialBodyCandidates, ...lockedWardrobe15BuiltinCandidates, ...lockedEnglishKitchenEn2Candidates, ...lockedPaid6KitchenCandidates, ...lockedContactCmsPageTitleCandidate, ...lockedPaidFourCurrentCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
       keyField: locked.keyField || "slug",

@@ -2,7 +2,6 @@ import {
   archiveAdminMutationRecord,
   deleteAdminMutationRecord,
   fetchAdminMutationRecord,
-  insertAdminAuditLog,
   insertAdminMutationRecord,
   updateAdminMutationRecord,
   resolveAdminContentLink,
@@ -21,7 +20,6 @@ export type PersistAdminRecordOptions = {
   idField?: string;
   expectedUpdatedAt?: string | null;
   action?: string;
-  audit?: boolean;
 };
 
 export type PersistAdminRecordRemovalOptions = {
@@ -110,7 +108,6 @@ export async function persistAdminRecord<T extends DbRecord = DbRecord>({
   idField = "id",
   expectedUpdatedAt,
   action,
-  audit = true,
 }: PersistAdminRecordOptions): Promise<AdminMutationResult<T>> {
   const isUpdate = id !== undefined && id !== null && id !== "";
   const clean = cleanPayload(payload, !isUpdate);
@@ -166,20 +163,6 @@ export async function persistAdminRecord<T extends DbRecord = DbRecord>({
     throw new AdminMutationError("database", "Record could not be written.", "write", { sourceError: error });
   }
 
-  if (audit) {
-    try {
-      await insertAdminAuditLog({
-        table,
-        action: action || (isUpdate ? "update" : "insert"),
-        id: typeof saved?.[idField] === "string" || typeof saved?.[idField] === "number" ? saved[idField] : id,
-        oldValue: before,
-        newValue: saved,
-      });
-    } catch {
-      // Audit logging should not erase a successful save in the UI.
-    }
-  }
-
   return {
     record: saved as T, before, table, action: action || (isUpdate ? "update" : "insert"),
     id: typeof saved[idField] === "string" || typeof saved[idField] === "number" ? saved[idField] : id,
@@ -212,18 +195,6 @@ export async function persistAdminRecordRemoval({
   } catch (error) {
     if (error instanceof AdminMutationError) throw error;
     throw new AdminMutationError("database", "Record could not be written.", "write", { sourceError: error });
-  }
-
-  try {
-    await insertAdminAuditLog({
-      table,
-      action: shouldArchive ? "archive" : "delete",
-      id,
-      oldValue: before,
-      newValue: after,
-    });
-  } catch {
-    // Keep delete/archive result stable even if audit insertion fails.
   }
 
   return { record: after, before, table, action: shouldArchive ? "archive" : "delete", id };

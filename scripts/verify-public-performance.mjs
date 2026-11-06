@@ -14,6 +14,17 @@ const productDetailPath =
 
 const pages = [
   {
+    name: "custom-cabinets",
+    path: "/zh/custom-cabinets",
+    requireSiteSettingsPreload: true,
+    maxPreloadBytes: 25_000,
+    // Static selection renders immediately; published references and the
+    // shared consultation footer may each perform one optional public read.
+    maxSupabaseRestFetches: 2,
+    checkLanguageSwitch: true,
+    forbidFurnitureCatalog: true,
+  },
+  {
     name: "home",
     path: "/zh",
     requireSiteSettingsPreload: true,

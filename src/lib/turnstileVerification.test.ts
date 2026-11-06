@@ -4,20 +4,20 @@ import { verifyTurnstileToken } from "../../supabase/functions/_shared/turnstile
 const unavailable = { ok: false, status: 503, error: "Bot verification temporarily unavailable" };
 const rejected = { ok: false, status: 400, error: "Bot verification failed" };
 const transport = vi.fn<typeof fetch>();
-let configured = true;
+let secret: string | undefined;
 
 beforeEach(() => {
-  configured = true;
+  secret = "synthetic-server-fixture";
   transport.mockReset();
-  vi.stubGlobal("Deno", { env: { get: () => configured ? "synthetic-server-fixture" : undefined } });
+  vi.stubGlobal("Deno", { env: { get: () => secret } });
   vi.stubGlobal("fetch", transport);
 });
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 
 describe("server-side Turnstile provider boundary", () => {
-  it("keeps the existing unconfigured behavior without contacting the provider", async () => {
-    configured = false;
-    expect(await verifyTurnstileToken(undefined, null)).toEqual({ ok: true, enforced: false });
+  it.each([undefined, "", "  "])("rejects missing server configuration %j without contacting the provider", async value => {
+    secret = value;
+    expect(await verifyTurnstileToken("synthetic-response", null)).toEqual(unavailable);
     expect(transport).not.toHaveBeenCalled();
   });
 

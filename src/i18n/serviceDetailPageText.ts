@@ -194,3 +194,33 @@ const serviceProjectGuidance: readonly ServiceProjectGuidanceBlock[] = [
 
 export const getServiceProjectGuidance = (slug: string, language: Language): readonly ServiceProjectGuidanceBlock[] =>
   serviceProjectGuidance.filter((block) => block.slug === slug && block.language === language);
+
+export const residentialLandingText = {
+  en: {
+    scopeHeading: "Home renovation services and areas we cover",
+    scope: "We take enquiries for condo and terrace-house renovation in Kuala Lumpur and Selangor, including areas such as Mont Kiara, Petaling Jaya and Puchong. Discuss a whole-home renovation or start with one area, such as the kitchen, bathroom or living room. Share your location and site photos or a floor plan, and tell us which spaces you want to update.",
+    areas: "See service areas",
+    photoCta: "Discuss my renovation on WhatsApp",
+    heading: "What affects condo renovation costs in Kuala Lumpur?",
+    answer: "Start with your floor area and the rooms you want to update. Separate essential work such as wiring, plumbing or waterproofing from optional cabinetry and finishes. Demolition, materials, lift access and condo management requirements can also affect the quote. You can start the conversation before setting a budget.",
+    budgetGuide: "See the renovation budget guide",
+  },
+  zh: {
+    scopeHeading: "住宅装修可以做哪些空间？",
+    scope: "吉隆坡和雪兰莪的公寓、排屋业主都可以咨询，例如满家乐、八打灵再也和蒲种。可以规划全屋装修，也可以先做厨房、浴室或客厅。先发项目地点和现场照片或平面图，再告诉我们想做哪些空间。",
+    areas: "查看服务地区",
+    photoCta: "咨询我的装修",
+    heading: "吉隆坡公寓装修费用怎么估？",
+    answer: "先看房屋面积和要做的空间。把水电、防水等必要工程与可分阶段做的柜体、饰面分开列，再核对拆除量、材料、货梯进场和管理处要求。还没定预算，也可以先咨询。",
+    budgetGuide: "看装修预算指南",
+  },
+  ms: {
+    scopeHeading: "Perkhidmatan ubah suai kediaman dan kawasan liputan",
+    scope: "Kami menerima pertanyaan ubah suai kondominium dan rumah teres di Kuala Lumpur dan Selangor, termasuk Mont Kiara, Petaling Jaya dan Puchong. Bincangkan ubah suai seluruh rumah atau mulakan dengan dapur, bilik mandi atau ruang tamu. Kongsi lokasi dan foto tapak atau pelan lantai, serta ruang yang ingin diubah suai.",
+    areas: "Lihat kawasan perkhidmatan",
+    photoCta: "Bincang ubah suai saya melalui WhatsApp",
+    heading: "Apakah yang mempengaruhi kos ubah suai kondominium di Kuala Lumpur?",
+    answer: "Mulakan dengan keluasan dan ruang yang ingin diubah suai. Asingkan kerja penting seperti pendawaian, paip dan kalis air daripada kabinet serta kemasan pilihan. Kerja perobohan, bahan, akses lif dan syarat pengurusan juga boleh mempengaruhi sebut harga. Anda boleh bertanya sebelum menetapkan bajet.",
+    budgetGuide: "Lihat panduan bajet ubah suai",
+  },
+} as const;

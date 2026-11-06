@@ -73,6 +73,7 @@ export const adminSystemLogSourceLabels = {
     frontend: "Frontend",
     "health-check": "Health check",
     ops: "Operations script",
+    managed_growth: "Growth operations",
     "form-attempts-maintenance": "Anti-spam cleanup",
     "maintenance-reminder": "Maintenance reminder",
     "notify-lead": "Lead notification",
@@ -83,6 +84,7 @@ export const adminSystemLogSourceLabels = {
     frontend: "前台",
     "health-check": "健康检查",
     ops: "运维脚本",
+    managed_growth: "推广运维",
     "form-attempts-maintenance": "防刷清理",
     "maintenance-reminder": "维护提醒",
     "notify-lead": "线索通知",
@@ -100,6 +102,7 @@ export const adminSystemLogCategoryLabels = {
     backup_restore_dry_run_completed: "Backup restore test",
     backup_restore_completed: "Backup restore",
     form_submission_attempts_cleanup: "Anti-spam records",
+    managed_growth_export: "Growth operations",
     maintenance_reminder_delivery_failed: "Notification",
     lead_notification_delivery_failed: "Notification",
     lead_notification_request_accepted: "Notification",
@@ -113,6 +116,7 @@ export const adminSystemLogCategoryLabels = {
     backup_restore_dry_run_completed: "备份恢复演练",
     backup_restore_completed: "备份恢复",
     form_submission_attempts_cleanup: "防刷记录",
+    managed_growth_export: "推广运维",
     maintenance_reminder_delivery_failed: "通知",
     lead_notification_delivery_failed: "通知",
     lead_notification_request_accepted: "通知",
@@ -129,6 +133,7 @@ export const adminSystemLogEventTypeLabels = {
     backup_restore_dry_run_completed: "Restore dry run",
     backup_restore_completed: "Backup restore",
     form_submission_attempts_cleanup: "Old anti-spam records cleaned",
+    managed_growth_export: "Growth data export",
     maintenance_reminder_delivery_failed: "Maintenance reminder delivery failed",
     lead_notification_delivery_failed: "Lead notification needs attention",
     lead_notification_request_accepted: "Lead notification request accepted",
@@ -142,6 +147,7 @@ export const adminSystemLogEventTypeLabels = {
     backup_restore_dry_run_completed: "恢复演练",
     backup_restore_completed: "备份恢复",
     form_submission_attempts_cleanup: "旧防刷记录清理",
+    managed_growth_export: "推广数据导出",
     maintenance_reminder_delivery_failed: "维护提醒发送失败",
     lead_notification_delivery_failed: "线索通知需核查",
     lead_notification_request_accepted: "线索通知请求已接受",
@@ -150,6 +156,7 @@ export const adminSystemLogEventTypeLabels = {
 
 export const adminSystemLogMessageLabels = {
   en: {
+    "Growth export completed.": "Growth data export completed.",
     "Lead notification request accepted; delivery is not verified.": "Notification request accepted. Recipient delivery is not verified.",
     "Lead notification acceptance could not be confirmed; the saved lead is retained.": "Notification acceptance could not be confirmed. The saved lead is retained.",
     "Lead notification dispatch could not be verified. Manual verification is required.": "Notification processing could not be confirmed. Check the saved lead and notification records before retrying.",
@@ -158,6 +165,7 @@ export const adminSystemLogMessageLabels = {
     "One or more health checks need attention.": "One or more health checks need attention.",
   },
   zh: {
+    "Growth export completed.": "推广数据导出完成。",
     "Lead notification request accepted; delivery is not verified.": "通知请求已接受，接收方是否收到仍未核实。",
     "Lead notification acceptance could not be confirmed; the saved lead is retained.": "通知请求是否接受未能确认，已保存的线索仍保留。",
     "Lead notification dispatch could not be verified. Manual verification is required.": "通知处理结果尚未确认。再次发送前，请核对已保存线索和通知记录。",

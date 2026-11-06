@@ -98,22 +98,26 @@ describe("the fixed eleven-row forward remainder after two truthful stopped runs
     const { chromium } = await import("@playwright/test"); const browser = await chromium.launch({ channel: "chrome", headless: true });
     try {
       const context = await browser.newContext(); await context.route("**/*", (route) => route.abort()); const page = await context.newPage();
+      await page.setContent("<body></body>", { waitUntil: "domcontentloaded" });
+      const replaceBody = (markup: string) => page.evaluate((value) => {
+        document.body.innerHTML = value;
+      }, markup);
       const expected = ["Exact heading", "Direct list sentence.", "核对报价，再确认。", "First second point."];
       const html = '<main><h2>Exact heading</h2><div style="display:contents">Direct list sentence.</div><p>核对<a href="/zh/quote">报价</a>，再确认。</p><p>First<br>second <strong>point</strong>.</p></main>';
-      await page.setContent(html); const visible = await readVisibleBodyEvidence(page);
+      await replaceBody(html); const visible = await readVisibleBodyEvidence(page);
       expect(assertRenderedEvidence({ status: 200, ready: true, runtimeErrors: 0, ...visible }, expected)).toBe(true);
       for (const replacement of ['hidden', 'inert', 'style="opacity:0"', 'style="display:none"', 'style="visibility:hidden"']) {
-        await page.setContent(html.replace('<main>', `<main ${replacement}>`));
+        await replaceBody(html.replace('<main>', `<main ${replacement}>`));
         expect(assertRenderedEvidence({ status: 200, ready: true, runtimeErrors: 0, ...await readVisibleBodyEvidence(page) }, expected)).toBe(false);
       }
       for (const subtree of ['<div style="opacity:0"><p>Secret sentence.</p><h2>Secret heading</h2></div>', '<div inert><span>Secret sentence.</span><h2>Secret heading</h2></div>', '<div hidden>Secret sentence.</div>']) {
-        await page.setContent(`<main>${subtree}<p>Visible sentence.</p></main>`); const body = await readVisibleBodyEvidence(page);
+        await replaceBody(`<main>${subtree}<p>Visible sentence.</p></main>`); const body = await readVisibleBodyEvidence(page);
         expect(body.visibleMainText).not.toContain("Secret"); expect(body.visibleHeadings).not.toContain("Secret heading");
       }
       for (const changed of [html.replace("Direct list", "Different list"), html.replace("<h2>Exact heading</h2>", ""), html.replace("Direct list sentence.", "")]) {
-        await page.setContent(changed); expect(assertRenderedEvidence({ status: 200, ready: true, runtimeErrors: 0, ...await readVisibleBodyEvidence(page) }, expected)).toBe(false);
+        await replaceBody(changed); expect(assertRenderedEvidence({ status: 200, ready: true, runtimeErrors: 0, ...await readVisibleBodyEvidence(page) }, expected)).toBe(false);
       }
-      await page.setContent('<main><p>First<br hidden>second point.</p></main>');
+      await replaceBody('<main><p>First<br hidden>second point.</p></main>');
       expect(assertRenderedEvidence({ status: 200, ready: true, runtimeErrors: 0, ...await readVisibleBodyEvidence(page) }, ["First second point."])).toBe(false);
     } finally { await browser.close(); }
   }, 30000);

@@ -20,7 +20,7 @@ async function edgePage(path: string, ua = "human-browser") {
   vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
     const url = new URL(String(input)); requests.push(url);
     const slug = url.searchParams.get("slug")?.replace(/^eq\./, "");
-    const rows = url.pathname.endsWith("/site_settings") ? [{ phone_e164: "+601128853888", email: "support@flashcast.com.my" }] : slug ? allRows.filter(row => row.slug === slug).map(row => revisionOverride?.slug === row.slug ? revisionOverride : row) : [];
+    const rows = url.pathname.endsWith("/site_settings") ? [{ phone_e164: "+601128853888", email: "support@flashcast.com.my", updated_at: "2026-09-27T08:00:00Z" }] : slug ? allRows.filter(row => row.slug === slug).map(row => revisionOverride?.slug === row.slug ? revisionOverride : row) : [];
     return new Response(JSON.stringify(rows), { headers: { "content-type": "application/json" } });
   }));
   const res = await onRequest({ request: new Request(`https://flashcast.com.my${path}`, { headers: { "user-agent": ua } }), env: { CF_PAGES_COMMIT_SHA: "geo-test", VITE_SUPABASE_URL: `https://fixture-${path.split("/").pop()}.supabase.co`, VITE_SUPABASE_ANON_KEY: "test-public-key", ASSETS: { fetch: async () => new Response(assets, { headers: { "content-type": "text/html" } }) } }, next: async () => new Response(assets, { headers: { "content-type": "text/html" } }), waitUntil: (p: Promise<unknown>) => pending.push(p) } as never);

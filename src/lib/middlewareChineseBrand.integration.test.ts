@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
+import { getChineseBrandAssociation } from "../i18n/brandIdentity";
 
 const aliases = ["闪铸装饰", "闪铸设计", "闪铸装修"];
 const settings = { company_name: "FLASH CAST SDN. BHD.", brand_name: "FLASH CAST" };
@@ -62,7 +63,7 @@ const fixtures: SourceFixture[] = [
 ];
 
 let fixtureId = 0;
-async function render(language: "en" | "zh", fixture: SourceFixture, identity = settings, backend = true) {
+async function render(language: "en" | "zh" | "ms", fixture: SourceFixture, identity = settings, backend = true) {
   const origin = `https://chinese-brand-${++fixtureId}.invalid`;
   const requests: Request[] = [];
   vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -131,6 +132,37 @@ const expectBrandIdentity = (document: Document, node: (type: string) => Record<
 afterEach(() => vi.unstubAllGlobals());
 
 describe("Edge Chinese brand identity from current published sources", () => {
+  it.each(["", "/about"])("matches the existing visible Chinese association once in initial HTML on /zh%s", async path => {
+    const fixture = fixtures.find(item => item.path === path)!;
+    const { response, document, node } = await render("zh", fixture);
+    const summary = document.querySelector("noscript[data-flashcast-geo-summary]")?.textContent || "";
+    expect(response.status).toBe(200);
+    expect(summary.split(getChineseBrandAssociation(settings, "zh")!)).toHaveLength(2);
+    expectMetadataParity(document, node);
+    expectBrandIdentity(document, node);
+    expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://flashcast.com.my/zh${path}`);
+    const graph = JSON.parse(document.querySelector("script[data-flashcast-edge-schema]")?.textContent || "{}")["@graph"] as Record<string, unknown>[];
+    for (const type of ["WebSite", "HomeAndConstructionBusiness"]) {
+      const nodes = graph.filter(item => item["@type"] === type);
+      expect(nodes).toHaveLength(1);
+      const names = nodes[0].alternateName as string[];
+      expect(names).toHaveLength(new Set(names).size);
+    }
+  });
+
+  it.each(["", "/about"])("keeps the same confirmed association when backend configuration is unavailable on /zh%s", async path => {
+    const { response, document } = await render("zh", fixtures.find(item => item.path === path)!, settings, false);
+    expect(response.status).toBe(200);
+    expect(document.querySelector("noscript[data-flashcast-geo-summary]")?.textContent).toContain(getChineseBrandAssociation(undefined, "zh"));
+  });
+
+  it.each(["en", "ms"] as const)("does not add Chinese association copy to %s initial HTML", async language => {
+    for (const path of ["", "/about"]) {
+      const { document } = await render(language, fixtures.find(item => item.path === path)!, settings, false);
+      expect(document.querySelector("noscript[data-flashcast-geo-summary]")?.textContent).not.toContain(getChineseBrandAssociation(undefined, "zh"));
+    }
+  });
+
   it.each(fixtures)("adds the route brand while preserving current CMS metadata on /zh$path", async fixture => {
     const { response, document, node, path } = await render("zh", fixture);
     expect(response.status).toBe(200);

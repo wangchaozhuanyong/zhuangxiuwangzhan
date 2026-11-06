@@ -1,4 +1,5 @@
 import { stripHtml } from "./text";
+import { oldHouseEnglishFaqRenderingCopy as renderingCopy } from "../i18n/oldHouseRenovationPageText";
 
 export type PublicServiceFaq = { question: string; answer: string };
 
@@ -14,4 +15,15 @@ export function mapPublicServiceFaqs(value: unknown): PublicServiceFaq[] {
     const answer = text(row.a) || text(row.answer);
     return question && answer ? [{ question, answer }] : [];
   });
+}
+
+export function mapOldHousePublicFaqs(value: unknown): PublicServiceFaq[] {
+  return mapPublicServiceFaqs(value).map((faq) =>
+    faq.question === renderingCopy.question
+      ? {
+          ...faq,
+          answer: faq.answer.replace(renderingCopy.previous, renderingCopy.current),
+        }
+      : faq,
+  );
 }

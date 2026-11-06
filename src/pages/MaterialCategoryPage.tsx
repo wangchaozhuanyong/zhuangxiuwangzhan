@@ -4,6 +4,7 @@ import { isReviewedMaterialConceptImage } from "@/lib/reviewedContentMedia.mjs";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
+import { Button } from "@/components/ui/button";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeAContentState, SchemeAListingGrid, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
@@ -11,6 +12,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory, translateSpaceLabel } from "@/i18n/displayLabels";
 import { materialCategoryPageText } from "@/i18n/materialCategoryPageText";
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
+import { customCabinetsHomeText } from "@/i18n/customCabinetsHomeText";
 
 export default function MaterialCategoryPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -31,6 +33,7 @@ export default function MaterialCategoryPage() {
     <PageMeta title={copy.metaTitle(name, copy.breadcrumbMaterials)} description={copy.metaDescription(description, name)} keywords={copy.metaKeywords(name)} canonicalPath={`/materials/category/${category.slug}`} />
     <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name, url: `/materials/category/${category.slug}` }]} />
     <SchemeARouteHero kind="listing" image={category.image} mediaDisclosure={isReviewedMaterialConceptImage(category.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={category.alt || name} label={copy.breadcrumbMaterials} title={name} description={description} />
+    {category.slug === "whole-house-custom" && <SchemeASection><Button asChild size="lg"><Link to="/custom-cabinets">{customCabinetsHomeText[language].design}</Link></Button></SchemeASection>}
     {subcategoryItems.length ? <SchemeASection title={copy.browseSubcategories} description={description}><SchemeAListingGrid items={subcategoryItems} actionLabel={copy.view} /></SchemeASection> : null}
     {productItems.length ? <SchemeASection title={copy.allProducts(name)}><SchemeAListingGrid items={productItems} actionLabel={copy.view} /></SchemeASection> : null}
   </main>;

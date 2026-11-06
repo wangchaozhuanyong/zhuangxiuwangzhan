@@ -5,6 +5,9 @@ import { getPublicPageName, prefetchPublicPageModule } from "./publicPagePrefetc
 afterEach(() => vi.restoreAllMocks());
 
 describe("public page module loading", () => {
+  it.each(["zh", "en", "ms"])("recognizes the cabinet page in %s", lang => {
+    expect(getPublicPageName(`/${lang}/custom-cabinets`)).toBe("CustomCabinets");
+  });
   it("shares an intended page with navigation and waits for its canonical styles", async () => {
     const module = { default: () => null };
     let finishStyles: () => void;

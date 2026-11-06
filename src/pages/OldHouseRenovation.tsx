@@ -23,7 +23,7 @@ import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteCont
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { usePublishedServiceBySlug } from "@/hooks/usePublishedContent";
-import { mapPublicServiceFaqs } from "@/lib/publicServiceFaqs";
+import { mapOldHousePublicFaqs } from "@/lib/publicServiceFaqs";
 
 const oldHouseComparisonMedia = {
   "terrace-living": {
@@ -49,7 +49,7 @@ const OldHouseRenovation = () => {
   // The existing query also returns local service fallbacks (without CMS status).
   // Keep this page's reviewed fallback until a real published record is available.
   const hasPublishedRecord = cmsService && "status" in cmsService && cmsService.status === "published";
-  const faqs = mapPublicServiceFaqs(hasPublishedRecord ? cmsService.faqs : t.faqs);
+  const faqs = mapOldHousePublicFaqs(hasPublishedRecord ? cmsService.faqs : t.faqs);
   const contextLinks = getServiceContextLinks("old-house", language);
   const quotePath = buildQuotePath({
     source: "service",
@@ -64,7 +64,7 @@ const OldHouseRenovation = () => {
       <JsonLdService name={t.title} description={t.description} />
       {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}
 
-      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<><PhotoEnquiryLink source="old_house_hero" /><Link to={quotePath} className="fc-route-hero-action-secondary" onClick={() => trackCtaClick("quote", "old_house_hero", { destination: quotePath })}>{t.assessment}</Link></>} />
+      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<><PhotoEnquiryLink source="old_house_hero" label={t.whatsapp} /><Link to={quotePath} className="fc-route-hero-action-secondary" onClick={() => trackCtaClick("quote", "old_house_hero", { destination: quotePath })}>{t.assessment}</Link></>} />
 
       <SchemeASection title={t.introTitle} description={t.intro.join(" ")}>
         <div className="fc-route-tagline">{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>

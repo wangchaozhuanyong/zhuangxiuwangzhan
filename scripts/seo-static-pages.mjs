@@ -1,4 +1,6 @@
 /** Static route SEO (mirrors in-app PageMeta copy; does not change visible UI). */
+import { readFileSync } from "node:fs";
+const cabinetText = JSON.parse(readFileSync(new URL("../src/i18n/customCabinetsText.json", import.meta.url), "utf8"));
 export const SITE_URL = (process.env.VITE_SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 export const OG_IMAGE = `${SITE_URL}/og-image.webp`;
 export const COMPANY = "FLASH CAST SDN. BHD.";
@@ -147,6 +149,9 @@ const servicesFaqs = {
 };
 
 const staticDefs = [
+  ...Object.entries(cabinetText).map(([lang, copy]) => page(lang, "/custom-cabinets", copy.metaTitle, copy.metaDescription, "", {
+    ogImage: "/images/custom-cabinets/v2/modern-1-kitchen.webp", faqs: copy.faqs, schemaType: "Service", entityName: copy.eyebrow,
+  })),
   page("en", "/services/surface-repair", "Home Surface Repair in Kuala Lumpur | Furniture, Tiles & Worktops | FLASH CAST", "Send photos of chipped doors, scratched furniture, damaged cabinetry, tiles or worktops. Discuss local surface repairs in Kuala Lumpur, Selangor and Klang Valley, subject to material and site assessment.", "", {"ogImage": "/images/services/surface-repair/hero.webp"}),
   page("zh", "/services/surface-repair", "吉隆坡家居表面修复｜木门、家具、瓷砖与台面修补 | FLASH CAST", "木门掉漆、家具划痕、柜体崩边与瓷砖台面缺口，可先发送照片咨询局部修复。服务吉隆坡、雪兰莪与巴生谷，按材质、损伤及现场条件确认处理范围。", "", {"ogImage": "/images/services/surface-repair/hero.webp"}),
   page("en", "/", "Renovation Company Kuala Lumpur & Selangor | FLASH CAST", "FLASH CAST plans and coordinates home and commercial renovation across Kuala Lumpur, Selangor, and Klang Valley, including kitchens, bathrooms, offices, shops, custom built-ins, material advice, and site work.", "", { faqs: homeFaqs.en }),
@@ -230,11 +235,13 @@ export function buildStaticManifest() {
       hreflang: {
         en: `${SITE_URL}${enPath}`,
         zh: `${SITE_URL}${zhPath}`,
+        ...(def.path === "/custom-cabinets" ? { ms: `${SITE_URL}/ms/custom-cabinets` } : {}),
         xDefault: `${SITE_URL}${enPath}`,
       },
       ogImage: def.ogImage ? new URL(def.ogImage, SITE_URL).href : OG_IMAGE,
       ...(def.faqs ? { faqs: def.faqs } : {}),
       ...(def.path.startsWith("/services/") ? { schemaType: "Service" } : {}),
+      ...(def.schemaType ? { schemaType: def.schemaType, entityName: def.entityName } : {}),
     };
   }
   return manifest;

@@ -15,8 +15,8 @@ export const adminDashboardText = {
   uploadImage: { en: "Upload Image", zh: "上传图片" },
   contentHealth: { en: "Content health check", zh: "内容健康检查" },
   contentHealthHelp: {
-    en: "Check missing English, SEO, images, and required fields in one place. Lower is better.",
-    zh: "集中查看缺英文、缺 SEO、缺图片和必填缺失。数字越低越好。",
+    en: "Unarchived records with missing required, English, SEO or image fields. Counts remain unconfirmed until every source can be read.",
+    zh: "未归档记录中的必填、英文、SEO 或图片缺项；所有来源读取确认后才显示统计。",
   },
   publishCenter: { en: "Publish center", zh: "发布中心" },
   publishCenterHelp: {
@@ -25,8 +25,8 @@ export const adminDashboardText = {
   },
   englishCenter: { en: "English generation center", zh: "英文生成中心" },
   englishCenterHelp: {
-    en: "Scan content missing English and generate English in batches automatically.",
-    zh: "集中扫描缺英文内容，并支持批量自动生成英文。",
+    en: "Unarchived records with missing required English fields, available for individual or batch generation.",
+    zh: "未归档记录中需要补齐的英文字段，支持单条和批量生成。",
   },
   leadFallback: { en: "Lead", zh: "咨询" },
   quoteFallback: { en: "Quote request", zh: "报价请求" },

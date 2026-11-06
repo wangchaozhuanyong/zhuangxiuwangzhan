@@ -5019,7 +5019,14 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
   "/images/services/design/detail-480.webp": {
     "width": 480,
     "height": 259,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 480,
+      "720": 480,
+      "900": 480,
+      "1200": 480,
+      "1600": 480
+    }
   },
   "/images/services/design/detail.webp": {
     "width": 891,
@@ -5036,42 +5043,98 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
   "/images/services/design/material-board-v2-1200.webp": {
     "width": 1200,
     "height": 1200,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1200
+    }
   },
   "/images/services/design/material-board-v2-480.webp": {
     "width": 480,
     "height": 480,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 480,
+      "720": 480,
+      "900": 480,
+      "1200": 480,
+      "1600": 480
+    }
   },
   "/images/services/design/material-board-v2-768.webp": {
     "width": 768,
     "height": 768,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 768,
+      "1200": 768,
+      "1600": 768
+    }
   },
   "/images/services/design/reading-480.webp": {
     "width": 480,
     "height": 509,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 480,
+      "720": 480,
+      "900": 480,
+      "1200": 480,
+      "1600": 480
+    }
   },
   "/images/services/design/reading.webp": {
     "width": 860,
     "height": 912,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 860,
+      "1200": 860,
+      "1600": 860
+    }
   },
   "/images/services/design/space-1200.webp": {
     "width": 1200,
     "height": 800,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1200
+    }
   },
   "/images/services/design/space-480.webp": {
     "width": 480,
     "height": 320,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 480,
+      "720": 480,
+      "900": 480,
+      "1200": 480,
+      "1600": 480
+    }
   },
   "/images/services/design/space-768.webp": {
     "width": 768,
     "height": 512,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 768,
+      "1200": 768,
+      "1600": 768
+    }
   },
   "/images/services/design/space.webp": {
     "width": 1536,

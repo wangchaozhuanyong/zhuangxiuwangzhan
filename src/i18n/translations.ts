@@ -11,6 +11,7 @@ export const translations: Translations = {
   "nav.home": { en: "Home", zh: "首页" ,
                 ms: "Laman utama",
               },
+  "nav.customCabinets": { en: "Mix & Match", zh: "自由搭配", ms: "Suai Padan" },
   "nav.furniture": { en: "Furniture showcase", zh: "家具展示" ,
                      ms: "Pameran perabot",
                    },

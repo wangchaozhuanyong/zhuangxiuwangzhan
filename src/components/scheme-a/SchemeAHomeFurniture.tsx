@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import LocalizedLink from "@/components/LocalizedLink";
 import PublicResultsBoundary from "@/components/PublicResultsBoundary";
@@ -27,22 +28,23 @@ export default function SchemeAHomeFurniture() {
         <div className="home-furniture__layout">
           <figure className="home-furniture__scene" data-cinematic-media>
             <DeferredSmartImage
-              src="/images/heroes/v20260930/furniture-showcase.webp"
-              alt={furnitureCopy.heroImageAlt}
-              width={1536}
-              height={1024}
-              sourceWidth={1536}
+              src="/images/heroes/hero-luxury-living.webp"
+              alt={copy.sceneAlt}
+              width={1920}
+              height={1080}
+              sourceWidth={1920}
               candidateWidths={[560, 720, 960, 1200, 1536]}
-              sizes="(max-width: 767px) 100vw, 50vw"
+              sizes="(max-width: 767px) 100vw, 85vw"
               rootMargin="1200px 0px"
               loading="lazy"
               fetchPriority="auto"
             />
-            <figcaption>{copy.sceneCaption}</figcaption>
+            <figcaption><strong>{copy.sceneTitle}</strong><span>{copy.sceneCaption}</span></figcaption>
           </figure>
           <div className="home-furniture__catalog">
             <PublicResultsBoundary query={query} loading={copy.loading} error={copy.loadFailed} empty={copy.empty} isEmpty={!products.length}>
-              <div className="home-furniture__products">
+              <p className="home-furniture__swipe-hint">{copy.swipeHint}</p>
+              <div className="home-furniture__products" tabIndex={0} role="region" aria-label={copy.allFurniture}>
                 {products.map((product) => (
                   <article className="home-furniture__product" key={product.slug}>
                     <LocalizedLink className="home-furniture__product-link" to={`/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`} aria-label={`${furnitureCopy.viewDetails}: ${product.name}`}>
@@ -52,7 +54,7 @@ export default function SchemeAHomeFurniture() {
                           alt={product.name}
                           width={540}
                           height={540}
-                          sizes="(max-width: 767px) 76vw, (max-width: 1023px) 24vw, 22vw"
+                          sizes="(max-width: 767px) 45vw, 22vw"
                           rootMargin="1200px 0px"
                           loading="lazy"
                           fetchPriority="auto"
@@ -70,13 +72,13 @@ export default function SchemeAHomeFurniture() {
             </PublicResultsBoundary>
           </div>
         </div>
-        <div className="home-furniture__actions scheme-a-actions">
-          <LocalizedLink className="scheme-a-button" to="/furniture">
+        <div className="home-furniture__actions">
+          <Button asChild size="lg"><LocalizedLink to="/furniture">
             {copy.allFurniture}<ArrowUpRight aria-hidden="true" />
-          </LocalizedLink>
-          <a className="scheme-a-text-link" href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={furnitureCopy.floatingShop}>
+          </LocalizedLink></Button>
+          <Button asChild variant="outline" size="lg"><a href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={furnitureCopy.floatingShop}>
             {copy.shop}<ArrowUpRight aria-hidden="true" />
-          </a>
+          </a></Button>
         </div>
       </div>
     </section>

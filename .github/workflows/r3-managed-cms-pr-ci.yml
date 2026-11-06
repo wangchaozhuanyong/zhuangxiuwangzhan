@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - scripts/managed-cms-targets-paid-four-current-v1.mjs
+      - supabase/functions/_shared/paid-four-current-targets.ts
+      - drafts/paid-four-content-zh-channel-20261030-v1/**
+      - src/lib/contentPublishPaidFourCurrent.test.ts
       - scripts/managed-cms-targets-two-original-material-bodies-v1.mjs
       - supabase/functions/_shared/two-original-material-body-targets.ts
       - drafts/publishing/fc-20261014-two-original-materials-exact-body-publication-v1/frozen-current-two-material-body-candidates.json
@@ -12,6 +16,10 @@ on:
       - supabase/functions/_shared/english-kitchen-en2-targets.ts
       - drafts/publishing/fc-20261011-english-kitchen-actual-publication-goal-v1/frozen-current-english-kitchen-en2-candidate.json
       - src/lib/contentPublishEnglishKitchenEn2.test.ts
+      - scripts/managed-cms-targets-contact-three-titles-v1.mjs
+      - supabase/functions/_shared/contact-cms-page-title-targets.ts
+      - drafts/publishing/fc-20261019-contact-conversion-malay-followthrough-v1/frozen-contact-cms-pages-three-titles.json
+      - src/lib/contentPublishContactThreeTitles.test.ts
       - src/data/locations.ts
       - src/i18n/locationContextLinks.ts
       - src/i18n/malayFallbackText.json
@@ -97,6 +105,10 @@ on:
       - supabase/functions/_shared/next8-two-record-targets.ts
       - drafts/publishing/fc-20261016-industry-keyword-next-eight-pages-v1/frozen-next8-two-row-candidates.json
       - src/lib/contentPublishNext8TwoRecord.test.ts
+      - scripts/managed-cms-target-next8-renovation-zh05971.mjs
+      - supabase/functions/_shared/next8-renovation-zh05971-target.ts
+      - drafts/publishing/fc-20261016-industry-keyword-next-eight-pages-v1/frozen-next8-renovation-zh05971-candidate.json
+      - src/lib/contentPublishNext8RenovationZh05971.test.ts
       - scripts/managed-cms-targets-next12-five-record-v1.mjs
       - supabase/functions/_shared/next12-five-record-targets.ts
       - drafts/publishing/fc-20261016-industry-keyword-next-twelve-pages-v1/frozen-next12-five-row-candidates.json
@@ -105,6 +117,10 @@ on:
       - supabase/functions/_shared/wardrobe15-builtin-targets.ts
       - drafts/publishing/fc-20261015-industry-keywords-site-coverage-plan-v1/frozen-wardrobe15-single-row-candidate.json
       - src/lib/contentPublishWardrobe15Builtin.test.ts
+      - scripts/managed-cms-targets-paid6-kitchen-v1.mjs
+      - supabase/functions/_shared/paid6-kitchen-targets.ts
+      - drafts/publishing/fc-20261017-six-keyword-matching-original-resume-v1/frozen-paid6-kitchen-channel-source.json
+      - src/lib/contentPublishPaid6Kitchen.test.ts
       - scripts/managed-cms-targets-seo-cabinet-two-anchors-v1.mjs
       - src/lib/contentPublishSeoCabinetTwoAnchors.test.ts
       - scripts/publish-malay-cms-single-target.mjs
@@ -204,10 +220,14 @@ jobs:
         run: |
           npm test -- \
             src/lib/contentPublishNext8TwoRecord.test.ts \
+            src/lib/contentPublishNext8RenovationZh05971.test.ts \
             src/lib/contentPublishNext12FiveRecord.test.ts \
             src/lib/contentPublishTwoOriginalMaterialBodies.test.ts \
             src/lib/contentPublishWardrobe15Builtin.test.ts \
+            src/lib/contentPublishPaidFourCurrent.test.ts \
             src/lib/contentPublishEnglishKitchenEn2.test.ts \
+            src/lib/contentPublishPaid6Kitchen.test.ts \
+            src/lib/contentPublishContactThreeTitles.test.ts \
             src/lib/contentPublishSeoCabinetTwoAnchors.test.ts \
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \
