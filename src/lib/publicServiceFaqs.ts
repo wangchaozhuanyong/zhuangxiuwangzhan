@@ -15,3 +15,17 @@ export function mapPublicServiceFaqs(value: unknown): PublicServiceFaq[] {
     return question && answer ? [{ question, answer }] : [];
   });
 }
+
+export function mapOldHousePublicFaqs(value: unknown): PublicServiceFaq[] {
+  return mapPublicServiceFaqs(value).map((faq) =>
+    faq.question === "What counts as before-and-after evidence for an old-house renovation?"
+      ? {
+          ...faq,
+          answer: faq.answer.replace(
+            "The before-and-proposed visuals on this page are labelled as AI-generated planning concepts; they should not be read as a client project or construction result.",
+            "The comparison on this page shows an illustrated starting layout and a proposed design rendering.",
+          ),
+        }
+      : faq,
+  );
+}
