@@ -678,6 +678,7 @@ export type Database = {
         message: string;
         metadata: Json;
         actor_id: string | null;
+        trusted_backup_evidence: boolean;
         created_at: Timestamp;
       }>;
       testimonials: Table<{
