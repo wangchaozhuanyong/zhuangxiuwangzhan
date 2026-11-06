@@ -19,7 +19,7 @@ import {
   resolvePublishedContentLink,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus, PublishContext } from "./types.ts";
-import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
+import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS, TWO_ORIGINAL_MATERIAL_BODY_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 import { pendingContentPaths, validateContentLinks } from "../_shared/content-links.mjs";
@@ -823,7 +823,7 @@ function cleanMaterialGallery(value: unknown, published: boolean) {
   return gallery;
 }
 
-function cleanMaterialPayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
+function cleanMaterialPayload(record: Record<string, unknown>, nextStatus?: ContentStatus, preserveExistingGallery = false) {
   const payload: Record<string, unknown> = {};
   const warnings: string[] = [];
   const requiresMaterialSchema = Array.from(MATERIAL_SCHEMA_FIELDS).some((field) =>
@@ -890,7 +890,7 @@ function cleanMaterialPayload(record: Record<string, unknown>, nextStatus?: Cont
 
   const published = status === "published";
   assertPublishedWebpImage(payload.image_url, status, "image_url");
-  const gallery = requiresMaterialSchema ? cleanMaterialGallery(record.gallery, published) : [];
+  const gallery = requiresMaterialSchema && !preserveExistingGallery ? cleanMaterialGallery(record.gallery, published) : [];
   if (published) {
     const requiredFields = [
       "title_zh", "title_en", "excerpt_zh", "excerpt_en", "content_zh", "content_en",
@@ -1411,6 +1411,87 @@ async function publishBlogContent(
   };
 }
 
+const trustedOriginalMaterialIdentity = (context: PublishContext) => {
+  const identity = context.managedIdentity;
+  return Boolean(identity && identity.repositoryId === 1248188229
+    && identity.workflowRef === "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main"
+    && /^[0-9a-f]{40}$/.test(identity.workflowSha)
+    && [identity.actorId, identity.runId, identity.runAttempt].every(value => Number.isSafeInteger(value) && value > 0));
+};
+
+// Exact existing-row bodies only. The normal permit RPC binds the actual workflow run;
+// the old local prototype's nullable-run permit reader and inverse are not reused.
+async function publishOriginalMaterialBodies(
+  input: ContentPublishRequest, client: ContentPublishClient, context: PublishContext,
+  mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
+): Promise<ContentPublishResult> {
+  const record = input.record!;
+  const operation = (input.managedPermit || input.managedCandidate)?.operation;
+  if (operation !== "publish" || target.rollbackAllowed !== false || nextStatus !== "published"
+      || record.id !== target.id || record.slug !== target.slug) {
+    return errorResult("Only the exact original material forward body action is admitted.", 403);
+  }
+  const existing = await fetchRecordByField(client, "materials", "id", target.id);
+  if (!existing) return errorResult("The exact original material row was not found.", 404);
+  const expected = String(input.expectedUpdatedAt || "");
+  if (!samePgTimestamp(existing.updated_at, expected) || !samePgTimestamp(expected, target.expectedUpdatedAt)) {
+    return errorResult("Exact material CAS differs from the frozen baseline. Refresh before continuing.", 409);
+  }
+  const projectionFields = target.baselineProjectionFields!;
+  const projection = Object.fromEntries(projectionFields.map(field => [field, existing[field]]));
+  if (Object.keys(existing).length !== projectionFields.length || projectionFields.some(field => existing[field] === undefined)
+      || existing.slug !== target.slug || existing.status !== "published"
+      || await sha256(projection) !== target.baselineFieldsSha256) {
+    return errorResult("Exact material requires its unchanged complete 59-field published baseline.", 409);
+  }
+  const fields = new Set(target.changedFields);
+  if (Object.entries(record).some(([field, value]) => !projectionFields.includes(field)
+      || !fields.has(field) && JSON.stringify(stableValue(value)) !== JSON.stringify(stableValue(existing[field])))
+      || target.changedFields!.some(field => typeof record[field] !== "string"
+        || String(record[field]).length > 80000 || cleanText(record[field], 80000) !== String(record[field]).trim())) {
+    return errorResult("Only the two frozen material bodies may differ; pricing, gallery, metadata and MS stay unchanged.", 403);
+  }
+  try { cleanMaterialPayload({ ...projection, ...record }, nextStatus, true); }
+  catch (error) { return errorResult(error instanceof Error ? error.message : "Invalid exact material body"); }
+  const patch = Object.fromEntries(target.changedFields!.map(field => [field, record[field]]));
+  if (await sha256(patch) !== target.desiredFieldsSha256) return errorResult("Material body bytes differ from the accepted original source.", 403);
+  const common = { ok: true, dry_run: mode === "dry-run", content_type: "material", action: "publish", operation,
+    slug: target.slug, status: "published", existing_id: target.id, existing_updated_at: existing.updated_at,
+    warnings: [], auth_mode: context.authMode || "admin" };
+  if (mode === "dry-run") return { body: { ...common, payload_preview: patch, performed_write: false } };
+  if (!trustedOriginalMaterialIdentity(context) || !cleanText(input.approvalId, 180)) {
+    return errorResult("Exact material publication requires the approved workflow identity and approvalId.", 403);
+  }
+  const denied = await beginManagedCmsWrite(input, client, context, target, existing, target.slug, patch, expected, patch);
+  if (denied) return denied;
+  let committed: Record<string, unknown>;
+  try {
+    committed = await publishMaterialAtomic(client, { p_material_id: target.id, p_expected_updated_at: expected,
+      p_payload: patch, p_images: null, p_admin_user_id: context.adminUserId || null, p_action: "publish" });
+  } catch (error) {
+    await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, null);
+    return errorResult(error instanceof Error ? error.message : "Atomic material result is unknown. Read back before retrying.",
+      error instanceof PublicationConflictError ? 409 : 500, { uncertain: true });
+  }
+  const saved = committed.saved as ContentRow | undefined;
+  if (!saved || saved.id !== target.id || !samePgTimestamp(saved.updated_at, String(saved.updated_at || ""))
+      || samePgTimestamp(saved.updated_at, expected) || !Number.isSafeInteger(saved.version)
+      || Number(saved.version) < Number(existing.version) || Object.keys(saved).length !== projectionFields.length
+      || projectionFields.some(field => saved[field] === undefined)
+      || await sha256(Object.fromEntries(target.changedFields!.map(field => [field, saved[field]]))) !== target.desiredFieldsSha256
+      || await sha256(Object.fromEntries(target.retainedProjectionFields!.map(field => [field, saved[field]]))) !== target.retainedFieldsSha256) {
+    await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, null);
+    return errorResult("Atomic material Saved/CAS/full59 readback differs. Reconcile before any retry.", 500, { uncertain: true });
+  }
+  if (!await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, saved)) {
+    return errorResult("Material was Saved but permit completion is unknown. Read back before retrying.", 500,
+      { uncertain: true, saved_id: saved.id, saved_updated_at: saved.updated_at, saved_version: saved.version });
+  }
+  return { body: { ...common, performed_write: true, saved_id: saved.id, saved_updated_at: saved.updated_at,
+    saved_version: saved.version, gallery_count: committed.gallery_count, gallery_archived_count: committed.gallery_archived_count,
+    public_revision: committed.public_revision } };
+}
+
 async function publishMaterialContent(
   input: ContentPublishRequest,
   client: ContentPublishClient,
@@ -1440,6 +1521,10 @@ async function publishMaterialContent(
   const existing = providedId
     ? await fetchRecordByField(client, "materials", "id", providedId)
     : await fetchRecordByField(client, "materials", "slug", cleaned.slug);
+  // The resolved row must not bypass the exact route via an uppercase UUID,
+  // title-derived slug, or another legacy lookup spelling.
+  if (existing && TWO_ORIGINAL_MATERIAL_BODY_TARGETS.some(target => target.id === String(existing.id || "").toLowerCase()
+      || target.slug === existing.slug)) return errorResult("This original material row requires its exact protected bilingual body tuple.", 403);
   const existingId = existing?.id ? String(existing.id) : "";
   if (providedId && !existing) return errorResult("Material id was provided but no matching material exists.", 404);
 
@@ -2110,6 +2195,14 @@ export async function publishContent(
   if (exactContactRow && !CONTACT_CMS_PAGE_TITLE_TARGETS.some(target => target === exact)) {
     return errorResult("This CMS Contact page requires its exact registered three-title tuple.", 403);
   }
+  const protectedOriginalMaterial = input.contentType === "material" && TWO_ORIGINAL_MATERIAL_BODY_TARGETS.some(target =>
+    target.id === String(input.record?.id || "").toLowerCase() || target.slug === managedRecordKey(input));
+  if (protectedOriginalMaterial && (!exact || exact.contentType !== "material")) {
+    return errorResult("This original material requires its exact task/action/version/physical scope.", 403);
+  }
+  if (protectedOriginalMaterial && mode === "publish" && !trustedOriginalMaterialIdentity(context)) {
+    return errorResult("Original material publication requires the trusted approved workflow.", 403);
+  }
   const newManagedRow = ORG020_V7_TARGETS.some((target) => target.contentType === input.contentType
     && (target.id === input.record?.id || target.slug === managedRecordKey(input)));
   if (mode === "publish" && newManagedRow && !context.managedIdentity) {
@@ -2162,6 +2255,7 @@ export async function publishContent(
       exact?.contentType === "translation_patch" ? exact : undefined);
   }
   if (exact && CONTACT_CMS_PAGE_TITLE_TARGETS.includes(exact)) return publishExactContactTitles(input, client, context, mode, nextStatus, exact);
+  if (protectedOriginalMaterial && exact) return publishOriginalMaterialBodies(input, client, context, mode, nextStatus, exact);
   if (exact && (ORG020_V7_TARGETS.includes(exact) || SHOP_OFFICE_SIX_FIELD_TARGETS.includes(exact)
       || isSparseNativeBodyPatch(exact, input.record, selection?.operation))) {
     return publishOrg020ExactPatch(input, client, context, mode, nextStatus, exact);

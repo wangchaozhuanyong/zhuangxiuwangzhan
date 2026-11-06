@@ -282,6 +282,8 @@ describe("three locked CMS targets in the existing protected workflow", () => {
         "next12-warehouse-fbe13ee7-cms-v1", "next12-bathroom-fbe13ee7-cms-v1", "next12-flooring-fbe13ee7-cms-v1", "next12-artistic-coating-fbe13ee7-cms-v1", "next12-approval-fbe13ee7-cms-v1",
         "wardrobe15-builtin-5507da74-cms-v1",
         "english-kitchen-en2-exact-v1",
+        "two-original-material-body-sintered-stone-grey",
+        "two-original-material-body-solid-surface-warm-white",
         "paid6-kitchen-content-zh-native-save-v1",
         "contact-three-locale-title-4c328eda-cms-v1",
         "current-stage-source-21a1a1ad2a3b66a30ac7b011",

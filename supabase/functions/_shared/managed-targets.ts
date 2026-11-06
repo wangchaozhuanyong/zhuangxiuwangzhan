@@ -15,13 +15,14 @@ import { ENGLISH_KITCHEN_EN2_TARGETS } from "./english-kitchen-en2-targets.ts";
 import { PAID6_KITCHEN_TARGETS } from "./paid6-kitchen-targets.ts";
 
 import { CONTACT_CMS_PAGE_TITLE_TARGETS } from "./contact-cms-page-title-targets.ts";
-export { ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS };
+import { TWO_ORIGINAL_MATERIAL_BODY_TARGETS } from "./two-original-material-body-targets.ts";
+export { ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS, TWO_ORIGINAL_MATERIAL_BODY_TARGETS };
 import { PAID_FOUR_CURRENT_TARGETS } from "./paid-four-current-targets.ts";
 
 export type ManagedTarget = {
   id: string;
   slug: string;
-  contentType: "service" | "service_area" | "blog" | "site_page" | "faq" | "translation_patch";
+  contentType: "material" | "service" | "service_area" | "blog" | "site_page" | "faq" | "translation_patch";
   taskId: string;
   actionId: string;
   candidateVersion: string;
@@ -150,6 +151,7 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_TARGETS: readonly ManagedTarget[] = [
+  ...TWO_ORIGINAL_MATERIAL_BODY_TARGETS,
   ...CONTACT_CMS_PAGE_TITLE_TARGETS,
   ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
@@ -217,7 +219,7 @@ export async function findManagedPreviewCandidate(
 // All protected IDs and aliases derive from the same exact publisher targets.
 export function isProtectedContentRecord(table: string, record: Record<string, unknown>): boolean {
   const tables: Record<ManagedTarget["contentType"], string> = {
-    service: "services", service_area: "service_areas", blog: "blog_posts",
+    material: "materials", service: "services", service_area: "service_areas", blog: "blog_posts",
     site_page: "site_pages", faq: "faqs", translation_patch: "",
   };
   return MANAGED_TARGETS.some((target) => (target.table || tables[target.contentType]) === table
