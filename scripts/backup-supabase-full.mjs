@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { encryptBackup, decryptBackup, sha256, assertArchivePath } from "./lib/private-backup.mjs";
-import { productionConnection, productionCommand, openSnapshot, readSnapshot, schemas, excludedRuntimeData, tableListSQL, tableFingerprintSQL, schemaFingerprintSQL, IMAGE } from "./lib/database-recovery.mjs";
+import { productionConnection, productionCommand, openSnapshot, readSnapshot, schemas, excludedRuntimeData, tableListSQL, tableFingerprintSQL, schemaFingerprintSQL, assertAuditTriggerArchive, IMAGE } from "./lib/database-recovery.mjs";
 
 export async function createFullBackup(root = process.cwd(), options = {}) {
   const context = await productionConnection(root, options);
@@ -18,6 +18,8 @@ export async function createFullBackup(root = process.cwd(), options = {}) {
       ...excludedRuntimeData.map((name) => `--exclude-table-data=auth.${name}`)]);
     metadata = { tables: fingerprints, structure, excluded_runtime_data: excludedRuntimeData.map((name) => `auth.${name}`) };
   } finally { opened.close(); }
+
+  assertAuditTriggerArchive(archive, metadata.structure, { cloud: context.cloud });
 
   const client = createClient(context.env.VITE_SUPABASE_URL, context.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: buckets, error: bucketError } = await client.storage.listBuckets();

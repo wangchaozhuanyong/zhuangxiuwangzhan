@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { readRecoveryEnv } from "./lib/backup-env.mjs";
-import { postgresInvocation } from "./lib/database-recovery.mjs";
+import { postgresInvocation, schemas, schemaFingerprintFor } from "./lib/database-recovery.mjs";
 import { encryptBackup, sha256 } from "./lib/private-backup.mjs";
 import { verifyFullPackage } from "./verify-supabase-full.mjs";
 import { checkCloudTools, removeEphemeralCloudCopy } from "./backup-supabase-cloud.mjs";
@@ -92,6 +92,45 @@ test("cloud package verification keeps database row, schema, administrator and m
   assert.throws(() => verifyFullPackage(folder, root, options), /Media coverage/);
   payload.objects[0].sha256 = sha256(media); payload.metadata.structure = null; save();
   assert.throws(() => verifyFullPackage(folder, root, options), /Schema or administrator/);
+});
+
+test("backup and restore keep private audit structure within the declared archive scope", () => {
+  assert.ok(schemas.includes("private"));
+  assert.match(schemaFingerprintFor(true), /'private'/);
+  assert.doesNotMatch(schemaFingerprintFor(false), /'private'/);
+});
+
+test("refuses an authenticated package whose recorded public audit trigger has no private function in the archive", (t) => {
+  const base = path.resolve(".release/cloud-backup-fixtures");
+  fs.mkdirSync(base, { recursive: true });
+  const folder = fs.mkdtempSync(path.join(base, "audit-toc-"));
+  t.after(() => fs.rmSync(folder, { recursive: true, force: true }));
+  const payload = {
+    archive: Buffer.from("synthetic postgres dump").toString("base64"),
+    metadata: { tables: [{ schema: "auth", table: "users", rows: 0 }, { schema: "public", table: "admin_users", rows: 0 }],
+      structure: { triggers: [{ schema: "public", table: "cms_pages", name: "audit_admin_record_change",
+        definition: "CREATE TRIGGER audit_admin_record_change AFTER INSERT ON public.cms_pages FOR EACH ROW EXECUTE FUNCTION private.audit_admin_record_change()" }] } },
+    objects: [],
+  };
+  const archive = encryptBackup(Buffer.from(JSON.stringify(payload)), "fixture-only-password");
+  fs.writeFileSync(path.join(folder, "recovery.fcbackup"), archive);
+  fs.writeFileSync(path.join(folder, "manifest.json"), JSON.stringify({ version: 1,
+    backup_type: "encrypted-postgres-storage", archive_file: "recovery.fcbackup", sha256: sha256(archive),
+    table_count: 2, storage_file_count: 0 }));
+  const trigger = "14; 2620 12345 TRIGGER public cms_pages audit_admin_record_change postgres\n";
+  const privateSchema = "6; 2615 12340 SCHEMA - private postgres\n";
+  const privateFunction = "8; 1255 12343 FUNCTION private audit_admin_record_change() postgres\n";
+  let entries = trigger;
+  const options = { cloud: true, env: cloudEnv(), execute: (_file, args) => {
+    if (args[0] === "--list") return { status: 0, stdout: Buffer.from(entries) };
+    assert.deepEqual(args, ["--data-only", "--file", "-"]);
+    return { status: 0, stdout: Buffer.from("COPY auth.users (id) FROM stdin;\n\\.\nCOPY public.admin_users (id) FROM stdin;\n\\.\n") };
+  }};
+  assert.throws(() => verifyFullPackage(folder, folder, options), /missing the private audit function/);
+  entries = privateSchema + privateFunction;
+  assert.throws(() => verifyFullPackage(folder, folder, options), /missing the private audit function or its recorded triggers/);
+  entries += trigger;
+  assert.equal(verifyFullPackage(folder, folder, options).database_archive_parsed, true);
 });
 
 test("workflow runs only from governed main with no deployment, private artifacts or Docker execution", () => {
