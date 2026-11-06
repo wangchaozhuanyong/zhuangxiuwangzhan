@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
 import { readEnvFile } from "./lib/project-env.mjs";
 import { decryptBackup, sha256, assertLocalRestoreContainer, assertArchivePath } from "./lib/private-backup.mjs";
-import { IMAGE, tableFingerprintSQL, schemaFingerprintSQL, normalizeStructure } from "./lib/database-recovery.mjs";
+import { IMAGE, tableFingerprintSQL, schemaFingerprintFor, normalizeStructure, assertAuditTriggerArchive } from "./lib/database-recovery.mjs";
 
 const root = process.cwd();
 const container = "supabase_db_flashcast-full-restore-20261003";
@@ -41,9 +41,12 @@ async function restore() {
   if (imported && (!process.argv.includes("--resume") || imported.backup_folder !== path.basename(backup))) throw new Error("This lab has already been imported. Use --resume with the same package to verify it without replacing data.");
   if (!imported && Number(localSQL("SELECT count(*) FROM pg_tables WHERE schemaname='public';")) !== 0) throw new Error("The rehearsal public schema must be empty before import.");
   const archive = Buffer.from(payload.archive, "base64");
+  assertAuditTriggerArchive(archive, payload.metadata.structure);
+  const includePrivate = Array.isArray(manifest.schemas) && manifest.schemas.includes("private");
   const unpack = spawnSync("docker", ["run", "--rm", "-i", IMAGE, "pg_restore", "--file", "-"], { input: archive, maxBuffer: 256 * 1024 * 1024, timeout: 300000 });
   if (unpack.status !== 0) throw new Error("Postgres archive parsing failed.");
-  const drops = "BEGIN; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; DROP SCHEMA IF EXISTS storage CASCADE; DROP SCHEMA IF EXISTS supabase_migrations CASCADE;\n";
+  const drops = "BEGIN; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; DROP SCHEMA IF EXISTS storage CASCADE; DROP SCHEMA IF EXISTS supabase_migrations CASCADE;\n"
+    + (includePrivate ? "DROP SCHEMA IF EXISTS private CASCADE;\n" : "");
   if (!imported) {
     localSQL(Buffer.concat([Buffer.from(drops), unpack.stdout, Buffer.from("\nCOMMIT;\n")]));
     fs.writeFileSync(importedFile, JSON.stringify({ backup_folder: path.basename(backup), imported_at: new Date().toISOString() }), { mode: 0o600, flag: "wx" });
@@ -57,7 +60,7 @@ async function restore() {
   if (checkpoint && (checkpoint.backup_sha256 !== manifest.sha256 || checkpoint.backup_folder !== path.basename(backup))) throw new Error("Database readback checkpoint belongs to a different backup.");
   const actualTables = checkpoint ? null : JSON.parse(localSQL(tableFingerprintSQL(payload.metadata.tables)));
   const expectedStructure = normalizeStructure(payload.metadata.structure);
-  const actualStructure = normalizeStructure(JSON.parse(localSQL(schemaFingerprintSQL, "postgres")));
+  const actualStructure = normalizeStructure(JSON.parse(localSQL(schemaFingerprintFor(includePrivate), "postgres")));
   const structureChecks = Object.fromEntries(Object.keys(expectedStructure).map((key) => [key, JSON.stringify(expectedStructure[key]) === JSON.stringify(actualStructure[key])]));
   const tableChecks = checkpoint?.table_checks || payload.metadata.tables.map((expected) => {
     const actual = actualTables.find((item) => item.schema === expected.schema && item.table === expected.table);
