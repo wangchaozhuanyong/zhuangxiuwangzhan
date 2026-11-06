@@ -142,14 +142,19 @@ export async function forwardWebsiteVisit(
       warn("http", response.status);
       return false;
     }
-    let result: { success?: boolean; data?: { accepted?: boolean } };
+    let result: { accepted?: boolean; success?: boolean; data?: { accepted?: boolean } } | null;
     try {
       result = (await response.json()) as typeof result;
     } catch {
       warn("invalid_response", response.status);
       return false;
     }
-    if (result.success !== true || result.data?.accepted !== true) {
+    const accepted = result && (
+      // The current receiver returns a bare receipt. The previous receiver wraps it.
+      (result.accepted === true && Object.keys(result).length === 1) ||
+      (result.success === true && result.data?.accepted === true)
+    );
+    if (!accepted) {
       warn("invalid_response", response.status);
       return false;
     }

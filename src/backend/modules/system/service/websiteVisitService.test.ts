@@ -130,4 +130,27 @@ describe("website visit edge service", () => {
     expect(diagnostic).not.toContain(secret);
     expect(diagnostic).not.toContain("203.0.113.19");
   });
+
+  it.each([
+    [JSON.stringify({ accepted: true }), true],
+    [JSON.stringify({ accepted: false }), false],
+    [JSON.stringify({ success: false, accepted: true }), false],
+    ["null", false],
+    ["<html>Unexpected response</html>", false],
+  ] as const)("checks the receiver's HTTP 200 receipt %s", async (body, accepted) => {
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(body, { status: 200 })));
+    const env = {
+      WEBSITE_VISIT_INGEST_SECRET: secret,
+      WEBSITE_VISIT_INGEST_URL:
+        "https://54-249-61-238.sslip.io/api/id-business-v2/workspace-website-monitor/visits/ingest",
+    };
+    expect(
+      await forwardWebsiteVisit(
+        createWebsiteVisit(request(), { eventId, path: "/zh" })!,
+        env,
+      ),
+    ).toBe(accepted);
+    expect(warning).toHaveBeenCalledTimes(accepted ? 0 : 1);
+  });
 });
