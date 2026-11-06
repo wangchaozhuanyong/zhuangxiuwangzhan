@@ -130,7 +130,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(heroLinks[0]).toHaveAttribute("target", "_blank");
     expect(heroLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
     expect(heroLinks[0]).toHaveClass("scheme-a-button--paper");
-    expect(heroLinks[1]).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
+    expect(heroLinks[1]).toHaveTextContent(language === "zh" ? "看设计参考" : "See design references");
     expect(heroLinks[1]).toHaveAttribute("href", `/${language}/projects`);
     expect(heroLinks[1]).toHaveClass("scheme-a-button--glass");
     expect(heroLinks[2]).toHaveAttribute("href", "https://shop.flashcast.com.my/");
@@ -181,7 +181,7 @@ describe("SchemeAHome composed CMS behavior", () => {
     expect(hero!.querySelectorAll("a")).toHaveLength(3);
     expect(hero!.querySelector(".scheme-a-hero__brand")).toBeNull();
     expect(hero!.querySelector('a[target="_blank"]')).toHaveAttribute("href", state.whatsappHref);
-    expect(hero!.querySelector(`a[href="/${language}/projects"]`)).toHaveTextContent(language === "zh" ? "查看案例" : "View projects");
+    expect(hero!.querySelector(`a[href="/${language}/projects"]`)).toHaveTextContent(language === "zh" ? "看设计参考" : "See design references");
     expect(hero!.querySelector(".scheme-a-hero__enquiry-panel, .scheme-a-hero__scope, .scheme-a-hero__enquiry")).toBeNull();
     expect(hero!.querySelector("h1")).toHaveTextContent(language === "zh" ? "装修、空间规划与定制家具" : "Renovation, Space Planning & Custom Furniture");
   });

@@ -1,6 +1,6 @@
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
-import { getServiceProjectGuidance, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
+import { getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
 import { projectDetailPageText } from "../src/i18n/projectDetailPageText";
 import { mediaLabels } from "../src/i18n/mediaLabels";
 import { getMaterialSubcategoryGuidance } from "../src/i18n/materialSubcategoryGuidance";
@@ -154,6 +154,11 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   let body = `<h1>${escape(title)}</h1>`;
   if (path.startsWith("/projects/") || (path.startsWith("/services/") && isServiceConceptImage(plain(field("alt"))))) body += `<p>${labels.label}</p>`;
   if (plain(field("excerpt"))) body += `<p>${escape(plain(field("excerpt")))}</p>`;
+  if (path === "/services/renovation") {
+    const copy = residentialLandingText[lang];
+    body += `<section><h2>${escape(copy.scopeHeading)}</h2><p>${escape(copy.scope)}</p><p><a href="/${lang}/locations">${escape(copy.areas)}</a></p></section>`;
+    body += `<section><h2>${escape(copy.heading)}</h2><p>${escape(copy.answer)}</p><p><a href="/${lang}/blog/malaysia-renovation-budget-guide">${escape(copy.budgetGuide)}</a></p></section>`;
+  }
   body += sanitizeReadableContent(content, lang);
   if (path.startsWith("/services/")) {
     body += list(labels.suitable, field("suitable_for")) + list(labels.scope, field("scope_items")) + list(labels.common, field("common_projects"));

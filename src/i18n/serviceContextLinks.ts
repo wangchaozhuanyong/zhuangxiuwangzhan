@@ -15,7 +15,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     renovation: [
       { id: "renovation-kl", label: "Service area", title: "Kuala Lumpur renovation", description: "Review property types, common renovation needs, and service coverage in Kuala Lumpur.", href: "/locations/kuala-lumpur" },
       { id: "renovation-mont-kiara", label: "Service area", title: "Mont Kiara renovation", description: "See local planning considerations for condos and managed residential properties.", href: "/locations/mont-kiara" },
-      { id: "renovation-project", label: "Project reference", title: "Mont Kiara condo renovation reference", description: "Open the project page to review its published scope, classification, and supporting details.", href: "/projects/mont-kiara-luxury-condo-renovation" },
+      { id: "renovation-project", label: "Design rendering", title: "See condo design references", description: "Explore a living and dining layout with built-in storage and layered lighting.", href: "/projects/mont-kiara-luxury-condo-renovation" },
       { id: "renovation-budget", label: "Planning guide", title: "Malaysia renovation budget guide", description: "Understand the scope and site factors that can change a renovation quotation.", href: "/blog/malaysia-renovation-budget-guide" },
       { id: "renovation-approval", label: "Planning guide", title: "Condo renovation management approval", description: "Prepare building forms, deposits, protection, work-hour, and contractor requirements.", href: "/blog/condo-renovation-management-approval-malaysia" },
       { id: "renovation-materials", label: "Materials", title: "Renovation materials library", description: "Compare published flooring, cabinetry, wall, countertop, door, and bathroom material options.", href: "/materials" },
@@ -55,7 +55,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     "old-house": [
       { id: "old-house-cheras", label: "Service area", title: "Cheras old-house renovation", description: "Review planning considerations for older landed homes, existing wiring and plumbing, moisture, access, and staged work.", href: "/locations/cheras" },
       { id: "old-house-pj", label: "Service area", title: "Petaling Jaya home renovation", description: "Explore renovation planning for established landed homes, strata properties, access, retained items, and site condition.", href: "/locations/petaling-jaya" },
-      { id: "old-house-projects", label: "Project references", title: "Browse landed-home renovation references", description: "Review published project pages and confirm whether each item is completed work or a labeled planning concept.", href: "/projects" },
+      { id: "old-house-projects", label: "Design references", title: "See landed-home design references", description: "Browse layout, storage and finish ideas for planning a renovation.", href: "/projects" },
       { id: "old-house-checklist", label: "Planning guide", title: "Old-house renovation checklist", description: "Check site condition, safety priorities, wiring, plumbing, moisture, roof, layout, approvals, and quotation scope.", href: "/blog/old-house-renovation-checklist" },
       { id: "old-house-costs", label: "Planning guide", title: "Hidden old-house renovation costs", description: "Understand how investigation, repairs, access, retained work, provisional scope, and discoveries can affect a quotation.", href: "/blog/old-house-renovation-hidden-costs-malaysia" },
       { id: "old-house-materials", label: "Materials", title: "Renovation materials library", description: "Compare published flooring, doors, cabinetry, wall finishes, and bathroom options after the repair scope is clear.", href: "/materials" },
@@ -74,7 +74,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     renovation: [
       { id: "renovation-kl", label: "服务地区", title: "吉隆坡装修服务", description: "了解吉隆坡常见房产类型、装修需求和实际服务范围。", href: "/locations/kuala-lumpur" },
       { id: "renovation-mont-kiara", label: "服务地区", title: "Mont Kiara 装修服务", description: "查看公寓和有管理处住宅常见的装修规划事项。", href: "/locations/mont-kiara" },
-      { id: "renovation-project", label: "项目参考", title: "Mont Kiara 公寓装修参考", description: "进入已发布项目页，查看范围、内容分类和现有说明。", href: "/projects/mont-kiara-luxury-condo-renovation" },
+      { id: "renovation-project", label: "设计效果图", title: "看公寓设计参考", description: "看看公寓客餐厅如何安排动线、柜体收纳和分层照明。", href: "/projects/mont-kiara-luxury-condo-renovation" },
       { id: "renovation-budget", label: "规划指南", title: "马来西亚装修预算指南", description: "了解哪些施工范围和现场因素会影响装修报价。", href: "/blog/malaysia-renovation-budget-guide" },
       { id: "renovation-approval", label: "规划指南", title: "公寓管理处装修申请", description: "提前准备表格、押金、保护、施工时间和承包商资料。", href: "/blog/condo-renovation-management-approval-malaysia" },
       { id: "renovation-materials", label: "装修材料", title: "装修材料库", description: "比较已发布的地面、柜体、墙面、台面、门窗和浴室材料。", href: "/materials" },
@@ -114,7 +114,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     "old-house": [
       { id: "old-house-cheras", label: "服务地区", title: "Cheras 旧屋翻新", description: "了解旧有地住宅的电线水管、潮湿、进场和分阶段施工规划事项。", href: "/locations/cheras" },
       { id: "old-house-pj", label: "服务地区", title: "八打灵再也住宅翻新", description: "查看成熟有地住宅、分层物业、进场、保留项目和现场状况的规划考虑。", href: "/locations/petaling-jaya" },
-      { id: "old-house-projects", label: "项目参考", title: "浏览有地住宅翻新参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
+      { id: "old-house-projects", label: "设计参考", title: "看有地住宅设计参考", description: "了解布局、收纳和饰面搭配，作为翻新规划参考。", href: "/projects" },
       { id: "old-house-checklist", label: "规划指南", title: "旧屋翻新检查清单", description: "检查屋况、安全顺序、电线、水管、潮湿、屋顶、格局、申请和报价范围。", href: "/blog/old-house-renovation-checklist" },
       { id: "old-house-costs", label: "规划指南", title: "旧屋翻新隐藏成本", description: "了解检查、必要修复、进场、保留工程、暂定范围和现场发现如何影响报价。", href: "/blog/old-house-renovation-hidden-costs-malaysia" },
       { id: "old-house-materials", label: "装修材料", title: "装修材料库", description: "在必要修复范围清楚后，再比较已发布的地面、门窗、柜体、墙面和浴室材料。", href: "/materials" },
@@ -134,7 +134,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     renovation: [
       { id: "renovation-kl", label: "Kawasan perkhidmatan", title: "pengubahsuaian Kuala Lumpur", description: "Semak jenis hartanah, keperluan pengubahsuaian biasa dan liputan perkhidmatan di Kuala Lumpur.", href: "/locations/kuala-lumpur" },
       { id: "renovation-mont-kiara", label: "Kawasan perkhidmatan", title: "Pengubahsuaian Mont Kiara", description: "Lihat pertimbangan perancangan tempatan untuk kondo dan harta kediaman terurus.", href: "/locations/mont-kiara" },
-      { id: "renovation-project", label: "Rujukan projek", title: "Rujukan pengubahsuaian kondo Mont Kiara", description: "Buka halaman projek untuk menyemak skop, klasifikasi dan butiran sokongan yang diterbitkan.", href: "/projects/mont-kiara-luxury-condo-renovation" },
+      { id: "renovation-project", label: "Gambaran reka bentuk", title: "Lihat rujukan reka bentuk kondominium", description: "Lihat susun atur ruang tamu dan ruang makan dengan kabinet simpanan dan pencahayaan berlapis.", href: "/projects/mont-kiara-luxury-condo-renovation" },
       { id: "renovation-budget", label: "Panduan perancangan", title: "Panduan bajet pengubahsuaian Malaysia", description: "Fahami skop dan faktor tapak yang boleh mengubah sebut harga pengubahsuaian.", href: "/blog/malaysia-renovation-budget-guide" },
       { id: "renovation-approval", label: "Panduan perancangan", title: "Kelulusan pengurusan pengubahsuaian kondo", description: "Sediakan borang bangunan, deposit, perlindungan, waktu kerja dan keperluan kontraktor.", href: "/blog/condo-renovation-management-approval-malaysia" },
       { id: "renovation-materials", label: "Bahan", title: "Perpustakaan bahan pengubahsuaian", description: "Bandingkan pilihan bahan lantai, kabinet, dinding, kaunter, pintu dan bilik mandi yang diterbitkan.", href: "/materials" },
@@ -174,7 +174,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     "old-house": [
       { id: "old-house-cheras", label: "Kawasan perkhidmatan", title: "Ubahsuai rumah lama Cheras", description: "Semak pertimbangan perancangan untuk rumah bertanah lama, pendawaian dan paip sedia ada, kelembapan, akses dan kerja berperingkat.", href: "/locations/cheras" },
       { id: "old-house-pj", label: "Kawasan perkhidmatan", title: "ubah suai rumah Petaling Jaya", description: "Terokai perancangan pengubahsuaian untuk rumah bertanah yang mantap, hartanah strata, akses, item tertahan dan keadaan tapak.", href: "/locations/petaling-jaya" },
-      { id: "old-house-projects", label: "Rujukan projek", title: "Semak imbas rujukan pengubahsuaian rumah bertanah", description: "Semak halaman projek yang diterbitkan dan sahkan sama ada setiap item telah siap kerja atau konsep perancangan berlabel.", href: "/projects" },
+      { id: "old-house-projects", label: "Rujukan reka bentuk", title: "Lihat rujukan reka bentuk rumah bertanah", description: "Terokai idea susun atur, ruang simpanan dan kemasan untuk merancang ubah suai.", href: "/projects" },
       { id: "old-house-checklist", label: "Panduan perancangan", title: "Senarai semak pengubahsuaian rumah lama", description: "Semak keadaan tapak, keutamaan keselamatan, pendawaian, paip, kelembapan, bumbung, susun atur, kelulusan dan skop sebut harga.", href: "/blog/old-house-renovation-checklist" },
       { id: "old-house-costs", label: "Panduan perancangan", title: "Kos pengubahsuaian rumah lama yang tersembunyi", description: "Fahami cara penyiasatan, pembaikan, akses, kerja yang dikekalkan, skop sementara dan penemuan boleh menjejaskan sebut harga.", href: "/blog/old-house-renovation-hidden-costs-malaysia" },
       { id: "old-house-materials", label: "Bahan", title: "Perpustakaan bahan pengubahsuaian", description: "Bandingkan pilihan lantai, pintu, kabinet, kemasan dinding dan bilik mandi yang diterbitkan selepas skop pembaikan jelas.", href: "/materials" },

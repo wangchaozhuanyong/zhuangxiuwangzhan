@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import text from "@/i18n/customCabinetsText.json";
 import { execFileSync } from "node:child_process";
+import { buildExpandedReadableBody } from "../../functions/expandedReadableBody";
 
 describe("cabinet landing page discovery", () => {
   const staticManifest = JSON.parse(execFileSync(process.execPath, ["--input-type=module", "-e", "import {buildStaticManifest} from './scripts/seo-static-pages.mjs'; console.log(JSON.stringify(Object.fromEntries(Object.entries(buildStaticManifest()).filter(([path])=>path.endsWith('/custom-cabinets')))));"], { cwd: process.cwd(), encoding: "utf8" }));
@@ -28,5 +29,8 @@ describe("cabinet landing page discovery", () => {
     expect(Object.keys(qualified[path].hreflang).sort()).toEqual(["en", "ms", "xDefault", "zh"]);
     expect(sitemap).toContain(`<loc>${meta.canonical}</loc>`);
     expect(llms).toContain(meta.canonical);
+    const readableBody = buildExpandedReadableBody(path, {});
+    expect(readableBody).toContain(`<h1>${text[language].landingTitle}</h1>`);
+    expect(readableBody).toContain(text[language].landingIntro);
   });
 });

@@ -75,6 +75,10 @@ const Quote = () => {
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.quote);
   const officeAddress = settings.short_address || settings.address || t.office;
   const whatsappHref = settings.whatsapp_url(t.whatsappMessage);
+  const cabinetTitle = quoteContext.source === "cabinet" ? quoteContext.title : "";
+  const cabinetWhatsAppHref = cabinetTitle
+    ? settings.whatsapp_url(t.cabinetPhotoMessage.replace("{design}", () => cabinetTitle), { mode: "user-composed" })
+    : "";
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -322,8 +326,15 @@ const Quote = () => {
 
               {contextLabel && (
                 <div className="mb-6 rounded-card border border-accent/20 bg-accent/5 p-4 text-sm">
-                  <p className="font-medium text-foreground">{contextLabel}</p>
-                  <p className="mt-1 text-muted-foreground">{t.contextNotice}</p>
+                  <p className="font-medium text-foreground">{cabinetTitle ? t.cabinetContext.replace("{design}", () => cabinetTitle) : contextLabel}</p>
+                  <p className="mt-1 text-muted-foreground">{cabinetTitle ? t.cabinetContextNotice : t.contextNotice}</p>
+                  {cabinetWhatsAppHref && (
+                    <a href={cabinetWhatsAppHref} target="_blank" rel="noopener noreferrer"
+                      className="mt-2 inline-flex min-h-11 items-center gap-2 font-medium text-accent underline"
+                      onClick={() => trackCtaClick("whatsapp", "cabinet_quote_photos", { destination: "whatsapp" })}>
+                      <WhatsAppIcon className="h-4 w-4" aria-hidden="true" />{t.cabinetPhotoCta}
+                    </a>
+                  )}
                 </div>
               )}
 

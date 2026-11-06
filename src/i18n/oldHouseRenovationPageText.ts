@@ -11,12 +11,12 @@ export const oldHouseRenovationPageText = {
     label: "Old House Renovation",
     title: "Old House Renovation in Kuala Lumpur and Selangor",
     description:
-      "Old house renovation is not only about replacing tiles or repainting walls. FLASH CAST helps owners review cracks, leaks, wiring, plumbing, waterproofing, termite risk, roofing, layout, ventilation, storage, and maintenance needs before confirming the renovation scope.",
+      "Renovating an older home in Kuala Lumpur or Selangor? You can ask about leaks, damp walls, ageing wiring or pipes, or a kitchen or bathroom upgrade. Send your location and photos. We’ll first review what you’re seeing, then discuss the work and whether a site visit would help.",
     heroAlt: "Old house renovation planning concept in Kuala Lumpur and Selangor",
     beforeAfterAlt: "Old house living area renovation planning concept",
     serviceAlt: "Old house site assessment and renovation planning example",
     assessment: "Request Old House Renovation Advice",
-    whatsapp: "WhatsApp Enquiry",
+    whatsapp: "Send photos to discuss your renovation",
     whatsappMessage:
       "Hi FLASH CAST, I'd like advice on an old house renovation. Project location: __. Property type and age: __. Main issues: __. Approximate floor area: __. I can share site photos or a floor plan.",
     introTitle: "What to Check Before Renovating an Old House",
@@ -25,11 +25,11 @@ export const oldHouseRenovationPageText = {
       "FLASH CAST provides old house renovation planning, site measurement, material advice, quotation scope review, and renovation coordination across Kuala Lumpur, Selangor, and Klang Valley.",
     ],
     tags: ["Site Assessment", "Scope Planning", "Waterproofing Review", "Material Direction"],
-    comparisonsTitle: "Old House Planning Concepts: Existing and Proposed",
+    comparisonsTitle: "Old Home Renovation Design Renderings",
     comparisonsDescription:
-      "Drag the divider to compare an illustrative existing condition with a proposed renovation concept from the same viewpoint. These are AI-generated planning visuals. Concept renovation illustration, not evidence of a completed client project.",
+      "Drag the divider to compare the illustrated starting layout with the design proposal. Look for changes in the layout, lighting and storage.",
     before: "Existing concept",
-    after: "Proposed concept",
+    after: "Design rendering",
     compareAria: (title: string) => `Compare the illustrative existing and proposed concepts for ${title}`,
     comparisons: [
       {
@@ -171,12 +171,12 @@ export const oldHouseRenovationPageText = {
     label: "旧屋翻新",
     title: "吉隆坡与雪兰莪旧屋翻新",
     description:
-      "旧屋翻新不只是换地砖或重新油漆。FLASH CAST 协助业主在确认施工范围前，先评估墙裂、漏水、电线、水管、防水、白蚁、屋顶、采光、收纳和空间布局。",
+      "吉隆坡或雪兰莪的旧屋有漏水、墙面潮湿、电线水管老化，或想翻新厨房、浴室？先发项目地点和问题照片。我们会先了解屋况，再和你沟通翻新范围及是否需要现场查看。",
     heroAlt: "吉隆坡与雪兰莪旧屋翻新规划概念设计",
     beforeAfterAlt: "旧屋客厅翻新规划概念设计",
     serviceAlt: "旧屋现场评估与翻新规划示例",
     assessment: "获取旧屋翻新报价建议",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "发旧屋照片，先聊翻新范围",
     whatsappMessage:
       "你好 FLASH CAST，我想咨询旧屋翻新。项目地点：__。房屋类型与大约屋龄：__。主要问题：__。大约面积：__。我可以提供现场照片或平面图。",
     introTitle: "旧屋翻新前要先检查什么",
@@ -185,11 +185,11 @@ export const oldHouseRenovationPageText = {
       "FLASH CAST 提供 Kuala Lumpur、Selangor 与 Klang Valley 旧屋翻新规划、现场测量、材料建议、报价范围整理和施工协调。",
     ],
     tags: ["现场评估", "范围规划", "防水检查", "材料方向"],
-    comparisonsTitle: "旧屋现状与拟议翻新概念示意",
+    comparisonsTitle: "旧屋翻新设计效果图",
     comparisonsDescription:
-      "拖动滑块，对比同一视角下的现状示意与拟议翻新方案。这些画面由 AI 生成，仅供规划。概念改造示意，非客户完工实景证据。",
+      "拖动滑块，对比现状示意与翻新方案，看看动线、光线和收纳可以怎样调整。",
     before: "现状示意",
-    after: "方案示意",
+    after: "设计效果图",
     compareAria: (title: string) => `比较「${title}」的现状示意与拟议方案概念图`,
     comparisons: [
       {
@@ -331,12 +331,12 @@ export const oldHouseRenovationPageText = {
     label: "Ubahsuai Rumah Lama",
     title: "Ubahsuai Rumah Lama di Kuala Lumpur dan Selangor",
     description:
-      "Pengubahsuaian rumah lama bukan sahaja menggantikan jubin atau mengecat semula dinding. FLASH CAST membantu pemilik menyemak keretakan, kebocoran, pendawaian, paip, kalis air, risiko anai-anai, bumbung, susun atur, pengudaraan, penyimpanan dan keperluan penyelenggaraan sebelum mengesahkan skop pengubahsuaian.",
+      "Rumah lama di Kuala Lumpur atau Selangor bocor, dinding lembap, atau pendawaian dan paip sudah berusia? Anda juga boleh bertanya tentang ubah suai dapur atau bilik mandi. Kongsi lokasi dan foto. Kami akan memahami keadaan rumah dahulu, kemudian membincangkan skop dan keperluan lawatan tapak.",
     heroAlt: "Konsep perancangan ubah suai rumah lama di Kuala Lumpur dan Selangor",
     beforeAfterAlt: "Konsep perancangan ubah suai ruang tamu rumah lama",
     serviceAlt: "Contoh penilaian tapak rumah lama dan perancangan ubah suai",
     assessment: "Minta Nasihat Ubahsuai Rumah Lama",
-    whatsapp: "Siasatan WhatsApp",
+    whatsapp: "Hantar foto untuk bincang skop ubah suai",
     whatsappMessage:
       "Hai FLASH CAST, saya ingin nasihat tentang pengubahsuaian rumah lama. Lokasi projek: __. Jenis hartanah dan umur: __. Isu utama: __. Anggaran keluasan lantai: __. Saya boleh berkongsi foto tapak atau pelan lantai.",
     introTitle: "Perkara yang Perlu Diperiksa Sebelum Mengubahsuai Rumah Lama",
@@ -345,11 +345,11 @@ export const oldHouseRenovationPageText = {
       "FLASH CAST menyediakan perancangan pengubahsuaian rumah lama, pengukuran tapak, nasihat bahan, semakan skop sebut harga dan penyelarasan pengubahsuaian di seluruh Kuala Lumpur, Selangor dan Lembah Klang.",
     ],
     tags: ["Penilaian Tapak", "Perancangan Skop", "Kajian Kalis Air", "Arah Bahan"],
-    comparisonsTitle: "Konsep Perancangan Rumah Lama: Sedia Ada dan Cadangan",
+    comparisonsTitle: "Gambaran Reka Bentuk Ubah Suai Rumah Lama",
     comparisonsDescription:
-      "Seret pembahagi untuk membandingkan keadaan sedia ada ilustrasi dengan konsep pengubahsuaian yang dicadangkan dari sudut pandangan yang sama. Ini adalah visual perancangan yang dijana AI. Ilustrasi pengubahsuaian konsep, bukan bukti projek pelanggan yang telah siap.",
+      "Seret pembahagi untuk membandingkan ilustrasi asal dengan cadangan reka bentuk. Perhatikan perubahan pada susun atur, pencahayaan dan ruang simpanan.",
     before: "Konsep sedia ada",
-    after: "Konsep yang dicadangkan",
+    after: "Gambaran reka bentuk",
     compareAria: (title: string) => `Bandingkan konsep ilustrasi sedia ada dan yang dicadangkan untuk ${title}`,
     comparisons: [
       {

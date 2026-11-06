@@ -1,6 +1,7 @@
 import { lazy, Suspense, useRef, useState } from 'react';
 import { ArrowRight, Heart } from 'lucide-react';
 import SmartImage from '@/components/SmartImage';
+import LocalizedLink from '@/components/LocalizedLink';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -10,7 +11,7 @@ import labels from '@/i18n/cabinetStudioCatalog.json';
 import { studioSchemes, studioStyles, studioImage, schemeById, type StudioScene } from '@/data/cabinetStudio';
 import { useCabinetStudio } from '@/hooks/useCabinetStudio';
 import { designForScheme, encodeDesign, savedDesignName, type StudioDesign } from '@/lib/cabinetStudio';
-import { changePaletteFinish, palettePreview, paletteRooms, paletteScenes, restorePalette } from '@/lib/cabinetPalette';
+import { changePaletteFinish, palettePreview, paletteQuotePath, paletteRooms, paletteScenes, restorePalette } from '@/lib/cabinetPalette';
 import { canPreviewCabinetDrafts } from '@/data/cabinetOffers';
 import { trackEvent } from '@/lib/analytics';
 import StudioDialog from './StudioDialog';
@@ -53,7 +54,6 @@ export default function CabinetStudio() {
     return state.save(design, `${l.styles[scheme.style]} · ${scheme.variant}`, existing?.id);
   }
   return <div className="cabinet-studio cabinet-studio--simple" id="cabinet-studio-tabs">
-    <h1 className="sr-only">{t.eyebrow}</h1>
     <p className="studio-live" role="status">{state.storageError ? t.saveFailed : notice || (emptyPlan ? p.emptyPlan : state.recovered ? t.recovered : '')}</p>
     <section aria-label={t.inspire} id="cabinet-packages">
       <div className="studio-catalog-tools"><div className="studio-filter studio-filter--simple">
@@ -63,11 +63,15 @@ export default function CabinetStudio() {
       </div><div className="studio-results"><p>{schemes.length} {t.count}</p>{style && <button onClick={() => state.filter('style','')}>{t.clear}</button>}</div></div>
       <div className="studio-gallery">{schemes.slice(0, limit).map((scheme, index) => {
         const design = { ...designForScheme(scheme.id), scene }, liked = state.saved.some(s => s.id === `inspiration-${scheme.id}`);
+        const quote = paletteQuotePath(design, language, window.location.hostname);
         return <article className="studio-card" key={scheme.id} data-scheme={scheme.id}>
           <button className="studio-card__image" aria-label={`${p.details} · ${l.styles[scheme.style]} ${scheme.variant}`} onClick={() => selectDetails(scheme.id)}><SmartImage src={studioImage(scheme.id, scene)} width={1536} height={1024} sizes="(max-width: 600px) 92vw, (max-width: 1179px) 46vw, 31vw" loading={index < 3 ? 'eager' : 'lazy'} revealOnLoad showFailureFallback retryOnError alt={`${l.styles[scheme.style]} · ${l.scenes[scene]}`} /></button>
           <div className="studio-card__body"><div className="studio-card__title"><h2>{l.styles[scheme.style]} <span>{String(scheme.variant).padStart(2, '0')}</span></h2><button className="studio-icon" aria-label={`${liked ? t.unfavorite : t.favorite} · ${l.styles[scheme.style]} ${scheme.variant}`} aria-pressed={liked} onClick={() => favorite(scheme.id)}><Heart size={18} fill={liked ? 'currentColor' : 'none'} /></button></div>
             <p>{l.finishes[scheme.finishes.front]} · {l.finishes[scheme.finishes.body]}</p><StudioPrice design={design} compact />
-            <div className="studio-card__actions"><Button variant="outline" onClick={() => selectDetails(scheme.id)}>{p.details}<ArrowRight size={16} /></Button></div>
+            <div className="studio-card__actions">
+              {quote && <Button asChild><LocalizedLink to={quote} onClick={() => trackEvent('cabinet_quote_start', { style_id: design.style, package_id: scheme.id })}>{p.quoteStyle}</LocalizedLink></Button>}
+              <Button variant="outline" onClick={() => selectDetails(scheme.id)}>{p.details}<ArrowRight size={16} aria-hidden="true" /></Button>
+            </div>
           </div>
         </article>;
       })}</div>
