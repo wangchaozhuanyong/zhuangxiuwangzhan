@@ -36,11 +36,10 @@ describe("domain saves retain the existing application save contract", () => {
     repository.fetchAdminMutationRecord.mockResolvedValue({ id: "test-row", updated_at: version, status: "published" });
     repository.updateAdminMutationRecord.mockImplementation(async (_table, _idField, id, payload) => ({ ...payload, id, updated_at: nextVersion }));
     repository.insertAdminMutationRecord.mockImplementation(async (_table, payload) => ({ ...payload, id: "test-created", updated_at: nextVersion }));
-    repository.insertAdminAuditLog.mockResolvedValue(undefined);
     repository.requestPublicContentInvalidation.mockResolvedValue({ ok: true, cache_invalidation: { revision: nextVersion } });
   });
 
-  it.each(domains)("$name update preserves version, audit and public/cache synchronization", async ({ name, save }) => {
+  it.each(domains)("$name update preserves version and public/cache synchronization with database-owned audit", async ({ name, save }) => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
     const adminKey = ["admin", name, "rows"];
     const publicKey = ["published", name, "zh"];
@@ -56,7 +55,7 @@ describe("domain saves retain the existing application save contract", () => {
       expect([table, idField, id]).toEqual([name, "id", "test-row"]);
       expect(payload).not.toHaveProperty("updated_at");
       expect(token).toEqual({ field: "updated_at", value: version });
-      expect(repository.insertAdminAuditLog).toHaveBeenCalledTimes(1);
+      expect(repository.insertAdminAuditLog).not.toHaveBeenCalled();
       expect(repository.requestPublicContentInvalidation).toHaveBeenCalledExactlyOnceWith({ table: name, action: "update", id: "test-row" });
       expect(client.getQueryState(adminKey)?.isInvalidated).toBe(true);
       expect(client.getQueryState(publicKey)?.isInvalidated).toBe(true);
