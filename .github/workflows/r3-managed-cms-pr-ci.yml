@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - functions/expandedReadableBody.ts
+      - src/lib/expandedReadableBody.test.ts
       - scripts/managed-cms-targets-paid-four-current-v1.mjs
       - supabase/functions/_shared/paid-four-current-targets.ts
       - drafts/paid-four-content-zh-channel-20261030-v1/**

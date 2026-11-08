@@ -1,6 +1,9 @@
 import { JSDOM } from "jsdom";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { buildExpandedReadableBody } from "../../functions/expandedReadableBody";
+import { buildReadablePublicBody } from "../../functions/readablePublicBody";
+import { getServiceProjectGuidance } from "@/i18n/serviceDetailPageText";
+import { loadMalayContent } from "@/i18n/malayContentRuntime";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 import { processPageText } from "@/i18n/processPageText";
 import { designServicePageText } from "@/i18n/designServicePageText";
@@ -60,5 +63,68 @@ describe.each(["en", "zh"] as const)("expanded %s raw HTML", lang => {
     const html = buildExpandedReadableBody(`/${lang}/blog/current`, { row: { ...row, [`content_${lang}`]: `<p>Safe</p><script>bad()</script><a href="javascript:bad()">Bad</a><a href="/${lang === "en" ? "zh" : "en"}/quote">Other language</a></noscript>` } });
     expect(html).not.toMatch(/<script|javascript:|<\/noscript>|bad\(\)/);
     expect(new JSDOM(html).window.document.querySelector('a[href^="javascript:"]')).toBeNull();
+  });
+});
+
+describe("shop project guidance in initial HTML", () => {
+  beforeAll(async () => { await loadMalayContent(); });
+
+  const shop = {
+    ...row, slug: "shop-renovation",
+    title_ms: "Kedai", content_ms: "<p>Kandungan kedai asal</p>",
+    process_steps_en: [{ title: "Scope & material review", desc: "Existing English process" }],
+    process_steps_zh: [{ title: "原有范围确认", desc: "原有中文流程" }],
+    process_steps_ms: [{ title: "Langkah asal", desc: "Butiran asal" }],
+    faqs_en: [{ q: "Existing question?", a: "Existing answer." }],
+    faqs_zh: [{ q: "原有问题？", a: "原有回答。" }],
+  };
+
+  it.each(["en", "zh"] as const)("includes the exact existing %s copy once through the middleware renderer selection", lang => {
+    const before = JSON.stringify(shop);
+    const route = `/${lang}/services/shop-renovation`;
+    const html = buildReadablePublicBody(route, shop) || buildExpandedReadableBody(route, { row: shop });
+    const dom = new JSDOM(html);
+    const document = dom.window.document;
+    const [block] = getServiceProjectGuidance(shop.slug, lang);
+    const headings = [...document.querySelectorAll("h2")].filter(item => item.textContent === block.heading);
+    expect(headings).toHaveLength(1);
+    const section = headings[0].parentElement!;
+    expect([...section.querySelectorAll("p")].map(item => item.textContent)).toEqual(block.body.split("\n"));
+    expect(section.querySelectorAll("p")).toHaveLength(6);
+    expect(section.textContent).not.toContain(getServiceProjectGuidance(shop.slug, lang === "en" ? "zh" : "en")[0].heading);
+    expect(document.querySelectorAll("h1")).toHaveLength(1);
+    expect(document.querySelector("h1")?.textContent).toBe(shop[`title_${lang}`]);
+    const process = [...document.querySelectorAll("h3")].find(item => item.textContent === shop[`process_steps_${lang}`][0].title)!;
+    expect(process).toBeDefined();
+    expect(process.compareDocumentPosition(section) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(document.body.textContent).toContain(lang === "en" ? "Full body" : "完整正文");
+    expect(document.body.textContent).toContain(shop[`faqs_${lang}`][0].a);
+    expect(document.querySelector("script,iframe,form,img")).toBeNull();
+    expect(JSON.stringify(shop)).toBe(before);
+    dom.window.close();
+  });
+
+  it.each(["en", "zh"] as const)("retains published, slug and body guards for %s shop content", lang => {
+    const invalidRows = [
+      { ...shop, status: "draft" }, { ...shop, status: "archived" },
+      { ...shop, slug: "office-renovation" },
+      { ...shop, [`title_${lang}`]: "" },
+      { ...shop, [`content_${lang}`]: "", [`excerpt_${lang}`]: "" },
+      { ...shop, [`content_${lang}`]: "x".repeat(131073) },
+    ];
+    for (const invalid of invalidRows) {
+      expect(buildExpandedReadableBody(`/${lang}/services/shop-renovation`, { row: invalid })).toBe("");
+    }
+  });
+
+  it.each([
+    ["ms", "shop-renovation"], ["en", "office-renovation"], ["zh", "office-renovation"],
+    ["ms", "office-renovation"], ["en", "current"], ["zh", "current"], ["ms", "current"],
+  ] as const)("does not add shop guidance to %s/%s", (lang, slug) => {
+    const html = buildExpandedReadableBody(`/${lang}/services/${slug}`, { row: { ...shop, slug } });
+    expect(html).not.toBe("");
+    for (const locale of ["en", "zh"] as const) {
+      expect(html).not.toContain(getServiceProjectGuidance(shop.slug, locale)[0].heading);
+    }
   });
 });
