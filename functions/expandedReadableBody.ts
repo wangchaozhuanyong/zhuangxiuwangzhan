@@ -8,7 +8,7 @@ import { servicesPageText } from "../src/i18n/servicesPageText";
 import { projectsPageText } from "../src/i18n/projectsPageText";
 import { materialsPageText } from "../src/i18n/materialsPageText";
 import { blogPageText } from "../src/i18n/blogPageText";
-import { serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
+import { getServiceProjectGuidance, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
 import { materialDetailPageText } from "../src/i18n/materialDetailPageText";
 import { projectDetailPageText } from "../src/i18n/projectDetailPageText";
 import { mediaLabels } from "../src/i18n/mediaLabels";
@@ -155,6 +155,11 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
       }
       body += list(copy.suitableFor, values("suitable_for")) + list(copy.offer, values("scope_items")) + list(copy.commonProjects, values("common_projects"));
       body += records(row[`process_steps_${lang}`]).map(step => `<h3>${escape(plain(step.title, lang))}</h3>${paragraph(plain(step.desc, lang))}`).join("");
+      if (detail[2] === "shop-renovation" && (lang === "en" || lang === "zh")) {
+        body += getServiceProjectGuidance(detail[2], lang).map(block =>
+          `<section>${heading(block.heading)}${block.body.split("\n").map(paragraph).join("")}</section>`
+        ).join("");
+      }
       body += faqs(copy.faq, mapPublicServiceFaqs(row[`faqs_${lang}`]));
       body += getServiceContextLinks(detail[2], lang).map(item => heading(item.title) + paragraph(item.description) + link(item.href, item.title, lang)).join("");
     } else if (kind === "projects") {
