@@ -1,12 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentType } from "react";
 import { MessageCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { contactEntryText } from "@/i18n/contactEntryText";
-import ContactEntryPanel from "./ContactEntryPanel";
-import { siteConfig } from "@/config/site";
+import type { ContactEntryPanelProps } from "./ContactEntryPanel";
 import { trackCtaClick } from "@/lib/analytics";
 import "@/styles/components/contact-entry.css";
 
@@ -28,12 +27,11 @@ export default function FurnitureFloatingLink() {
   currentPath.current = `${location.pathname}${location.search}`;
   const opening = useRef(false);
   const closing = useRef(false);
-  useEffect(() => {
-    if (!siteConfig.wechatId.trim() || /^\/admin(?:\/|$)/.test(location.pathname)) return;
-    const qr = new Image();
-    qr.src = siteConfig.wechatQrUrl;
-    if (typeof qr.decode === "function") void qr.decode().catch(() => undefined);
-  }, [location.pathname]);
+  const [ContactPanel, setContactPanel] = useState<ComponentType<ContactEntryPanelProps> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const active = useRef(false);
+  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
   const state = location.state as { contactEntry?: string } | null;
   const open = state?.contactEntry === owner;
   const obstructed = useFloatingOcclusion(stackRef, `${location.pathname}${location.search}`, "fixed");
@@ -54,24 +52,39 @@ export default function FurnitureFloatingLink() {
     <div ref={stackRef} className="fc-contact-stack" data-obstructed={suppressed || undefined}
       aria-hidden={suppressed || undefined}>
     <button ref={entryRef} type="button" className="fc-contact-entry" lang={language}
-      aria-haspopup="dialog" aria-expanded={open}
+      aria-haspopup="dialog" aria-expanded={open} aria-busy={loading} aria-disabled={loading || undefined}
       onClick={() => {
         if (opening.current) return;
         opening.current = true;
-        openedPath.current = `${location.pathname}${location.search}`;
-        const title = document.querySelector("main h1")?.textContent?.trim();
-        const service = location.pathname.includes("/services/") ? title : undefined;
-        setMessage(pageWhatsAppMessage || text.message(service || text.genericService));
-        void navigate(`${location.pathname}${location.search}${location.hash}`, {
-          state: { ...location.state, contactEntry: owner }, preventScrollReset: true,
+        const path = `${location.pathname}${location.search}`;
+        const showPanel = () => {
+          if (!active.current || currentPath.current !== path) return;
+          openedPath.current = path;
+          const title = document.querySelector("main h1")?.textContent?.trim();
+          const service = location.pathname.includes("/services/") ? title : undefined;
+          setMessage(pageWhatsAppMessage || text.message(service || text.genericService));
+          void navigate(`${location.pathname}${location.search}${location.hash}`, {
+            state: { ...location.state, contactEntry: owner }, preventScrollReset: true,
+          });
+          trackCtaClick("contact_open", "contact_entry");
+        };
+        setLoadError(false);
+        if (ContactPanel) { showPanel(); return; }
+        setLoading(true);
+        void import("./ContactEntryPanel").then(({ default: Panel }) => {
+          if (!active.current || currentPath.current !== path) return;
+          setContactPanel(() => Panel);
+          showPanel();
+        }).catch(() => { if (active.current) setLoadError(true); }).finally(() => {
+          if (active.current) setLoading(false);
+          opening.current = false;
         });
-        trackCtaClick("contact_open", "contact_entry");
       }}>
       <span className="fc-contact-entry__icon" aria-hidden="true"><MessageCircle /></span>
-      <span className="fc-contact-entry__label" aria-live="polite">{text.trigger}</span>
+      <span className="fc-contact-entry__label" aria-live="polite">{loading ? text.loading : loadError ? text.loadError : text.trigger}</span>
     </button>
     </div>
-    {open && <ContactEntryPanel message={message} onClose={close}
+    {open && ContactPanel && <ContactPanel message={message} onClose={close}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           setReturnFocus(openedPath.current === currentPath.current);

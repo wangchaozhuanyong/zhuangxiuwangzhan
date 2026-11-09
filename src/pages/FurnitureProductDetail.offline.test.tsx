@@ -4,17 +4,21 @@ import { QueryClient, QueryClientProvider, onlineManager } from "@tanstack/react
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { PublicDataPayload } from "@/lib/publicPreload";
-import { furnitureCatalog, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { furnitureCatalog, getFurnitureProduct, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import * as publicRepository from "@/backend/modules/cms/repository/publicContentRepository";
 import { publicContentQueries } from "@/lib/publicContentQueries";
-import { furnitureText } from "@/i18n/furnitureText";
+import { formatFurnitureEnquiryMessage, furnitureText } from "@/i18n/furnitureText";
+import { loadMalayContent } from "@/i18n/malayContentRuntime";
 import FurnitureProductDetail from "./FurnitureProductDetail";
 
-const seed = vi.hoisted(() => ({ payload: null as PublicDataPayload | null, language: "zh" as "en" | "zh", pageMeta: vi.fn() }));
+const seed = vi.hoisted(() => ({ payload: null as PublicDataPayload | null, language: "zh" as "en" | "zh" | "ms", pageMeta: vi.fn() }));
 vi.mock("@/lib/publicPreload", () => ({ readPreloadedPublicData: () => seed.payload }));
 vi.mock("@/lib/supabaseConfig", () => ({ isSupabaseConfigured: false }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: seed.language }) }));
-vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettings: () => ({ whatsapp_url: () => "https://example.invalid" }) }));
+vi.mock("@/hooks/useSiteSettings", async () => {
+  const { resolveSiteSettings } = await import("@/lib/siteSettingsApi");
+  return { useSiteSettings: () => resolveSiteSettings(null, seed.language) };
+});
 vi.mock("@/contexts/PublicChromeContext", () => ({ usePageWhatsAppMessage: () => {} }));
 vi.mock("@/components/SmartImage", () => ({ SmartImage: () => null }));
 // Capture the component's declaration only; this is not a browser head/Helmet assertion.
@@ -23,6 +27,12 @@ vi.mock("@/components/JsonLd", () => ({ JsonLdBreadcrumb: () => null }));
 
 let root: Root, node: HTMLDivElement, client: QueryClient;
 const staticProduct = furnitureCatalog.products[0]!;
+const homeProductSlugs = [
+  "lc-40108-1-seater-pu-lounge-chair-cream",
+  "danu-6-seater-sintered-stone-dining-set-cream",
+  "a05-smart-charging-bedside-table-white",
+  "std-2501-compact-study-desk",
+];
 async function settle() { await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)); }); }
 async function render(slug: string) {
   await act(async () => root.render(<QueryClientProvider client={client}>
@@ -51,6 +61,22 @@ const readSpies = () => [
   vi.spyOn(publicRepository, "fetchPublishedMaterialBySlugAndCategory"),
   vi.spyOn(publicRepository, "fetchPublishedMaterialRowsByCategory"),
 ];
+
+it.each((["en", "zh", "ms"] as const).flatMap(language => homeProductSlugs.map(slug => ({ language, slug }))))(
+  "prefills the current product on the $language detail CTA for $slug",
+  async ({ language, slug }) => {
+    if (language === "ms") await loadMalayContent();
+    seed.language = language;
+    await render(slug);
+    const product = localizeFurnitureProduct(getFurnitureProduct(slug)!, language);
+    expect(node.querySelector("h1")).toHaveTextContent(product.name);
+    const link = node.querySelector<HTMLAnchorElement>("a.is-whatsapp");
+    expect(link).toHaveTextContent(furnitureText[language].enquire);
+    const url = new URL(link!.href);
+    expect(url.origin).toBe("https://wa.me");
+    expect(url.searchParams.get("text")).toBe(formatFurnitureEnquiryMessage(product.name, product.sku, language));
+  },
+);
 
 it("shows waiting instead of not-found for an uncached offline managed slug, then confirms the actual no-SDK result", async () => {
   onlineManager.setOnline(false); const slug = "isolated-managed-offline"; await render(slug);

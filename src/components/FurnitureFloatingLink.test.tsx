@@ -148,8 +148,12 @@ for (const language of ["zh", "en", "ms"] as const) {
         expect(trigger.textContent).toBe(contactEntryText[language].trigger);
         expect(document.querySelector('[role="dialog"]')).toBeNull();
         expect(document.querySelector(".fc-furniture-floating")).toBeNull();
-        act(() => trigger.click());
+        act(() => { trigger.click(); trigger.click(); });
         expect(trigger).not.toBeDisabled();
+        expect(trigger).toHaveAttribute("aria-busy", "true");
+        expect(trigger).toHaveTextContent(contactEntryText[language].loading);
+        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        await act(async () => { await vi.dynamicImportSettled(); });
         expect(trigger).not.toHaveAttribute("aria-busy", "true");
         const dialog = document.querySelector('[role="dialog"]')!;
         expect(dialog).toHaveTextContent(contactEntryText[language].title);

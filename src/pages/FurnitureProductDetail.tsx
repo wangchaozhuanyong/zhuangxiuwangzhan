@@ -101,7 +101,7 @@ export default function FurnitureProductDetail() {
             <p className="fc-furniture-detail__price">{localizedProduct.price || copy.priceOnRequest}</p>
             {localizedProduct.shortDescription ? <p className="fc-furniture-detail__summary">{localizedProduct.shortDescription.split("\n").slice(0, 2).join("\n")}</p> : null}
             <div className="fc-furniture-detail__actions">
-              <a className="is-whatsapp" href={settings.whatsapp_url(message)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon />{copy.enquire}</a>
+              <a className="is-whatsapp" href={settings.whatsapp_url(message, { mode: "product-enquiry" })} target="_blank" rel="noopener noreferrer"><WhatsAppIcon />{copy.enquire}</a>
               <a className="is-shop" href={furnitureShopUrlForLanguage(language)} target="_blank" rel="noopener noreferrer" aria-label={`${copy.buyNow} · ${copy.shopLabel}`}>{copy.buyNow}</a>
             </div>
             <p className="fc-furniture-detail__note">{localizedProduct.availabilityNote || copy.note}</p>

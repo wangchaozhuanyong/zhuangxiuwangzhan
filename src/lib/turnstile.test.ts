@@ -108,12 +108,12 @@ describe("production Turnstile verification lifecycle", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it("waits for the 10 second verification deadline, then ignores late callbacks", async () => {
+  it("waits for the 30 second verification deadline, then ignores late callbacks", async () => {
     const sdk = installSdk();
     const { pending } = await beginVerification(await loadModule());
     const [container, options] = sdk.render.mock.calls[0];
     const rejected = expect(pending).rejects.toThrow("Turnstile verification timed out");
-    await vi.advanceTimersByTimeAsync(9999);
+    await vi.advanceTimersByTimeAsync(29_999);
     expect(container.isConnected).toBe(true);
     expect(sdk.remove).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(1);
@@ -126,6 +126,21 @@ describe("production Turnstile verification lifecycle", () => {
     await flushCleanup();
     expect(sdk.remove).toHaveBeenCalledExactlyOnceWith(widgetId);
     expect(container.isConnected).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("accepts a slow challenge after the former deadline without executing or removing it twice", async () => {
+    const sdk = installSdk();
+    const { pending } = await beginVerification(await loadModule());
+    const [container, options] = sdk.render.mock.calls[0];
+    await vi.advanceTimersByTimeAsync(15_000);
+    expect(container.isConnected).toBe(true);
+    expect(sdk.remove).not.toHaveBeenCalled();
+    options.callback(testToken);
+    await expect(pending).resolves.toBe(testToken);
+    await flushCleanup();
+    expect(sdk.execute).toHaveBeenCalledOnce();
+    expect(sdk.remove).toHaveBeenCalledExactlyOnceWith(widgetId);
     expect(vi.getTimerCount()).toBe(0);
   });
 

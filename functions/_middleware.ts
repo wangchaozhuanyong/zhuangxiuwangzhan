@@ -2495,9 +2495,17 @@ export const onRequest: PagesFunction = async (context) => {
   }
   transformed = injectDynamicImagePreloads(
     transformed,
-    getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail, {
-      isHomePage: isHomeDataPageKey(key), projectDetailSlug, topLevelPublicPageKey, publicPageBundle,
-    }),
+    [
+      // The visible header otherwise discovers this critical image only after
+      // route execution. Match its published URL and version exactly.
+      ...(isHomeDataPageKey(key) && siteSettings?.logo_url ? [{
+        href: addCacheBuster(siteSettings.logo_url, siteSettings.updated_at),
+        fetchPriority: "high" as const,
+      }] : []),
+      ...getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail, {
+        isHomePage: isHomeDataPageKey(key), projectDetailSlug, topLevelPublicPageKey, publicPageBundle,
+      }),
+    ],
   );
   transformed = injectPerformanceHints(
     transformed,

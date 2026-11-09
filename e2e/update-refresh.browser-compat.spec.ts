@@ -9,6 +9,7 @@ const buildRoot = process.env.REFRESH_BUILD_ROOT;
 const versions = ["legacy-old", "candidate-before", "candidate-after"];
 const folders = ["legacy-dist", "current-dist", "next-dist"];
 let server: Server;
+let apiServer: Server;
 let origin: string;
 let phase = 1;
 let slowDocument = false;
@@ -67,8 +68,25 @@ test.beforeAll(async () => {
   const address = server.address();
   if (!address || typeof address === "string") throw new Error("Fixture port unavailable");
   origin = `http://[::1]:${address.port}`;
+  // WebKit sends real CORS preflights even when the final fetch is routed by
+  // Playwright. Serve the fake API on loopback instead of relying on interception.
+  apiServer = createServer((req, res) => {
+    const read = ["GET", "HEAD", "OPTIONS"].includes(req.method || "")
+      || req.method === "POST" && new URL(req.url!, "http://fixture").pathname === "/rest/v1/rpc/get_public_home_bundle";
+    if (!read || req.headers.origin !== origin) { res.writeHead(405); res.end(); return; }
+    res.writeHead(req.method === "OPTIONS" ? 204 : 200, {
+      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST",
+      "Access-Control-Allow-Headers": String(req.headers["access-control-request-headers"] || "authorization,apikey,content-type,x-client-info,accept-profile,prefer"),
+      "Content-Type": "application/json", "Cache-Control": "no-store",
+    });
+    res.end(req.method === "OPTIONS" || req.method === "HEAD" ? "" : req.method === "POST" ? "{}" : "[]");
+  });
+  await new Promise<void>((resolve, reject) => { apiServer.once("error", reject); apiServer.listen(65530, "127.0.0.1", resolve); });
 });
 test.afterAll(async () => {
+  apiServer?.closeAllConnections();
+  if (apiServer?.listening) await new Promise<void>((resolve) => apiServer.close(() => resolve()));
   server?.closeAllConnections();
   await new Promise<void>((resolve) => server?.close(() => resolve()));
 });
@@ -79,9 +97,8 @@ test.beforeEach(async ({ context }) => {
     const url = new URL(route.request().url());
     if (url.origin === origin) return route.continue();
     if (url.hostname === "127.0.0.1" && url.port === "65530") {
-      const headers = { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS", "Access-Control-Allow-Headers": "authorization,apikey,content-type,x-client-info,accept-profile,prefer" };
-      if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers, body: "" });
-      if (route.request().method() === "GET") return route.fulfill({ status: 200, headers, contentType: "application/json", body: "[]" });
+      if (["GET", "HEAD", "OPTIONS"].includes(route.request().method())
+        || route.request().method() === "POST" && url.pathname === "/rest/v1/rpc/get_public_home_bundle") return route.continue();
     }
     return route.abort();
   });

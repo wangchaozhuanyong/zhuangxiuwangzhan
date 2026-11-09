@@ -75,14 +75,15 @@ export function initializePublicBoot(): PublicBoot | undefined {
   const stylesReady = () => Array.from(document.querySelectorAll<HTMLLinkElement>("link[data-public-style]"))
     .every((link) => !!link.sheet && !failedStyles.has(link));
   const applyStyles = () => {
-    // Fonts remain optional. Let the current document's explicit critical image
-    // transfers finish before their font subsets contend for the same bandwidth.
+    // Optional fonts must not contend with route scripts or critical images.
+    // Activate them after the real readiness gate and its visual handoff finish.
     const imagesPending = !isAdmin && document.readyState !== "complete" &&
       Array.from(document.querySelectorAll<HTMLLinkElement>(imagePreloads)).some(link =>
         (!link.media || window.matchMedia(link.media).matches) && !finishedImages.has(link) &&
         !performance.getEntriesByName(link.href).some(entry => entry.duration > 0));
     for (const link of document.querySelectorAll<HTMLLinkElement>("link[data-public-style],link[data-public-fonts]")) {
-      if (link.hasAttribute("data-public-fonts") && imagesPending) continue;
+      if (link.hasAttribute("data-public-fonts") && (imagesPending || !isAdmin && state !== "ready" && state !== "degraded")) continue;
+      if (link.hasAttribute("data-public-fonts") && !link.hasAttribute("href") && link.dataset.publicFontHref) link.href = link.dataset.publicFontHref;
       if (link.sheet || isAdmin && link.hasAttribute("data-public-style")) link.media = "all";
     }
   };

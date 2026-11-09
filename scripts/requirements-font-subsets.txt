@@ -1,0 +1,4 @@
+# Offline asset generation only; do not install into the website runtime.
+fonttools==4.60.2
+brotli==1.2.1
+zopfli==0.2.3.post1

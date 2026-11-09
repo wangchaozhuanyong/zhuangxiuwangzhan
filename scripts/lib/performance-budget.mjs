@@ -40,3 +40,15 @@ export function collectInitialJavaScriptAssets(distDir, entryRefs) {
   for (const ref of entryRefs) visit(ref);
   return [...assets];
 }
+
+/** Read real HTML tags; inline scripts may contain route-only href strings. */
+export function collectHtmlAssetReferences(html) {
+  const markup = html.replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/(<script\b[^>]*>)[\s\S]*?<\/script\s*>/gi, "$1</script>")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, "");
+  const refs = [];
+  for (const [tag] of markup.matchAll(/<(?:script|link)\b[^>]*>/gi)) {
+    for (const [, ref] of tag.matchAll(/\s(?:src|href)\s*=\s*["'](\/assets\/[^"']+)["']/gi)) refs.push(ref);
+  }
+  return refs;
+}

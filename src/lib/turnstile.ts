@@ -2,7 +2,9 @@ const siteKey = String(import.meta.env.VITE_TURNSTILE_SITE_KEY || "").trim();
 const TURNSTILE_SCRIPT_ID = "cf-turnstile-api";
 const TURNSTILE_SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 const SCRIPT_LOAD_TIMEOUT_MS = 8_000;
-const TOKEN_TIMEOUT_MS = 10_000;
+// A slow challenge must not be discarded at the former 10-second deadline.
+// Provider failures still reject immediately; the server verifies every token.
+const TOKEN_TIMEOUT_MS = 30_000;
 const shouldSkipTurnstile = import.meta.env.DEV;
 
 let scriptPromise: Promise<void> | null = null;

@@ -162,7 +162,7 @@ export const fallbackSiteSettings: SiteSettings = {
 
 export type ResolvedSiteSettings = SiteSettings & {
   phone_href: string;
-  /** Default ignores legacy page templates; user-composed preserves customer-confirmed text. */
+  /** Default ignores legacy templates. Explicit modes preserve customer text or a product enquiry. */
   whatsapp_url: (message?: string, options?: Pick<WhatsAppMessageOptions, "mode">) => string;
   address: string;
   short_address: string;

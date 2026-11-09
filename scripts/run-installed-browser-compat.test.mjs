@@ -4,6 +4,17 @@ import { spawnSync } from "node:child_process";
 import { Capabilities } from "selenium-webdriver";
 import { readFile, rm } from "node:fs/promises";
 import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl, publicDeviceIdentity, assertRequestedDeviceIdentity, negativeLeadRequestGuard, publicQaMetrics, publicScreenshotPage, publicDriverFailure, publicProviderPlan, publicDriverHttpResponse, assertMobileMotion, withNativeDeviceContext, hideNativeDeviceKeyboard, closeBrowserSession } from "./run-installed-browser-compat.mjs";
+import { classifyAdminEntry } from './run-installed-browser-compat.mjs';
+
+test('anonymous admin coverage distinguishes Access and app login without claiming authentication', () => {
+  const input = { baseOrigin: 'https://flashcast.com.my', emailVisible: true, passwordVisible: false, submitVisible: true };
+  assert.equal(classifyAdminEntry({ ...input, url: 'https://tenant.cloudflareaccess.com/cdn-cgi/access/login/flashcast.com.my' }), 'cloudflare-access');
+  assert.equal(classifyAdminEntry({ ...input, passwordVisible: true, url: 'https://flashcast.com.my/admin/login' }), 'application-login');
+  for (const url of ['https://tenant.cloudflareaccess.com.evil.test/cdn-cgi/access/login/site', 'http://tenant.cloudflareaccess.com/cdn-cgi/access/login/site', 'https://tenant.cloudflareaccess.com/other', 'https://flashcast.com.my/admin']) {
+    assert.throws(() => classifyAdminEntry({ ...input, url }), /ADMIN_ENTRY_NOT_VERIFIED/);
+  }
+  assert.throws(() => classifyAdminEntry({ ...input, emailVisible: false, url: 'https://tenant.cloudflareaccess.com/cdn-cgi/access/login/site' }), /ADMIN_ENTRY_NOT_VERIFIED/);
+});
 
 test("requested real device, browser and OS must match supplier-returned identity", () => {
   const target = { browserName: "safari", options: { deviceName: "iPhone 16", osVersion: "18", realMobile: true } };

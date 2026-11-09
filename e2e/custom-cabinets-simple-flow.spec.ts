@@ -1,11 +1,9 @@
 import { test, expect, type Page } from '@playwright/test';
-import { mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
 import p from '../src/i18n/cabinetPaletteText.json' with { type:'json' };
 import t from '../src/i18n/cabinetStudioText.json' with { type:'json' };
 import l from '../src/i18n/cabinetStudioCatalog.json' with { type:'json' };
 import { studioStyles, studioSchemes, cabinetDefaults } from '../src/data/cabinetStudio';
-const evidence=resolve('reports/custom-cabinets-20261024/multi-part-20261026/browser');mkdirSync(evidence,{recursive:true});
+const evidencePath=(name:string)=>test.info().outputPath(name);
 test.beforeEach(async({page})=>{
   await page.route('**/*',route=>{const r=route.request(),u=new URL(r.url());const read=r.method()==='POST'&&u.pathname==='/rest/v1/rpc/get_public_home_bundle';if((!['GET','HEAD','OPTIONS'].includes(r.method())&&!read)||/google-analytics|googletagmanager|cloudflareinsights|doubleclick/.test(u.hostname)||/\/(?:__visit|functions\/v1\/(?:submit-lead|notify-lead))\b/.test(u.pathname))return route.abort();return route.continue();});
 });
@@ -31,7 +29,7 @@ for(const lang of ['zh','en','ms'] as const)for(const width of [360,390,768,1024
   const columns=await page.locator('.studio-gallery').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length);expect(columns).toBe(width<600?1:width<1180?2:3);
   await page.locator('[data-scheme="cream-1"] img').evaluate((img:HTMLImageElement)=>img.decode());
   const ratio=await page.locator('[data-scheme="cream-1"] img').evaluate(e=>e.getBoundingClientRect().width/e.getBoundingClientRect().height);expect(ratio).toBeCloseTo(1.5,2);
-  await page.screenshot({path:resolve(evidence,`catalogue-${lang}-${width}.png`)});
+  await page.screenshot({path:evidencePath(`catalogue-${lang}-${width}.png`)});
   await start(page,lang);const dialog=page.getByRole('dialog');await noOverflow(page);
   await expect(dialog.getByRole('button',{name:l[lang].scenes.living,exact:true})).toHaveCount(0);
   const original=await roomRaster(page);
@@ -44,7 +42,7 @@ for(const lang of ['zh','en','ms'] as const)for(const width of [360,390,768,1024
   expect(quote.pathname).toBe(`/${lang}/quote`);expect(quote.searchParams.get('projectType')).toBe('Custom Built-In Furniture');expect(quote.searchParams.get('details')).toContain(l[lang].finishes.walnut);
   await expect(dialog.getByRole('link',{name:p[lang].consult,exact:true})).toBeInViewport();
   await expect(dialog.getByRole('button',{name:t[lang].close,exact:true})).toBeInViewport();
-  await page.screenshot({path:resolve(evidence,`colours-${lang}-${width}.png`)});
+  await page.screenshot({path:evidencePath(`colours-${lang}-${width}.png`)});
   await dialog.getByRole('button',{name:t[lang].save,exact:true}).click();await expect(dialog).toContainText(t[lang].savedOk);
   await page.reload();await ready(page);await onlyPart(page,'wall-front');await expect(page.locator('[data-finish="walnut"]')).toHaveAttribute('aria-pressed','true');
   await page.getByRole('dialog').getByRole('button',{name:l[lang].scenes.bedroom,exact:true}).click();await ready(page);
@@ -108,8 +106,11 @@ test('catalogue selection starts with original colours and keeps filters and bro
 test('home entry and existing service and material links stay localized',async({page})=>{
   for(const lang of ['zh','en','ms']){
     await page.goto(`/${lang}?fc_test=1`);
-    const entry=page.locator('[data-home-section="custom-cabinets"]');await expect(entry).toBeVisible();
-    await entry.locator('.home-cabinets__actions a').first().click();await expect(page.locator('[data-scheme]')).toHaveCount(12);
+    await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state','ready');
+    await page.locator('header button[aria-controls="scheme-a-directory"]:visible').first().click();
+    const entry=page.locator(`.scheme-a-directory a[href="/${lang}/custom-cabinets"]`);await expect(entry).toBeVisible();
+    await entry.click();await expect(page).toHaveURL(new RegExp(`/${lang}/custom-cabinets(?:[?#].*)?$`));
+    await expect(page.locator('[data-scheme]')).toHaveCount(12);
     await page.locator('.studio-support details').first().locator('summary').click();
     const links=await page.locator('.studio-support details').first().locator('a').evaluateAll(items=>items.map(a=>a.getAttribute('href')));
     expect(links).toContain(`/${lang}/materials/category/whole-house-custom`);expect(links).toContain(`/${lang}/services/builtin`);
@@ -120,7 +121,7 @@ for(const height of [600,720])test(`short desktop keeps the full room and enquir
   await page.setViewportSize({width:1440,height});await page.goto('/zh/custom-cabinets?fc_test=1');await start(page);
   const bounds=await page.locator('.studio-room-preview__frame').evaluate(e=>{const a=e.getBoundingClientRect(),b=e.closest('.studio-product__layout')!.getBoundingClientRect();return {top:a.top,bottom:a.bottom,bodyTop:b.top,bodyBottom:b.bottom,ratio:a.width/a.height};});
   expect(bounds.top).toBeGreaterThanOrEqual(bounds.bodyTop-1);expect(bounds.bottom).toBeLessThanOrEqual(bounds.bodyBottom+1);expect(bounds.ratio).toBeCloseTo(1.5,2);
-  await expect(page.getByRole('link',{name:p.zh.consult,exact:true})).toBeInViewport();await page.screenshot({path:resolve(evidence,`short-desktop-${height}.png`)});
+  await expect(page.getByRole('link',{name:p.zh.consult,exact:true})).toBeInViewport();await page.screenshot({path:evidencePath(`short-desktop-${height}.png`)});
 });
 
 test('direct enquiry fills the existing form with the exact preview configuration without submitting',async({page})=>{
@@ -146,7 +147,7 @@ test('default colour selection links every kitchen door, with local parts still 
   const decode=()=>page.evaluate(()=>JSON.parse(atob(new URLSearchParams(location.search).get('d')!.replaceAll('-','+').replaceAll('_','/'))));
   let configuration=await decode();for(const kind of ['base','wall'])expect(configuration[4].find((c:unknown[])=>c[1]===kind)[5]).toBe('sage');
   expect(configuration[4].find((c:unknown[])=>c[1]==='wardrobe')[5]).toBe('cream');
-  await page.screenshot({path:resolve(evidence,'linked-kitchen-doors-390.png')});
+  await page.screenshot({path:evidencePath('linked-kitchen-doors-390.png')});
   await onlyPart(page,'base-front');await page.locator('[data-finish="ivory"]').click();await ready(page);
   configuration=await decode();expect(configuration[4].find((c:unknown[])=>c[1]==='base')[5]).toBe('ivory');expect(configuration[4].find((c:unknown[])=>c[1]==='wall')[5]).toBe('sage');
   await page.getByRole('button',{name:p.zh.doorsOnly,exact:true}).click();await expect(page.locator('.studio-palette__selection')).toContainText(p.zh.mixedColours);
@@ -175,7 +176,7 @@ for(const lang of ['zh','en','ms'] as const)for(const width of [360,1440])test(`
   await partPicker(page);await noOverflow(page);
   expect(await picker.locator('summary').evaluate(e=>getComputedStyle(e,'::after').content)).toBe('none');
   expect(await picker.locator('label').first().evaluate(e=>getComputedStyle(e).flexDirection)).toBe('row');
-  await page.screenshot({path:resolve(evidence,`multi-parts-${lang}-${width}.png`)});
+  await page.screenshot({path:evidencePath(`multi-parts-${lang}-${width}.png`)});
   await picker.locator('[data-part="base-top"]').check();for(const id of ['base-front','wall-front','base-body','wall-body'])await expect(picker.locator(`[data-part="${id}"]`)).not.toBeChecked();
   await picker.locator('summary').click();await expect(page.locator('[data-finish="walnut"]')).toHaveCount(0);await page.locator('[data-finish="grey-stone"]').click();await ready(page);
   configuration=await decode();base=configuration[4].find((c:unknown[])=>c[1]==='base');expect(base[8]).toBe('grey-stone');expect(base[5]).toBe('walnut');

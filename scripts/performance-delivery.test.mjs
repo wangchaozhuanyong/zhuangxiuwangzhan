@@ -5,7 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
-import { collectInitialJavaScriptAssets } from "./lib/performance-budget.mjs";
+import { collectHtmlAssetReferences, collectInitialJavaScriptAssets } from "./lib/performance-budget.mjs";
 import { resolvePublicModulePreloadDependencies } from "./vite-module-preload.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -90,4 +90,32 @@ test("the public configuration boundary is allowed while a transitive Supabase S
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Admin\/data dependencies leaked into the public entry: \/assets\/supabase-test\.js/);
   assert.doesNotMatch(result.stderr, /supabaseConfig/);
+});
+
+test("HTML references exclude inline code, comments and data attributes while retaining real static tags", () => {
+  const html = `<script type="module" src="/assets/entry.js"></script>
+    <script>const sample = 'href="/assets/route.css"'; const tag = '<link href="/assets/fake.css">';</script>
+    <!-- <link href="/assets/comment.css"> -->
+    <style>.x:after { content: '<link href="/assets/style.css">'; }</style>
+    <link rel="stylesheet" href="/assets/shell.css" data-href="/assets/deferred.css">
+    <link rel="preload" as="style" href="/assets/real-preload.css">`;
+  assert.deepEqual(collectHtmlAssetReferences(html), ["/assets/entry.js", "/assets/shell.css", "/assets/real-preload.css"]);
+});
+test("CSS budgets retain 40/60 KiB limits and count a shared route stylesheet once", t => {
+  const css = bytes => `.page{--fixture:"${randomBytes(bytes * 1024).toString("base64")}"}`;
+  const dir = fixture(t, {
+    "index.html": '<script type="module" src="/assets/entry.js"></script><link rel="stylesheet" href="/assets/public-home-test.css">',
+    "assets/entry.js": "export const value = 1;",
+    "assets/public-home-test.css": css(35),
+  });
+  const run = () => spawnSync(process.execPath, [path.join(root, "scripts/verify-performance-budget.mjs")], {
+    cwd: root, encoding: "utf8", env: { ...process.env, PERFORMANCE_BUDGET_DIST_DIR: dir },
+  });
+  assert.equal(run().status, 0, "35 KiB shared CSS must not be counted twice");
+  writeFileSync(path.join(dir, "assets/public-home-test.css"), css(45));
+  assert.match(run().stderr, /Initial CSS is .*budget is 40\.0 KiB gzip/);
+  writeFileSync(path.join(dir, "index.html"), `<script src="/assets/entry.js"></script><script>const hint = 'href="/assets/public-home-test.css"';</script>`);
+  assert.equal(run().status, 0, "route-only CSS remains within the 60 KiB route budget");
+  writeFileSync(path.join(dir, "assets/public-home-test.css"), css(65));
+  assert.match(run().stderr, /Public route CSS is .*budget is 60\.0 KiB gzip/);
 });

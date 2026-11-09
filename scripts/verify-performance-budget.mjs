@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import path from "node:path";
-import { collectInitialJavaScriptAssets } from "./lib/performance-budget.mjs";
+import { collectHtmlAssetReferences, collectInitialJavaScriptAssets } from "./lib/performance-budget.mjs";
 
 const rootDir = process.cwd();
 const distDir = path.resolve(rootDir, process.env.PERFORMANCE_BUDGET_DIST_DIR || "dist");
@@ -22,7 +22,7 @@ if (!existsSync(htmlPath)) {
   fail("dist/index.html is missing. Run npm run build first.");
 } else {
   const html = readFileSync(htmlPath, "utf8");
-  const assetRefs = [...html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g)].map((match) => match[1]);
+  const assetRefs = collectHtmlAssetReferences(html);
   const htmlJsRefs = [...new Set(assetRefs.filter((ref) => ref.endsWith(".js")))];
   let initialJsRefs = [];
   try {
@@ -47,7 +47,7 @@ if (!existsSync(htmlPath)) {
   const initialJsGzip = gzipBytes(initialJsRefs);
   const initialCssGzip = gzipBytes(initialCssRefs);
   const publicRouteCssGzip = publicRouteCssRefs.reduce(
-    (largest, ref) => Math.max(largest, initialCssGzip + gzipBytes([ref])),
+    (largest, ref) => Math.max(largest, gzipBytes([...new Set([...initialCssRefs, ref])])),
     initialCssGzip,
   );
   const formatKib = (bytes) => `${(bytes / kib).toFixed(1)} KiB gzip`;
