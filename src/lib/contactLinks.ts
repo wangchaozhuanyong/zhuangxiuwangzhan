@@ -4,8 +4,8 @@ import { currentInquirySources } from "@/lib/inquirySource";
 import { siteConfig } from "@/config/site";
 
 export type WhatsAppMessageOptions = {
-  /** Only an explicitly authored/confirmed message may bypass the default opening. */
-  mode?: "default" | "user-composed";
+  /** Explicit exceptions to the generic renovation opening. */
+  mode?: "default" | "user-composed" | "product-enquiry";
   businessNumber?: string;
 };
 
@@ -20,6 +20,7 @@ export function withInquiryWhatsAppHref(href: string, language: Language, option
     const businessNumber = (options.businessNumber ?? siteConfig.whatsappNumber).replace(/[^\d]/g, "");
     // Do not rewrite customer/admin or unrelated third-party WhatsApp recipients.
     if (!businessNumber || number.replace(/[^\d]/g, "") !== businessNumber || options.mode === "user-composed") return href;
+    if (options.mode === "product-enquiry" && url.searchParams.get("text")?.trim()) return href;
     url.searchParams.set("text", whatsappOpeningText(language, currentInquirySources().last));
     return url.toString();
   } catch { return href; }

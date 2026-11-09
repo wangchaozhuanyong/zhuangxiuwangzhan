@@ -36,7 +36,8 @@ const filename = `noto-sc-static-${digest.slice(0, 12)}.css`;
 const output = path.resolve('public/fonts', filename);
 if (fs.existsSync(output) && fs.readFileSync(output, 'utf8') !== css) throw new Error('Preserve an existing asset with a different body.');
 if (checking) {
-  if (!fs.existsSync(output) || !fs.readFileSync('index.html', 'utf8').includes('/fonts/' + filename)) throw new Error('The committed font asset and HTML reference must match.');
+  if (!fs.existsSync(output) || fs.readFileSync(output, 'utf8') !== css) throw new Error('The committed original fallback font asset must match.');
+  await import('./check-public-font-subsets.mjs');
 } else fs.writeFileSync(output, css);
 const record = { inputSha256: createHash('sha256').update(original).digest('hex'), outputSha256: digest, file: '/fonts/' + filename, faceCount: faces.length, matchingOrderPreserved: true, beforeGzip: gzipSync(original).length, afterGzip: gzipSync(css).length };
 if (!checking) {

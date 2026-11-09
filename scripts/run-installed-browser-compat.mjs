@@ -406,8 +406,19 @@ const pages = [
   { path: "/zh/projects", selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href*="/quote"]'], minTextLength: 500 },
   { path: "/zh/quote", selectors: ["main", "#quote-name", "#quote-phone", "#quote-project-type", "#quote-details"], minTextLength: 500 },
   { path: "/zh/contact", selectors: ["main", "#contact-name", "#contact-phone", "#contact-message", 'a[href^="tel:"]'], minTextLength: 500 },
-  { path: "/admin", selectors: ['input[type="email"]', 'input[type="password"]', 'button[type="submit"]'], minTextLength: 100 },
+  { path: "/admin", selectors: [], minTextLength: 100 },
 ];
+
+// An anonymous entry check can reach Access before the application's login.
+// Neither entry form proves successful application authentication or role access.
+export function classifyAdminEntry({ url, baseOrigin, emailVisible, passwordVisible, submitVisible }) {
+  const target = new URL(url);
+  if (target.origin === baseOrigin && /^\/admin(?:\/|$)/.test(target.pathname)
+    && emailVisible && passwordVisible && submitVisible) return 'application-login';
+  if (target.protocol === 'https:' && target.hostname.endsWith('.cloudflareaccess.com')
+    && target.pathname.startsWith('/cdn-cgi/access/login/') && emailVisible && submitVisible) return 'cloudflare-access';
+  throw new Error('ADMIN_ENTRY_NOT_VERIFIED');
+}
 
 const pathExists = async (path) => {
   if (!path || path.includes("undefined")) return false;
@@ -451,6 +462,15 @@ const assertPageHealthy = async (page, spec) => {
   }
 
   await waitForPageUsable(page);
+
+  if (spec.path === '/admin') {
+    // Access can render after the initial document arrives.
+    await waitForVisible(page, 'input[type="email"]');
+    const visible = selector => page.locator(`${selector}:visible`).count().then(count => count > 0);
+    return { path: spec.path, entry: classifyAdminEntry({ url: page.url(), baseOrigin: new URL(baseUrl).origin,
+      emailVisible: await visible('input[type="email"]'), passwordVisible: await visible('input[type="password"]'),
+      submitVisible: await visible('button[type="submit"], input[type="submit"]') }), applicationAuthVerified: false };
+  }
 
   for (const selector of spec.selectors) {
     await waitForVisible(page, selector);
@@ -514,21 +534,23 @@ const assertMobileMenu = async (page) => {
 const runTarget = async (target) => {
   let browser;
   const checks = [];
+  const adminEntryChecks = [];
   try {
     const { chromium } = await import("playwright");
     browser = await chromium.launch({ executablePath: target.executablePath, headless });
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, bypassCSP: false });
     const page = await context.newPage();
     for (const spec of pages) {
-      await assertPageHealthy(page, spec);
+      const result = await assertPageHealthy(page, spec);
+      if (result?.path === '/admin') adminEntryChecks.push(result);
       checks.push(spec.path);
       console.log(`[installed-browser] ${target.id} checked ${spec.path}`);
     }
     await assertMobileMenu(page);
     checks.push("mobile-menu-navigation");
-    return { id: target.id, name: target.name, executablePath: target.executablePath, version: browser.version(), checks, ok: true };
+    return { id: target.id, name: target.name, executablePath: target.executablePath, version: browser.version(), checks, adminEntryChecks, ok: true };
   } catch (error) {
-    return { id: target.id, name: target.name, executablePath: target.executablePath, checks, ok: false, error: error instanceof Error ? error.message : String(error) };
+    return { id: target.id, name: target.name, executablePath: target.executablePath, checks, adminEntryChecks, ok: false, error: error instanceof Error ? error.message : String(error) };
   } finally {
     await browser?.close();
   }
