@@ -360,9 +360,12 @@ export const getDynamicImagePreloads = (
   }
 
   if (route.isHomePage) {
+    // The Malay dictionary shares the initial connection with the hero.
+    // Let the existing viewport-aware components load below-fold project images.
+    const projectPreloads = key === "/ms" ? [] : getHomeProjectImagePreloads(homeContentBundle);
     const heroImageUrl = getHomeHeroImageUrl(homeContentBundle, key);
     if (normalizePreloadImageUrl(heroImageUrl).split(/[?#]/, 1)[0].endsWith("/hero-luxury-living.webp")) {
-      return [...HOME_ATELIER_HERO_PRELOADS, ...getHomeProjectImagePreloads(homeContentBundle)];
+      return [...HOME_ATELIER_HERO_PRELOADS, ...projectPreloads];
     }
 
     return [
@@ -370,7 +373,7 @@ export const getDynamicImagePreloads = (
         height: 1100,
         sizes: HOME_HERO_IMAGE_SIZES,
       }),
-      ...getHomeProjectImagePreloads(homeContentBundle),
+      ...projectPreloads,
     ];
   }
 

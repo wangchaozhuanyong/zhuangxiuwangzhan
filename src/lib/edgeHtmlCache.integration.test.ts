@@ -675,7 +675,7 @@ describe("public Edge HTML cache", () => {
     expect(html).not.toContain('rel="preload" as="image" href="/images/heroes/hero-luxury-living.webp"');
   });
 
-  it("starts the first two published homepage project images from the HTML", async () => {
+  it.each(["/en", "/zh", "/ms"])("scopes published homepage project image preloads for %s", async (path) => {
     const imageUrl = (name: string) => `https://home-preload-test.supabase.co/storage/v1/object/public/site-images/${name}.webp`;
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
@@ -690,14 +690,22 @@ describe("public Edge HTML cache", () => {
       return new Response(body, { headers: { "content-type": "application/json" } });
     }));
 
-    const response = await requestPage({ path: "/zh", supabaseUrl: "https://home-preload-test.supabase.co" });
+    const response = await requestPage({ path, supabaseUrl: "https://home-preload-test.supabase.co" });
     const html = await response.text();
+    const preloads = [...new DOMParser().parseFromString(html, "text/html").querySelectorAll('link[rel="preload"][as="image"]')];
+    expect(response.status).toBe(200);
+    expect(preloads.some((link) => link.getAttribute("href")?.includes("home-daylight-"))).toBe(true);
+    if (path === "/ms") {
+      expect(preloads.some((link) => /(?:featured|supporting)\.webp/.test(link.getAttribute("href") || ""))).toBe(false);
+      expect(html).toContain("/site-images/featured.webp");
+      expect(html).toContain("/site-images/supporting.webp");
+      return;
+    }
 
     expect(html).toContain("/render/image/public/site-images/featured.webp?quality=86&amp;width=560&amp;height=1050&amp;format=webp");
     expect(html).toContain("/render/image/public/site-images/supporting.webp?quality=84&amp;width=360&amp;height=450&amp;resize=cover&amp;format=webp");
     expect(html).toContain('media="(max-width: 47.9375rem)" fetchpriority="low"');
     expect(html).toContain('media="(min-width: 48rem)" fetchpriority="low"');
-    const preloads = [...new DOMParser().parseFromString(html, "text/html").querySelectorAll('link[rel="preload"][as="image"]')];
     const featured = preloads.find((link) => link.getAttribute("href")?.includes("featured.webp"));
     const supportingMobile = preloads.find((link) => link.getAttribute("media") === "(max-width: 47.9375rem)");
     expect(featured?.getAttribute("imagesrcset")).toBe(buildSupabaseSrcSet(imageUrl("featured"), [560, 720, 960, 1200, 1600], { height: 1050, quality: 86 }));
