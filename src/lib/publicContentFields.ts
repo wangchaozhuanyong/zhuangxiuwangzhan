@@ -8,3 +8,23 @@ export const PUBLIC_SERVICE_FIELDS = ["id", "slug", "status", "sort_order", "ima
 export const PUBLIC_BLOG_FIELDS = ["id", "slug", "status", "category", "published_at", "created_at", "updated_at", "cover_image_url", "tags", ...localized([
   "title", "excerpt", "content", "alt", "seo_title", "seo_description",
 ])];
+
+export const PUBLIC_MATERIAL_CARD_FIELDS = [
+  "id",
+  "slug",
+  "category",
+  "subcategory",
+  "material_type",
+  "color",
+  "texture",
+  "image_url",
+  "price_mode",
+  "price_min",
+  "price_max",
+  "price_currency",
+  "price_unit",
+  "reference_price",
+  ...localized(["title", "excerpt", "alt"]),
+];
+
+export const PUBLIC_MATERIAL_LIST_FIELDS = [...PUBLIC_MATERIAL_CARD_FIELDS, ...localized(["suitable_spaces"])];

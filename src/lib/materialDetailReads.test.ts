@@ -22,4 +22,13 @@ describe("material detail request scope", () => {
     expect(result.category?.items[0].gallery).toEqual([]);
     expect(result.category?.items[0].description).toBe("Full original body");
   });
+
+  it("keeps the displayed body when an older material has no category", async () => {
+    const row = { id: "legacy", slug: "legacy-oak", title_en: "Oak", content_en: "Legacy body" };
+    vi.mocked(fetchPublishedMaterialRowBySlug).mockResolvedValue(row as never);
+    vi.mocked(fetchPublishedMaterialRows).mockResolvedValue([row]);
+
+    const result = await getPublishedMaterialBySlug("legacy-oak", "en");
+    expect(result.category?.items[0].description).toBe("Legacy body");
+  });
 });

@@ -294,6 +294,46 @@ describe("public Edge HTML cache", () => {
     expect(xml).not.toContain("https://flashcast.com.my/zh/landing/office-renovation");
   });
 
+  it.each(["en", "zh", "ms"] as const)("keeps material category links and detail content with a narrow list read (%s)", async (language) => {
+    const material: Record<string, unknown> = {
+      id: "oak", slug: "spc-flooring-natural-oak", status: "published", category: "Whole-House Custom",
+      subcategory: "Solid Wood Finish", image_url: "/oak.webp", price_mode: "reference", sort_order: 1,
+      title_en: "Natural oak", title_zh: "天然橡木", title_ms: "Kayu oak asli",
+      excerpt_en: "An oak finish", excerpt_zh: "橡木饰面摘要", excerpt_ms: "Ringkasan kemasan oak",
+      content_en: "Full oak detail", content_zh: "完整橡木详情", content_ms: "Butiran penuh oak",
+    };
+    const listReads: URL[] = [];
+    supabaseFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/site_settings")) return Response.json([{ updated_at: siteSettingsRevision }]);
+      if (url.pathname.endsWith("/material_images")) {
+        return Response.json([{ id: "oak-photo", image_url: "/oak-gallery.webp", is_active: true }]);
+      }
+      if (!url.pathname.endsWith("/materials")) return Response.json([]);
+      if (url.searchParams.has("or")) listReads.push(url);
+      const select = url.searchParams.get("select");
+      const row = select === "*" ? material
+        : Object.fromEntries((select || "").split(",").filter((key) => key in material).map((key) => [key, material[key]]));
+      return Response.json([row]);
+    });
+    const supabaseUrl = `https://material-projection-${language}.supabase.co`;
+    const list = await requestPage({ path: `/${language}/materials/category/whole-house-custom/solid-wood-finish`, supabaseUrl });
+    const listHtml = await list.text();
+    expect(list.status).toBe(200);
+    expect(listHtml).toContain(`href="/${language}/materials/${material.slug}"`);
+    expect(listHtml).toContain(material[`excerpt_${language}`]);
+    expect(listHtml).toContain("/oak.webp");
+    expect(listHtml).not.toContain(material[`content_${language}`]);
+    expect(listReads).toHaveLength(1);
+    expect(listReads[0].searchParams.get("select")).not.toMatch(/\*|content_(?:en|zh|ms)/);
+
+    const detail = await requestPage({ path: `/${language}/materials/${material.slug}`, supabaseUrl });
+    const detailHtml = await detail.text();
+    expect(detail.status).toBe(200);
+    expect(detailHtml).toContain(material[`content_${language}`]);
+    expect(detailHtml).toContain("/oak-gallery.webp");
+  });
+
   it("uses catalog override metadata and preloads settings for the same product", async () => {
     supabaseFetch.mockImplementation(async (input: RequestInfo | URL) => {
       const url = new URL(String(input));
