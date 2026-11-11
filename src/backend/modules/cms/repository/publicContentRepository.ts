@@ -1,6 +1,6 @@
 import { withReadSignal } from "@/lib/readRequest";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
-import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "@/lib/publicContentFields";
+import { PUBLIC_BLOG_FIELDS, PUBLIC_MATERIAL_LIST_FIELDS, PUBLIC_SERVICE_FIELDS } from "@/lib/publicContentFields";
 import type { UnknownRecord } from "@/lib/recordUtils";
 import type { Database } from "@/lib/database.types";
 
@@ -170,15 +170,21 @@ export async function fetchPublishedProjectRowBySlug(slug: string, signal?: Abor
   return data || null;
 }
 
-export async function fetchPublishedMaterialRows(limit?: number, excludedCategory?: string, signal?: AbortSignal) {
+export async function fetchPublishedMaterialRows(
+  limit?: number,
+  excludedCategory?: string,
+  signal?: AbortSignal,
+  selection: "full" | "list" = "full",
+) {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
-  let query = supabase.from("materials").select("*").eq("status", "published").order("sort_order");
+  const fields = selection === "list" ? PUBLIC_MATERIAL_LIST_FIELDS.join(",") : "*";
+  let query = supabase.from("materials").select(fields).eq("status", "published").order("sort_order");
   if (excludedCategory) query = query.or(`category.is.null,category.neq.${excludedCategory}`);
   query = applyLimit(query, limit);
   const { data, error } = await withReadSignal(query, signal);
   if (error) throw error;
-  return data || [];
+  return (data || []) as unknown as UnknownRecord[];
 }
 
 export async function fetchPublishedMaterialRowsByCategory(category: string, signal?: AbortSignal, listOrder = false) {

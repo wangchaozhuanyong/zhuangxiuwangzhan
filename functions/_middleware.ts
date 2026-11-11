@@ -1,4 +1,4 @@
-import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
+import { PUBLIC_BLOG_FIELDS, PUBLIC_MATERIAL_CARD_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
 import "../src/i18n/malayContent";
 import { hasMalayContent } from "../src/i18n/localizedContent";
 import { isOptionalHomeSectionEnabled } from "../src/lib/homeOptionalSections";
@@ -1438,7 +1438,7 @@ const fetchPublicServices = async (env: Record<string, string | undefined>, fres
 
 const fetchPublicMaterials = async (env: Record<string, string | undefined>, fresh = false, category?: string) => {
   const configure = (url: URL) => {
-    url.searchParams.set("select", "*");
+    url.searchParams.set("select", ["status", ...PUBLIC_MATERIAL_CARD_FIELDS].join(","));
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("or", "(category.is.null,category.neq.furniture)");
     if (category) url.searchParams.set("category", `eq.${category}`);

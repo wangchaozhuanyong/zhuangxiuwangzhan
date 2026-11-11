@@ -425,9 +425,8 @@ export function mapPublishedProjectDetail(data: UnknownRecord, language: Languag
 }
 
 export const getPublishedMaterials = async (language: Language = "en", signal?: AbortSignal): Promise<MaterialCatalogCategory[]> => {
-
   if (!hasPublicContentDatabaseClient()) return getFallbackMaterials();
-  const data = await fetchPublishedMaterialRows(undefined, FURNITURE_MATERIAL_CATEGORY, signal);
+  const data = await fetchPublishedMaterialRows(undefined, FURNITURE_MATERIAL_CATEGORY, signal, "list");
   if (!data?.length) return getFallbackMaterials();
 
   return mapPublishedMaterialRows(data, language);
@@ -554,7 +553,11 @@ export const getPublishedMaterialBySlug = async (slug: string, language: Languag
       }
     }
   }
-  const categories = await getPublishedMaterials(language, signal);
+  // Older records without a usable category still need their full detail in the fallback.
+  const fallbackRows = hasPublicContentDatabaseClient()
+    ? await fetchPublishedMaterialRows(undefined, FURNITURE_MATERIAL_CATEGORY, signal)
+    : null;
+  const categories = fallbackRows?.length ? mapPublishedMaterialRows(fallbackRows, language) : await getFallbackMaterials();
   for (const category of categories) {
     const material = category.items.find((item) => item.slug === slug);
     if (material) {

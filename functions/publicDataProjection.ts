@@ -1,5 +1,5 @@
 import { estimateBlogReadMinutes } from "../src/lib/blogMeta";
-import { PUBLIC_BLOG_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
+import { PUBLIC_BLOG_FIELDS, PUBLIC_MATERIAL_CARD_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
 import { hasMalayContent } from "../src/i18n/localizedContent";
 
 export type PublicProjectionRecord = Record<string, unknown>;
@@ -103,26 +103,8 @@ const localizedDetail = (row: PublicProjectionRecord, fields: string[], language
 export const projectServiceDetailForPreload = (row: PublicProjectionRecord, language: "en" | "zh" | "ms") => localizedDetail(row, PUBLIC_SERVICE_FIELDS, language);
 export const projectBlogDetailForPreload = (row: PublicProjectionRecord, language: "en" | "zh" | "ms") => localizedDetail(row, PUBLIC_BLOG_FIELDS, language, true);
 
-const MATERIAL_LIST_FIELDS = [
-  "id",
-  "slug",
-  "category",
-  "subcategory",
-  "material_type",
-  "color",
-  "texture",
-  "image_url",
-  "price_mode",
-  "price_min",
-  "price_max",
-  "price_currency",
-  "price_unit",
-  "reference_price",
-  ...withLocalizedFields(["title", "excerpt", "alt"]),
-] as const;
-
 const MATERIAL_DETAIL_FIELDS = [
-  ...MATERIAL_LIST_FIELDS,
+  ...PUBLIC_MATERIAL_CARD_FIELDS,
   ...withLocalizedFields([
     "content",
     "suitable_spaces",
@@ -147,7 +129,7 @@ const MATERIAL_IMAGE_FIELDS = [
 ] as const;
 
 const projectMaterialListRow = (row: PublicProjectionRecord) =>
-  withDescriptionFallback(row, pickFields(row, MATERIAL_LIST_FIELDS));
+  withDescriptionFallback(row, pickFields(row, PUBLIC_MATERIAL_CARD_FIELDS));
 
 const projectMaterialDetailRow = (row: PublicProjectionRecord) => {
   const projected = pickFields(row, MATERIAL_DETAIL_FIELDS);
