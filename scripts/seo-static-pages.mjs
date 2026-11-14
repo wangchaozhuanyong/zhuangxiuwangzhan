@@ -1,5 +1,6 @@
 /** Static route SEO (mirrors in-app PageMeta copy; does not change visible UI). */
 import { readFileSync } from "node:fs";
+const serviceAreaCopy = JSON.parse(readFileSync(new URL("../src/components/services/serviceAreaPageText.json", import.meta.url), "utf8"));
 const cabinetText = JSON.parse(readFileSync(new URL("../src/i18n/customCabinetsText.json", import.meta.url), "utf8"));
 export const SITE_URL = (process.env.VITE_SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 export const OG_IMAGE = `${SITE_URL}/og-image.webp`;
@@ -149,6 +150,142 @@ const servicesFaqs = {
 };
 
 const staticDefs = [
+  // Five service-area combinations, each with its own English, Chinese and Malay metadata.
+  {
+    lang: "en",
+    path: "/locations/kuala-lumpur/kitchen-renovation",
+    title: "Kitchen Renovation Kuala Lumpur | FLASH CAST",
+    description: "Kitchen renovation in Kuala Lumpur for condos and landed homes. Custom cabinets, wet and dry kitchen layout, quartz tops, plumbing and electrical coordination. Site visit and itemised quotation.",
+    keywords: "kitchen renovation kuala lumpur, kitchen cabinet kl, custom kitchen cabinet malaysia, wet kitchen dry kitchen",
+    schemaType: "Service",
+    entityName: "Kitchen Renovation Kuala Lumpur",
+  },
+  {
+    lang: "zh",
+    path: "/locations/kuala-lumpur/kitchen-renovation",
+    title: "吉隆坡厨房装修｜定制橱柜｜FLASH CAST",
+    description: "吉隆坡公寓与有地住宅厨房装修。定制橱柜、干湿厨房布局、石英石台面、水电协调，含现场测量与分项报价。",
+    keywords: "吉隆坡厨房装修, 厨房橱柜定制, 干湿厨房, 全屋定制",
+    schemaType: "Service",
+    entityName: "吉隆坡厨房装修",
+  },
+  {
+    lang: "ms",
+    path: "/locations/kuala-lumpur/kitchen-renovation",
+    title: "Pengubahsuaian Dapur Kuala Lumpur | FLASH CAST",
+    description: "Pengubahsuaian dapur di Kuala Lumpur untuk kondominium dan rumah teres. Kabinet custom, susun atur dapur basah dan kering, permukaan kuarza, kerja paip dan elektrik. Lawatan tapak dan sebut harga terperinci.",
+    keywords: "pengubahsuaian dapur kuala lumpur, kabinet dapur kl, kabinet dapur custom malaysia",
+    schemaType: "Service",
+    entityName: "Pengubahsuaian Dapur Kuala Lumpur",
+  },
+  {
+    lang: "en",
+    path: "/locations/kuala-lumpur/office-renovation",
+    title: "Office Renovation Kuala Lumpur | Fit-Out | FLASH CAST",
+    description: "Office renovation and fit-out in Kuala Lumpur for shoplot offices, corporate suites and co-working spaces. Partition, ceiling, electrical, networking, air-conditioning and handover documentation.",
+    keywords: "office renovation kl, office fit out kuala lumpur, office interior design kl",
+    schemaType: "Service",
+    entityName: "Office Renovation Kuala Lumpur",
+  },
+  {
+    lang: "zh",
+    path: "/locations/kuala-lumpur/office-renovation",
+    title: "吉隆坡办公室装修｜办公室精装｜FLASH CAST",
+    description: "吉隆坡店铺办公室、企业办公室与共享空间的装修与精装。隔墙、天花、电气、网络、空调与交付文件。",
+    keywords: "吉隆坡办公室装修, 办公室设计装修, 商业空间装修",
+    schemaType: "Service",
+    entityName: "吉隆坡办公室装修",
+  },
+  {
+    lang: "ms",
+    path: "/locations/kuala-lumpur/office-renovation",
+    title: "Pengubahsuaian Pejabat KL | Fit-Out | FLASH CAST",
+    description: "Pengubahsuaian dan fit-out pejabat di Kuala Lumpur untuk pejabat shoplot, suite korporat dan ruang kerja bersama. Partition, siling, elektrik, rangkaian, penghawa dingin dan dokumentasi serahan.",
+    keywords: "pengubahsuaian pejabat kl, fit out pejabat kuala lumpur, pengubahsuaian komersial kl",
+    schemaType: "Service",
+    entityName: "Pengubahsuaian Pejabat Kuala Lumpur",
+  },
+  {
+    lang: "en",
+    path: "/locations/kuala-lumpur/bathroom-renovation",
+    title: "Bathroom Renovation Kuala Lumpur | FLASH CAST",
+    description: "Bathroom and toilet renovation in Kuala Lumpur. Waterproofing, re-tiling, sanitary ware, shower screen, ventilation and concealed plumbing replacement with ponding test records.",
+    keywords: "bathroom renovation kl, toilet renovation kuala lumpur, waterproofing malaysia",
+    schemaType: "Service",
+    entityName: "Bathroom Renovation Kuala Lumpur",
+  },
+  {
+    lang: "zh",
+    path: "/locations/kuala-lumpur/bathroom-renovation",
+    title: "吉隆坡浴室装修｜防水与暗管更换｜FLASH CAST",
+    description: "吉隆坡浴室与厕所翻新。防水、重铺砖、洁具、淋浴隔断、通风与暗管更换，含闭水测试记录。",
+    keywords: "吉隆坡浴室装修, 厕所翻新, 防水工程",
+    schemaType: "Service",
+    entityName: "吉隆坡浴室装修",
+  },
+  {
+    lang: "ms",
+    path: "/locations/kuala-lumpur/bathroom-renovation",
+    title: "Pengubahsuaian Bilik Air KL | FLASH CAST",
+    description: "Pengubahsuaian bilik air dan tandas di Kuala Lumpur. Kalis air, jubin baharu, saniteri, skrin mandi, pengudaraan dan penggantian paip tersembunyi dengan rekod ujian takungan air.",
+    keywords: "pengubahsuaian bilik air kl, pengubahsuaian tandas kuala lumpur, kalis air malaysia",
+    schemaType: "Service",
+    entityName: "Pengubahsuaian Bilik Air Kuala Lumpur",
+  },
+  {
+    lang: "en",
+    path: "/locations/petaling-jaya/condo-renovation",
+    title: "Condo Renovation Petaling Jaya | FLASH CAST",
+    description: "Condo and apartment renovation in Petaling Jaya. Layout changes, carpentry, flooring, electrical, air-conditioning and JMB or MC management approval coordination for PJ condos.",
+    keywords: "condo renovation petaling jaya, apartment renovation pj, renovation contractor petaling jaya",
+    schemaType: "Service",
+    entityName: "Condo Renovation Petaling Jaya",
+  },
+  {
+    lang: "zh",
+    path: "/locations/petaling-jaya/condo-renovation",
+    title: "八打灵再也公寓装修｜管理处审批｜FLASH CAST",
+    description: "八打灵再也公寓与共管公寓装修。格局改动、木作、地面、电气、空调，以及 JMB 或 MC 管理处审批协调。",
+    keywords: "八打灵再也公寓装修, 公寓翻新 pj, 八打灵再也装修公司",
+    schemaType: "Service",
+    entityName: "八打灵再也公寓装修",
+  },
+  {
+    lang: "ms",
+    path: "/locations/petaling-jaya/condo-renovation",
+    title: "Pengubahsuaian Kondominium PJ | FLASH CAST",
+    description: "Pengubahsuaian kondominium dan apartmen di Petaling Jaya. Ubah susun atur, kerja kayu, lantai, elektrik, penghawa dingin dan penyelarasan kelulusan JMB atau MC.",
+    keywords: "pengubahsuaian kondominium pj, pengubahsuaian apartment petaling jaya, kontraktor pengubahsuaian petaling jaya",
+    schemaType: "Service",
+    entityName: "Pengubahsuaian Kondominium Petaling Jaya",
+  },
+  {
+    lang: "en",
+    path: "/locations/selangor/landed-house-renovation",
+    title: "Landed House Renovation Selangor | FLASH CAST",
+    description: "Landed house renovation across Selangor: terrace, semi-D and bungalow. Extension, layout reconfiguration, full house wiring and plumbing, wet works and local council approval guidance.",
+    keywords: "landed house renovation selangor, terrace house renovation selangor, bungalow renovation kl",
+    schemaType: "Service",
+    entityName: "Landed House Renovation Selangor",
+  },
+  {
+    lang: "zh",
+    path: "/locations/selangor/landed-house-renovation",
+    title: "雪兰莪有地住宅装修｜排屋与洋房｜FLASH CAST",
+    description: "雪兰莪排屋、半独立式与独立洋房装修。扩建、格局重划、全屋水电、泥水工程与地方政府图测审批指引。",
+    keywords: "雪兰莪有地住宅装修, 排屋装修 雪兰莪, 洋房装修",
+    schemaType: "Service",
+    entityName: "雪兰莪有地住宅装修",
+  },
+  {
+    lang: "ms",
+    path: "/locations/selangor/landed-house-renovation",
+    title: "Pengubahsuaian Rumah Teres Selangor | FLASH CAST",
+    description: "Pengubahsuaian rumah teres di Selangor: teres, semi-D dan banglo. Sambungan, ubah susun atur, pendawaian dan paip seluruh rumah, kerja basah dan panduan kelulusan pihak berkuasa tempatan.",
+    keywords: "pengubahsuaian rumah teres selangor, pengubahsuaian banglo kl, pengubahsuaian semi-d selangor",
+    schemaType: "Service",
+    entityName: "Pengubahsuaian Rumah Teres Selangor",
+  },
   ...Object.entries(cabinetText).map(([lang, copy]) => page(lang, "/custom-cabinets", copy.metaTitle, copy.metaDescription, "", {
     ogImage: "/images/custom-cabinets/v2/modern-1-kitchen.webp", faqs: copy.faqs, schemaType: "Service", entityName: copy.eyebrow,
   })),
@@ -221,6 +358,8 @@ const staticDefs = [
 export function buildStaticManifest() {
   const manifest = {};
   for (const def of staticDefs) {
+    const areaCopy = serviceAreaCopy[def.path]?.[def.lang];
+    const faqs = areaCopy ? [{ question: areaCopy.question, answer: areaCopy.answer }] : def.faqs;
     const localizedPath = def.path === "/" ? `/${def.lang}` : `/${def.lang}${def.path}`;
     const canonicalPath = def.path === "/" ? `/${def.lang}` : `/${def.lang}${def.path}`;
     const enPath = def.path === "/" ? "/en" : `/en${def.path}`;
@@ -239,7 +378,7 @@ export function buildStaticManifest() {
         xDefault: `${SITE_URL}${enPath}`,
       },
       ogImage: def.ogImage ? new URL(def.ogImage, SITE_URL).href : OG_IMAGE,
-      ...(def.faqs ? { faqs: def.faqs } : {}),
+      ...(faqs ? { faqs } : {}),
       ...(def.path.startsWith("/services/") ? { schemaType: "Service" } : {}),
       ...(def.schemaType ? { schemaType: def.schemaType, entityName: def.entityName } : {}),
     };

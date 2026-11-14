@@ -822,6 +822,19 @@
       "evidence": "2026-10-03 local Vite + Cloudflare; synthetic data/MFA; normal route renders without page errors"
     },
     {
+      "path": "/:lang/locations/:area/:service",
+      "surface": "public",
+      "source": "src/routes/publicRoutes.tsx",
+      "loading": "Lazy route module and PublicRouteImageGate; localized page content renders without a CMS read",
+      "refresh": "Retain static page content; shared public queries refresh related link labels independently",
+      "navigation": "Preserve public chrome and ScrollToTop; localized links to the parent area, parent service and quote",
+      "editing": "N/A: read-only route; quote opens the existing quote page",
+      "acceptance": "NOT_MEASURED",
+      "samplePath": "/en/locations/kuala-lumpur/kitchen-renovation",
+      "component": "ServiceAreaPage",
+      "evidence": "2026-11-14: registered before preview acceptance"
+    },
+    {
       "path": "/:lang/locations/:slug",
       "surface": "public",
       "source": "src/routes/publicRoutes.tsx",

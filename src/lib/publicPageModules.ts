@@ -52,6 +52,7 @@ export const publicPageModules = {
   Blog: createPublicPageLoader(() => import("@/pages/Blog")),
   BlogDetail: createPublicPageLoader(() => import("@/pages/BlogDetail")),
   LocationPage: createPublicPageLoader(() => import("@/pages/LocationPage")),
+  ServiceAreaPage: createPublicPageLoader(() => import("@/pages/ServiceAreaPage")),
   LandingPage: createPublicPageLoader(() => import("@/pages/LandingPage")),
   CmsDynamicPage: createPublicPageLoader(() => import("@/pages/CmsDynamicPage")),
   Privacy: createPublicPageLoader(() => import("@/pages/Privacy")),
