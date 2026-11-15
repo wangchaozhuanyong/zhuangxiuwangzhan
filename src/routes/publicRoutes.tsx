@@ -26,6 +26,7 @@ const Quote = lazy(publicPageModules.Quote);
 const Blog = lazy(publicPageModules.Blog);
 const BlogDetail = lazy(publicPageModules.BlogDetail);
 const LocationPage = lazy(publicPageModules.LocationPage);
+const ServiceAreaPage = lazy(publicPageModules.ServiceAreaPage);
 const LandingPage = lazy(publicPageModules.LandingPage);
 const CmsDynamicPage = lazy(publicPageModules.CmsDynamicPage);
 const Privacy = lazy(publicPageModules.Privacy);
@@ -78,6 +79,7 @@ export const publicRoutes = (
     <Route path="/:lang/blog" element={withLanguageSync(<Blog />)} />
     <Route path="/:lang/blog/:slug" element={withLanguageSync(<Suspense fallback={<BlogArticleLoading />}><BlogDetail /></Suspense>)} />
     <Route path="/:lang/locations" element={withLanguageSync(<Locations />)} />
+    <Route caseSensitive path="/:lang/locations/:area/:service" element={withLanguageSync(<ServiceAreaPage />, publicPageModules.ServiceAreaPage)} />
     <Route path="/:lang/locations/:slug" element={withLanguageSync(<LocationPage />)} />
     <Route path="/:lang/landing/:slug" element={<LandingPageRoute />} />
     <Route path="/:lang/privacy" element={withLanguageSync(<Privacy />)} />
