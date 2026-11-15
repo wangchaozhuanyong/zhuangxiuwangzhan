@@ -1,0 +1,71 @@
+name: C1 preview read-only verification
+on:
+  push:
+    branches: [codex/c1-preview-recheck-20261115]
+    paths: [.github/workflows/c1-preview-recheck.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      C1_PREVIEW: https://7347379e.flashcast-website.pages.dev
+    steps:
+      - name: Check the Cloudflare preview responses
+        run: |
+          mkdir -p c1-evidence
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { writeFile } from 'node:fs/promises';
+          const cases = [{"path":"/en/locations/kuala-lumpur/kitchen-renovation","status":200,"title":"Kitchen Renovation Kuala Lumpur | FLASH CAST"},{"path":"/zh/locations/kuala-lumpur/kitchen-renovation","status":200,"title":"吉隆坡厨房装修｜定制橱柜｜FLASH CAST"},{"path":"/ms/locations/kuala-lumpur/kitchen-renovation","status":200,"title":"Pengubahsuaian Dapur Kuala Lumpur | FLASH CAST"},{"path":"/en/locations/kuala-lumpur/office-renovation","status":200,"title":"Office Renovation Kuala Lumpur | Fit-Out | FLASH CAST"},{"path":"/zh/locations/kuala-lumpur/office-renovation","status":200,"title":"吉隆坡办公室装修｜办公室精装｜FLASH CAST"},{"path":"/ms/locations/kuala-lumpur/office-renovation","status":200,"title":"Pengubahsuaian Pejabat KL | Fit-Out | FLASH CAST"},{"path":"/en/locations/kuala-lumpur/bathroom-renovation","status":200,"title":"Bathroom Renovation Kuala Lumpur | FLASH CAST"},{"path":"/zh/locations/kuala-lumpur/bathroom-renovation","status":200,"title":"吉隆坡浴室装修｜防水与暗管更换｜FLASH CAST"},{"path":"/ms/locations/kuala-lumpur/bathroom-renovation","status":200,"title":"Pengubahsuaian Bilik Air KL | FLASH CAST"},{"path":"/en/locations/petaling-jaya/condo-renovation","status":200,"title":"Condo Renovation Petaling Jaya | FLASH CAST"},{"path":"/zh/locations/petaling-jaya/condo-renovation","status":200,"title":"八打灵再也公寓装修｜管理处审批｜FLASH CAST"},{"path":"/ms/locations/petaling-jaya/condo-renovation","status":200,"title":"Pengubahsuaian Kondominium PJ | FLASH CAST"},{"path":"/en/locations/selangor/landed-house-renovation","status":200,"title":"Landed House Renovation Selangor | FLASH CAST"},{"path":"/zh/locations/selangor/landed-house-renovation","status":200,"title":"雪兰莪有地住宅装修｜排屋与洋房｜FLASH CAST"},{"path":"/ms/locations/selangor/landed-house-renovation","status":200,"title":"Pengubahsuaian Rumah Teres Selangor | FLASH CAST"},{"path":"/en/locations/kuala-lumpur/nonexistent","status":404},{"path":"/en/locations/nowhere/kitchen-renovation","status":404},{"path":"/en/locations/kuala-lumpur/kitchen-renovation/extra","status":404},{"path":"/en/locations/kuala-lumpur","status":200},{"path":"/zh/locations/kuala-lumpur","status":200},{"path":"/en/services/kitchen","status":200},{"path":"/zh/services/kitchen","status":200}];
+          const origin = process.env.C1_PREVIEW;
+          const fetchPreview = path => fetch(origin + path, { redirect: 'manual', signal: AbortSignal.timeout(12000) });
+          const results = [];
+          await fetchPreview(cases[0].path);
+          for (const item of cases) {
+            try {
+              const response = await fetchPreview(item.path);
+              const html = await response.text();
+              const title = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim();
+              const row = {path:item.path, status:response.status, title, expected:item.status, checks:[]};
+              if(response.status !== item.status) row.checks.push('unexpected HTTP status');
+              if(item.title) {
+                if(title !== item.title) row.checks.push('unexpected HTML title');
+                for(const schema of ['Service','FAQPage','BreadcrumbList']) {
+                  if(!new RegExp('"@type"\\s*:\\s*"'+schema+'"').test(html)) row.checks.push('missing '+schema);
+                }
+                for(const locale of ['en','zh-CN','ms-MY']) {
+                  if(!html.includes('hreflang="'+locale+'"')) row.checks.push('missing hreflang '+locale);
+                }
+                if(item.path.startsWith('/ms/') && /<meta[^>]+name="robots"[^>]+noindex/i.test(html)) row.checks.push('Malay HTML noindex');
+              }
+              results.push(row);
+            } catch(error) {
+              results.push({path:item.path, expected:item.status, checks:[String(error.cause || error)]});
+            }
+          }
+          const sitemapResponse = await fetchPreview('/sitemap.xml');
+          const sitemap = await sitemapResponse.text();
+          const missingSitemap = cases.filter(item => item.title && !sitemap.includes('<loc>https://flashcast.com.my'+item.path+'</loc>')).map(item => item.path);
+          const evidence = {origin, total:results.length, results, sitemapStatus:sitemapResponse.status, missingSitemap};
+          await writeFile('c1-evidence/cloudflare-http.json',JSON.stringify(evidence,null,2));
+          console.log(JSON.stringify(evidence,null,2));
+          assert.equal(results.filter(row=>row.checks.length).length,0);
+          assert.equal(sitemapResponse.status,200);
+          assert.equal(missingSitemap.length,0);
+          NODE
+      - name: Capture desktop and mobile screenshots
+        run: |
+          npx --yes --package=playwright@1.57.0 -- playwright screenshot --channel chrome --viewport-size="1440,960" --wait-for-selector="main h1" --timeout=20000 "$C1_PREVIEW/zh/locations/kuala-lumpur/kitchen-renovation" c1-evidence/C1_cloud_desktop.png
+          npx --yes --package=playwright@1.57.0 -- playwright screenshot --channel chrome --viewport-size="390,844" --wait-for-selector="main h1" --timeout=20000 "$C1_PREVIEW/zh/locations/kuala-lumpur/kitchen-renovation" c1-evidence/C1_cloud_mobile.png
+      - name: Keep the read-only verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c1-cloudflare-preview-verification
+          path: c1-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
