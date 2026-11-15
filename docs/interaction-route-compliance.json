@@ -829,10 +829,10 @@
       "refresh": "Retain static page content; shared public queries refresh related link labels independently",
       "navigation": "Preserve public chrome and ScrollToTop; localized links to the parent area, parent service and quote",
       "editing": "N/A: read-only route; quote opens the existing quote page",
-      "acceptance": "NOT_MEASURED",
+      "acceptance": "PASS_LOCAL_SIMULATED",
       "samplePath": "/en/locations/kuala-lumpur/kitchen-renovation",
       "component": "ServiceAreaPage",
-      "evidence": "2026-11-14: registered before preview acceptance"
+      "evidence": "2026-11-15 local C1 fixture from PR #318 (37a1e2df): 22 HTTP/HTML checks and 44 Chrome navigations at 1440px and 390px passed. Cloudflare preview results are recorded in PR #318."
     },
     {
       "path": "/:lang/locations/:slug",
