@@ -72,6 +72,7 @@ export default function ServiceAreaPage() {
         description={page.description}
         actions={<Link to={quotePath}>{copy.quote}<ArrowUpRight aria-hidden="true" /></Link>}
       />
+      <SchemeASection title={page.bodyHeading} description={page.body} children={null} />
       <SchemeASection title={copy.faqTitle(page.area)}>
         <SchemeAFaqList items={faqs} />
       </SchemeASection>

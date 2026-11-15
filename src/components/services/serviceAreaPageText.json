@@ -9,7 +9,12 @@
       "title": "Kitchen Renovation Kuala Lumpur | FLASH CAST",
       "description": "Kitchen renovation in Kuala Lumpur for condos and landed homes. Custom cabinets, wet and dry kitchen layout, quartz tops, plumbing and electrical coordination. Site visit and itemised quotation.",
       "keywords": "kitchen renovation kuala lumpur, kitchen cabinet kl, custom kitchen cabinet malaysia, wet kitchen dry kitchen",
-      "entityName": "Kitchen Renovation Kuala Lumpur"
+      "entityName": "Kitchen Renovation Kuala Lumpur",
+      "bodyHeading": "Check the layout before sizing cabinets",
+      "body": [
+        "For a Kuala Lumpur condo kitchen, start with the existing water supply, drainage, power points and extractor route. If your landed home has a wet and dry kitchen, decide where you will wash, prep and cook before settling on cabinet and worktop dimensions.",
+        "Send current photos, a floor plan or approximate measurements, and a list of appliances you want to keep. If the sink, sockets or extractor route may move, ask for those works to be itemised separately from cabinetry, worktops and installation. The final scope follows a site review and the written quotation."
+      ]
     },
     "zh": {
       "heading": "吉隆坡厨房装修",
@@ -20,7 +25,12 @@
       "title": "吉隆坡厨房装修｜定制橱柜｜FLASH CAST",
       "description": "吉隆坡公寓与有地住宅厨房装修。定制橱柜、干湿厨房布局、石英石台面、水电协调，含现场测量与分项报价。",
       "keywords": "吉隆坡厨房装修, 厨房橱柜定制, 干湿厨房, 全屋定制",
-      "entityName": "吉隆坡厨房装修"
+      "entityName": "吉隆坡厨房装修",
+      "bodyHeading": "橱柜定尺寸前先核对点位",
+      "body": [
+        "吉隆坡公寓的厨房可以先按现有给排水、电源和排烟位置来规划。需要兼顾干湿厨房的有地住宅，可先决定哪里洗切、哪里烹煮，以及备餐台和日常电器放在哪里，再确认柜体和台面的尺寸。",
+        "询价时，请提供现况照片、平面图或大致尺寸，并标出要保留的电器。若需要移动水槽、插座或排烟位置，可请我们在报价中把水电调整与柜体、台面及安装分别列清。实际做法以现场复核和书面报价为准。"
+      ]
     },
     "ms": {
       "heading": "Pengubahsuaian Dapur di Kuala Lumpur",
@@ -31,7 +41,12 @@
       "title": "Pengubahsuaian Dapur Kuala Lumpur | FLASH CAST",
       "description": "Pengubahsuaian dapur di Kuala Lumpur untuk kondominium dan rumah teres. Kabinet custom, susun atur dapur basah dan kering, permukaan kuarza, kerja paip dan elektrik. Lawatan tapak dan sebut harga terperinci.",
       "keywords": "pengubahsuaian dapur kuala lumpur, kabinet dapur kl, kabinet dapur custom malaysia",
-      "entityName": "Pengubahsuaian Dapur Kuala Lumpur"
+      "entityName": "Pengubahsuaian Dapur Kuala Lumpur",
+      "bodyHeading": "Semak susun atur sebelum menentukan saiz kabinet",
+      "body": [
+        "Untuk dapur kondominium di Kuala Lumpur, mulakan dengan menyemak bekalan air, saliran, soket dan laluan salur penyedut asap dapur sedia ada. Jika rumah bertanah anda mempunyai dapur basah dan dapur kering, tentukan ruang untuk membasuh, menyediakan bahan dan memasak sebelum menetapkan ukuran kabinet dan permukaan kerja.",
+        "Hantar gambar keadaan semasa, pelan lantai atau anggaran ukuran, serta senarai peralatan yang ingin dikekalkan. Jika sinki, soket atau salur penyedut asap mungkin perlu dialihkan, minta kerja berkenaan disenaraikan berasingan daripada kabinet, permukaan kerja dan pemasangan. Skop akhir tertakluk pada semakan tapak dan sebut harga bertulis."
+      ]
     }
   },
   "/locations/kuala-lumpur/office-renovation": {
@@ -44,7 +59,12 @@
       "title": "Office Renovation Kuala Lumpur | Fit-Out | FLASH CAST",
       "description": "Office renovation and fit-out in Kuala Lumpur for shoplot offices, corporate suites and co-working spaces. Partition, ceiling, electrical, networking, air-conditioning and handover documentation.",
       "keywords": "office renovation kl, office fit out kuala lumpur, office interior design kl",
-      "entityName": "Office Renovation Kuala Lumpur"
+      "entityName": "Office Renovation Kuala Lumpur",
+      "bodyHeading": "Plan workspace use and building access",
+      "body": [
+        "For a Kuala Lumpur office fit-out, list headcount, equipment and network needs by reception area, meeting room and workstation. If the team will remain on site during the works, identify areas that must stay operational so the sequence and any downtime can be discussed early.",
+        "Send the floor plan, site photos and equipment list, along with the building's work hours, loading route and goods-lift arrangements. Compare quotations by checking partitions, lighting, power and data points, air-conditioning coordination and any handover documents. Mark the equipment your team will supply."
+      ]
     },
     "zh": {
       "heading": "吉隆坡办公室装修",
@@ -55,7 +75,12 @@
       "title": "吉隆坡办公室装修｜办公室精装｜FLASH CAST",
       "description": "吉隆坡店铺办公室、企业办公室与共享空间的装修与精装。隔墙、天花、电气、网络、空调与交付文件。",
       "keywords": "吉隆坡办公室装修, 办公室设计装修, 商业空间装修",
-      "entityName": "吉隆坡办公室装修"
+      "entityName": "吉隆坡办公室装修",
+      "bodyHeading": "先确认办公需求和进场条件",
+      "body": [
+        "在吉隆坡规划办公室装修时，可先按接待区、会议室和工位列出人数、设备和网络需求。若团队会在施工期间继续使用办公室，请标出必须维持运作的区域，再讨论施工顺序和可行的停用时段。",
+        "把平面图、现场照片和设备清单发给我们，并补充大楼允许的施工时间、进场路线和货梯安排。比较报价时，可逐项确认隔墙、照明、电源与网络点、空调配合及交付文件，并注明哪些设备由你方提供。"
+      ]
     },
     "ms": {
       "heading": "Pengubahsuaian Pejabat di Kuala Lumpur",
@@ -66,7 +91,12 @@
       "title": "Pengubahsuaian Pejabat KL | Fit-Out | FLASH CAST",
       "description": "Pengubahsuaian dan fit-out pejabat di Kuala Lumpur untuk pejabat shoplot, suite korporat dan ruang kerja bersama. Partition, siling, elektrik, rangkaian, penghawa dingin dan dokumentasi serahan.",
       "keywords": "pengubahsuaian pejabat kl, fit out pejabat kuala lumpur, pengubahsuaian komersial kl",
-      "entityName": "Pengubahsuaian Pejabat Kuala Lumpur"
+      "entityName": "Pengubahsuaian Pejabat Kuala Lumpur",
+      "bodyHeading": "Rancang penggunaan ruang dan akses bangunan",
+      "body": [
+        "Untuk pengubahsuaian pejabat di Kuala Lumpur, senaraikan bilangan pengguna, peralatan dan keperluan rangkaian bagi ruang lobi, bilik mesyuarat dan ruang kerja. Jika pasukan anda masih bekerja di pejabat semasa pengubahsuaian, tandakan ruang yang mesti kekal beroperasi supaya urutan kerja dan tempoh gangguan boleh dibincangkan lebih awal.",
+        "Hantar pelan lantai, gambar tapak dan senarai peralatan bersama waktu kerja yang dibenarkan, laluan penghantaran dan aturan lif barang. Semasa membandingkan sebut harga, semak skop dinding pemisah, pencahayaan, titik kuasa dan data, penyelarasan penyaman udara serta dokumen serahan. Nyatakan peralatan yang dibekalkan oleh pihak anda."
+      ]
     }
   },
   "/locations/kuala-lumpur/bathroom-renovation": {
@@ -79,7 +109,12 @@
       "title": "Bathroom Renovation Kuala Lumpur | FLASH CAST",
       "description": "Bathroom and toilet renovation in Kuala Lumpur. Waterproofing, re-tiling, sanitary ware, shower screen, ventilation and concealed plumbing replacement with ponding test records.",
       "keywords": "bathroom renovation kl, toilet renovation kuala lumpur, waterproofing malaysia",
-      "entityName": "Bathroom Renovation Kuala Lumpur"
+      "entityName": "Bathroom Renovation Kuala Lumpur",
+      "bodyHeading": "Plan around leaks and daily use",
+      "body": [
+        "If you notice a bathroom leak, record where it appears, when you first saw it and whether it follows showering or other water use. Photograph the floor drain, wall-to-floor junctions and affected areas. Let us know if you have another working bathroom so access and daily use can be discussed before work starts.",
+        "After the site review, ask for demolition, plumbing, waterproofing, tiling and fittings to be listed separately. Confirm what can stay in place, whether concealed pipes need replacement, and whether the agreed scope includes a ponding test and its record."
+      ]
     },
     "zh": {
       "heading": "吉隆坡浴室装修",
@@ -90,7 +125,12 @@
       "title": "吉隆坡浴室装修｜防水与暗管更换｜FLASH CAST",
       "description": "吉隆坡浴室与厕所翻新。防水、重铺砖、洁具、淋浴隔断、通风与暗管更换，含闭水测试记录。",
       "keywords": "吉隆坡浴室装修, 厕所翻新, 防水工程",
-      "entityName": "吉隆坡浴室装修"
+      "entityName": "吉隆坡浴室装修",
+      "bodyHeading": "翻新前核对漏水和使用安排",
+      "body": [
+        "如果浴室出现渗水，请记录水迹的位置、出现时间，以及与洗澡或用水的关系。拍下地漏、墙地交接处和受影响区域，并说明家里是否有另一间可用的浴室。这些资料有助于安排现场检查和讨论施工期间的使用安排。",
+        "现场确认后，可请我们在书面报价中分列拆除、管道、防水、铺砖和洁具。保留哪些洁具、是否需要更换暗管、是否包含闭水测试和记录，应随现场评估一并确认。"
+      ]
     },
     "ms": {
       "heading": "Pengubahsuaian Bilik Air di Kuala Lumpur",
@@ -101,7 +141,12 @@
       "title": "Pengubahsuaian Bilik Air KL | FLASH CAST",
       "description": "Pengubahsuaian bilik air dan tandas di Kuala Lumpur. Kalis air, jubin baharu, saniteri, skrin mandi, pengudaraan dan penggantian paip tersembunyi dengan rekod ujian takungan air.",
       "keywords": "pengubahsuaian bilik air kl, pengubahsuaian tandas kuala lumpur, kalis air malaysia",
-      "entityName": "Pengubahsuaian Bilik Air Kuala Lumpur"
+      "entityName": "Pengubahsuaian Bilik Air Kuala Lumpur",
+      "bodyHeading": "Semak kebocoran dan penggunaan harian",
+      "body": [
+        "Jika bilik air menunjukkan tanda kebocoran, catat lokasi kesan air, bila ia mula kelihatan dan sama ada ia berlaku selepas mandi atau penggunaan air yang lain. Ambil gambar perangkap lantai, sambungan dinding dengan lantai dan kawasan yang terjejas. Maklumkan jika ada bilik air lain yang boleh digunakan sepanjang kerja.",
+        "Selepas semakan tapak, minta kerja perobohan, paip, kalis air, pemasangan jubin dan kelengkapan disenaraikan berasingan. Sahkan kelengkapan yang boleh dikekalkan, sama ada paip tersembunyi perlu diganti, dan sama ada skop yang dipersetujui merangkumi ujian takungan air serta rekodnya."
+      ]
     }
   },
   "/locations/petaling-jaya/condo-renovation": {
@@ -114,7 +159,12 @@
       "title": "Condo Renovation Petaling Jaya | FLASH CAST",
       "description": "Condo and apartment renovation in Petaling Jaya. Layout changes, carpentry, flooring, electrical, air-conditioning and JMB or MC management approval coordination for PJ condos.",
       "keywords": "condo renovation petaling jaya, apartment renovation pj, renovation contractor petaling jaya",
-      "entityName": "Condo Renovation Petaling Jaya"
+      "entityName": "Condo Renovation Petaling Jaya",
+      "bodyHeading": "Check the building's renovation requirements",
+      "body": [
+        "Before renovating a Petaling Jaya condo, ask the management office about application documents, working hours, service-lift bookings and protection for common areas. Keep those instructions with the unit plan so delivery and work sequencing can be discussed against the building's requirements.",
+        "Mark any partitions, flooring, storage, power, plumbing and air-conditioning points you want to change, plus the fittings you want to retain. Use that list for the quotation and flag any items still awaiting management or site confirmation. Requirements depend on your building and the actual unit."
+      ]
     },
     "zh": {
       "heading": "八打灵再也公寓装修",
@@ -125,7 +175,12 @@
       "title": "八打灵再也公寓装修｜管理处审批｜FLASH CAST",
       "description": "八打灵再也公寓与共管公寓装修。格局改动、木作、地面、电气、空调，以及 JMB 或 MC 管理处审批协调。",
       "keywords": "八打灵再也公寓装修, 公寓翻新 pj, 八打灵再也装修公司",
-      "entityName": "八打灵再也公寓装修"
+      "entityName": "八打灵再也公寓装修",
+      "bodyHeading": "先向管理处确认施工安排",
+      "body": [
+        "装修八打灵再也的公寓前，可向管理处确认申请材料、可施工时段、订用货梯以及公共区域保护的要求。把这些要求和单位平面图放在一起，有助于安排材料进场，也能及早发现影响施工顺序的条件。",
+        "请标出想调整的隔间、地面、收纳、水电和空调位置，以及希望保留的设施。询价时可先确认施工项目，再列出有待管理处或现场核实的事项。具体要求以该楼管理方回复及现场评估为准。"
+      ]
     },
     "ms": {
       "heading": "Pengubahsuaian Kondominium di Petaling Jaya",
@@ -136,7 +191,12 @@
       "title": "Pengubahsuaian Kondominium PJ | FLASH CAST",
       "description": "Pengubahsuaian kondominium dan apartmen di Petaling Jaya. Ubah susun atur, kerja kayu, lantai, elektrik, penghawa dingin dan penyelarasan kelulusan JMB atau MC.",
       "keywords": "pengubahsuaian kondominium pj, pengubahsuaian apartment petaling jaya, kontraktor pengubahsuaian petaling jaya",
-      "entityName": "Pengubahsuaian Kondominium Petaling Jaya"
+      "entityName": "Pengubahsuaian Kondominium Petaling Jaya",
+      "bodyHeading": "Semak syarat pengubahsuaian bangunan",
+      "body": [
+        "Sebelum mengubah suai kondominium di Petaling Jaya, tanya pejabat pengurusan tentang dokumen permohonan, waktu kerja, tempahan lif barang dan perlindungan kawasan umum. Simpan arahan itu bersama pelan unit supaya penghantaran bahan dan urutan kerja boleh dibincangkan mengikut keadaan bangunan.",
+        "Tandakan dinding pemisah, lantai, ruang simpanan, titik elektrik, paip dan kedudukan penyaman udara yang ingin diubah. Sertakan kelengkapan yang ingin dikekalkan. Gunakan senarai itu untuk sebut harga dan nyatakan perkara yang masih memerlukan pengesahan daripada pihak pengurusan atau semakan tapak."
+      ]
     }
   },
   "/locations/selangor/landed-house-renovation": {
@@ -149,7 +209,12 @@
       "title": "Landed House Renovation Selangor | FLASH CAST",
       "description": "Landed house renovation across Selangor: terrace, semi-D and bungalow. Extension, layout reconfiguration, full house wiring and plumbing, wet works and local council approval guidance.",
       "keywords": "landed house renovation selangor, terrace house renovation selangor, bungalow renovation kl",
-      "entityName": "Landed House Renovation Selangor"
+      "entityName": "Landed House Renovation Selangor",
+      "bodyHeading": "Define layout changes and any extension",
+      "body": [
+        "If you are planning to renovate a terrace house, semi-detached home or bungalow in Selangor, mark the rooms you want to change and any proposed extension on the existing floor plan. For work beyond the current building footprint, check what drawings and approvals the relevant local authority expects before discussing the work scope.",
+        "Share your neighbourhood, current photos, and the rooms or fittings you want to keep. Review layout changes, wiring, plumbing, wet works and reinstatement separately so the quotation can identify confirmed work and items awaiting inspection. Site visits, scope and timing depend on the address and site conditions."
+      ]
     },
     "zh": {
       "heading": "雪兰莪有地住宅装修",
@@ -160,7 +225,12 @@
       "title": "雪兰莪有地住宅装修｜排屋与洋房｜FLASH CAST",
       "description": "雪兰莪排屋、半独立式与独立洋房装修。扩建、格局重划、全屋水电、泥水工程与地方政府图测审批指引。",
       "keywords": "雪兰莪有地住宅装修, 排屋装修 雪兰莪, 洋房装修",
-      "entityName": "雪兰莪有地住宅装修"
+      "entityName": "雪兰莪有地住宅装修",
+      "bodyHeading": "先确认格局调整与扩建范围",
+      "body": [
+        "如果你计划翻新雪兰莪的排屋、半独立式住宅或独立屋，请在原平面图上标出想改动的室内区域和计划扩建的位置。涉及外部范围时，可以先确认当地主管部门要求什么图纸和审批，再与我们讨论相应的工作范围。",
+        "请提供所在地区、现况照片和要保留的房间或设施。评估时可把格局调整、布线、管道、湿作业和复原分别列项，便于确认哪些须先检查和哪些已计入报价。上门安排、范围和工期以实际地点及现场条件为准。"
+      ]
     },
     "ms": {
       "heading": "Pengubahsuaian Rumah Bertanah di Selangor",
@@ -171,7 +241,12 @@
       "title": "Pengubahsuaian Rumah Teres Selangor | FLASH CAST",
       "description": "Pengubahsuaian rumah teres di Selangor: teres, semi-D dan banglo. Sambungan, ubah susun atur, pendawaian dan paip seluruh rumah, kerja basah dan panduan kelulusan pihak berkuasa tempatan.",
       "keywords": "pengubahsuaian rumah teres selangor, pengubahsuaian banglo kl, pengubahsuaian semi-d selangor",
-      "entityName": "Pengubahsuaian Rumah Teres Selangor"
+      "entityName": "Pengubahsuaian Rumah Teres Selangor",
+      "bodyHeading": "Tentukan perubahan susun atur dan tambahan ruang",
+      "body": [
+        "Jika anda merancang pengubahsuaian rumah teres, rumah berkembar atau banglo di Selangor, tandakan ruang yang ingin diubah dan cadangan tambahan ruang pada pelan lantai sedia ada. Untuk kerja yang melibatkan tambahan di luar bangunan asal, semak keperluan lukisan dan kelulusan dengan pihak berkuasa tempatan sebelum membincangkan skop kerja.",
+        "Maklumkan kawasan tempat rumah anda berada, gambar semasa, serta ruang atau kelengkapan yang ingin dikekalkan. Semak perubahan susun atur, pendawaian, paip, kerja basah dan kerja pemulihan secara berasingan supaya sebut harga dapat menunjukkan kerja yang telah dikenal pasti dan perkara yang masih menunggu pemeriksaan. Lawatan tapak, skop dan jadual tertakluk pada alamat serta keadaan sebenar tapak."
+      ]
     }
   }
 }

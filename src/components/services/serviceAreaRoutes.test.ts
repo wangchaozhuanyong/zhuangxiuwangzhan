@@ -65,6 +65,14 @@ describe("C1 service and area routes", () => {
       expect(html).not.toMatch(/name="robots" content="noindex/);
       for (const schema of ["Service", "FAQPage", "BreadcrumbList"]) expect(html).toContain('"@type":"' + schema + '"');
       expect(html).toContain(expected.question.replace(/&/g, "\\u0026"));
+
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const readable = doc.querySelector("noscript[data-flashcast-geo-summary] [data-flashcast-readable-body]");
+      expect(readable?.querySelector("h1")?.textContent).toBe(expected.heading);
+      const overview = readable?.querySelector("section");
+      expect(overview?.querySelector("h2")?.textContent).toBe(expected.bodyHeading);
+      expect(Array.from(overview?.querySelectorAll("p") ?? [], node => node.textContent)).toEqual(expected.body);
+      expect(readable?.querySelector("section:last-child h3")?.textContent).toBe(expected.question);
     },
   );
 
@@ -75,7 +83,9 @@ describe("C1 service and area routes", () => {
   ])("returns HTTP 404 for %s", async (path) => {
     const response = await readEdge(path);
     expect(response.status).toBe(404);
-    expect(await response.text()).toContain('name="robots" content="noindex, nofollow"');
+    const html = await response.text();
+    expect(html).toContain('name="robots" content="noindex, nofollow"');
+    expect(html).not.toContain("data-flashcast-readable-body");
   });
 
   it.each([

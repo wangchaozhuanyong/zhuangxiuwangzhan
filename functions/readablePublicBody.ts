@@ -1,3 +1,4 @@
+import serviceAreaPageText from "../src/components/services/serviceAreaPageText.json";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
 import { getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
@@ -7,7 +8,9 @@ import { getMaterialSubcategoryGuidance } from "../src/i18n/materialSubcategoryG
 import { servicesPageText } from "../src/i18n/servicesPageText";
 import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
+import { locationPageText } from "../src/i18n/locationPageText";
 import { isServiceConceptImage } from "../src/lib/serviceMedia";
+import { findServiceAreaRoute } from "../src/lib/serviceAreaRoutes";
 import { quotePageText } from "../src/i18n/quotePageText";
 import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText } from "../src/i18n/furnitureText";
 import { furnitureListingPagePath, furnitureProductPath, localizeFurnitureProduct, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
@@ -123,11 +126,20 @@ function buildReviewedCta(path: string, lang: "en" | "zh" | "ms", identity?: Rea
 
 export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined, identity?: ReadableContactIdentity | null) {
   const match = key.match(/^\/(en|zh|ms)(\/.*)$/);
-  const reviewedOffice = key === "/en/services/office-renovation";
-  const reviewedSelangor = match?.[2] === "/locations/selangor";
-  if (!match || (!reviewedOffice && !reviewedSelangor && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
+  if (!match) return "";
   const lang = match[1] as "en" | "zh" | "ms";
   const path = match[2];
+  const serviceAreaPath = path.match(/^\/locations\/([^/]+)\/([^/]+)$/);
+  const serviceArea = serviceAreaPath && findServiceAreaRoute(serviceAreaPath[1], serviceAreaPath[2]);
+  if (serviceArea) {
+    const page = serviceAreaPageText[serviceArea.path][lang];
+    const overview = `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(paragraph).join("")}</section>`;
+    const faq = `<section><h2>${escape(locationPageText[lang].faqTitle(page.area))}</h2><h3>${escape(page.question)}</h3>${paragraph(page.answer)}</section>`;
+    return wrapBody(`<h1>${escape(page.heading)}</h1>${paragraph(page.description)}${overview}${faq}`, lang);
+  }
+  const reviewedOffice = key === "/en/services/office-renovation";
+  const reviewedSelangor = path === "/locations/selangor";
+  if ((!reviewedOffice && !reviewedSelangor && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
   if (row.slug !== path.split("/").pop()) return "";
   const field = (base: string) => row[`${base}_${lang}`];
   const title = plain(field("title"));
