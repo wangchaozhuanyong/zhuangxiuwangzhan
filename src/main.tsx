@@ -4,8 +4,12 @@ import "./index.css";
 import { consumePendingChunkRecoveryLog, installChunkLoadRecovery } from "@/lib/chunkLoadRecovery";
 import { registerOfflineFallback } from "@/lib/offlineFallback";
 import { captureInquirySources } from "@/lib/inquirySource";
+import { captureInquiryLanding } from "@/lib/inquiryLanding";
+import { getDefaultLanguage, getLanguageFromPath } from "@/i18n/routes";
 
 captureInquirySources(true);
+const entryPath = window.location.pathname;
+captureInquiryLanding(entryPath, getLanguageFromPath(entryPath) ?? getDefaultLanguage());
 installChunkLoadRecovery();
 registerOfflineFallback();
 const pendingChunkRecoveryLog = consumePendingChunkRecoveryLog();

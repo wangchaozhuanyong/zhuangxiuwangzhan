@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
 import Link from "@/components/LocalizedLink";
+import LandingQuoteForm from "@/components/landing/LandingQuoteForm";
 import PageMeta from "@/components/PageMeta";
 import { SchemeAFaqList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import pageText from "@/components/services/serviceAreaPageText.json";
@@ -75,6 +76,9 @@ export default function ServiceAreaPage() {
       <SchemeASection title={page.bodyHeading} description={page.body} children={null} />
       <SchemeASection title={copy.faqTitle(page.area)}>
         <SchemeAFaqList items={faqs} />
+      </SchemeASection>
+      <SchemeASection className="fc-service-area-enquiry">
+        <LandingQuoteForm key={route.path} landingTitle={page.heading} serviceEnquiry />
       </SchemeASection>
       <SchemeASection>
         <nav className="fc-route-related-links" aria-label={copy.resourceTitle(page.area)}>

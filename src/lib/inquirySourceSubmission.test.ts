@@ -18,9 +18,16 @@ afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 describe("existing submit-lead offline wire compatibility", () => {
   it.each([
     ["contact", "/en/contact"], ["quote", "/zh/quote"], ["quote", "/ms/landing/synthetic-campaign"],
+    ["quote", "/en/locations/kuala-lumpur/kitchen-renovation"],
   ])("bounds actual %s wire payload from %s without changing retries or guard fields", async (type, route) => {
-    window.history.replaceState({}, "", "/en?utm_source=chatgpt&utm_medium=cpc");
+    const sourcePage = "locations/kuala-lumpur/kitchen-renovation";
+    const landing = route === "/zh/quote" || route === `/en/${sourcePage}`;
+    window.history.replaceState({}, "", (landing ? `/en/${sourcePage}` : "/en") + "?utm_source=chatgpt&utm_medium=cpc");
     const source = await import("./inquirySource"); source.captureInquirySources(true);
+    if (landing) {
+      const entry = await import("./inquiryLanding");
+      entry.captureInquiryLanding(window.location.pathname, "en");
+    }
     const service = await import("@/backend/modules/leads/service/leadService");
     window.history.replaceState({}, "", route);
     const sourcePath = route + "?source=service&title=" + encodeURIComponent("全屋定制".repeat(100)) + "&gclid=DO_NOT_SAVE&email=DO_NOT_SAVE";
@@ -30,6 +37,9 @@ describe("existing submit-lead offline wire compatibility", () => {
     const first = wire.invoke.mock.calls[0][0], second = wire.invoke.mock.calls[1][0];
     expect(first.type).toBe(type); expect(first.sourcePath.length).toBeLessThanOrEqual(300);
     expect(first.sourcePath).not.toMatch(/gclid|email|DO_NOT_SAVE/);
+    const params = new URL(first.sourcePath, "https://fixture.invalid").searchParams;
+    expect(params.get("source_page")).toBe(landing ? sourcePage : null);
+    expect(params.get("source_lang")).toBe(landing ? "en" : null);
     expect(readInquirySources(first.sourcePath).last).toBe("chatgpt_paid");
     expect(first.submissionId).toMatch(/^[a-f0-9-]{36}$/); expect(second.submissionId).toBe(first.submissionId);
     expect(first.website).toBe(""); expect(first.startedAt).toBe(payload.startedAt); expect(first.elapsedMs).toBeGreaterThanOrEqual(5000);

@@ -13,11 +13,13 @@ import { trackQuoteFormSubmit } from "@/lib/analytics";
 import { submitQuoteRequest } from "@/lib/leadApi";
 import { isValidLeadPhone, localizeLeadFormErrors } from "@/lib/leadValidation";
 import { preloadTurnstile } from "@/lib/turnstile";
+import { parseQuoteContext } from "@/lib/quoteContext";
 
 
 
 type LandingQuoteFormProps = {
   landingTitle: string;
+  serviceEnquiry?: boolean;
 };
 
 type FieldErrors = Partial<Record<"name" | "phone" | "projectType" | "location", "formRequired" | "formPhoneInvalid">>;
@@ -29,7 +31,7 @@ const fieldIds = {
   location: "landing-quote-location",
 } as const;
 
-const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
+const LandingQuoteForm = ({ landingTitle, serviceEnquiry }: LandingQuoteFormProps) => {
   const { language } = useLanguage();
   const t = landingPageText[language];
   const formGuard = useFormGuard();
@@ -88,7 +90,9 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
         phone: submitted.phone,
         projectType: submitted.projectType,
         location: submitted.location,
-        details: language === "ms" ? malayFormat("Campaign enquiry: __FC0__", [landingTitle]) : (language === "zh" ? `推广页面咨询：${landingTitle}` : `Campaign enquiry: ${landingTitle}`),
+        details: serviceEnquiry
+          ? parseQuoteContext(new URLSearchParams({ source: "service", title: landingTitle }), language).details
+          : language === "ms" ? malayFormat("Campaign enquiry: __FC0__", [landingTitle]) : (language === "zh" ? `推广页面咨询：${landingTitle}` : `Campaign enquiry: ${landingTitle}`),
         sourcePath: `${window.location.pathname}${window.location.search}`,
         website: honeypot,
         startedAt: formGuard.startedAt,
