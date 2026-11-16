@@ -5184,6 +5184,18 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "1600": 1536
     }
   },
+  "/images/services/digital-lock.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
   "/images/services/exterior-works.webp": {
     "width": 1200,
     "height": 900,

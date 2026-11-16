@@ -142,7 +142,8 @@ const AdminLeadList = () => {
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <Link to={`/admin/leads/${lead.id}`} className="min-w-0 flex-1">
                   <p className="break-words font-semibold">{lead.name || "-"} · {lead.phone || "-"}</p>
-                  <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground">{translateStatusLabel("leads", lead.status || "new", lang)} · {formatSourcePath(lead.source_path, lang)} · {new Date(lead.created_at).toLocaleString("zh-CN")}</p>
+                  <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground">{translateStatusLabel("leads", lead.status || "new", lang)} · {new Date(lead.created_at).toLocaleString("zh-CN")}</p>
+                  <p data-lead-source className="break-words text-xs leading-relaxed text-muted-foreground">{formatSourcePath(lead.source_path, lang)}</p>
                   {badges.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
                       {badges.map((badge) => (

@@ -59,7 +59,7 @@ export default function ServiceDetail() {
   const title = display(service.title);
   const imageAlt = display(service.imageAlt || service.title);
   const conceptLabel = isServiceConceptImage(imageAlt) ? mediaLabels[language].renderingConcept : "";
-  const mediaDisclosure = isAiServiceConceptImage(service.image) ? mediaLabels[language].aiConceptDisclosure : undefined;
+  const mediaDisclosure = isAiServiceConceptImage(service.image) ? mediaLabels[language].renderingConcept : undefined;
   const summary = display(service.summary);
   const rawDescription = service.description || service.summary;
   const richDescription = isHtmlText(rawDescription) ? sanitizeServiceOverviewHtml(rawDescription, language) : "";
@@ -81,7 +81,7 @@ export default function ServiceDetail() {
       description: display(item.summary),
       image: item.image,
       imageAlt: relatedImageAlt,
-      mediaDisclosure: isAiServiceConceptImage(item.image) ? mediaLabels[language].aiConceptDisclosure : undefined,
+      mediaDisclosure: isAiServiceConceptImage(item.image) ? mediaLabels[language].renderingConcept : undefined,
       meta: isServiceConceptImage(relatedImageAlt) ? mediaLabels[language].renderingConcept : undefined,
       href: `/services/${item.slug}`,
     };

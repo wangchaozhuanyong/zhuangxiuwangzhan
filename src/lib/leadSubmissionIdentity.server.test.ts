@@ -6,6 +6,7 @@ import type { SubmitBody, SubmitLeadClient } from "../../supabase/functions/subm
 import { acceptanceSourcePath, FORMAL_LEAD_SOURCE_FILTER, isStoredLeadTest, LEAD_TESTS } from "../../supabase/functions/_shared/lead-test-contract";
 import { formatAdminSystemLogRow } from "@/lib/adminSystemLogDisplay";
 import type { SystemLogRow } from "@/backend/modules/system/service/systemEventService";
+import { buildInquirySourcePath } from "@/lib/inquirySourcePath";
 
 type Form = "contact" | "quote";
 type Row = Record<string, unknown> & { id: string };
@@ -75,6 +76,22 @@ beforeEach(() => {
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
 describe.each(["contact", "quote"] as const)("%s stable logical submission", type => {
+  it("persists and retries a service-area enquiry through the existing source field", async () => {
+    const state = memory();
+    const { captureInquiryLanding } = await import("@/lib/inquiryLanding");
+    captureInquiryLanding("/ms/locations/kuala-lumpur/kitchen-renovation", "ms");
+    const sourcePath = buildInquirySourcePath(`/zh/${type}?source=service`, { first: "google_paid", last: "google_organic" });
+    const body = { ...payload(type), sourcePath };
+    const result = await submitLead(request(), body, state.client);
+    const saved = state.rows[table(type)].get(result.body.id!);
+    expect(result.body).toEqual({ ok: true, id: expect.any(String) });
+    expect(saved?.source_path).toBe(
+      `/zh/${type}?inq_first=google_paid&inq_last=google_organic&source=service&source_page=locations%2Fkuala-lumpur%2Fkitchen-renovation&source_lang=ms`,
+    );
+    expect((await submitLead(request(), body, state.client)).body).toEqual({ ok: true, id: result.body.id, deduplicated: true });
+    expect(state.calls).toMatchObject({ limits: 1, inserts: 1, notifications: 1 });
+  });
+
   it.each(["zh", "en", "ms"])("deduplicates %s form retries without repeating notification", async language => {
     const state = memory();
     const body = { ...payload(type), sourcePath: `/${language}/${type}` };

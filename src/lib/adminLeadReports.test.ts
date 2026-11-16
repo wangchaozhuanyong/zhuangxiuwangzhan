@@ -4,8 +4,23 @@ import {
   getAdminLeadReportStartIso,
   normalizeAdminLeadReportPeriod,
 } from "@/lib/adminLeadReports";
+import { formatSourcePath } from "@/lib/leadSourceText";
 
 describe("adminLeadReports", () => {
+  it("groups translated enquiry titles by the same landing page across both forms", () => {
+    const source = "source=service&source_page=locations%2Fkuala-lumpur%2Fkitchen-renovation";
+    const contact = `/en/contact?${source}&source_lang=en`;
+    const quote = `/zh/quote?${source}&source_lang=zh&title=Kitchen+translation`;
+    const report = buildAdminLeadReport({
+      language: "zh", period: "all",
+      leads: [{ id: "lead", source_path: contact }],
+      quotes: [{ id: "quote", source_path: quote }],
+    });
+    expect(report.sourceRows).toHaveLength(1);
+    expect(report.sourceRows[0]).toMatchObject({ leads: 1, quotes: 1, sourceType: "service" });
+    expect(report.sourceRows[0].label).toContain("吉隆坡厨房装修");
+    expect(formatSourcePath(contact, "ms")).toContain("Pengubahsuaian Dapur di Kuala Lumpur");
+  });
   it("recognizes the source stored by the contact submission backend", () => {
     const report = buildAdminLeadReport({
       language: "zh", period: "all", quotes: [],

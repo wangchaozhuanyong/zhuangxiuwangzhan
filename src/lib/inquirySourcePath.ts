@@ -1,4 +1,5 @@
 import { currentInquirySources, INQUIRY_CHANNELS, type InquiryChannel, type InquirySources } from "./inquirySource";
+import { currentInquiryLanding, isDirectServiceAreaQuotePath } from "./inquiryLanding";
 
 const unknown = (): InquirySources => ({ first: "unknown", last: "unknown" });
 const isChannel = (v: unknown): v is InquiryChannel => INQUIRY_CHANNELS.includes(v as InquiryChannel);
@@ -23,7 +24,8 @@ export function buildInquirySourcePath(input: string, sources = currentInquirySo
   try { url = new URL(input, "https://flashcast.invalid"); } catch { url = new URL("/", "https://flashcast.invalid"); }
   const internalTest = /^\/__internal_test__\/[A-Za-z0-9_/-]{1,180}$/.test(url.pathname);
   if (internalTest) return url.pathname; // The existing server rejects client-supplied stored TEST paths.
-  const pathname = /^\/(?:zh|en|ms)\/(?:contact|quote|landing\/[a-z0-9-]{1,80})\/?$/i.test(url.pathname) ? url.pathname : "/";
+  const knownForm = /^\/(?:zh|en|ms)\/(?:contact|quote|landing\/[a-z0-9-]{1,80})\/?$/i.test(url.pathname) || isDirectServiceAreaQuotePath(url.pathname);
+  const pathname = knownForm ? url.pathname : "/";
   const p = new URLSearchParams();
   p.set("inq_first", isChannel(sources.first) ? sources.first : "unknown");
   p.set("inq_last", isChannel(sources.last) ? sources.last : "unknown");
@@ -33,6 +35,11 @@ export function buildInquirySourcePath(input: string, sources = currentInquirySo
   const source = url.searchParams.get("source") || "";
   const hasSiteContext = contextSources.test(source);
   if (hasSiteContext) p.set("source", source);
+  const landing = knownForm ? currentInquiryLanding() : null;
+  if (landing) {
+    p.set("source_page", landing.page);
+    p.set("source_lang", landing.language);
+  }
   for (const key of hasSiteContext ? ["title", "context", "projectType"] : []) {
     let value = safeContext(url.searchParams.get(key) || "");
     while (value) {

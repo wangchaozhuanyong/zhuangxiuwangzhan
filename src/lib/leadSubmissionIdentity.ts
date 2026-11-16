@@ -1,4 +1,5 @@
 import { isLeadTestPage } from "@/lib/leadTest";
+import { isDirectServiceAreaQuotePath } from "@/lib/inquiryLanding";
 
 type LeadType = "quote" | "contact";
 type SubmissionIdentity = { submissionId: string; fingerprint: string; createdAt: number };
@@ -12,7 +13,9 @@ export async function getLeadSubmissionId(type: LeadType, sourcePath: string, fi
   if (typeof window === "undefined" || isLeadTestPage(sourcePath)) return undefined;
   const pathname = sourcePath.split("?")[0] ?? "";
   const directForm = /^\/(en|zh|ms)\/(quote|contact)\/?$/.exec(pathname);
-  const landingQuote = type === "quote" && /^\/(en|zh|ms)\/landing\/[^/]+\/?$/.test(pathname);
+  const landingQuote = type === "quote" && (
+    /^\/(en|zh|ms)\/landing\/[^/]+\/?$/.test(pathname) || isDirectServiceAreaQuotePath(pathname)
+  );
   if (directForm?.[2] !== type && !landingQuote) return undefined;
   const canonical = JSON.stringify([type, sourcePath, Object.keys(fields).sort().map((key) => [key, fields[key] || ""])]);
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));

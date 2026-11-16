@@ -57,7 +57,7 @@ export default function Services() {
       meta: [copy.groups[groupForService(service.slug)].short, conceptLabel].filter(Boolean).join(" · "),
       image,
       imageAlt,
-      mediaDisclosure: isAiServiceConceptImage(image) ? mediaLabels[language].aiConceptDisclosure : undefined,
+      mediaDisclosure: isAiServiceConceptImage(image) ? mediaLabels[language].renderingConcept : undefined,
       href: `/services/${service.slug}`,
     };
   }), [copy.groups, language, visible]);
