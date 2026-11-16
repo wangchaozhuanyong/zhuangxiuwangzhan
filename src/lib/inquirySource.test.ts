@@ -3,6 +3,44 @@ import { classifyInquirySource, mergeInquirySources } from "./inquirySource";
 import { buildInquirySourcePath, readInquirySources } from "./inquirySourcePath";
 import { readLeadTest, isEnglishAcceptancePage } from "../../supabase/functions/_shared/lead-test-contract";
 import { formatSourcePath } from "./leadSourceText";
+
+describe("service landing attribution", () => {
+  it("keeps the first localized page through another page, language changes and reload", async () => {
+    const firstPage = "/en/locations/kuala-lumpur/kitchen-renovation";
+    vi.resetModules();
+    const entry = await import("./inquiryLanding");
+    entry.captureInquiryLanding(firstPage, "en");
+    entry.captureInquiryLanding("/ms/services/renovation", "ms");
+    vi.resetModules();
+    const reloaded = await import("./inquiryLanding");
+    reloaded.captureInquiryLanding("/ms/quote", "ms");
+    const { buildInquirySourcePath: serialize } = await import("./inquirySourcePath");
+    const stored = new URL(serialize("/ms/quote?title=Different+title"), "https://fixture.invalid");
+    expect(stored.pathname).toBe("/ms/quote");
+    expect(stored.searchParams.get("source_page")).toBe(firstPage.replace(/^\/en\//, ""));
+    expect(stored.searchParams.get("source_lang")).toBe("en");
+  });
+
+  it.each(["/en/quote", "/en/contact"])("keeps the legacy fallback when the tab starts at %s", async (formPath) => {
+    vi.resetModules();
+    const entry = await import("./inquiryLanding");
+    entry.captureInquiryLanding(formPath, "en");
+    entry.captureInquiryLanding("/zh/services/kitchen", "zh");
+    const { buildInquirySourcePath: serialize } = await import("./inquirySourcePath");
+    expect(serialize(formPath, { first: "unknown", last: "unknown" })).toBe(formPath + "?inq_first=unknown&inq_last=unknown");
+  });
+
+  it.each([
+    ["https://private.example.invalid", "en"],
+    ["en/services/painting", "en"],
+    ["services/painting", "invalid"],
+    ["locations/unknown/painting", "zh"],
+  ])("discards untrusted landing metadata %s (%s)", (page, language) => {
+    const input = "/en/quote?" + new URLSearchParams({ source: "service", source_page: page, source_lang: language });
+    const stored = buildInquirySourcePath(input, { first: "unknown", last: "unknown" });
+    expect(stored).not.toMatch(/source_page|source_lang/);
+  });
+});
 import { buildAdminLeadReport } from "./adminLeadReports";
 import { resolveSiteSettings } from "./siteSettingsApi";
 import { withInquiryWhatsAppHref } from "./contactLinks";

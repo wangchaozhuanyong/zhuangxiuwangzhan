@@ -2,7 +2,9 @@ import type { BilingualLanguage as Language } from "@/i18n/languageDetection";
 import { translateProjectType } from "@/i18n/displayLabels";
 import { isStoredLeadTest } from "@/lib/leadTest";
 import { readInquirySources } from "@/lib/inquirySourcePath";
+import { inquiryLandingKind, readInquiryLandingSource } from "@/lib/inquiryLanding";
 import { formatInquirySources } from "@/i18n/inquirySourceText";
+import { localizeInquiryLandingTitle } from "@/lib/leadSourceText";
 
 export type AdminLeadReportPeriod = "30d" | "90d" | "all";
 
@@ -178,12 +180,20 @@ const readSourceInfo = (
   let sourceType = fallbackSource === "website_contact" ? "contact" : fallbackSource || "unknown";
   let title = "";
   let pathname = "";
+  let landingPage: string | undefined;
 
   try {
     const parsed = new URL(rawPath || "/", "https://flashcast.local");
     pathname = parsed.pathname;
     sourceType = parsed.searchParams.get("source") || sourceType || inferSourceTypeFromPath(pathname);
-    title = parsed.searchParams.get("title") || "";
+    const landing = readInquiryLandingSource(parsed.searchParams);
+    if (landing) {
+      landingPage = landing.page;
+      sourceType = inquiryLandingKind(landingPage);
+      title = localizeInquiryLandingTitle(landing, language) || "";
+    } else {
+      title = parsed.searchParams.get("title") || "";
+    }
     if (!sourceType || sourceType === "unknown") sourceType = inferSourceTypeFromPath(pathname);
   } catch {
     pathname = rawPath.split("?")[0] || "";
@@ -191,9 +201,9 @@ const readSourceInfo = (
 
   const baseLabel = sourceTypeLabel(sourceType, language);
   const pathLabel = pathname ? pathname.replace(/^\/(zh|en|ms)(?=\/|$)/, "") || "/" : "";
-  const label = title ? `${baseLabel}：${title}` : pathLabel && pathLabel !== "/" ? `${baseLabel} · ${pathLabel}` : baseLabel;
+  const label = title ? `${baseLabel}：${title}` : !landingPage && pathLabel && pathLabel !== "/" ? `${baseLabel} · ${pathLabel}` : baseLabel;
   const channels = readInquirySources(rawPath);
-  const key = `${channels.first}:${channels.last}:${sourceType}:${title || pathLabel || rawPath || "unknown"}`.toLowerCase();
+  const key = `${channels.first}:${channels.last}:${sourceType}:${landingPage ?? (title || pathLabel || rawPath || "unknown")}`.toLowerCase();
 
   return {
     key,
