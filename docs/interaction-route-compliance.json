@@ -1027,7 +1027,7 @@
       "acceptance": "PASS_LOCAL_SIMULATED",
       "samplePath": "/en/services/interaction-fixture",
       "component": "ServiceDetail",
-      "evidence": "2026-10-03 local Vite + Cloudflare; synthetic data/MFA; normal route renders without page errors"
+      "evidence": "2026-10-03 local Vite + Cloudflare; synthetic data/MFA; normal route renders without page errors. 2026-11-16 production check: all 21 C2 service URLs returned HTTP 200. All 14 English and Chinese URLs were eligible in the SEO manifest and present in the sitemap. All seven Malay URLs returned noindex and were absent from the sitemap. Chrome at 390 by 844 confirmed /en/services/digital-lock renders without horizontal overflow, reloads with its own canonical URL, and switches EN → ZH → MS → EN with the expected headings. The Malay page used the English heading. No page errors were recorded. An unknown service slug returned HTTP 404."
     },
     {
       "path": "/:lang/services/old-house",
