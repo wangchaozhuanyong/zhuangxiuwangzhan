@@ -875,6 +875,8 @@ export const servicesData: ServiceItem[] = [
     id: "digital-lock",
     title: "Digital Lock Supply & Installation",
     titleZh: "电子锁销售与安装",
+    imageAlt: "Black keypad lock on a timber entrance door",
+    imageAltZh: "木质入户门上的黑色按键电子锁",
     slug: "digital-lock",
     seoTitle: "Digital Lock Installation KL | Supply & Install | FLASH CAST",
     seoTitleZh: "吉隆坡电子锁安装｜智能门锁｜FLASH CAST",
@@ -952,7 +954,7 @@ export const servicesData: ServiceItem[] = [
       { q: "还能用机械钥匙吗？", a: "我们安装的多数型号都保留机械应急开锁。交付时会现场测试，并告知钥匙的存放位置。" },
       { q: "断电会怎样？", a: "不同型号表现不同，有的保持原状态，有的自动开或自动锁。交付时会说明该型号的实际表现。" },
     ],
-    image: "/images/services/ai-concepts/builtin-concept.webp", // 待补真实图：电子锁安装实景
+    image: "/images/services/digital-lock.webp",
   },
   {
     id: "painting",
