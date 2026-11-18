@@ -1,0 +1,510 @@
+{
+  "schema": "flashcast-service-seo-review-candidate/v1",
+  "preparedAt": "2026-11-18 03:01:08 UTC",
+  "state": "prepared-awaiting-owner-approval",
+  "source": {
+    "path": "docs/seo/codex-tasks/C4-meta-values.md",
+    "sha256": "88a09a2145ed2798d18fe847322d41d22ce3e2439b055de8ba1d1f8abaa49715",
+    "exactValues": true
+  },
+  "authorization": {
+    "credentialMode": "cron",
+    "header": "x-cron-secret",
+    "secretName": "CONTENT_PUBLISH_SECRET",
+    "ownerApproved": false,
+    "explicitExecution": false,
+    "approvalId": null,
+    "managedPermit": null
+  },
+  "admission": {
+    "registeredInProtectedTargets": false,
+    "serverDryRunPerformed": false,
+    "requiredBeforePublish": [
+      "Register the exact runtime_target and its candidate source in the existing protected publisher.",
+      "Run a zero-write server preview for the exact row, SEO fields and expectedUpdatedAt.",
+      "Receive explicit ownerApproved authorization for this exact candidate.",
+      "Use the approved main workflow with its verified GitHub OIDC identity and a fresh one-time row-scoped permit."
+    ]
+  },
+  "runtime_target": {
+    "id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+    "slug": "approval",
+    "contentType": "service",
+    "table": "services",
+    "taskId": "c4-four-service-seo-20261118-v1",
+    "actionId": "publish-c4-approval-seo-20261118-v1",
+    "candidateVersion": "c4-approval-seo-20261118-v1",
+    "scope": "flashcast.com.my:services:912750be-05ad-40e5-b20a-d1e5c33f232f:seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
+    "changedFields": [
+      "seo_title_en",
+      "seo_title_zh",
+      "seo_description_en",
+      "seo_description_zh"
+    ],
+    "baselineProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "expectedUpdatedAt": "2026-10-27T04:02:36.717645+00:00",
+    "versionField": "updated_at",
+    "retainedProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_ms",
+      "seo_title_ms",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "requiresParentRun": true,
+    "rollbackAllowed": true,
+    "baselineFieldsSha256": "77bb39f56baa95df7d44323edbd2ef5364c32eba15441c6f5a209f86b17a5c02",
+    "desiredFieldsSha256": "14afbeace7e79bb9f5638db8d67851bc10e99f8305365036e1cee9975a92ad0e",
+    "rollbackFieldsSha256": "88643fe51b243c6b9ac716e99a04a81885c38052c37cbf8e8463148d27239536",
+    "retainedFieldsSha256": "3742c9afaceabfb107b6c29ee43bd90e9e346049a64d77a599099423659fe285"
+  },
+  "before": {
+    "id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+    "slug": "approval",
+    "alt_en": "Permit & Drawing Support",
+    "alt_ms": "Sokongan Permit dan Lukisan",
+    "alt_zh": "Permit & Drawing Support",
+    "status": "published",
+    "faqs_en": [
+      {
+        "a": "Timing depends on the current process, document completeness, review comments, responsible parties, fees and the management or authority. Confirm the latest requirements before scheduling work.",
+        "q": "How long does a renovation approval take?"
+      },
+      {
+        "a": "Selected tasks can be coordinated when they are included in the confirmed scope. Owner, consultant, landlord, management and authority responsibilities should be listed separately.",
+        "q": "Can document preparation and follow-up be coordinated?"
+      },
+      {
+        "a": "Share the site address, property type, management or landlord guide, existing and proposed plans, intended work, and any correspondence already received.",
+        "q": "What should I prepare for an initial approval review?"
+      }
+    ],
+    "faqs_ms": [
+      {
+        "a": "Kelulusan daripada pejabat pengurusan lazimnya mengambil masa 1 hingga 2 minggu. Permit DBKL mungkin mengambil masa 2 hingga 4 minggu.",
+        "q": "Berapa lamakah masa untuk mendapatkan permit pengubahsuaian?"
+      },
+      {
+        "a": "Ya. Kami membantu menyediakan dokumen, mengemukakan permohonan dan membuat susulan.",
+        "q": "Bolehkah anda menguruskan keseluruhan proses permit?"
+      }
+    ],
+    "faqs_zh": [
+      {
+        "a": "时间取决于当前流程、文件完整度、审核意见、责任方、费用与管理方或相关单位。排期前应确认最新要求。",
+        "q": "装修审批需要多长时间？"
+      },
+      {
+        "a": "已纳入确认范围的部分任务可以协调。业主、顾问、房东、管理方与相关单位的责任应分别列明。",
+        "q": "可以协调文件准备与跟进吗？"
+      },
+      {
+        "a": "提交现场地址、房产类型、管理方或房东指南、现有与拟议图纸、计划工程与已收到的往来文件。",
+        "q": "初步检查审批需求时应准备什么？"
+      }
+    ],
+    "version": 1,
+    "title_en": "Permit & Drawing Support",
+    "title_ms": "Sokongan Permit dan Lukisan Pengubahsuaian",
+    "title_zh": "装修准证与图纸支持",
+    "image_url": "/images/services/approval-docs.webp",
+    "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project.\n\n<h2>How can you organise existing information before the first discussion?</h2>\n<p>Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval.</p>\n<h2>How should document-support fees and responsibilities be clarified?</h2>\n<p>Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through <a href=\"/en/services/renovation\">home-renovation planning</a> or commercial requirements through the <a href=\"/en/services/office-renovation\">office fit-out scope</a>, then <a href=\"/en/quote\">submit the document-support enquiry</a>. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here.</p>\n<h2>How can drawing revisions be checked against the support quotation?</h2><p>List existing and proposed drawings, documents and revisions. Confirm whether a site measurement is needed, what information must be organised, which revisions and communications are included, and who handles later requests. Charges depend on the actual document work, revision scope and coordination. Existing documents are not proof of current management acceptance; confirm revision allowances and any third-party fees separately. Quotations are free. If site measurement is needed, it is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking. The existing responsibilities of management and professionals, and the absence of any approval guarantee, continue to apply.</p>",
+    "content_ms": "Keperluan kelulusan dan dokumen berbeza mengikut harta, cadangan kerja, pengurusan atau peraturan tuan tanah dan proses kuasa semasa yang berkaitan. FLASH CAST boleh membantu mengenal pasti dan menyelaras lukisan atau dokumen yang dipilih apabila ia dimasukkan dalam skop yang disahkan. Tanggungjawab tepat, input pihak yang layak, yuran, masa dan hasil mesti disahkan untuk projek.\n\n<h2>Bagaimana anda boleh menyusun maklumat sedia ada sebelum perbincangan pertama?</h2>\n<p>Sediakan lokasi dan jenis hartanah, foto tapak, pelan yang tersedia serta perubahan yang dicadangkan. Sertakan panduan daripada pihak pengurusan bangunan atau tuan tanah, surat-menyurat dan maklumat hubungan yang telah diterima. Tandakan dokumen yang tiada, belum disahkan atau tidak bertarikh. Senarai ini membantu perbincangan awal; ia bukan senarai permohonan rasmi yang lengkap dan tidak menjamin kelulusan.</p>\n<h2>Bagaimanakah bayaran dan tanggungjawab sokongan dokumen harus dijelaskan?</h2>\n<p>Jelaskan siapa yang menyediakan maklumat asal, menyediakan atau menyemak dokumen, menghubungi pihak pengurusan dan menyelaras kerja yang memerlukan profesional berkelayakan. Sahkan yuran perkhidmatan, caj pihak ketiga, skop dan pengecualian secara bertulis. Untuk projek kediaman, lihat <a href=\"/ms/services/renovation\">perkhidmatan pengubahsuaian rumah</a>; untuk projek komersial, lihat <a href=\"/ms/services/office-renovation\">perkhidmatan fit-out pejabat</a>. Hantar pertanyaan sokongan dokumen melalui <a href=\"/ms/quote\">borang pertanyaan</a>. Keperluan hendaklah disahkan dengan pihak pengurusan dan pihak berkuasa yang berkaitan. Tiada tandatangan profesional, yuran tetap, tempoh kelulusan atau keputusan dijanjikan di halaman ini.</p>",
+    "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。\n\n<h2>初次沟通前，怎样整理已有资料？</h2>\n<p>可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。</p>\n<h2>文件协助的费用与责任应怎样确认？</h2>\n<p>逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 <a href=\"/zh/services/renovation\">住宅装修咨询</a> 中；商业单位可结合 <a href=\"/zh/services/office-renovation\">办公室装修范围</a>，再 <a href=\"/zh/quote\">提交文件协助需求</a>。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。</p>\n<h2>怎样核对图纸版本与协助报价？</h2><p>列出已有及拟补的图纸、文件和版本，确认是否需现场量度、整理多少资料、预计包含哪些修改与沟通，以及后续新增要求由谁处理。费用会受实际文件工作、修订范围及协调需求影响；原有文件不代表仍获管理方接受，修改次数和任何第三方费用都应分别确认。报价免费；如需上门量房，30公里以内免费，超过30公里收费，预约前核对地点与收费。现有管理方与专业人士责任及不保证审批结果的条件继续适用。</p>",
+    "created_at": "2026-05-29T10:14:07.868773+00:00",
+    "excerpt_en": "Review renovation approval, management, drawing and document-coordination needs against the property and confirmed project scope.",
+    "excerpt_ms": "Semak kelulusan pengubahsuaian, pengurusan, lukisan dan keperluan penyelarasan dokumen terhadap hartanah dan skop projek yang disahkan.",
+    "excerpt_zh": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
+    "sort_order": 100,
+    "updated_at": "2026-10-27T04:02:36.717645+00:00",
+    "seo_title_en": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+    "seo_title_ms": "Sokongan Permit dan Lukisan Kuala Lumpur | FLASH CAST",
+    "seo_title_zh": "装修准证与图纸支持 | FLASH CAST",
+    "scope_items_en": [
+      "Management Office Renovation Application",
+      "DBKL Renovation Permit Assistance",
+      "Drawing Submission Coordination",
+      "Documentation Preparation",
+      "Site Inspection Coordination"
+    ],
+    "scope_items_ms": [
+      "Permohonan pengubahsuaian kepada pejabat pengurusan",
+      "Bantuan permohonan permit pengubahsuaian DBKL",
+      "Penyelarasan penyerahan lukisan",
+      "Penyediaan dokumen",
+      "Penyelarasan pemeriksaan tapak"
+    ],
+    "scope_items_zh": [
+      "管理处申请协助",
+      "DBKL 准证协助",
+      "图纸提交协调",
+      "文件准备",
+      "现场检查协调"
+    ],
+    "suitable_for_en": [
+      "Anyone doing renovation in a managed property",
+      "Projects requiring DBKL or local council permits",
+      "Commercial renovations needing compliance documentation"
+    ],
+    "suitable_for_ms": [
+      "Pemilik yang mengubah suai hartanah di bawah pengurusan bangunan",
+      "Projek yang memerlukan permit DBKL atau pihak berkuasa tempatan",
+      "Pengubahsuaian komersial yang memerlukan dokumen pematuhan"
+    ],
+    "suitable_for_zh": [
+      "管理处监管项目业主",
+      "需要 DBKL 或地方政府审批的项目",
+      "需要合规文件的商业装修"
+    ],
+    "process_steps_en": [
+      {
+        "desc": "Identify the property, proposed work, current requirements and responsible parties.",
+        "title": "Requirement Check"
+      },
+      {
+        "desc": "Confirm which drawings, forms, supporting documents, fees and qualified parties are required.",
+        "title": "Document Scope"
+      },
+      {
+        "desc": "Coordinate the agreed submission tasks and responses when included in the project scope.",
+        "title": "Submission Coordination"
+      },
+      {
+        "desc": "Keep relevant submitted, approved or returned documents with the project records.",
+        "title": "Record Handover"
+      }
+    ],
+    "process_steps_ms": [
+      {
+        "desc": "Kumpulkan dokumen projek dan lukisan yang diperlukan.",
+        "title": "Pengumpulan dokumen"
+      },
+      {
+        "desc": "Kemukakan permohonan kepada pihak berkuasa yang berkaitan.",
+        "title": "Penyerahan permohonan"
+      },
+      {
+        "desc": "Semak status permohonan dan jawab pertanyaan yang diterima.",
+        "title": "Susulan permohonan"
+      },
+      {
+        "desc": "Selepas kelulusan diberikan, serahkan semua dokumen kepada anda.",
+        "title": "Kelulusan dan penyerahan"
+      }
+    ],
+    "process_steps_zh": [
+      {
+        "desc": "确认房产、拟议工程、当前要求与责任方。",
+        "title": "要求检查"
+      },
+      {
+        "desc": "确认所需图纸、表格、支持文件、费用与专业人士。",
+        "title": "文件范围"
+      },
+      {
+        "desc": "如已纳入项目范围，协调已约定的提交与回复任务。",
+        "title": "提交协调"
+      },
+      {
+        "desc": "将相关已提交、已批准或退回文件纳入项目记录。",
+        "title": "记录交付"
+      }
+    ],
+    "common_projects_en": [
+      "Condo management office renovation applications",
+      "DBKL renovation permit submissions",
+      "Drawing and plan submissions",
+      "Site inspection coordination"
+    ],
+    "common_projects_ms": [
+      "Permohonan pengubahsuaian kepada pejabat pengurusan kondo",
+      "Permohonan permit pengubahsuaian DBKL",
+      "Penyerahan lukisan dan pelan",
+      "Penyelarasan pemeriksaan tapak"
+    ],
+    "common_projects_zh": [
+      "公寓管理处申请",
+      "DBKL 装修准证申请",
+      "图纸与平面图提交",
+      "现场检查协调"
+    ],
+    "seo_description_en": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project.",
+    "seo_description_ms": "Permohonan permit pengubahsuaian, penyelarasan pejabat pengurusan, lukisan seni bina, dan semua perkhidmatan dokumentasi untuk projek anda.",
+    "seo_description_zh": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+  },
+  "desired": {
+    "seo_title_en": "Renovation Permit & Drawing Support | FLASH CAST",
+    "seo_title_zh": "装修许可证与图测支持｜FLASH CAST",
+    "seo_description_en": "Renovation permit and drawing support for Kuala Lumpur and Selangor projects, with submission requirements clarified before work starts.",
+    "seo_description_zh": "吉隆坡与雪兰莪装修许可证与图测支持。开工前先理清送审要求与文件清单。"
+  },
+  "rollback": {
+    "seo_title_en": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+    "seo_title_zh": "装修准证与图纸支持 | FLASH CAST",
+    "seo_description_en": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project.",
+    "seo_description_zh": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。"
+  },
+  "dryRunRequest": {
+    "contentType": "service",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-10-27T04:02:36.717645+00:00",
+    "ownerApproved": false,
+    "explicitExecution": false,
+    "record": {
+      "id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+      "slug": "approval",
+      "alt_en": "Permit & Drawing Support",
+      "alt_ms": "Sokongan Permit dan Lukisan",
+      "alt_zh": "Permit & Drawing Support",
+      "status": "published",
+      "faqs_en": [
+        {
+          "a": "Timing depends on the current process, document completeness, review comments, responsible parties, fees and the management or authority. Confirm the latest requirements before scheduling work.",
+          "q": "How long does a renovation approval take?"
+        },
+        {
+          "a": "Selected tasks can be coordinated when they are included in the confirmed scope. Owner, consultant, landlord, management and authority responsibilities should be listed separately.",
+          "q": "Can document preparation and follow-up be coordinated?"
+        },
+        {
+          "a": "Share the site address, property type, management or landlord guide, existing and proposed plans, intended work, and any correspondence already received.",
+          "q": "What should I prepare for an initial approval review?"
+        }
+      ],
+      "faqs_ms": [
+        {
+          "a": "Kelulusan daripada pejabat pengurusan lazimnya mengambil masa 1 hingga 2 minggu. Permit DBKL mungkin mengambil masa 2 hingga 4 minggu.",
+          "q": "Berapa lamakah masa untuk mendapatkan permit pengubahsuaian?"
+        },
+        {
+          "a": "Ya. Kami membantu menyediakan dokumen, mengemukakan permohonan dan membuat susulan.",
+          "q": "Bolehkah anda menguruskan keseluruhan proses permit?"
+        }
+      ],
+      "faqs_zh": [
+        {
+          "a": "时间取决于当前流程、文件完整度、审核意见、责任方、费用与管理方或相关单位。排期前应确认最新要求。",
+          "q": "装修审批需要多长时间？"
+        },
+        {
+          "a": "已纳入确认范围的部分任务可以协调。业主、顾问、房东、管理方与相关单位的责任应分别列明。",
+          "q": "可以协调文件准备与跟进吗？"
+        },
+        {
+          "a": "提交现场地址、房产类型、管理方或房东指南、现有与拟议图纸、计划工程与已收到的往来文件。",
+          "q": "初步检查审批需求时应准备什么？"
+        }
+      ],
+      "version": 1,
+      "title_en": "Permit & Drawing Support",
+      "title_ms": "Sokongan Permit dan Lukisan Pengubahsuaian",
+      "title_zh": "装修准证与图纸支持",
+      "image_url": "/images/services/approval-docs.webp",
+      "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project.\n\n<h2>How can you organise existing information before the first discussion?</h2>\n<p>Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval.</p>\n<h2>How should document-support fees and responsibilities be clarified?</h2>\n<p>Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through <a href=\"/en/services/renovation\">home-renovation planning</a> or commercial requirements through the <a href=\"/en/services/office-renovation\">office fit-out scope</a>, then <a href=\"/en/quote\">submit the document-support enquiry</a>. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here.</p>\n<h2>How can drawing revisions be checked against the support quotation?</h2><p>List existing and proposed drawings, documents and revisions. Confirm whether a site measurement is needed, what information must be organised, which revisions and communications are included, and who handles later requests. Charges depend on the actual document work, revision scope and coordination. Existing documents are not proof of current management acceptance; confirm revision allowances and any third-party fees separately. Quotations are free. If site measurement is needed, it is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking. The existing responsibilities of management and professionals, and the absence of any approval guarantee, continue to apply.</p>",
+      "content_ms": "Keperluan kelulusan dan dokumen berbeza mengikut harta, cadangan kerja, pengurusan atau peraturan tuan tanah dan proses kuasa semasa yang berkaitan. FLASH CAST boleh membantu mengenal pasti dan menyelaras lukisan atau dokumen yang dipilih apabila ia dimasukkan dalam skop yang disahkan. Tanggungjawab tepat, input pihak yang layak, yuran, masa dan hasil mesti disahkan untuk projek.\n\n<h2>Bagaimana anda boleh menyusun maklumat sedia ada sebelum perbincangan pertama?</h2>\n<p>Sediakan lokasi dan jenis hartanah, foto tapak, pelan yang tersedia serta perubahan yang dicadangkan. Sertakan panduan daripada pihak pengurusan bangunan atau tuan tanah, surat-menyurat dan maklumat hubungan yang telah diterima. Tandakan dokumen yang tiada, belum disahkan atau tidak bertarikh. Senarai ini membantu perbincangan awal; ia bukan senarai permohonan rasmi yang lengkap dan tidak menjamin kelulusan.</p>\n<h2>Bagaimanakah bayaran dan tanggungjawab sokongan dokumen harus dijelaskan?</h2>\n<p>Jelaskan siapa yang menyediakan maklumat asal, menyediakan atau menyemak dokumen, menghubungi pihak pengurusan dan menyelaras kerja yang memerlukan profesional berkelayakan. Sahkan yuran perkhidmatan, caj pihak ketiga, skop dan pengecualian secara bertulis. Untuk projek kediaman, lihat <a href=\"/ms/services/renovation\">perkhidmatan pengubahsuaian rumah</a>; untuk projek komersial, lihat <a href=\"/ms/services/office-renovation\">perkhidmatan fit-out pejabat</a>. Hantar pertanyaan sokongan dokumen melalui <a href=\"/ms/quote\">borang pertanyaan</a>. Keperluan hendaklah disahkan dengan pihak pengurusan dan pihak berkuasa yang berkaitan. Tiada tandatangan profesional, yuran tetap, tempoh kelulusan atau keputusan dijanjikan di halaman ini.</p>",
+      "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。\n\n<h2>初次沟通前，怎样整理已有资料？</h2>\n<p>可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。</p>\n<h2>文件协助的费用与责任应怎样确认？</h2>\n<p>逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 <a href=\"/zh/services/renovation\">住宅装修咨询</a> 中；商业单位可结合 <a href=\"/zh/services/office-renovation\">办公室装修范围</a>，再 <a href=\"/zh/quote\">提交文件协助需求</a>。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。</p>\n<h2>怎样核对图纸版本与协助报价？</h2><p>列出已有及拟补的图纸、文件和版本，确认是否需现场量度、整理多少资料、预计包含哪些修改与沟通，以及后续新增要求由谁处理。费用会受实际文件工作、修订范围及协调需求影响；原有文件不代表仍获管理方接受，修改次数和任何第三方费用都应分别确认。报价免费；如需上门量房，30公里以内免费，超过30公里收费，预约前核对地点与收费。现有管理方与专业人士责任及不保证审批结果的条件继续适用。</p>",
+      "created_at": "2026-05-29T10:14:07.868773+00:00",
+      "excerpt_en": "Review renovation approval, management, drawing and document-coordination needs against the property and confirmed project scope.",
+      "excerpt_ms": "Semak kelulusan pengubahsuaian, pengurusan, lukisan dan keperluan penyelarasan dokumen terhadap hartanah dan skop projek yang disahkan.",
+      "excerpt_zh": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
+      "sort_order": 100,
+      "updated_at": "2026-10-27T04:02:36.717645+00:00",
+      "seo_title_en": "Renovation Permit & Drawing Support | FLASH CAST",
+      "seo_title_ms": "Sokongan Permit dan Lukisan Kuala Lumpur | FLASH CAST",
+      "seo_title_zh": "装修许可证与图测支持｜FLASH CAST",
+      "scope_items_en": [
+        "Management Office Renovation Application",
+        "DBKL Renovation Permit Assistance",
+        "Drawing Submission Coordination",
+        "Documentation Preparation",
+        "Site Inspection Coordination"
+      ],
+      "scope_items_ms": [
+        "Permohonan pengubahsuaian kepada pejabat pengurusan",
+        "Bantuan permohonan permit pengubahsuaian DBKL",
+        "Penyelarasan penyerahan lukisan",
+        "Penyediaan dokumen",
+        "Penyelarasan pemeriksaan tapak"
+      ],
+      "scope_items_zh": [
+        "管理处申请协助",
+        "DBKL 准证协助",
+        "图纸提交协调",
+        "文件准备",
+        "现场检查协调"
+      ],
+      "suitable_for_en": [
+        "Anyone doing renovation in a managed property",
+        "Projects requiring DBKL or local council permits",
+        "Commercial renovations needing compliance documentation"
+      ],
+      "suitable_for_ms": [
+        "Pemilik yang mengubah suai hartanah di bawah pengurusan bangunan",
+        "Projek yang memerlukan permit DBKL atau pihak berkuasa tempatan",
+        "Pengubahsuaian komersial yang memerlukan dokumen pematuhan"
+      ],
+      "suitable_for_zh": [
+        "管理处监管项目业主",
+        "需要 DBKL 或地方政府审批的项目",
+        "需要合规文件的商业装修"
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Identify the property, proposed work, current requirements and responsible parties.",
+          "title": "Requirement Check"
+        },
+        {
+          "desc": "Confirm which drawings, forms, supporting documents, fees and qualified parties are required.",
+          "title": "Document Scope"
+        },
+        {
+          "desc": "Coordinate the agreed submission tasks and responses when included in the project scope.",
+          "title": "Submission Coordination"
+        },
+        {
+          "desc": "Keep relevant submitted, approved or returned documents with the project records.",
+          "title": "Record Handover"
+        }
+      ],
+      "process_steps_ms": [
+        {
+          "desc": "Kumpulkan dokumen projek dan lukisan yang diperlukan.",
+          "title": "Pengumpulan dokumen"
+        },
+        {
+          "desc": "Kemukakan permohonan kepada pihak berkuasa yang berkaitan.",
+          "title": "Penyerahan permohonan"
+        },
+        {
+          "desc": "Semak status permohonan dan jawab pertanyaan yang diterima.",
+          "title": "Susulan permohonan"
+        },
+        {
+          "desc": "Selepas kelulusan diberikan, serahkan semua dokumen kepada anda.",
+          "title": "Kelulusan dan penyerahan"
+        }
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "确认房产、拟议工程、当前要求与责任方。",
+          "title": "要求检查"
+        },
+        {
+          "desc": "确认所需图纸、表格、支持文件、费用与专业人士。",
+          "title": "文件范围"
+        },
+        {
+          "desc": "如已纳入项目范围，协调已约定的提交与回复任务。",
+          "title": "提交协调"
+        },
+        {
+          "desc": "将相关已提交、已批准或退回文件纳入项目记录。",
+          "title": "记录交付"
+        }
+      ],
+      "common_projects_en": [
+        "Condo management office renovation applications",
+        "DBKL renovation permit submissions",
+        "Drawing and plan submissions",
+        "Site inspection coordination"
+      ],
+      "common_projects_ms": [
+        "Permohonan pengubahsuaian kepada pejabat pengurusan kondo",
+        "Permohonan permit pengubahsuaian DBKL",
+        "Penyerahan lukisan dan pelan",
+        "Penyelarasan pemeriksaan tapak"
+      ],
+      "common_projects_zh": [
+        "公寓管理处申请",
+        "DBKL 装修准证申请",
+        "图纸与平面图提交",
+        "现场检查协调"
+      ],
+      "seo_description_en": "Renovation permit and drawing support for Kuala Lumpur and Selangor projects, with submission requirements clarified before work starts.",
+      "seo_description_ms": "Permohonan permit pengubahsuaian, penyelarasan pejabat pengurusan, lukisan seni bina, dan semua perkhidmatan dokumentasi untuk projek anda.",
+      "seo_description_zh": "吉隆坡与雪兰莪装修许可证与图测支持。开工前先理清送审要求与文件清单。"
+    },
+    "managedCandidate": {
+      "taskId": "c4-four-service-seo-20261118-v1",
+      "actionId": "publish-c4-approval-seo-20261118-v1",
+      "operation": "publish",
+      "scope": "flashcast.com.my:services:912750be-05ad-40e5-b20a-d1e5c33f232f:seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
+      "candidateVersion": "c4-approval-seo-20261118-v1"
+    }
+  }
+}
