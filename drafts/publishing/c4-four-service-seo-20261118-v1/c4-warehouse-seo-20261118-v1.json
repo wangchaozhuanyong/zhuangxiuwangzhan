@@ -1,0 +1,502 @@
+{
+  "schema": "flashcast-service-seo-review-candidate/v1",
+  "preparedAt": "2026-11-18 03:01:08 UTC",
+  "state": "prepared-awaiting-owner-approval",
+  "source": {
+    "path": "docs/seo/codex-tasks/C4-meta-values.md",
+    "sha256": "88a09a2145ed2798d18fe847322d41d22ce3e2439b055de8ba1d1f8abaa49715",
+    "exactValues": true
+  },
+  "authorization": {
+    "credentialMode": "cron",
+    "header": "x-cron-secret",
+    "secretName": "CONTENT_PUBLISH_SECRET",
+    "ownerApproved": false,
+    "explicitExecution": false,
+    "approvalId": null,
+    "managedPermit": null
+  },
+  "admission": {
+    "registeredInProtectedTargets": false,
+    "serverDryRunPerformed": false,
+    "requiredBeforePublish": [
+      "Register the exact runtime_target and its candidate source in the existing protected publisher.",
+      "Run a zero-write server preview for the exact row, SEO fields and expectedUpdatedAt.",
+      "Receive explicit ownerApproved authorization for this exact candidate.",
+      "Use the approved main workflow with its verified GitHub OIDC identity and a fresh one-time row-scoped permit."
+    ]
+  },
+  "runtime_target": {
+    "id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+    "slug": "warehouse",
+    "contentType": "service",
+    "table": "services",
+    "taskId": "c4-four-service-seo-20261118-v1",
+    "actionId": "publish-c4-warehouse-seo-20261118-v1",
+    "candidateVersion": "c4-warehouse-seo-20261118-v1",
+    "scope": "flashcast.com.my:services:1fab3adb-aa8c-4aab-9c30-8931152cdc91:seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
+    "changedFields": [
+      "seo_title_en",
+      "seo_title_zh",
+      "seo_description_en",
+      "seo_description_zh"
+    ],
+    "baselineProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "expectedUpdatedAt": "2026-10-27T03:21:16.724548+00:00",
+    "versionField": "updated_at",
+    "retainedProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_ms",
+      "seo_title_ms",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "requiresParentRun": true,
+    "rollbackAllowed": true,
+    "baselineFieldsSha256": "62368d4b0567ec54daff1d7c0d7d8a9b6595c5e9603eda6ed67f30b3434275e0",
+    "desiredFieldsSha256": "c4b6893ff023a25fe595a145020e849697f1a3b97930378d36a0ce84439c10da",
+    "rollbackFieldsSha256": "9d9d743dfe9094575595ece763e729b6931782d3b904fb83da0095aafa8cd09e",
+    "retainedFieldsSha256": "c30d3008fdefa2acd72ba85c2d95b033eafb613e8740fe392843c05cf3909c51"
+  },
+  "before": {
+    "id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+    "slug": "warehouse",
+    "alt_en": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+    "alt_ms": "Rak gudang, lorong tengah, zon lantai dan konsep perancangan kawasan pemilihan",
+    "alt_zh": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+    "status": "published",
+    "faqs_en": [
+      {
+        "a": "A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.",
+        "q": "What information helps with an initial discussion?"
+      },
+      {
+        "a": "Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.",
+        "q": "Can only part of a warehouse be adjusted?"
+      },
+      {
+        "a": "No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.",
+        "q": "Do the planning examples show real completed sites?"
+      }
+    ],
+    "faqs_ms": [
+      {
+        "a": "Ya. Perancangan dibuat berdasarkan jenis dan dimensi barangan, kaedah penerimaan serta keperluan kapasiti beban.",
+        "q": "Bolehkah sistem rak dirancang mengikut keperluan kapasiti beban?"
+      }
+    ],
+    "faqs_zh": [
+      {
+        "a": "建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。",
+        "q": "初次沟通要准备哪些资料？"
+      },
+      {
+        "a": "可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。",
+        "q": "可以只调整仓库的一部分吗？"
+      },
+      {
+        "a": "不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。",
+        "q": "规划示例是否代表真实项目？"
+      }
+    ],
+    "version": 2,
+    "title_en": "Warehouse Shelving and Storage Planning",
+    "title_ms": "Perancangan Rak dan Penyimpanan Gudang",
+    "title_zh": "雪兰莪仓库货架与仓储空间规划",
+    "image_url": "/images/services/ai-concepts/warehouse-concept.webp",
+    "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>\n\n<h2>How should a racking proposal relate to its quotation?</h2>\n<p>Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification.</p>\n<h2>Which scope and issue records should be retained at handover?</h2>\n<p>Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover issue-recording checklist</a> can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, <a href=\"/en/quote\">send the warehouse layout and goods information</a>.</p>\n<h2>Who should confirm the work before it starts?</h2><p>The warehouse operator should confirm daily operations and access restrictions, while the responsible rack supplier or installer checks the proposed configuration and required information. Record the layout revision and separate responsibilities for supply, installation, aisles or floor markings, site coordination and checks before starting. FLASH CAST’s confirmed warehouse scope includes shelving, aisle planning, floor markings and storage zones; this does not establish a complete industrial fit-out, fire, structural or load design service, or professional sign-off.</p><h2>Which costs need separate confirmation?</h2><p>Beyond the stated rack configuration, ask whether handling and installation, existing-installation removal, floor markings, protection, waste removal and site coordination are included. List exclusions and work awaiting site or supplier confirmation separately. Share the address, plan and goods information before arranging a visit. Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking.</p>",
+    "content_ms": "<h1>Perancangan Rak dan Penyimpanan Gudang</h1>\n<p>Susun atur gudang yang berkesan adalah lebih daripada mengisi lantai dengan rak. Dimensi barangan, kekerapan pergerakan, kaedah pengambilan stok, lorong, kawasan pemuatan dan peralatan sedia ada semuanya membentuk pelan. FLASH CAST membantu pengusaha gudang dan unit perindustrian di Selangor dan Lembah Klang menggabungkan keperluan ini dalam skop perancangan dan penyelarasan yang praktikal.</p>\n<p><strong>Nota visualisasi konsep:</strong> visual pada halaman ini ialah contoh susun atur storan dan perancangan pergerakan. Ia bukan projek siap, gambar gudang sebenar atau komitmen kapasiti beban.</p>\n<h2>Maklumat untuk Dikongsi Sebelum Merancang</h2>\n<ul><li>Maklumat dimensi dan berat untuk barangan, palet, karton dan peralatan.</li><li>Penerimaan, penyimpanan, pengambilan, penghantaran dan pemuatan harian.</li><li>Kedudukan capaian, laluan troli dan pintu pemuatan.</li><li>Lantai, tiang, pencahayaan, saliran dan perkhidmatan tapak sedia ada.</li></ul>\n<h2>Keutamaan Perancangan Penyimpanan</h2>\n<ul><li>Asingkan zon penerimaan, penyimpanan sementara, penyimpanan, pemilihan, pembungkusan dan penghantaran dengan jelas.</li><li>Letakkan barangan yang kerap diambil di kawasan yang mudah dicapai.</li><li>Pastikan laluan operasi dan penyelenggaraan sentiasa lapang.</li><li>Selaraskan rak, lantai, pencahayaan dan sebarang kerja pengubahsuaian yang berkaitan dalam satu skop yang jelas.</li></ul>\n<h2>Proses Perbincangan dan Penghantaran</h2>\n<ol><li>Semak penggunaan gudang, aliran barangan dan kesesakan semasa.</li><li>Semak pelan, pengukuran, aktiviti pemuatan dan kekangan peralatan.</li><li>Bincangkan pengezonan, arah rak dan penyelarasan tapak item.</li><li>Sahkan pengubahsuaian yang berkaitan atau skop kerja sokongan.</li><li>Teruskan dengan penyelarasan tapak dan semak terhadap skop yang dipersetujui.</li></ol>\n<h2>Perkhidmatan Berkaitan</h2>\n<p>Jika kawasan pejabat perlu bertukar pada masa yang sama, lihat <a href=\"/ms/services/office-renovation\">Pengubahsuaian Pejabat</a>. Jika dokumen permit atau pengubahsuaian mungkin berkaitan, lihat <a href=\"/ms/services/approval\">Sokongan Kelulusan Pengubahsuaian</a>. Gunakan <a href=\"/ms/quote\">Minta Perundingan Pengubahsuaian</a> untuk berkongsi pelan lantai, maklumat barangan dan foto tapak.</p>\n<h2>FAQs</h2>\n<h3>Apakah maklumat yang membantu dengan perbincangan awal?</h3><p>Pelan lantai, dimensi barangan dan peralatan, proses aliran barangan harian dan foto atau video tapak membantu mengenal pasti keutamaan pengukuran dan penyelarasan.</p>\n<h3>Bolehkah hanya sebahagian daripada gudang dilaraskan?</h3><p>Ya. Zon menerima, menahan, memilih atau bersebelahan pejabat boleh dibincangkan secara berasingan. Skop yang boleh dilaksanakan bergantung pada penggunaan dan keadaan tapak.</p>\n<h3>Adakah contoh perancangan menunjukkan tapak sebenar yang telah siap?</h3><p>No. Konsep visualisasi menerangkan aliran storan dan organisasi spatial. Konfigurasi akhir dan keperluan tapak mesti disahkan untuk barangan, peralatan dan kemudahan tertentu.</p>\n<p><a href=\"/ms/quote\">Minta Perundingan Pengubahsuaian</a></p>\n\n<h2>Bagaimanakah cadangan sistem rak harus dikaitkan dengan sebut harganya?</h2>\n<p>AMinta pihak yang bertanggungjawab untuk menentukan jenis rak, kuantiti, dimensi, tahap, semakan susun atur, pengendalian dan skop pemasangan, termasuk maklumat tapak yang masih belum diselesaikan. Untuk memuatkan, keadaan lantai, penetapan atau pengesahan kejuruteraan, minta dokumen pembekal untuk konfigurasi yang tepat dan tentukan sama ada penilaian profesional yang berkaitan diperlukan. Imej umum, projek serupa atau penyata beban terpencil tidak menetapkan kesesuaian untuk tapak ini. Halaman ini tidak membekalkan reka bentuk beban, jaminan berangka atau pensijilan kejuruteraan.</p>\n<h2>Apakah skop dan rekod keluaran yang perlu disimpan semasa penyerahan?</h2>\n<p>Review menghantar item dengan pihak yang bertanggungjawab terhadap susun atur, konfigurasi dan skop yang dipersetujui. Rakam lokasi, kerosakan yang boleh dilihat atau item tertunggak, foto, pemilikan dan pengaturan semak semula. Arahan, label, had penggunaan dan maklumat penyelenggaraan hendaklah sepadan dengan konfigurasi yang dihantar, dengan pemeriksaan khusus yang dijalankan oleh pihak bertanggungjawab yang dipersetujui. Senarai semak rakaman isu penyerahan <a href=\"/ms/blog/renovation-handover-defect-checklist-malaysia\">senarai semak rekod isu semasa serahan</a> boleh mengatur perbincangan; senarai semak pengubahsuaian am tidak memerlukan pensijilan keselamatan. Untuk membincangkan skop, <a href=\"/ms/quote\">hantar susun atur gudang dan maklumat barangan</a>.</p>",
+    "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>\n\n<h2>货架方案与报价要怎样对应？</h2>\n<p>请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。</p>\n<h2>交付时应留下哪些范围和问题记录？</h2>\n<p>按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付问题记录清单</a> 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，<a href=\"/zh/quote\">提交仓库平面与货物资料</a>。</p>\n<h2>开始前怎样确认负责方与实际范围？</h2><p>由仓库使用方确认日常作业与进出场限制，并请货架供应或安装负责方核对拟用配置及所需资料。开始前将布局版本、供货、安装、通道或地面标线、现场配合及检查责任分别写入确认范围。FLASH CAST 已确认的仓储业务包括货架、通道规划、地面标线和存储分区；不能由此推定包含整套工业厂房装修、消防、结构或承载设计及专业签署。</p><h2>哪些费用需要在报价中另行说明？</h2><p>除已列明的货架配置外，询问搬运安装、旧设施处理、地面标线、保护清运及现场协调是否包含，并将排除项目和仍待现场或供应方确认的工作单列。先提供地址、平面和货物资料，再确认现场安排。报价免费；上门量房在30公里以内免费，超过30公里收费，预约前先核对地点与收费。</p>",
+    "created_at": "2026-05-25T10:58:29.820388+00:00",
+    "excerpt_en": "Plan warehouse zones, shelving direction and storage flow around goods, pallet or carton dimensions, handling activity, equipment and site constraints in Selangor and the Klang Valley.",
+    "excerpt_ms": "Rancang zon gudang, arah rak dan aliran penyimpanan di sekeliling barangan, dimensi palet atau karton, aktiviti pengendalian, peralatan dan kekangan tapak di Selangor dan Lembah Klang.",
+    "excerpt_zh": "根据货物类型、托盘或箱体尺寸、拣货动线、设备和现场限制，协助梳理仓库货架与仓储空间规划方向，服务雪兰莪及巴生谷。",
+    "sort_order": 70,
+    "updated_at": "2026-10-27T03:21:16.724548+00:00",
+    "seo_title_en": "Warehouse Shelving & Storage Planning | FLASH CAST",
+    "seo_title_ms": "Perancangan Rak & Penyimpanan Gudang | FLASH CAST",
+    "seo_title_zh": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+    "scope_items_en": [
+      "Warehouse brief and goods-flow review",
+      "Site measurements and equipment constraints",
+      "Receiving, storage, picking and dispatch zoning",
+      "Shelving direction and aisle coordination",
+      "Related renovation and supporting-work scope",
+      "Site coordination and scope check"
+    ],
+    "scope_items_ms": [
+      "Semakan ukuran tapak",
+      "Perancangan sistem rak dan aliran kerja",
+      "Pembinaan tapak asas",
+      "Pemeriksaan pemasangan dan keselamatan"
+    ],
+    "scope_items_zh": [
+      "仓库用途与货物流向沟通",
+      "现场尺寸与设备条件核对",
+      "收货、存储、拣货与出库分区",
+      "货架方向与通道协调",
+      "相关装修与配套工作范围",
+      "现场协调与范围检查"
+    ],
+    "suitable_for_en": [
+      "Receiving zones",
+      "Holding and storage zones",
+      "Picking and packing zones",
+      "Warehouse-office transition zones"
+    ],
+    "suitable_for_ms": [
+      "Gudang",
+      "Unit perindustrian",
+      "Ruang logistik",
+      "Bilik simpanan"
+    ],
+    "suitable_for_zh": [
+      "收货区",
+      "暂存与存储区",
+      "拣货与包装区",
+      "仓库办公连接区"
+    ],
+    "process_steps_en": [
+      {
+        "desc": "Review warehouse use, goods flow and current bottlenecks.",
+        "title": "Review the brief"
+      },
+      {
+        "desc": "Check the plan, measurements, loading activity and equipment constraints.",
+        "title": "Check the site"
+      },
+      {
+        "desc": "Discuss zoning, shelving directions and site-coordination items.",
+        "title": "Discuss zoning"
+      },
+      {
+        "desc": "Confirm the related renovation or supporting-work scope.",
+        "title": "Confirm the scope"
+      }
+    ],
+    "process_steps_ms": [
+      {
+        "desc": "Sahkan saiz barangan, anggaran beban, penggunaan forklift, aliran penerimaan dan keperluan keselamatan.",
+        "title": "Semakan keperluan"
+      },
+      {
+        "desc": "Rancang sistem rak, lebar lorong, pencahayaan, ruang pejabat dan zon simpanan.",
+        "title": "Perancangan susun atur"
+      },
+      {
+        "desc": "Pasang sistem rak atau kerja fit-out, kemudian periksa akses, kestabilan dan butiran penyerahan.",
+        "title": "Pemasangan dan pemeriksaan keselamatan"
+      }
+    ],
+    "process_steps_zh": [
+      {
+        "desc": "了解仓库用途、货物流向和现有问题。",
+        "title": "了解需求"
+      },
+      {
+        "desc": "核对平面、尺寸、进出货与设备条件。",
+        "title": "核对现场"
+      },
+      {
+        "desc": "讨论分区、货架类型方向和施工协调事项。",
+        "title": "讨论分区"
+      },
+      {
+        "desc": "确认需要处理的装修或配套工作范围。",
+        "title": "确认范围"
+      }
+    ],
+    "common_projects_en": [
+      "Warehouse shelving zoning",
+      "Pallet and carton storage planning",
+      "Picking and packing flow",
+      "Receiving and dispatch areas"
+    ],
+    "common_projects_ms": [
+      "Sistem rak gudang",
+      "Ruang pejabat dalam gudang",
+      "Kerja lantai dan pencahayaan",
+      "Perancangan aliran kerja"
+    ],
+    "common_projects_zh": [
+      "仓库货架分区",
+      "托盘与箱体存储规划",
+      "拣货与包装动线",
+      "收货与出库区域"
+    ],
+    "seo_description_en": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley.",
+    "seo_description_ms": "Rancang aliran rak dan penyimpanan gudang di sekitar barangan, peralatan, lorong dan aktiviti pemuatan di Selangor dan Lembah Klang.",
+    "seo_description_zh": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+  },
+  "desired": {
+    "seo_title_en": "Warehouse Shelving Selangor & KL | FLASH CAST",
+    "seo_title_zh": "雪兰莪与吉隆坡仓库货架规划｜FLASH CAST",
+    "seo_description_en": "Warehouse shelving and storage planning in Selangor and Kuala Lumpur. Dimensions, item flow, aisles and scope reviewed before quotation.",
+    "seo_description_zh": "雪兰莪与吉隆坡仓库货架与仓储规划。先确认尺寸、货物流向与通道，再安排报价。"
+  },
+  "rollback": {
+    "seo_title_en": "Warehouse Shelving & Storage Planning | FLASH CAST",
+    "seo_title_zh": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST",
+    "seo_description_en": "Plan warehouse shelving and storage flow around goods, equipment, aisles and loading activity in Selangor and the Klang Valley.",
+    "seo_description_zh": "依据货物、设备、通道与装卸动线，规划雪兰莪及巴生谷仓库货架与仓储空间方向。"
+  },
+  "dryRunRequest": {
+    "contentType": "service",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-10-27T03:21:16.724548+00:00",
+    "ownerApproved": false,
+    "explicitExecution": false,
+    "record": {
+      "id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+      "slug": "warehouse",
+      "alt_en": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+      "alt_ms": "Rak gudang, lorong tengah, zon lantai dan konsep perancangan kawasan pemilihan",
+      "alt_zh": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+      "status": "published",
+      "faqs_en": [
+        {
+          "a": "A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.",
+          "q": "What information helps with an initial discussion?"
+        },
+        {
+          "a": "Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.",
+          "q": "Can only part of a warehouse be adjusted?"
+        },
+        {
+          "a": "No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.",
+          "q": "Do the planning examples show real completed sites?"
+        }
+      ],
+      "faqs_ms": [
+        {
+          "a": "Ya. Perancangan dibuat berdasarkan jenis dan dimensi barangan, kaedah penerimaan serta keperluan kapasiti beban.",
+          "q": "Bolehkah sistem rak dirancang mengikut keperluan kapasiti beban?"
+        }
+      ],
+      "faqs_zh": [
+        {
+          "a": "建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。",
+          "q": "初次沟通要准备哪些资料？"
+        },
+        {
+          "a": "可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。",
+          "q": "可以只调整仓库的一部分吗？"
+        },
+        {
+          "a": "不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。",
+          "q": "规划示例是否代表真实项目？"
+        }
+      ],
+      "version": 2,
+      "title_en": "Warehouse Shelving and Storage Planning",
+      "title_ms": "Perancangan Rak dan Penyimpanan Gudang",
+      "title_zh": "雪兰莪仓库货架与仓储空间规划",
+      "image_url": "/images/services/ai-concepts/warehouse-concept.webp",
+      "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>\n\n<h2>How should a racking proposal relate to its quotation?</h2>\n<p>Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification.</p>\n<h2>Which scope and issue records should be retained at handover?</h2>\n<p>Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover issue-recording checklist</a> can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, <a href=\"/en/quote\">send the warehouse layout and goods information</a>.</p>\n<h2>Who should confirm the work before it starts?</h2><p>The warehouse operator should confirm daily operations and access restrictions, while the responsible rack supplier or installer checks the proposed configuration and required information. Record the layout revision and separate responsibilities for supply, installation, aisles or floor markings, site coordination and checks before starting. FLASH CAST’s confirmed warehouse scope includes shelving, aisle planning, floor markings and storage zones; this does not establish a complete industrial fit-out, fire, structural or load design service, or professional sign-off.</p><h2>Which costs need separate confirmation?</h2><p>Beyond the stated rack configuration, ask whether handling and installation, existing-installation removal, floor markings, protection, waste removal and site coordination are included. List exclusions and work awaiting site or supplier confirmation separately. Share the address, plan and goods information before arranging a visit. Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking.</p>",
+      "content_ms": "<h1>Perancangan Rak dan Penyimpanan Gudang</h1>\n<p>Susun atur gudang yang berkesan adalah lebih daripada mengisi lantai dengan rak. Dimensi barangan, kekerapan pergerakan, kaedah pengambilan stok, lorong, kawasan pemuatan dan peralatan sedia ada semuanya membentuk pelan. FLASH CAST membantu pengusaha gudang dan unit perindustrian di Selangor dan Lembah Klang menggabungkan keperluan ini dalam skop perancangan dan penyelarasan yang praktikal.</p>\n<p><strong>Nota visualisasi konsep:</strong> visual pada halaman ini ialah contoh susun atur storan dan perancangan pergerakan. Ia bukan projek siap, gambar gudang sebenar atau komitmen kapasiti beban.</p>\n<h2>Maklumat untuk Dikongsi Sebelum Merancang</h2>\n<ul><li>Maklumat dimensi dan berat untuk barangan, palet, karton dan peralatan.</li><li>Penerimaan, penyimpanan, pengambilan, penghantaran dan pemuatan harian.</li><li>Kedudukan capaian, laluan troli dan pintu pemuatan.</li><li>Lantai, tiang, pencahayaan, saliran dan perkhidmatan tapak sedia ada.</li></ul>\n<h2>Keutamaan Perancangan Penyimpanan</h2>\n<ul><li>Asingkan zon penerimaan, penyimpanan sementara, penyimpanan, pemilihan, pembungkusan dan penghantaran dengan jelas.</li><li>Letakkan barangan yang kerap diambil di kawasan yang mudah dicapai.</li><li>Pastikan laluan operasi dan penyelenggaraan sentiasa lapang.</li><li>Selaraskan rak, lantai, pencahayaan dan sebarang kerja pengubahsuaian yang berkaitan dalam satu skop yang jelas.</li></ul>\n<h2>Proses Perbincangan dan Penghantaran</h2>\n<ol><li>Semak penggunaan gudang, aliran barangan dan kesesakan semasa.</li><li>Semak pelan, pengukuran, aktiviti pemuatan dan kekangan peralatan.</li><li>Bincangkan pengezonan, arah rak dan penyelarasan tapak item.</li><li>Sahkan pengubahsuaian yang berkaitan atau skop kerja sokongan.</li><li>Teruskan dengan penyelarasan tapak dan semak terhadap skop yang dipersetujui.</li></ol>\n<h2>Perkhidmatan Berkaitan</h2>\n<p>Jika kawasan pejabat perlu bertukar pada masa yang sama, lihat <a href=\"/ms/services/office-renovation\">Pengubahsuaian Pejabat</a>. Jika dokumen permit atau pengubahsuaian mungkin berkaitan, lihat <a href=\"/ms/services/approval\">Sokongan Kelulusan Pengubahsuaian</a>. Gunakan <a href=\"/ms/quote\">Minta Perundingan Pengubahsuaian</a> untuk berkongsi pelan lantai, maklumat barangan dan foto tapak.</p>\n<h2>FAQs</h2>\n<h3>Apakah maklumat yang membantu dengan perbincangan awal?</h3><p>Pelan lantai, dimensi barangan dan peralatan, proses aliran barangan harian dan foto atau video tapak membantu mengenal pasti keutamaan pengukuran dan penyelarasan.</p>\n<h3>Bolehkah hanya sebahagian daripada gudang dilaraskan?</h3><p>Ya. Zon menerima, menahan, memilih atau bersebelahan pejabat boleh dibincangkan secara berasingan. Skop yang boleh dilaksanakan bergantung pada penggunaan dan keadaan tapak.</p>\n<h3>Adakah contoh perancangan menunjukkan tapak sebenar yang telah siap?</h3><p>No. Konsep visualisasi menerangkan aliran storan dan organisasi spatial. Konfigurasi akhir dan keperluan tapak mesti disahkan untuk barangan, peralatan dan kemudahan tertentu.</p>\n<p><a href=\"/ms/quote\">Minta Perundingan Pengubahsuaian</a></p>\n\n<h2>Bagaimanakah cadangan sistem rak harus dikaitkan dengan sebut harganya?</h2>\n<p>AMinta pihak yang bertanggungjawab untuk menentukan jenis rak, kuantiti, dimensi, tahap, semakan susun atur, pengendalian dan skop pemasangan, termasuk maklumat tapak yang masih belum diselesaikan. Untuk memuatkan, keadaan lantai, penetapan atau pengesahan kejuruteraan, minta dokumen pembekal untuk konfigurasi yang tepat dan tentukan sama ada penilaian profesional yang berkaitan diperlukan. Imej umum, projek serupa atau penyata beban terpencil tidak menetapkan kesesuaian untuk tapak ini. Halaman ini tidak membekalkan reka bentuk beban, jaminan berangka atau pensijilan kejuruteraan.</p>\n<h2>Apakah skop dan rekod keluaran yang perlu disimpan semasa penyerahan?</h2>\n<p>Review menghantar item dengan pihak yang bertanggungjawab terhadap susun atur, konfigurasi dan skop yang dipersetujui. Rakam lokasi, kerosakan yang boleh dilihat atau item tertunggak, foto, pemilikan dan pengaturan semak semula. Arahan, label, had penggunaan dan maklumat penyelenggaraan hendaklah sepadan dengan konfigurasi yang dihantar, dengan pemeriksaan khusus yang dijalankan oleh pihak bertanggungjawab yang dipersetujui. Senarai semak rakaman isu penyerahan <a href=\"/ms/blog/renovation-handover-defect-checklist-malaysia\">senarai semak rekod isu semasa serahan</a> boleh mengatur perbincangan; senarai semak pengubahsuaian am tidak memerlukan pensijilan keselamatan. Untuk membincangkan skop, <a href=\"/ms/quote\">hantar susun atur gudang dan maklumat barangan</a>.</p>",
+      "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>\n\n<h2>货架方案与报价要怎样对应？</h2>\n<p>请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。</p>\n<h2>交付时应留下哪些范围和问题记录？</h2>\n<p>按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付问题记录清单</a> 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，<a href=\"/zh/quote\">提交仓库平面与货物资料</a>。</p>\n<h2>开始前怎样确认负责方与实际范围？</h2><p>由仓库使用方确认日常作业与进出场限制，并请货架供应或安装负责方核对拟用配置及所需资料。开始前将布局版本、供货、安装、通道或地面标线、现场配合及检查责任分别写入确认范围。FLASH CAST 已确认的仓储业务包括货架、通道规划、地面标线和存储分区；不能由此推定包含整套工业厂房装修、消防、结构或承载设计及专业签署。</p><h2>哪些费用需要在报价中另行说明？</h2><p>除已列明的货架配置外，询问搬运安装、旧设施处理、地面标线、保护清运及现场协调是否包含，并将排除项目和仍待现场或供应方确认的工作单列。先提供地址、平面和货物资料，再确认现场安排。报价免费；上门量房在30公里以内免费，超过30公里收费，预约前先核对地点与收费。</p>",
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "excerpt_en": "Plan warehouse zones, shelving direction and storage flow around goods, pallet or carton dimensions, handling activity, equipment and site constraints in Selangor and the Klang Valley.",
+      "excerpt_ms": "Rancang zon gudang, arah rak dan aliran penyimpanan di sekeliling barangan, dimensi palet atau karton, aktiviti pengendalian, peralatan dan kekangan tapak di Selangor dan Lembah Klang.",
+      "excerpt_zh": "根据货物类型、托盘或箱体尺寸、拣货动线、设备和现场限制，协助梳理仓库货架与仓储空间规划方向，服务雪兰莪及巴生谷。",
+      "sort_order": 70,
+      "updated_at": "2026-10-27T03:21:16.724548+00:00",
+      "seo_title_en": "Warehouse Shelving Selangor & KL | FLASH CAST",
+      "seo_title_ms": "Perancangan Rak & Penyimpanan Gudang | FLASH CAST",
+      "seo_title_zh": "雪兰莪与吉隆坡仓库货架规划｜FLASH CAST",
+      "scope_items_en": [
+        "Warehouse brief and goods-flow review",
+        "Site measurements and equipment constraints",
+        "Receiving, storage, picking and dispatch zoning",
+        "Shelving direction and aisle coordination",
+        "Related renovation and supporting-work scope",
+        "Site coordination and scope check"
+      ],
+      "scope_items_ms": [
+        "Semakan ukuran tapak",
+        "Perancangan sistem rak dan aliran kerja",
+        "Pembinaan tapak asas",
+        "Pemeriksaan pemasangan dan keselamatan"
+      ],
+      "scope_items_zh": [
+        "仓库用途与货物流向沟通",
+        "现场尺寸与设备条件核对",
+        "收货、存储、拣货与出库分区",
+        "货架方向与通道协调",
+        "相关装修与配套工作范围",
+        "现场协调与范围检查"
+      ],
+      "suitable_for_en": [
+        "Receiving zones",
+        "Holding and storage zones",
+        "Picking and packing zones",
+        "Warehouse-office transition zones"
+      ],
+      "suitable_for_ms": [
+        "Gudang",
+        "Unit perindustrian",
+        "Ruang logistik",
+        "Bilik simpanan"
+      ],
+      "suitable_for_zh": [
+        "收货区",
+        "暂存与存储区",
+        "拣货与包装区",
+        "仓库办公连接区"
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Review warehouse use, goods flow and current bottlenecks.",
+          "title": "Review the brief"
+        },
+        {
+          "desc": "Check the plan, measurements, loading activity and equipment constraints.",
+          "title": "Check the site"
+        },
+        {
+          "desc": "Discuss zoning, shelving directions and site-coordination items.",
+          "title": "Discuss zoning"
+        },
+        {
+          "desc": "Confirm the related renovation or supporting-work scope.",
+          "title": "Confirm the scope"
+        }
+      ],
+      "process_steps_ms": [
+        {
+          "desc": "Sahkan saiz barangan, anggaran beban, penggunaan forklift, aliran penerimaan dan keperluan keselamatan.",
+          "title": "Semakan keperluan"
+        },
+        {
+          "desc": "Rancang sistem rak, lebar lorong, pencahayaan, ruang pejabat dan zon simpanan.",
+          "title": "Perancangan susun atur"
+        },
+        {
+          "desc": "Pasang sistem rak atau kerja fit-out, kemudian periksa akses, kestabilan dan butiran penyerahan.",
+          "title": "Pemasangan dan pemeriksaan keselamatan"
+        }
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "了解仓库用途、货物流向和现有问题。",
+          "title": "了解需求"
+        },
+        {
+          "desc": "核对平面、尺寸、进出货与设备条件。",
+          "title": "核对现场"
+        },
+        {
+          "desc": "讨论分区、货架类型方向和施工协调事项。",
+          "title": "讨论分区"
+        },
+        {
+          "desc": "确认需要处理的装修或配套工作范围。",
+          "title": "确认范围"
+        }
+      ],
+      "common_projects_en": [
+        "Warehouse shelving zoning",
+        "Pallet and carton storage planning",
+        "Picking and packing flow",
+        "Receiving and dispatch areas"
+      ],
+      "common_projects_ms": [
+        "Sistem rak gudang",
+        "Ruang pejabat dalam gudang",
+        "Kerja lantai dan pencahayaan",
+        "Perancangan aliran kerja"
+      ],
+      "common_projects_zh": [
+        "仓库货架分区",
+        "托盘与箱体存储规划",
+        "拣货与包装动线",
+        "收货与出库区域"
+      ],
+      "seo_description_en": "Warehouse shelving and storage planning in Selangor and Kuala Lumpur. Dimensions, item flow, aisles and scope reviewed before quotation.",
+      "seo_description_ms": "Rancang aliran rak dan penyimpanan gudang di sekitar barangan, peralatan, lorong dan aktiviti pemuatan di Selangor dan Lembah Klang.",
+      "seo_description_zh": "雪兰莪与吉隆坡仓库货架与仓储规划。先确认尺寸、货物流向与通道，再安排报价。"
+    },
+    "managedCandidate": {
+      "taskId": "c4-four-service-seo-20261118-v1",
+      "actionId": "publish-c4-warehouse-seo-20261118-v1",
+      "operation": "publish",
+      "scope": "flashcast.com.my:services:1fab3adb-aa8c-4aab-9c30-8931152cdc91:seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
+      "candidateVersion": "c4-warehouse-seo-20261118-v1"
+    }
+  }
+}
