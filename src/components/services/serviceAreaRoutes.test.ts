@@ -61,6 +61,7 @@ describe("C1 service and area routes", () => {
       const [, , area, service] = path.split("/");
       const route = findServiceAreaRoute(area, service);
       expect(route?.path).toBe(path);
+      if (["condo-renovation", "landed-house-renovation"].includes(service)) expect(route?.parentService).toBe("renovation");
       const localizedPath = "/" + language + path;
       const languages = Object.keys(pageText[path as keyof typeof pageText]);
       const meta = generated.manifest[localizedPath];
