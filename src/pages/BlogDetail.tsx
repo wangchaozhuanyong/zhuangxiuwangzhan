@@ -9,6 +9,7 @@ import { usePublishedBlogPostBySlug, usePublishedBlogPosts } from "@/hooks/usePu
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import BlogArticleLoading, { BlogContentSkeleton } from "@/components/blocks/BlogArticleLoading";
+import RelatedServiceLinks from "@/components/blog/RelatedServiceLinks";
 import { Button } from "@/components/ui/button";
 import SmartImage from "@/components/SmartImage";
 import { JsonLdBlogPosting, JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -309,6 +310,8 @@ const BlogDetail = () => {
                 </>
               ) : renderContent(post.content)}
             </article>
+
+            <RelatedServiceLinks slug={post.slug} />
 
             <div className="blog-editorial-tags">
               <div>
