@@ -1,3 +1,4 @@
+import { C4_SERVICE_SEO_TARGETS } from "./c4-service-seo-targets.ts";
 import { CONTENT_LINK_REPAIR_TARGETS } from "./content-link-repair-targets.ts";
 import { ORG020_V7_TARGETS } from "./org020-v7-targets.ts";
 import { NATIVE_BODY_TARGETS } from "./native-body-targets.ts";
@@ -53,6 +54,7 @@ const PAID_THREE_PAGE_NATIVE_FIELDS = [
 
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
+  ...C4_SERVICE_SEO_TARGETS,
   ...PAID_FOUR_CURRENT_TARGETS,
   ...ENGLISH_KITCHEN_EN2_TARGETS,
   ...SHOP_OFFICE_SIX_FIELD_TARGETS,

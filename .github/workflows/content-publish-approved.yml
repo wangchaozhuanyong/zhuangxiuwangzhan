@@ -18,6 +18,7 @@ on:
         default: all-20260906
         type: choice
         options:
+          - c4-four-service-seo-20261118-v1
           - current-stage-source-21a1a1ad2a3b66a30ac7b011
           - current-stage-source-621f604c3a2e460c60b61438
           - current-stage-source-0f31548d5b630ef286d45894
@@ -180,6 +181,12 @@ jobs:
           APPROVAL_ID: ${{ inputs.approval_id }}
         run: |
           test "$GITHUB_REF" = "refs/heads/main"
+          if [ "$PUBLISH_TARGET" = "c4-four-service-seo-20261118-v1" ]; then
+            test "$APPROVAL_ID" = "owner-approved-c4-four-service-seo-20261118" || exit 1
+            test "$MANAGED_OPERATION" = "publish" || exit 1
+            test -z "$MANAGED_PERMIT_ID" && test -z "$PARENT_RUN_ID" || exit 1
+            case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
+          fi
           if [ "$PUBLISH_TARGET" = "builtin-wardrobe-layout-content-zh-20261014-v1" ] && [ "$MANAGED_OPERATION" != "publish" ]; then
             echo "::error::This wardrobe target permits only its exact forward operation."
             exit 1
@@ -312,7 +319,7 @@ jobs:
           test -n "$VITE_SUPABASE_ANON_KEY"
 
       - name: Validate or publish approved updates
-        if: ${{ inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' && inputs.target != 'content-link-repair-20261024' }}
+        if: ${{ inputs.target != 'c4-four-service-seo-20261118-v1' && inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' && inputs.target != 'content-link-repair-20261024' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -467,6 +474,22 @@ jobs:
           if [ "$PUBLISH_TARGET" = "remaining-completion-after-38037667102" ]; then batch_script=scripts/publish-remainder8-after-38037667102.mjs; fi
           if [ "$PUBLISH_TARGET" = "paid-three-page-native-20261010" ]; then batch_script=scripts/publish-paid-three-page-native-20261010.mjs; fi
           node --experimental-strip-types "$batch_script" --mode=publish --artifact-dir="$PWD/audits/content-publish-${GITHUB_RUN_ID}"
+
+      - name: Preview or publish the four owner-approved C4 SEO candidates
+        if: ${{ inputs.target == 'c4-four-service-seo-20261118-v1' }}
+        env:
+          CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || '' }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL: https://flashcast.com.my
+          PUBLISH_MODE: ${{ inputs.mode }}
+          PUBLISH_TARGET: ${{ inputs.target }}
+          APPROVAL_ID: ${{ inputs.approval_id }}
+          MANAGED_OPERATION: ${{ inputs.managed_operation }}
+          MANAGED_PERMIT_ID: ${{ inputs.managed_permit_id }}
+          PARENT_RUN_ID: ${{ inputs.parent_run_id }}
+        run: node --experimental-strip-types scripts/publish-c4-service-seo.mjs
 
       - name: Upload audit package
         if: always()
