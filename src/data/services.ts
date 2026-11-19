@@ -19,10 +19,10 @@ export const servicesData: ServiceItem[] = [
     title: "Residential Renovation in Kuala Lumpur and Selangor",
     titleZh: "吉隆坡与雪兰莪住宅装修服务",
     slug: "renovation",
-    seoTitle: "Residential Renovation Kuala Lumpur | FLASH CAST",
-    seoTitleZh: "吉隆坡住宅装修服务｜公寓与有地住宅翻新｜FLASH CAST",
-    seoDescription: "Plan residential renovation in Kuala Lumpur, Selangor, or Klang Valley with FLASH CAST. Review the site, define the work scope, compare materials, and coordinate relevant trades before requesting a quotation.",
-    seoDescriptionZh: "FLASH CAST 为吉隆坡、雪兰莪与巴生谷的公寓和有地住宅提供装修规划。先检查现场、确认范围、比较材料并协调相关工种，再整理报价与施工安排。",
+    seoTitle: "Residential Renovation KL & Selangor | FLASH CAST",
+    seoTitleZh: "吉隆坡与雪兰莪住宅装修｜FLASH CAST",
+    seoDescription: "Residential renovation in Kuala Lumpur and Selangor. Site review, confirmed scope, material comparison and trade coordination before quotation.",
+    seoDescriptionZh: "吉隆坡与雪兰莪公寓及有地住宅装修。先看现场、确认施工范围、比较材料并协调相关工种，再整理分项报价与工期安排。",
     summary: "Residential renovation for condos and landed homes across Kuala Lumpur, Selangor, and Klang Valley, planned around the real site, confirmed work scope, materials, and trade coordination.",
     summaryZh: "为 Kuala Lumpur、Selangor 与 Klang Valley 的公寓和有地住宅提供装修规划，从真实现场、确认范围、材料选择和工种协调开始。",
     description: "Residential renovation can involve demolition, masonry, electrical, plumbing, carpentry, ceilings, flooring, painting, kitchens, bathrooms, and other selected work. FLASH CAST starts by reviewing the property condition, intended use, items to keep or remove, management requirements, and budget factors. The quotation should then separate confirmed work, exclusions, owner-supplied items, responsibilities, programme assumptions, progress updates, and handover items.",
@@ -86,12 +86,12 @@ export const servicesData: ServiceItem[] = [
     title: "Interior Design",
     titleZh: "室内设计与空间规划",
     slug: "design",
-    seoTitle: "Interior Design Kuala Lumpur | Space Planning, 3D Visualization & Renovation Coordination",
-    seoTitleZh: "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接",
+    seoTitle: "Interior Design Kuala Lumpur | Space Planning | FLASH CAST",
+    seoTitleZh: "吉隆坡室内设计与空间规划｜FLASH CAST",
     seoDescription:
-      "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support.",
+      "Interior design in Kuala Lumpur with space planning, 3D visualisation direction, material advice and renovation quotation support.",
     seoDescriptionZh:
-      "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。",
+      "吉隆坡室内设计与空间规划。提供 3D 效果图方向、材料建议、施工图协调，并衔接装修报价。",
     summary:
       "Interior design and space planning for residential and commercial renovation, including layout direction, 3D visualization direction, material advice, drawing coordination, and renovation quotation support.",
     summaryZh:
@@ -181,10 +181,10 @@ export const servicesData: ServiceItem[] = [
     slug: "builtin",
     imageAlt: "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
     imageAltZh: "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
-    seoTitle: "Custom Cabinet Kuala Lumpur | FLASH CAST",
-    seoTitleZh: "吉隆坡定制柜与内嵌家具 | FLASH CAST",
-    seoDescription: "FLASH CAST provides custom built-in furniture planning in Kuala Lumpur, Selangor, and Klang Valley, including wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems.",
-    seoDescriptionZh: "FLASH CAST 提供吉隆坡、雪兰莪和 Klang Valley 定制家具规划，包括衣柜、厨房柜、电视柜、鞋柜、展示柜和收纳系统。",
+    seoTitle: "Custom Built-In Furniture KL | Wardrobes | FLASH CAST",
+    seoTitleZh: "吉隆坡定制家具｜衣柜与橱柜｜FLASH CAST",
+    seoDescription: "Custom built-in furniture in Kuala Lumpur: wardrobes, kitchen cabinets, TV and shoe cabinets, display units and storage systems.",
+    seoDescriptionZh: "吉隆坡定制家具规划：衣柜、厨房橱柜、电视柜、鞋柜、展示柜与全屋收纳系统，按现场尺寸设计。",
     summary: "Custom wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems planned around site measurements, materials, hardware, and installation scope.",
     summaryZh: "FLASH CAST 提供定制衣柜、厨房柜、电视柜、鞋柜、展示柜和收纳系统规划，先确认现场尺寸、材料、五金和安装范围。",
     description: "FLASH CAST helps plan custom built-in furniture for homes and commercial spaces in Kuala Lumpur, Selangor, and Klang Valley. The service can cover wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, study desks, display cabinets, and storage systems. Before fabrication, we review site measurements, storage needs, material direction, hardware, and installation details so the quotation and drawings match the actual space.",
@@ -230,12 +230,12 @@ export const servicesData: ServiceItem[] = [
     title: "Kitchen Renovation in Kuala Lumpur & Selangor",
     titleZh: "吉隆坡与雪兰莪厨房装修服务",
     slug: "kitchen",
-    seoTitle: "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
-    seoTitleZh: "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+    seoTitle: "Kitchen Renovation KL & Selangor | FLASH CAST",
+    seoTitleZh: "吉隆坡厨房装修｜定制橱柜｜FLASH CAST",
     seoDescription:
-      "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope.",
+      "Kitchen renovation in Kuala Lumpur and Selangor. Layout, storage, cabinets, countertops, appliance points and plumbing confirmed before quoting.",
     seoDescriptionZh:
-      "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。",
+      "吉隆坡与雪兰莪厨房装修。围绕实际格局规划收纳、橱柜、台面、电器点位与水电，确认后才报价。",
     summary:
       "FLASH CAST helps homeowners plan kitchen renovation across Kuala Lumpur and Selangor, starting with site measurement, cooking habits, storage, dry and wet kitchen zoning, cabinet layout, countertop options, appliance positions, plumbing points, wet-work condition, and quotation scope.",
     summaryZh:
@@ -333,10 +333,10 @@ export const servicesData: ServiceItem[] = [
     title: "Bathroom Renovation in Kuala Lumpur and Selangor",
     titleZh: "吉隆坡浴室装修与防水工程规划",
     slug: "bathroom",
-    seoTitle: "Bathroom Renovation Kuala Lumpur | FLASH CAST",
-    seoTitleZh: "吉隆坡浴室装修与防水工程 | FLASH CAST",
-    seoDescription: "Plan a bathroom renovation in Kuala Lumpur or Selangor with FLASH CAST. Review waterproofing, tile works, drainage, sanitary fittings, shower screen planning, and quotation factors before starting.",
-    seoDescriptionZh: "FLASH CAST 提供吉隆坡、雪兰莪与巴生谷浴室装修、防水工程、瓷砖更新、排水优化、洁具安装与浴室柜规划。提交照片和问题点，获取下一步建议。",
+    seoTitle: "Bathroom Renovation KL | Waterproofing | FLASH CAST",
+    seoTitleZh: "吉隆坡浴室装修｜防水工程｜FLASH CAST",
+    seoDescription: "Bathroom renovation in Kuala Lumpur. Waterproofing, tiling, drainage, sanitary fittings and shower screen planning, reviewed before work starts.",
+    seoDescriptionZh: "吉隆坡浴室装修。防水、铺砖、排水、洁具与淋浴隔断在开工前逐项确认，含闭水测试安排。",
     summary: "Bathroom renovation across Kuala Lumpur, Selangor, and Klang Valley, including waterproofing refresh, tile works, drainage improvement, sanitary fitting installation, shower screen planning, and vanity storage coordination.",
     summaryZh: "FLASH CAST 为 Kuala Lumpur、Selangor 与 Klang Valley 的住宅业主提供浴室装修、防水重做、瓷砖更新、排水优化、洁具安装、shower screen 与浴室柜规划支持。",
     description: "A bathroom renovation should plan leakage, drainage, finishing, ventilation, and storage together instead of only choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, lighting, ventilation, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.",
@@ -440,12 +440,12 @@ export const servicesData: ServiceItem[] = [
     slug: "office-renovation",
     imageAlt: "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
     imageAltZh: "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
-    seoTitle: "Office Renovation Contractor KL | FLASH CAST",
-    seoTitleZh: "吉隆坡办公室装修与 Fit-Out | FLASH CAST",
+    seoTitle: "Office Renovation & Fit-Out KL | FLASH CAST",
+    seoTitleZh: "吉隆坡办公室装修与精装｜FLASH CAST",
     seoDescription:
-      "Plan office renovation and commercial fit-out in Kuala Lumpur, Selangor, and Klang Valley with FLASH CAST. Review layout, partitions, reception, M&E, materials, and quotation steps.",
+      "Office renovation and fit-out in Kuala Lumpur. Layout, partitions, reception, M&E coordination, materials and staged quotation steps.",
     seoDescriptionZh:
-      "FLASH CAST 提供吉隆坡、雪兰莪与巴生谷办公室装修、商业 fit-out、隔间、接待区、会议室、工作站与材料协调建议。提交照片、面积和用途获取初步报价沟通。",
+      "吉隆坡办公室装修与商业精装。格局、隔间、接待区、机电配合与材料分项确认，可分阶段报价。",
     summary:
       "Office renovation and commercial fit-out planning for offices, clinics, retail units, showrooms, and SME workspaces that need clear layout, partitions, reception, workstations, lighting, material direction, and quotation preparation.",
     summaryZh:
@@ -541,12 +541,12 @@ export const servicesData: ServiceItem[] = [
     title: "Shop Renovation & Retail Fit-Out in Kuala Lumpur",
     titleZh: "吉隆坡店铺装修与零售 Fit-Out",
     slug: "shop-renovation",
-    seoTitle: "Shop Renovation Kuala Lumpur | FLASH CAST",
-    seoTitleZh: "吉隆坡店铺装修与零售 Fit-Out | FLASH CAST",
+    seoTitle: "Shop & Retail Fit-Out KL | Shoplot | FLASH CAST",
+    seoTitleZh: "吉隆坡店铺装修与零售空间｜FLASH CAST",
     seoDescription:
-      "FLASH CAST plans shop renovation and retail fit-out for retail stores, F&B spaces, clinic front areas, beauty and hair salons, showrooms and service outlets.",
+      "Shop and retail fit-out in Kuala Lumpur: retail stores, F&B, clinics, salons and showrooms. Counter, display and lighting coordination.",
     seoDescriptionZh:
-      "FLASH CAST 提供店铺装修与零售空间规划，覆盖零售店、餐饮店、诊所前区、美容美发门店和展厅的动线、柜台、展示、收纳、灯光与施工协调。",
+      "吉隆坡店铺与零售空间装修：零售店、餐饮、诊所前台、美容美发与展厅，含柜台与灯光配合。",
     summary:
       "We coordinate customer flow, display areas, counters, storage, lighting and M&E points around the way the business operates and the limits of the existing site.",
     summaryZh:
@@ -641,6 +641,10 @@ export const servicesData: ServiceItem[] = [
     id: "artistic-coating",
     title: "Artistic Wall Coating — Remmers",
     slug: "artistic-coating",
+    seoTitle: "Artistic Wall Coating KL | Feature Walls | FLASH CAST",
+    seoTitleZh: "吉隆坡艺术涂料｜特色墙施工｜FLASH CAST",
+    seoDescription: "Artistic wall coating and feature walls in Kuala Lumpur and Selangor, with surface preparation and finish samples agreed before application.",
+    seoDescriptionZh: "吉隆坡与雪兰莪艺术涂料与特色墙施工。先确认基层处理与样板效果，再安排大面积施工。",
     summary: "German Remmers artistic wall coating options for feature walls and selected interior spaces.",
     description: "Artistic wall coating is suitable for feature walls and selected interiors that need texture, depth, and a more distinctive finish than regular paint. Before recommending a coating approach, we confirm wall condition, design direction, color, sample effect, maintenance expectations, and site constraints.",
     suitableFor: ["Homeowners wanting premium feature walls", "Interior designers seeking unique finishes", "Hotels and hospitality venues", "Restaurants and F&B interiors", "Commercial showrooms and lobbies"],
@@ -665,12 +669,12 @@ export const servicesData: ServiceItem[] = [
     title: "Old House Renovation in Kuala Lumpur and Selangor",
     titleZh: "吉隆坡与雪兰莪旧屋翻新",
     slug: "old-house",
-    seoTitle: "Old House Renovation Kuala Lumpur | FLASH CAST",
-    seoTitleZh: "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
+    seoTitle: "Old House Renovation KL & Selangor | FLASH CAST",
+    seoTitleZh: "吉隆坡老屋翻新｜雪兰莪｜FLASH CAST",
     seoDescription:
-      "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction.",
+      "Old house renovation in Kuala Lumpur and Selangor: site assessment, wiring, plumbing, waterproofing, layout and material direction.",
     seoDescriptionZh:
-      "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。",
+      "吉隆坡与雪兰莪老屋翻新。包含现场评估、线路、水管、防水、格局与材料方向。",
     summary:
       "Old house renovation planning for terrace houses, semi-D homes, bungalows, inherited properties, and older landed homes in Kuala Lumpur, Selangor, and Klang Valley.",
     summaryZh: "为吉隆坡、雪兰莪与 Klang Valley 的旧排屋、半独立、独立式住宅、继承房产和老屋提供翻新规划。",
@@ -757,12 +761,12 @@ export const servicesData: ServiceItem[] = [
     slug: "warehouse",
     imageAlt: "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
     imageAltZh: "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
-    seoTitle: "Warehouse Shelving and Storage Planning in Selangor and Kuala Lumpur",
-    seoTitleZh: "仓库货架与仓储空间规划｜雪兰莪与吉隆坡 Warehouse Shelving 服务",
+    seoTitle: "Warehouse Shelving Selangor & KL | FLASH CAST",
+    seoTitleZh: "雪兰莪与吉隆坡仓库货架规划｜FLASH CAST",
     seoDescription:
-      "FLASH CAST provides warehouse shelving, storage planning, packing-zone layout, and industrial-unit space advice in Selangor, Kuala Lumpur, and Klang Valley. Review dimensions, item flow, aisles, and scope before quotation.",
+      "Warehouse shelving and storage planning in Selangor and Kuala Lumpur. Dimensions, item flow, aisles and scope reviewed before quotation.",
     seoDescriptionZh:
-      "FLASH CAST 提供雪兰莪、吉隆坡与 Klang Valley 仓库货架、仓储收纳系统、packing zone 与工业单位空间规划建议。先确认尺寸、货物类型、动线与施工范围，再安排报价沟通。",
+      "雪兰莪与吉隆坡仓库货架与仓储规划。先确认尺寸、货物流向与通道，再安排报价。",
     summary:
       "Warehouse shelving, storage-system planning, packing-zone organization, and practical industrial-unit layout advice for businesses across Selangor, Kuala Lumpur, and Klang Valley.",
     summaryZh:
@@ -853,6 +857,10 @@ export const servicesData: ServiceItem[] = [
     id: "approval",
     title: "Permit & Drawing Support",
     slug: "approval",
+    seoTitle: "Renovation Permit & Drawing Support | FLASH CAST",
+    seoTitleZh: "装修许可证与图测支持｜FLASH CAST",
+    seoDescription: "Renovation permit and drawing support for Kuala Lumpur and Selangor projects, with submission requirements clarified before work starts.",
+    seoDescriptionZh: "吉隆坡与雪兰莪装修许可证与图测支持。开工前先理清送审要求与文件清单。",
     summary: "Review renovation approval, management, drawing, and document-coordination needs against the property and confirmed project scope.",
     description: "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing, and outcome must be confirmed for the project.",
     suitableFor: ["Anyone doing renovation in a managed property", "Projects requiring DBKL or local council permits", "Commercial renovations needing compliance documentation"],
