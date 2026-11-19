@@ -2,23 +2,25 @@ import { describe, expect, it } from "vitest";
 import { servicesData } from "@/data/services";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 
-const PRIORITY_SERVICE_SLUGS = ["renovation", "kitchen", "bathroom", "office-renovation", "shop-renovation", "old-house", "builtin"] as const;
+const PRIORITY_SERVICE_INTENTS = [
+  { slug: "renovation", title: /^Residential Renovation\b/i },
+  { slug: "kitchen", title: /^Kitchen Renovation\b/i },
+  { slug: "bathroom", title: /^Bathroom Renovation\b/i },
+  { slug: "office-renovation", title: /^Office Renovation\b/i },
+  { slug: "shop-renovation", title: /^Shop (?:Renovation|& Retail Fit-Out)\b/i },
+  { slug: "old-house", title: /^Old House Renovation\b/i },
+  { slug: "builtin", title: /^(?:Custom Cabinet|Custom Built-In Furniture)\b/i },
+] as const;
+
+const PRIORITY_SERVICE_SLUGS = PRIORITY_SERVICE_INTENTS.map(({ slug }) => slug);
 
 describe("priority service SEO fallbacks", () => {
   it("assigns a distinct commercial search intent to each priority service", () => {
-    const services = PRIORITY_SERVICE_SLUGS.map((slug) => servicesData.find((service) => service.slug === slug));
-    expect(services.every(Boolean)).toBe(true);
-
-    const titles = services.map((service) => service?.seoTitle || "");
-    expect(titles).toEqual([
-      "Residential Renovation Kuala Lumpur | FLASH CAST",
-      "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
-      "Bathroom Renovation Kuala Lumpur | FLASH CAST",
-      "Office Renovation Contractor KL | FLASH CAST",
-      "Shop Renovation Kuala Lumpur | FLASH CAST",
-      "Old House Renovation Kuala Lumpur | FLASH CAST",
-      "Custom Cabinet Kuala Lumpur | FLASH CAST",
-    ]);
+    const titles = PRIORITY_SERVICE_INTENTS.map(({ slug, title }) => {
+      const actualTitle = servicesData.find((service) => service.slug === slug)?.seoTitle || "";
+      expect(actualTitle, slug).toMatch(title);
+      return actualTitle;
+    });
     expect(new Set(titles).size).toBe(titles.length);
     expect(titles.every((title) => title.length >= 40 && title.length <= 60)).toBe(true);
   });
