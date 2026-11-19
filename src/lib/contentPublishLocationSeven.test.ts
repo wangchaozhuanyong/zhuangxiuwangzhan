@@ -48,6 +48,7 @@ describe('remaining seven exact regional body releases',()=>{
   it('guards the exact approval before credentials and keeps all writes in content-publish',()=>{
     const workflow=readFileSync('.github/workflows/content-publish-approved.yml','utf8');
     const script=readFileSync('scripts/publish-location-seven-bodies.mjs','utf8');
+    expect(workflow).toContain("runs-on: ${{ inputs.target == 'location-seven-body-20261119-v1' && 'ubuntu-24.04' || 'ubuntu-latest' }}");
     expect(workflow.indexOf('owner-approved-location-seven-after-kl-20261119')).toBeLessThan(workflow.indexOf('Confirm production source and required secrets'));
     expect(workflow).toContain("inputs.target == 'location-seven-body-20261119-v1' && inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || ''");
     expect(script).not.toMatch(/\.from\(['"]service_areas['"]\)\s*\.(?:update|insert|upsert|delete)\(/);
