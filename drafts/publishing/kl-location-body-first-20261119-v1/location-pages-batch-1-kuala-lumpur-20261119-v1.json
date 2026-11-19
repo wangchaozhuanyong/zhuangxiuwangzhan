@@ -1,0 +1,312 @@
+{
+  "schema": "flashcast-area-body-review-candidate/v1",
+  "source": {
+    "path": "docs/seo/location-pages-batch-1.md",
+    "exactValues": true,
+    "lfSha256": "77f9d5eb3b751863247ccf9e919edf63c33f0a2b607edb4e9e68566aaf4b9b17"
+  },
+  "before": {
+    "id": "4e2cd77f-ac25-4a16-87bc-03652c4121b1",
+    "slug": "kuala-lumpur",
+    "status": "published",
+    "faqs_en": [
+      {
+        "a": "It can be discussed after we review the project type, location, access, current condition, and schedule. Share photos, approximate size, and intended scope first.",
+        "q": "Can a site visit or measurement be arranged in Kuala Lumpur?"
+      },
+      {
+        "a": "Timing depends on how clear the scope is, whether a site review is needed, and whether material, technical, management, landlord, consultant, or authority details are outstanding. We confirm the next step after reviewing the information.",
+        "q": "What affects quotation preparation for a renovation in Kuala Lumpur?"
+      },
+      {
+        "a": "Yes. We can review the available building guide and project scope with you. Required forms, drawings, qualified parties, fees, deposits, submissions, responsibilities, and approval decisions remain subject to the relevant management, landlord, consultants, or authority.",
+        "q": "Can management or approval requirements be reviewed?"
+      }
+    ],
+    "faqs_ms": [
+      {
+        "a": "Ia boleh dibincangkan selepas kami menyemak jenis projek, lokasi, akses, keadaan semasa dan jadual. Kongsi foto, anggaran saiz dan skop yang dimaksudkan dahulu.",
+        "q": "Bolehkah lawatan tapak atau pengukuran diatur di Kuala Lumpur?"
+      },
+      {
+        "a": "Masa bergantung pada sejauh mana jelas skopnya, sama ada semakan tapak diperlukan dan sama ada butiran bahan, teknikal, pengurusan, tuan tanah, perunding atau pihak berkuasa masih belum jelas. Kami mengesahkan langkah seterusnya selepas menyemak maklumat.",
+        "q": "Apakah yang mempengaruhi penyediaan sebut harga untuk pengubahsuaian di Kuala Lumpur?"
+      },
+      {
+        "a": "Ya. Kami boleh menyemak panduan bangunan dan skop projek yang tersedia dengan anda. Borang yang diperlukan, lukisan, pihak yang layak, yuran, deposit, penyerahan, tanggungjawab, dan keputusan kelulusan tetap tertakluk kepada pengurusan, tuan tanah, perunding atau pihak berkuasa yang berkaitan.",
+        "q": "Bolehkah pengurusan atau keperluan kelulusan disemak?"
+      }
+    ],
+    "faqs_zh": [
+      {
+        "a": "可以在初步了解项目类型、地点、出入条件、现场情况和时间安排后讨论。请先提供照片、大约面积和计划施工范围。",
+        "q": "Kuala Lumpur 可以安排现场查看或测量吗？"
+      },
+      {
+        "a": "报价准备时间取决于施工范围是否明确、是否需要现场查看，以及材料、技术、管理处、业主、顾问或相关部门资料是否齐全。我们会在审核资料后说明下一步。",
+        "q": "Kuala Lumpur 装修报价准备时间受哪些因素影响？"
+      },
+      {
+        "a": "可以。我们可以根据现有管理指南和项目范围一起核对。具体表格、图纸、合格人员、费用、押金、提交责任和审批结果，仍以相关管理处、业主、顾问或主管部门要求为准。",
+        "q": "可以一起核对管理处或审批要求吗？"
+      }
+    ],
+    "version": 1,
+    "projects": [
+      {
+        "type": "Residential Renovation",
+        "image": "/images/projects/residential-renovation.webp?v=20260601-content",
+        "title": "Kuala Lumpur Residential Renovation Reference"
+      },
+      {
+        "type": "Commercial Fit-Out",
+        "image": "/images/projects/commercial-renovation.webp?v=20260601-content",
+        "title": "Kuala Lumpur Commercial Fit-Out Reference"
+      }
+    ],
+    "title_en": "Kuala Lumpur Renovation Contractor",
+    "title_ms": "Kontraktor Pengubahsuaian di Kuala Lumpur",
+    "title_zh": "Kuala Lumpur 装修公司",
+    "area_name": "Kuala Lumpur",
+    "content_en": "<p>FLASH CAST provides renovation planning and project coordination for homes and commercial spaces in Kuala Lumpur. We can discuss home renovation, kitchens and bathrooms, custom built-in cabinetry, office fit-outs and shop spaces. The practical scope depends on the property condition, layout and access; a written quotation follows review of the actual work.</p><p>To compare renovation contractors in Kuala Lumpur, share the property location and type, approximate size, site photos, intended work and budget range. We review these details and confirm whether a site visit or measurement is needed. Quotations are free. Measurement within 30 km of our company or service point is free; beyond 30 km it is charged, with the fee confirmed before arranging a visit.</p><p>For managed properties, working hours, deliveries, access and any landlord, management or authority submissions depend on the specific building and work scope. We can help review the available requirements, while the relevant parties decide approvals. Use the service links on this page to review the matching work, then send your details through the free quotation form.</p>",
+    "content_ms": "<p>FLASH CAST menyediakan perancangan pengubahsuaian dan penyelarasan projek untuk rumah serta ruang komersial di Kuala Lumpur. Kami boleh membincangkan pengubahsuaian rumah, dapur dan bilik mandi, kabinet terbina dalam tersuai, fit-out pejabat serta ruang kedai. Skop praktikal bergantung pada keadaan hartanah, susun atur dan akses tapak; sebut harga bertulis disediakan selepas kerja sebenar disemak.</p><p>Untuk membandingkan kontraktor pengubahsuaian di Kuala Lumpur, kongsikan lokasi dan jenis hartanah, anggaran keluasan, foto tapak, kerja yang dirancang serta julat belanjawan. Kami akan menyemak maklumat ini dan mengesahkan sama ada lawatan atau ukuran tapak diperlukan. Sebut harga adalah percuma. Ukuran tapak dalam lingkungan 30 km dari pejabat atau titik perkhidmatan kami juga percuma; lawatan melebihi jarak itu dikenakan bayaran yang akan disahkan sebelum lawatan diatur.</p><p>Bagi hartanah di bawah pengurusan, waktu kerja, penghantaran, akses dan sebarang permohonan kepada tuan tanah, pihak pengurusan atau pihak berkuasa bergantung pada bangunan serta skop kerja. Kami boleh membantu menyemak keperluan yang tersedia, manakala kelulusan ditentukan oleh pihak berkenaan. Lihat pautan perkhidmatan pada halaman ini untuk skop berkaitan, kemudian hantar butiran melalui borang permintaan sebut harga.</p>",
+    "content_zh": "<p>FLASH CAST 在吉隆坡承接住宅与商业空间装修咨询，可按实际需求讨论住宅翻新、厨房及浴室、定制柜、办公室装修与店铺空间。可施工范围取决于物业现况、布局和进场条件；书面报价会在核对具体工程后准备。</p><p>选择吉隆坡装修公司时，可先提供物业地点和类型、约略面积、现场照片、计划施工项目及预算范围。我们先审核资料，再确认是否需要上门查看或量房。报价免费；距离公司或服务点 30 公里以内量房免费，超过 30 公里则收费，并在安排行程前确认费用。</p><p>如物业受管理处管理，施工时段、材料进场、出入安排及业主、管理处或主管部门所需文件，都应按实际大楼和工程范围核对。我们可协助查看已有要求，审批决定仍由相关单位作出。可通过本页服务链接了解对应项目，再使用免费报价表单提交资料。</p>",
+    "created_at": "2026-05-25T10:58:29.820388+00:00",
+    "excerpt_en": "FLASH CAST provides Kuala Lumpur home renovation, old house refurbishment, kitchen, bathroom, office, shop, and custom cabinet services.",
+    "excerpt_ms": "FLASH CAST menyediakan perkhidmatan pengubahsuaian di Kuala Lumpur, termasuk rumah lama, dapur, bilik mandi, pejabat, kedai dan perabot terbina dalam tersuai.",
+    "excerpt_zh": "FLASH CAST 提供 Kuala Lumpur 住宅装修、旧屋翻新、厨房浴室、办公室、店铺和定制柜服务。",
+    "sort_order": 10,
+    "updated_at": "2026-10-19T13:38:05.283775+00:00",
+    "common_needs": [
+      "Full renovation",
+      "Kitchen cabinet",
+      "Bathroom waterproofing",
+      "Built-in furniture",
+      "Office fit-out",
+      "Shop renovation"
+    ],
+    "seo_title_en": "Kuala Lumpur Renovation Contractor | Home, Office, Kitchen & Shop",
+    "seo_title_ms": "Kontraktor Ubah Suai Kuala Lumpur | Rumah, Pejabat, Dapur & Kedai",
+    "seo_title_zh": "Kuala Lumpur 装修公司 | 住宅、旧屋、厨房、办公室与店铺装修",
+    "property_types": [
+      "Condo",
+      "Terrace house",
+      "Semi-D",
+      "Office",
+      "Retail shop",
+      "Warehouse"
+    ],
+    "seo_description_en": "FLASH CAST provides Kuala Lumpur renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.",
+    "seo_description_ms": "FLASH CAST menyediakan perkhidmatan pengubahsuaian Kuala Lumpur untuk rumah, rumah lama, kabinet dapur, kalis air bilik mandi, pejabat, kedai, kabinet tersuai, dan sebut harga percuma.",
+    "seo_description_zh": "FLASH CAST 提供 Kuala Lumpur 装修服务，覆盖住宅装修、旧屋翻新、厨房橱柜、浴室防水、办公室、店铺、定制柜和免费报价。",
+    "construction_notes_en": "Kuala Lumpur projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early.",
+    "construction_notes_ms": "Bagi projek di Kuala Lumpur, sahkan lebih awal permohonan kepada pihak pengurusan, waktu kerja, penghantaran bahan, kerja perlindungan, tempat letak kereta dan had bunyi.",
+    "construction_notes_zh": "Kuala Lumpur 项目建议提前确认管理处申请、施工时间、材料运输、保护工程、停车安排和噪音限制。"
+  },
+  "desired": {
+    "content_en": "<p>Kuala Lumpur is mostly a city of apartments and condominiums, with pockets of older terraces and shophouses in areas like Pudu, Chow Kit and parts of Sungai Besi. That mix decides the work: a high-rise unit is renovated within what the JMB will approve and what the service lift can carry, while an older shophouse or terrace is a structural and services job before it is a design job. The two are quoted, scheduled and supervised differently, so the first visit is spent identifying which one you actually have.</p>\n<p><strong>What comes up most often in Kuala Lumpur</strong></p>\n<p>In condominiums, the recurring items are kitchens that were built for a smaller appliance load, bathrooms reaching the end of their waterproofing life, storage that never matched the layout, and electrical points that were added over the years without a clear record. In older city terraces and shophouses, the list is harder: undersized incoming supply, wiring that predates modern load, drainage that was patched rather than replaced, and structural openings made without drawings. Anything touching the building facade or structural elements usually needs DBKL submission, and that is a programme item, not paperwork to handle at the end.</p>\n<p><strong>Access, management and timing</strong></p>\n<p>City centre buildings impose the tightest constraints in the Klang Valley. Most condominiums allow renovation only on weekdays within fixed hours, require a deposit, a contractor registration, a worker list and insurance before the first day, and restrict loading to a booked service lift window. Some buildings stop noisy work entirely during certain periods. Street parking around Pudu, Chow Kit and Bukit Bintang is scarce, so material delivery has to be scheduled rather than attempted. We confirm all of this before the programme is set, because a one-hour loading window changes the sequence for the whole job.</p>\n<p><strong>Typical scope</strong></p>\n<p>For a condominium: kitchen and bathroom replacement, built-in wardrobes and cabinets, flooring, lighting and electrical additions, and layout changes that do not touch structure. For a city terrace or shophouse: full rewiring and re-piping, waterproofing, structural repair, and reinstatement of the frontage where required. For both: waterproofing is the item most often postponed and most often regretted, because failure appears in the unit below rather than your own.</p>\n<p><strong>Quotation and handover</strong></p>\n<p>The quotation separates confirmed work from items that can only be assessed after opening up, and states which submissions and management approvals sit with us. At handover we test every outlet and tap, run the bathrooms under normal use, and record defects in writing with a return date. In high-rise buildings we also confirm the deposit refund steps with the management office, because that is the last thing standing between you and a closed project.</p>",
+    "content_zh": "<p>吉隆坡以公寓与共管公寓为主，Pudu、Chow Kit 与 Sungai Besi 部分地段还留着较老的排屋与店屋。这个结构直接决定施工方式：高层单位要在 JMB 批准的范围内、在货梯能承受的范围内做；老店屋与排屋则是先解决结构与水电，再谈设计。两类房子的报价方式、工期安排与现场管理都不一样，所以第一次上门要先判断你手上是哪一种。</p>\n<p><strong>吉隆坡最常见的问题</strong></p>\n<p>公寓反复出现的是：厨房当初按较小电器负荷设计、浴室防水到了寿命末期、收纳与户型对不上、多年下来陆续加装的电点没有完整记录。市区老排屋与店屋的问题更硬：进电容量不足、线路早于现代用电标准、排水是修补而不是更换、开洞改结构却没有图纸。凡涉及建筑外观或结构构件，通常要送 DBKL 审批，这是排期里的一项工作，不是最后补的手续。</p>\n<p><strong>进场、管理与时段</strong></p>\n<p>市中心的限制是整个巴生谷最紧的。多数共管公寓只允许工作日固定时段施工，开工前要交押金、承包商登记、工人名单与保险，上料只能用预约的货梯时段；部分大楼在特定期间完全禁止噪音工序。Pudu、Chow Kit、武吉免登一带路边车位紧张，材料进场必须预约，不能临时碰运气。这些在排工期之前就要确认，因为只有一小时的上料窗口，会改变整个施工顺序。</p>\n<p><strong>典型施工范围</strong></p>\n<p>公寓多为：厨房与浴室重做、定制衣柜与橱柜、地面、灯位与加点位，以及不触及结构的格局调整。市区排屋与店屋多为：全屋重新拉电换管、防水、结构修补，以及按需要做的临街立面复原。两类共通的是防水——最常被推迟，也最常后悔，因为失效的水渍先出现在楼下，而不是你自己家里。</p>\n<p><strong>报价与交付</strong></p>\n<p>报价会把已确认工程与「打开后才能判断」的项目分开，并写清哪些送审与管理处手续由我们处理。交付时逐个插座与龙头测试、浴室按日常使用方式试一遍，缺陷书面记录并约定返场日期。高层单位还要与管理处确认押金退还流程，那往往是项目真正结案前的最后一关。</p>"
+  },
+  "rollback": {
+    "content_en": "<p>FLASH CAST provides renovation planning and project coordination for homes and commercial spaces in Kuala Lumpur. We can discuss home renovation, kitchens and bathrooms, custom built-in cabinetry, office fit-outs and shop spaces. The practical scope depends on the property condition, layout and access; a written quotation follows review of the actual work.</p><p>To compare renovation contractors in Kuala Lumpur, share the property location and type, approximate size, site photos, intended work and budget range. We review these details and confirm whether a site visit or measurement is needed. Quotations are free. Measurement within 30 km of our company or service point is free; beyond 30 km it is charged, with the fee confirmed before arranging a visit.</p><p>For managed properties, working hours, deliveries, access and any landlord, management or authority submissions depend on the specific building and work scope. We can help review the available requirements, while the relevant parties decide approvals. Use the service links on this page to review the matching work, then send your details through the free quotation form.</p>",
+    "content_zh": "<p>FLASH CAST 在吉隆坡承接住宅与商业空间装修咨询，可按实际需求讨论住宅翻新、厨房及浴室、定制柜、办公室装修与店铺空间。可施工范围取决于物业现况、布局和进场条件；书面报价会在核对具体工程后准备。</p><p>选择吉隆坡装修公司时，可先提供物业地点和类型、约略面积、现场照片、计划施工项目及预算范围。我们先审核资料，再确认是否需要上门查看或量房。报价免费；距离公司或服务点 30 公里以内量房免费，超过 30 公里则收费，并在安排行程前确认费用。</p><p>如物业受管理处管理，施工时段、材料进场、出入安排及业主、管理处或主管部门所需文件，都应按实际大楼和工程范围核对。我们可协助查看已有要求，审批决定仍由相关单位作出。可通过本页服务链接了解对应项目，再使用免费报价表单提交资料。</p>"
+  },
+  "runtime_target": {
+    "id": "4e2cd77f-ac25-4a16-87bc-03652c4121b1",
+    "slug": "kuala-lumpur",
+    "contentType": "service_area",
+    "table": "service_areas",
+    "taskId": "kl-location-body-first-20261119-v1",
+    "actionId": "publish-kl-location-body-first-20261119-v1",
+    "candidateVersion": "location-pages-batch-1-kuala-lumpur-20261119-v1",
+    "scope": "flashcast.com.my:service_areas/4e2cd77f-ac25-4a16-87bc-03652c4121b1:content_en,content_zh",
+    "changedFields": [
+      "content_en",
+      "content_zh"
+    ],
+    "baselineProjectionFields": [
+      "area_name",
+      "common_needs",
+      "construction_notes_en",
+      "construction_notes_ms",
+      "construction_notes_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "projects",
+      "property_types",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "expectedUpdatedAt": "2026-10-19T13:38:05.283775+00:00",
+    "versionField": "updated_at",
+    "retainedProjectionFields": [
+      "area_name",
+      "common_needs",
+      "construction_notes_en",
+      "construction_notes_ms",
+      "construction_notes_zh",
+      "content_ms",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "projects",
+      "property_types",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "title_en",
+      "title_ms",
+      "title_zh"
+    ],
+    "requiresParentRun": true,
+    "rollbackAllowed": true,
+    "baselineFieldsSha256": "2b026db160d8293cdce91b2c182091d77611058001d6c3c51a50836dad65014c",
+    "desiredFieldsSha256": "67ec0a3d24e274a8684d4d63de127743cc865c98fc97493b787056c3eb763283",
+    "rollbackFieldsSha256": "69f85b9bbdd8cad9a15c3b9230826fa83c2a808b1798fb3ca8de5e997c94a6f5",
+    "retainedFieldsSha256": "749a26b56d2a72daf10a0c8079bdb361f7645ef7695babd7c34be38522660e71"
+  },
+  "dryRunRequest": {
+    "contentType": "service_area",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-10-19T13:38:05.283775+00:00",
+    "source": "owner-approved-kl-first-20261119",
+    "record": {
+      "id": "4e2cd77f-ac25-4a16-87bc-03652c4121b1",
+      "slug": "kuala-lumpur",
+      "status": "published",
+      "faqs_en": [
+        {
+          "a": "It can be discussed after we review the project type, location, access, current condition, and schedule. Share photos, approximate size, and intended scope first.",
+          "q": "Can a site visit or measurement be arranged in Kuala Lumpur?"
+        },
+        {
+          "a": "Timing depends on how clear the scope is, whether a site review is needed, and whether material, technical, management, landlord, consultant, or authority details are outstanding. We confirm the next step after reviewing the information.",
+          "q": "What affects quotation preparation for a renovation in Kuala Lumpur?"
+        },
+        {
+          "a": "Yes. We can review the available building guide and project scope with you. Required forms, drawings, qualified parties, fees, deposits, submissions, responsibilities, and approval decisions remain subject to the relevant management, landlord, consultants, or authority.",
+          "q": "Can management or approval requirements be reviewed?"
+        }
+      ],
+      "faqs_ms": [
+        {
+          "a": "Ia boleh dibincangkan selepas kami menyemak jenis projek, lokasi, akses, keadaan semasa dan jadual. Kongsi foto, anggaran saiz dan skop yang dimaksudkan dahulu.",
+          "q": "Bolehkah lawatan tapak atau pengukuran diatur di Kuala Lumpur?"
+        },
+        {
+          "a": "Masa bergantung pada sejauh mana jelas skopnya, sama ada semakan tapak diperlukan dan sama ada butiran bahan, teknikal, pengurusan, tuan tanah, perunding atau pihak berkuasa masih belum jelas. Kami mengesahkan langkah seterusnya selepas menyemak maklumat.",
+          "q": "Apakah yang mempengaruhi penyediaan sebut harga untuk pengubahsuaian di Kuala Lumpur?"
+        },
+        {
+          "a": "Ya. Kami boleh menyemak panduan bangunan dan skop projek yang tersedia dengan anda. Borang yang diperlukan, lukisan, pihak yang layak, yuran, deposit, penyerahan, tanggungjawab, dan keputusan kelulusan tetap tertakluk kepada pengurusan, tuan tanah, perunding atau pihak berkuasa yang berkaitan.",
+          "q": "Bolehkah pengurusan atau keperluan kelulusan disemak?"
+        }
+      ],
+      "faqs_zh": [
+        {
+          "a": "可以在初步了解项目类型、地点、出入条件、现场情况和时间安排后讨论。请先提供照片、大约面积和计划施工范围。",
+          "q": "Kuala Lumpur 可以安排现场查看或测量吗？"
+        },
+        {
+          "a": "报价准备时间取决于施工范围是否明确、是否需要现场查看，以及材料、技术、管理处、业主、顾问或相关部门资料是否齐全。我们会在审核资料后说明下一步。",
+          "q": "Kuala Lumpur 装修报价准备时间受哪些因素影响？"
+        },
+        {
+          "a": "可以。我们可以根据现有管理指南和项目范围一起核对。具体表格、图纸、合格人员、费用、押金、提交责任和审批结果，仍以相关管理处、业主、顾问或主管部门要求为准。",
+          "q": "可以一起核对管理处或审批要求吗？"
+        }
+      ],
+      "version": 1,
+      "projects": [
+        {
+          "type": "Residential Renovation",
+          "image": "/images/projects/residential-renovation.webp?v=20260601-content",
+          "title": "Kuala Lumpur Residential Renovation Reference"
+        },
+        {
+          "type": "Commercial Fit-Out",
+          "image": "/images/projects/commercial-renovation.webp?v=20260601-content",
+          "title": "Kuala Lumpur Commercial Fit-Out Reference"
+        }
+      ],
+      "title_en": "Kuala Lumpur Renovation Contractor",
+      "title_ms": "Kontraktor Pengubahsuaian di Kuala Lumpur",
+      "title_zh": "Kuala Lumpur 装修公司",
+      "area_name": "Kuala Lumpur",
+      "content_en": "<p>Kuala Lumpur is mostly a city of apartments and condominiums, with pockets of older terraces and shophouses in areas like Pudu, Chow Kit and parts of Sungai Besi. That mix decides the work: a high-rise unit is renovated within what the JMB will approve and what the service lift can carry, while an older shophouse or terrace is a structural and services job before it is a design job. The two are quoted, scheduled and supervised differently, so the first visit is spent identifying which one you actually have.</p>\n<p><strong>What comes up most often in Kuala Lumpur</strong></p>\n<p>In condominiums, the recurring items are kitchens that were built for a smaller appliance load, bathrooms reaching the end of their waterproofing life, storage that never matched the layout, and electrical points that were added over the years without a clear record. In older city terraces and shophouses, the list is harder: undersized incoming supply, wiring that predates modern load, drainage that was patched rather than replaced, and structural openings made without drawings. Anything touching the building facade or structural elements usually needs DBKL submission, and that is a programme item, not paperwork to handle at the end.</p>\n<p><strong>Access, management and timing</strong></p>\n<p>City centre buildings impose the tightest constraints in the Klang Valley. Most condominiums allow renovation only on weekdays within fixed hours, require a deposit, a contractor registration, a worker list and insurance before the first day, and restrict loading to a booked service lift window. Some buildings stop noisy work entirely during certain periods. Street parking around Pudu, Chow Kit and Bukit Bintang is scarce, so material delivery has to be scheduled rather than attempted. We confirm all of this before the programme is set, because a one-hour loading window changes the sequence for the whole job.</p>\n<p><strong>Typical scope</strong></p>\n<p>For a condominium: kitchen and bathroom replacement, built-in wardrobes and cabinets, flooring, lighting and electrical additions, and layout changes that do not touch structure. For a city terrace or shophouse: full rewiring and re-piping, waterproofing, structural repair, and reinstatement of the frontage where required. For both: waterproofing is the item most often postponed and most often regretted, because failure appears in the unit below rather than your own.</p>\n<p><strong>Quotation and handover</strong></p>\n<p>The quotation separates confirmed work from items that can only be assessed after opening up, and states which submissions and management approvals sit with us. At handover we test every outlet and tap, run the bathrooms under normal use, and record defects in writing with a return date. In high-rise buildings we also confirm the deposit refund steps with the management office, because that is the last thing standing between you and a closed project.</p>",
+      "content_ms": "<p>FLASH CAST menyediakan perancangan pengubahsuaian dan penyelarasan projek untuk rumah serta ruang komersial di Kuala Lumpur. Kami boleh membincangkan pengubahsuaian rumah, dapur dan bilik mandi, kabinet terbina dalam tersuai, fit-out pejabat serta ruang kedai. Skop praktikal bergantung pada keadaan hartanah, susun atur dan akses tapak; sebut harga bertulis disediakan selepas kerja sebenar disemak.</p><p>Untuk membandingkan kontraktor pengubahsuaian di Kuala Lumpur, kongsikan lokasi dan jenis hartanah, anggaran keluasan, foto tapak, kerja yang dirancang serta julat belanjawan. Kami akan menyemak maklumat ini dan mengesahkan sama ada lawatan atau ukuran tapak diperlukan. Sebut harga adalah percuma. Ukuran tapak dalam lingkungan 30 km dari pejabat atau titik perkhidmatan kami juga percuma; lawatan melebihi jarak itu dikenakan bayaran yang akan disahkan sebelum lawatan diatur.</p><p>Bagi hartanah di bawah pengurusan, waktu kerja, penghantaran, akses dan sebarang permohonan kepada tuan tanah, pihak pengurusan atau pihak berkuasa bergantung pada bangunan serta skop kerja. Kami boleh membantu menyemak keperluan yang tersedia, manakala kelulusan ditentukan oleh pihak berkenaan. Lihat pautan perkhidmatan pada halaman ini untuk skop berkaitan, kemudian hantar butiran melalui borang permintaan sebut harga.</p>",
+      "content_zh": "<p>吉隆坡以公寓与共管公寓为主，Pudu、Chow Kit 与 Sungai Besi 部分地段还留着较老的排屋与店屋。这个结构直接决定施工方式：高层单位要在 JMB 批准的范围内、在货梯能承受的范围内做；老店屋与排屋则是先解决结构与水电，再谈设计。两类房子的报价方式、工期安排与现场管理都不一样，所以第一次上门要先判断你手上是哪一种。</p>\n<p><strong>吉隆坡最常见的问题</strong></p>\n<p>公寓反复出现的是：厨房当初按较小电器负荷设计、浴室防水到了寿命末期、收纳与户型对不上、多年下来陆续加装的电点没有完整记录。市区老排屋与店屋的问题更硬：进电容量不足、线路早于现代用电标准、排水是修补而不是更换、开洞改结构却没有图纸。凡涉及建筑外观或结构构件，通常要送 DBKL 审批，这是排期里的一项工作，不是最后补的手续。</p>\n<p><strong>进场、管理与时段</strong></p>\n<p>市中心的限制是整个巴生谷最紧的。多数共管公寓只允许工作日固定时段施工，开工前要交押金、承包商登记、工人名单与保险，上料只能用预约的货梯时段；部分大楼在特定期间完全禁止噪音工序。Pudu、Chow Kit、武吉免登一带路边车位紧张，材料进场必须预约，不能临时碰运气。这些在排工期之前就要确认，因为只有一小时的上料窗口，会改变整个施工顺序。</p>\n<p><strong>典型施工范围</strong></p>\n<p>公寓多为：厨房与浴室重做、定制衣柜与橱柜、地面、灯位与加点位，以及不触及结构的格局调整。市区排屋与店屋多为：全屋重新拉电换管、防水、结构修补，以及按需要做的临街立面复原。两类共通的是防水——最常被推迟，也最常后悔，因为失效的水渍先出现在楼下，而不是你自己家里。</p>\n<p><strong>报价与交付</strong></p>\n<p>报价会把已确认工程与「打开后才能判断」的项目分开，并写清哪些送审与管理处手续由我们处理。交付时逐个插座与龙头测试、浴室按日常使用方式试一遍，缺陷书面记录并约定返场日期。高层单位还要与管理处确认押金退还流程，那往往是项目真正结案前的最后一关。</p>",
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "excerpt_en": "FLASH CAST provides Kuala Lumpur home renovation, old house refurbishment, kitchen, bathroom, office, shop, and custom cabinet services.",
+      "excerpt_ms": "FLASH CAST menyediakan perkhidmatan pengubahsuaian di Kuala Lumpur, termasuk rumah lama, dapur, bilik mandi, pejabat, kedai dan perabot terbina dalam tersuai.",
+      "excerpt_zh": "FLASH CAST 提供 Kuala Lumpur 住宅装修、旧屋翻新、厨房浴室、办公室、店铺和定制柜服务。",
+      "sort_order": 10,
+      "updated_at": "2026-10-19T13:38:05.283775+00:00",
+      "common_needs": [
+        "Full renovation",
+        "Kitchen cabinet",
+        "Bathroom waterproofing",
+        "Built-in furniture",
+        "Office fit-out",
+        "Shop renovation"
+      ],
+      "seo_title_en": "Kuala Lumpur Renovation Contractor | Home, Office, Kitchen & Shop",
+      "seo_title_ms": "Kontraktor Ubah Suai Kuala Lumpur | Rumah, Pejabat, Dapur & Kedai",
+      "seo_title_zh": "Kuala Lumpur 装修公司 | 住宅、旧屋、厨房、办公室与店铺装修",
+      "property_types": [
+        "Condo",
+        "Terrace house",
+        "Semi-D",
+        "Office",
+        "Retail shop",
+        "Warehouse"
+      ],
+      "seo_description_en": "FLASH CAST provides Kuala Lumpur renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.",
+      "seo_description_ms": "FLASH CAST menyediakan perkhidmatan pengubahsuaian Kuala Lumpur untuk rumah, rumah lama, kabinet dapur, kalis air bilik mandi, pejabat, kedai, kabinet tersuai, dan sebut harga percuma.",
+      "seo_description_zh": "FLASH CAST 提供 Kuala Lumpur 装修服务，覆盖住宅装修、旧屋翻新、厨房橱柜、浴室防水、办公室、店铺、定制柜和免费报价。",
+      "construction_notes_en": "Kuala Lumpur projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early.",
+      "construction_notes_ms": "Bagi projek di Kuala Lumpur, sahkan lebih awal permohonan kepada pihak pengurusan, waktu kerja, penghantaran bahan, kerja perlindungan, tempat letak kereta dan had bunyi.",
+      "construction_notes_zh": "Kuala Lumpur 项目建议提前确认管理处申请、施工时间、材料运输、保护工程、停车安排和噪音限制。"
+    },
+    "managedCandidate": {
+      "taskId": "kl-location-body-first-20261119-v1",
+      "actionId": "publish-kl-location-body-first-20261119-v1",
+      "scope": "flashcast.com.my:service_areas/4e2cd77f-ac25-4a16-87bc-03652c4121b1:content_en,content_zh",
+      "candidateVersion": "location-pages-batch-1-kuala-lumpur-20261119-v1",
+      "operation": "publish"
+    }
+  }
+}
