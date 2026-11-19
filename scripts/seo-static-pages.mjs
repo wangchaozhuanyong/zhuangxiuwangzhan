@@ -150,6 +150,133 @@ const servicesFaqs = {
 };
 
 const staticDefs = [
+  // Batch 2: exact approved English and Chinese copy; Malay awaits translation.
+  {
+    "lang": "en",
+    "path": "/locations/kuala-lumpur/condo-renovation",
+    "title": "Condo Renovation Kuala Lumpur | FLASH CAST",
+    "description": "Condo renovation in Kuala Lumpur for units from the 1990s to current buildings. Layout, storage, electrical and air-conditioning works planned around management rules and structural limits.",
+    "keywords": "condo renovation kuala lumpur, apartment renovation kl, condo interior works",
+    "schemaType": "Service",
+    "entityName": "Condo Renovation Kuala Lumpur"
+  },
+  {
+    "lang": "zh",
+    "path": "/locations/kuala-lumpur/condo-renovation",
+    "title": "吉隆坡公寓装修｜管理处审批｜FLASH CAST",
+    "description": "吉隆坡公寓装修，覆盖 1990 年代到近年的单位。格局、收纳、电气与空调工程，按管理处规定与结构限制规划。",
+    "keywords": "吉隆坡公寓装修, 公寓翻新, 公寓管理处审批",
+    "schemaType": "Service",
+    "entityName": "吉隆坡公寓装修"
+  },
+  {
+    "lang": "en",
+    "path": "/locations/petaling-jaya/kitchen-renovation",
+    "title": "Kitchen Renovation Petaling Jaya | FLASH CAST",
+    "description": "Kitchen renovation in Petaling Jaya for older apartments and terraces. Drainage stack and electrical capacity checked first, then cabinets, worktop and appliance planning.",
+    "keywords": "kitchen renovation petaling jaya, kitchen cabinet pj, kitchen renovation contractor pj",
+    "schemaType": "Service",
+    "entityName": "Kitchen Renovation Petaling Jaya"
+  },
+  {
+    "lang": "zh",
+    "path": "/locations/petaling-jaya/kitchen-renovation",
+    "title": "八打灵再也厨房装修｜定制橱柜｜FLASH CAST",
+    "description": "八打灵再也老公寓与排屋的厨房装修。先核对排水立管与电容量，再规划橱柜、台面与电器。",
+    "keywords": "八打灵再也厨房装修, 厨房橱柜定制, 厨房翻新",
+    "schemaType": "Service",
+    "entityName": "八打灵再也厨房装修"
+  },
+  {
+    "lang": "en",
+    "path": "/locations/cheras/condo-renovation",
+    "title": "Condo Renovation Cheras | FLASH CAST",
+    "description": "Condo renovation in Cheras for older blocks around Taman Maluri and newer units towards Sungai Besi. Services review for old blocks, layout and storage within management rules for new ones.",
+    "keywords": "condo renovation cheras, apartment renovation cheras, condo renovation contractor cheras",
+    "schemaType": "Service",
+    "entityName": "Condo Renovation Cheras"
+  },
+  {
+    "lang": "zh",
+    "path": "/locations/cheras/condo-renovation",
+    "title": "蕉赖公寓装修｜新旧楼差异｜FLASH CAST",
+    "description": "蕉赖公寓装修，覆盖 Taman Maluri 旧楼与 Sungai Besi 方向新楼。旧楼先查机电，新楼在管理规则内做格局与收纳。",
+    "keywords": "蕉赖公寓装修, 蕉赖公寓翻新, 公寓管理处审批",
+    "schemaType": "Service",
+    "entityName": "蕉赖公寓装修"
+  },
+  {
+    "lang": "en",
+    "path": "/locations/subang-jaya/landed-house-renovation",
+    "title": "Landed House Renovation Subang Jaya | FLASH CAST",
+    "description": "Landed house renovation in Subang Jaya: terrace and semi-detached extensions, rewiring, re-piping, roof work and full-house refurbishment with MBSJ submission guidance.",
+    "keywords": "landed house renovation subang jaya, terrace extension subang jaya, house renovation usj",
+    "schemaType": "Service",
+    "entityName": "Landed House Renovation Subang Jaya"
+  },
+  {
+    "lang": "zh",
+    "path": "/locations/subang-jaya/landed-house-renovation",
+    "title": "梳邦再有地住宅装修｜排屋扩建｜FLASH CAST",
+    "description": "梳邦再有地住宅装修：排屋与半独立式扩建、重新拉电、换管、屋顶工程与全屋翻新，含 MBSJ 送审指引。",
+    "keywords": "梳邦再有地住宅装修, 排屋扩建, USJ 房屋翻新",
+    "schemaType": "Service",
+    "entityName": "梳邦再有地住宅装修"
+  },
+  {
+    "lang": "en",
+    "path": "/locations/kuala-lumpur/digital-lock",
+    "title": "Digital Lock Installation Kuala Lumpur | FLASH CAST",
+    "description": "Digital lock installation in Kuala Lumpur condos and landed homes. Door compatibility and building approval checked first, then supply, installation, user enrolment and handover testing.",
+    "keywords": "digital lock installation kuala lumpur, smart lock kl, digital lock condo door",
+    "schemaType": "Service",
+    "entityName": "Digital Lock Installation Kuala Lumpur"
+  },
+  {
+    "lang": "zh",
+    "path": "/locations/kuala-lumpur/digital-lock",
+    "title": "吉隆坡电子锁安装｜智能门锁｜FLASH CAST",
+    "description": "吉隆坡公寓与有地住宅电子锁安装。先核对门体兼容与大楼审批，再供应、安装、录入使用者并做交付测试。",
+    "keywords": "吉隆坡电子锁安装, 智能门锁, 公寓门锁更换",
+    "schemaType": "Service",
+    "entityName": "吉隆坡电子锁安装"
+  },
+  {
+    "lang": "en",
+    "path": "/locations/selangor/office-renovation",
+    "title": "Office Renovation Selangor | Fit-Out | FLASH CAST",
+    "description": "Office renovation and fit-out across Selangor, including shoplot offices, industrial buildings and purpose-built towers. Authority submission, fire requirements and zoning planned up front.",
+    "keywords": "office renovation selangor, office fit out selangor, shoplot office renovation",
+    "schemaType": "Service",
+    "entityName": "Office Renovation Selangor"
+  },
+  {
+    "lang": "zh",
+    "path": "/locations/selangor/office-renovation",
+    "title": "雪兰莪办公室装修｜办公室精装｜FLASH CAST",
+    "description": "雪兰莪办公室装修与精装，覆盖店屋办公室、工业建筑与专门写字楼。送审、消防要求与分区在前期一并规划。",
+    "keywords": "雪兰莪办公室装修, 办公室精装, 店屋办公室装修",
+    "schemaType": "Service",
+    "entityName": "雪兰莪办公室装修"
+  },
+  {
+    "lang": "en",
+    "path": "/locations/petaling-jaya/landed-house-renovation",
+    "title": "Landed House Renovation Petaling Jaya | FLASH CAST",
+    "description": "Landed house renovation in Petaling Jaya for terraces and semi-detached homes from the 1960s to 1980s. Existing alterations, structure and services reviewed before design.",
+    "keywords": "landed house renovation petaling jaya, terrace house renovation pj, house renovation ss",
+    "schemaType": "Service",
+    "entityName": "Landed House Renovation Petaling Jaya"
+  },
+  {
+    "lang": "zh",
+    "path": "/locations/petaling-jaya/landed-house-renovation",
+    "title": "八打灵再有地住宅装修｜排屋翻新｜FLASH CAST",
+    "description": "八打灵再也 1960 至 1980 年代排屋与半独立式的翻新。设计之前先查既有改动、结构与水电状况。",
+    "keywords": "八打灵再有地住宅装修, 排屋翻新, 老屋改造 PJ",
+    "schemaType": "Service",
+    "entityName": "八打灵再有地住宅装修"
+  },
   // Five service-area combinations, each with its own English, Chinese and Malay metadata.
   {
     lang: "en",
