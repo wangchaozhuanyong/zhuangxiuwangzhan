@@ -51,10 +51,10 @@ export async function navigateLocation(page,url) {
     catch(error) {if(attempt===3||error?.name!=='TimeoutError')throw error;}
   }
 }
-export async function checkAreaBrowser({browser,row,body,identity,widths,output,mode,baseline=[]}) {
+export async function checkAreaBrowser({browser,row,body,identity,widths,output,mode,baseline=[],languages=['en','zh']}) {
   const results=[];
   const display=await displayLabels();
-  for(const lang of ['en','zh']) for(const width of widths) {
+  for(const lang of languages) for(const width of widths) {
     const context=await browser.newContext({viewport:{width,height:900},locale:lang==='en'?'en-MY':'zh-CN'});
     try {
       const page=await context.newPage(), errors=[];
