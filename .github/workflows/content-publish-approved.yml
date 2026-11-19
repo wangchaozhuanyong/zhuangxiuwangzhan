@@ -332,6 +332,15 @@ jobs:
           test -n "$VITE_SUPABASE_URL"
           test -n "$VITE_SUPABASE_ANON_KEY"
 
+      - name: Read the immutable completed two-area acceptance evidence
+        if: ${{ inputs.target == 'location-seven-body-20261119-v1' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: approved-content-publish-44527250913
+          run-id: 44527250913
+          github-token: ${{ github.token }}
+          path: audits/previous-location-seven-44527250913
+
       - name: Install the existing Playwright Chromium for seven-area acceptance
         if: ${{ inputs.target == 'location-seven-body-20261119-v1' }}
         run: npx playwright install --with-deps chromium
