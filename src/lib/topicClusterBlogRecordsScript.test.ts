@@ -117,7 +117,10 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain("owner-standing-flashcast-site-publish-20260906");
     expect(workflow).toContain("uses: actions/upload-artifact@v7");
     expect(workflow).toContain("if: always()");
-    expect(workflow).toContain("path: audits/content-publish-${{ github.run_id }}");
+    expect(workflow).toContain("path: |\n            audits/content-publish-${{ github.run_id }}");
+    expect(workflow).toContain("!audits/content-publish-${{ github.run_id }}/location-seven/**/preview.json");
+    expect(workflow).toContain("!audits/content-publish-${{ github.run_id }}/location-seven/**/readback.json");
+    expect(workflow).toContain("!audits/content-publish-${{ github.run_id }}/location-seven/**/rollback-plan.json");
   });
 
   it("locks exact publish and safe rollback target sets before production secrets", () => {
