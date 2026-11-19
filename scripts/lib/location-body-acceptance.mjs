@@ -87,7 +87,7 @@ export async function checkAreaBrowser({browser,row,body,identity,widths,output,
       results.push(result);
       write(resolve(output,`${mode}-browser.json`),results);
       if(width===390||width===1440) {
-        await page.locator('#main-content .fc-route-section-head').evaluate(el=>scrollTo(0,scrollY+el.getBoundingClientRect().top-110));
+        await page.locator('#main-content .fc-route-section-head').first().evaluate(el=>scrollTo(0,scrollY+el.getBoundingClientRect().top-110));
         await page.screenshot({path:resolve(output,`${mode}-${lang}-${width}.png`)});
       }
       console.log(JSON.stringify({slug:row.slug,lang,width,mode,introCharacters:result.introCharacters,strong:result.headings.length,overflow:result.overflow}));
