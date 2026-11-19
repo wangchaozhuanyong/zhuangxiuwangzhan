@@ -138,9 +138,9 @@ export const MANAGED_SERVICES: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_AREAS: readonly ManagedTarget[] = [
-  ...KL_LOCATION_BODY_FIRST_TARGETS,
   { id: "e2e461b7-3bb8-4206-817a-7f830824b8ac", slug: "selangor", contentType: "service_area", taskId: "fc-20260923-selangor-public-fact-risk-v1", actionId: "publish-selangor-service-area-r1-v4", candidateVersion: "selangor-r1-cms-row-20260923-v4", scope: "flashcast.com.my:selangor-service-area-fact-risk-v1", changedFields: ["content_zh", "content_en", "property_types"], desiredFieldsSha256: "c7a38650e07d81047a67aa43433564096cb3176ac99a9e29b960f71ee1db923e" },
   { id: "4e2cd77f-ac25-4a16-87bc-03652c4121b1", slug: "kuala-lumpur", contentType: "service_area", taskId: "fc-20260926-kl-location-cms-r1-closure-v1", actionId: "update-kl-location-bilingual-content-v1", candidateVersion: "kl-location-intent-r1-v2", scope: "flashcast.com.my:service_areas/4e2cd77f-ac25-4a16-87bc-03652c4121b1:content_en,content_zh", changedFields: ["content_en", "content_zh"], baselineFieldsSha256: "08bbd02a42ff47edd974a5a66ad3294aff6a4acfec9b37a827d3bc4ba53acb8e", desiredFieldsSha256: "69f85b9bbdd8cad9a15c3b9230826fa83c2a808b1798fb3ca8de5e997c94a6f5", requiresParentRun: true },
+  ...KL_LOCATION_BODY_FIRST_TARGETS,
 ];
 
 export const MANAGED_BLOGS: readonly ManagedTarget[] = [
