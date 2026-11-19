@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import {createHash,randomUUID} from 'node:crypto';
-import {readFileSync} from 'node:fs';
+import {readFileSync,copyFileSync} from 'node:fs';
 import {resolve,join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
+import {lookup} from 'node:dns/promises';
 import {createClient} from '@supabase/supabase-js';
 import {chromium} from '@playwright/test';
 import {LOCATION_SEVEN_BODY_TARGETS} from '../supabase/functions/_shared/location-seven-body-targets.ts';
@@ -20,6 +21,45 @@ const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fro
 export const digest=v=>createHash('sha256').update(JSON.stringify(stable(v))).digest('hex');
 const project=(row,fields)=>Object.fromEntries(fields.map(f=>[f,row[f]??null]));
 const selection=t=>({taskId:t.taskId,actionId:t.actionId,scope:t.scope,candidateVersion:t.candidateVersion,operation:'publish'});
+export const COMPLETED_RECEIPTS=JSON.parse(readFileSync(resolve(ROOT,'scripts/location-seven-completed-receipts.json'),'utf8'));
+export function assertCompletedRow(t,row,receipt) {
+  assert.equal(receipt.id,t.id);assert.equal(row.id,t.id);assert.equal(row.slug,t.slug);assert.equal(row.status,'published');
+  assert.equal(row.updated_at,receipt.savedUpdatedAt,'Completed row version changed; do not overwrite it');
+  assert.equal(digest(project(row,t.changedFields)),t.desiredFieldsSha256,'Completed body changed');
+  assert.equal(digest(project(row,t.retainedProjectionFields)),t.retainedFieldsSha256,'Completed retained fields changed');
+}
+export function assertCompletedPermit(t,row,receipt,permit) {
+  assertCompletedRow(t,row,receipt);assert(permit,'Completed permit is absent');
+  const expected={permit_id:receipt.permitId,status:'completed',operation:'publish',task_id:t.taskId,action_id:t.actionId,
+    candidate_version:t.candidateVersion,scope:t.scope,record_id:t.id,slug:t.slug,saved_id:t.id,
+    expected_updated_at:t.expectedUpdatedAt,saved_updated_at:receipt.savedUpdatedAt,payload_sha256:t.desiredFieldsSha256,
+    rollback_payload_sha256:t.rollbackFieldsSha256,github_workflow_ref:WORKFLOW,github_workflow_sha:receipt.githubWorkflowSha};
+  for(const [field,value] of Object.entries(expected))assert.equal(permit[field],value,`Completed permit ${field} differs`);
+  assert.equal(Number(permit.github_repository_id),1248188229);assert.equal(Number(permit.github_run_id),receipt.githubRunId);
+  assert.equal(Number(permit.github_run_attempt),receipt.githubRunAttempt);assert.equal(Number(permit.github_actor_id),receipt.githubActorId);
+}
+function readCompletedEvidence() {
+  assert.equal(COMPLETED_RECEIPTS.schema,'location-seven-completed-receipts/v1');
+  assert.equal(COMPLETED_RECEIPTS.parentRunId,44527250913);
+  assert.deepEqual(COMPLETED_RECEIPTS.receipts.map(r=>r.slug),['petaling-jaya','subang-jaya']);
+  const source=resolve(ROOT,'audits/previous-location-seven-44527250913/location-seven');
+  const hash=file=>createHash('sha256').update(readFileSync(file)).digest('hex');
+  assert.equal(hash(join(source,'identity-probe.json')),COMPLETED_RECEIPTS.identitySha256);
+  const identity=JSON.parse(readFileSync(join(source,'identity-probe.json'),'utf8')).identity;
+  assert.equal(identity.runId,44527250913);assert.equal(identity.repositoryId,1248188229);assert.equal(identity.workflowRef,WORKFLOW);
+  return new Map(COMPLETED_RECEIPTS.receipts.map(receipt=>{
+    const dir=join(source,receipt.slug);
+    assert.equal(identity.workflowSha,receipt.githubWorkflowSha);assert.equal(identity.actorId,receipt.githubActorId);
+    for(const name of ['completion.json','permit-issued.json','publish-receipt.json','before-browser.json'])assert.equal(hash(join(dir,name)),receipt.filesSha256[name]);
+    const completion=JSON.parse(readFileSync(join(dir,'completion.json'),'utf8'));
+    const published=JSON.parse(readFileSync(join(dir,'publish-receipt.json'),'utf8'));
+    const issued=JSON.parse(readFileSync(join(dir,'permit-issued.json'),'utf8'));
+    assert(completion.ok&&completion.rollbackPreviewOnly);assert.equal(completion.slug,receipt.slug);
+    assert.equal(completion.savedUpdatedAt,receipt.savedUpdatedAt);assert.equal(published.saved_id,receipt.id);
+    assert.equal(published.saved_updated_at,receipt.savedUpdatedAt);assert.equal(published.dry_run,false);assert.equal(issued.permitId,receipt.permitId);
+    return [receipt.slug,{...receipt,dir,beforeBrowser:JSON.parse(readFileSync(join(dir,'before-browser.json'),'utf8'))}];
+  }));
+}
 export function readCandidates() {
   const source=readFileSync(resolve(ROOT,SOURCE),'utf8').replace(/\r\n/g,'\n');
   assert.equal(createHash('sha256').update(source).digest('hex'),'77f9d5eb3b751863247ccf9e919edf63c33f0a2b607edb4e9e68566aaf4b9b17');
@@ -56,9 +96,10 @@ export function assertEnvironment(e,sha) {
 async function main() {
   const e=process.env;assert.equal(resolve(process.cwd()),resolve(ROOT));
   assertEnvironment(e,execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim());
-  const candidates=readCandidates(),output=resolve(ROOT,'audits',`content-publish-${e.GITHUB_RUN_ID}`,'location-seven');
+  const candidates=readCandidates(),previous=readCompletedEvidence(),output=resolve(ROOT,'audits',`content-publish-${e.GITHUB_RUN_ID}`,'location-seven');
   const reader=createClient(e.VITE_SUPABASE_URL,e.VITE_SUPABASE_ANON_KEY,{auth:{persistSession:false}});
   const issuer=e.PUBLISH_MODE==='publish'?createClient(e.VITE_SUPABASE_URL,e.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false}}):null;
+  const completedPermit=async receipt=>{const {data,error}=await issuer.from('managed_cms_release_permits').select('*').eq('permit_id',receipt.permitId).maybeSingle();assert(!error,'Completed permit lookup failed');return data;};
   const read=async t=>{const {data,error}=await reader.from('service_areas').select(t.baselineProjectionFields.join(',')).eq('id',t.id).maybeSingle();assert(!error&&data,'Read failed');return data;};
   const {data:identity,error:identityError}=await reader.from('site_settings').select('id,company_name,brand_name,updated_at').eq('id','default').single();
   assert(!identityError&&identity?.company_name&&identity?.brand_name,'Public identity unavailable');write(join(output,'site-identity.json'),identity);
@@ -70,9 +111,18 @@ async function main() {
   const probe=await post({managedIdentityProbe:true});assert.equal(probe.performed_write,false);assert.deepEqual(probe.identity,verified);write(join(output,'identity-probe.json'),probe);
   const klTarget={id:'4e2cd77f-ac25-4a16-87bc-03652c4121b1',baselineProjectionFields:candidates[0].t.baselineProjectionFields};
   const klBefore=await read(klTarget);write(join(output,'kl-before.json'),klBefore);
-  // All seven previews must pass before any one-use permit is issued.
+  // Verify the two immutable completed receipts without replaying them; preview
+  // all five untouched baselines before any fresh one-use permit is issued.
   for(const c of candidates) {
-    c.before=await read(c.t);assertBaseline(c.t,c.before);
+    c.before=await read(c.t);c.completed=previous.get(c.t.slug);
+    if(c.completed) {
+      assertCompletedRow(c.t,c.before,c.completed);
+      if(issuer)assertCompletedPermit(c.t,c.before,c.completed,await completedPermit(c.completed));
+      write(join(output,c.t.slug,'completed-receipt-check.json'),{ok:true,readOnly:true,originalRunId:c.completed.githubRunId,permitId:c.completed.permitId,savedUpdatedAt:c.completed.savedUpdatedAt,bodySha256:c.t.desiredFieldsSha256,retainedFieldsSha256:c.t.retainedFieldsSha256,serverPermitVerified:Boolean(issuer)});
+      for(const name of ['permit-issued.json','publish-receipt.json','before-browser.json'])copyFileSync(join(c.completed.dir,name),join(output,c.t.slug,name));
+      continue;
+    }
+    assertBaseline(c.t,c.before);
     c.rollback=project(c.before,c.t.changedFields);
     assert.equal(digest(c.rollback),c.t.rollbackFieldsSha256);
     c.request={contentType:'service_area',mode:'dry-run',nextStatus:'published',expectedUpdatedAt:c.t.expectedUpdatedAt,record:{...c.before,...c.desired},managedCandidate:selection(c.t)};
@@ -81,11 +131,21 @@ async function main() {
     write(join(output,c.t.slug,'preview.json'),{before:c.before,desired:c.desired,rollback:c.rollback,preview,productionWrites:0});
   }
   write(join(output,'before-sitemap.json'),await checkAreaSitemap(['kuala-lumpur',...candidates.map(c=>c.t.slug)]));
-  if(!issuer){write(join(output,'completion.json'),{ok:true,mode:'dry-run',records:7,productionWrites:0});return;}
-  const browser=await chromium.launch({headless:true});
+  if(!issuer){write(join(output,'completion.json'),{ok:true,mode:'dry-run',records:7,alreadyPublished:2,pendingPreviews:5,productionWrites:0});return;}
+  const ipv4=await lookup('flashcast.com.my',{family:4});
+  write(join(output,'browser-transport.json'),{host:'flashcast.com.my',currentPublicDnsAddress:ipv4.address,quic:false,httpsCertificateValidation:true});
+  const browser=await chromium.launch({headless:true,args:['--disable-quic',`--host-resolver-rules=MAP flashcast.com.my ${ipv4.address}`]});
   try {
     for(const c of candidates) {
       const {t}=c,dir=join(output,t.slug);
+      if(c.completed) {
+        assertCompletedPermit(t,await read(t),c.completed,await completedPermit(c.completed));
+        const metadata=[];for(const lang of ['en','zh'])metadata.push(await checkRawMetadata(c.before,lang,identity));write(join(dir,'public-metadata.json'),metadata);
+        await checkAreaBrowser({browser,row:c.before,body:c.desired,identity,widths:[360,390,768,1024,1440],output:dir,mode:'after',baseline:c.completed.beforeBrowser});
+        assertCompletedRow(t,await read(t),c.completed);
+        write(join(dir,'completion.json'),{ok:true,slug:t.slug,savedUpdatedAt:c.completed.savedUpdatedAt,records:1,fields:2,retainedFields:t.retainedProjectionFields.length,rollbackPreviewOnly:true,readOnly:true,originalRunId:c.completed.githubRunId});
+        continue;
+      }
       assertBaseline(t,await read(t));
       const beforeBrowser=await checkAreaBrowser({browser,row:c.before,body:c.before,identity,widths:[390],output:dir,mode:'before'});
       assertBaseline(t,await read(t));
@@ -111,7 +171,7 @@ async function main() {
   } finally {await browser.close();}
   assert.equal(digest(await read(klTarget)),digest(klBefore),'KL changed during this batch');
   write(join(output,'after-sitemap.json'),await checkAreaSitemap(['kuala-lumpur',...candidates.map(c=>c.t.slug)]));
-  write(join(output,'completion.json'),{ok:true,mode:'publish',records:7,fieldsPerRecord:2,credentialMode:'x-cron-secret',identity:verified,klUnchanged:true});
+  write(join(output,'completion.json'),{ok:true,mode:'publish',records:7,newWrites:5,alreadyPublished:2,fieldsPerRecord:2,credentialMode:'x-cron-secret',identity:verified,klUnchanged:true});
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(error=>{
   let message=String(error?.message||'Seven-area publication failed');

@@ -1,9 +1,10 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect,vi} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {readCandidates,assertBaseline,assertEnvironment,digest} from '../../scripts/publish-location-seven-bodies.mjs';
+import {readCandidates,assertBaseline,assertEnvironment,digest,COMPLETED_RECEIPTS,assertCompletedRow,assertCompletedPermit} from '../../scripts/publish-location-seven-bodies.mjs';
+import {navigateLocation} from '../../scripts/lib/location-body-acceptance.mjs';
 import {MANAGED_AREAS,findManagedTarget,managedAction} from '../../supabase/functions/_shared/managed-targets.ts';
 import {issueManagedPermit} from '../../supabase/functions/content-publish/permit-issuer.ts';
 import type {ContentPublishClient} from '../../supabase/functions/content-publish/types.ts';
@@ -54,5 +55,56 @@ describe('remaining seven exact regional body releases',()=>{
     expect(script).not.toMatch(/\.from\(['"]service_areas['"]\)\s*\.(?:update|insert|upsert|delete)\(/);
     expect(script).toContain('ownerApproved:true,explicitExecution:true');
     expect(script).toContain("mode:'dry-run'");
+  });
+});
+
+describe('resume only the two independently confirmed completed rows',()=>{
+  it('freezes the original run, exactly two receipts, and immutable evidence digests',()=>{
+    expect(COMPLETED_RECEIPTS.parentRunId).toBe(44527250913);
+    expect(COMPLETED_RECEIPTS.receipts.map(r=>r.slug)).toEqual(['petaling-jaya','subang-jaya']);
+    expect(COMPLETED_RECEIPTS.identitySha256).toMatch(/^[a-f0-9]{64}$/);
+    for(const r of COMPLETED_RECEIPTS.receipts) {
+      expect(r.githubRunId).toBe(44527250913);
+      expect(Object.keys(r.filesSha256).sort()).toEqual(['before-browser.json','completion.json','permit-issued.json','publish-receipt.json']);
+      expect(Object.values(r.filesSha256).every(hash=>/^[a-f0-9]{64}$/.test(String(hash)))).toBe(true);
+    }
+    const workflow=readFileSync('.github/workflows/content-publish-approved.yml','utf8');
+    expect(workflow).toContain('name: approved-content-publish-44527250913');
+    expect(workflow).toContain('run-id: 44527250913');
+  });
+  it.each(COMPLETED_RECEIPTS.receipts)('$slug accepts read-only completion evidence and rejects any row or permit drift',receipt=>{
+    const {t,desired}=candidates.find(c=>c.t.slug===receipt.slug)!;
+    const row={id:t.id,slug:t.slug,status:'published',updated_at:receipt.savedUpdatedAt,...desired,title_en:'Original retained title'};
+    const retainedProjectionFields=['id','slug','status','title_en'];
+    const target={...t,retainedProjectionFields,retainedFieldsSha256:digest(Object.fromEntries(retainedProjectionFields.map(f=>[f,row[f]])))};
+    const permit={permit_id:receipt.permitId,status:'completed',operation:'publish',task_id:t.taskId,action_id:t.actionId,candidate_version:t.candidateVersion,
+      scope:t.scope,record_id:t.id,slug:t.slug,saved_id:t.id,expected_updated_at:t.expectedUpdatedAt,saved_updated_at:receipt.savedUpdatedAt,
+      payload_sha256:t.desiredFieldsSha256,rollback_payload_sha256:t.rollbackFieldsSha256,github_repository_id:1248188229,
+      github_run_id:receipt.githubRunId,github_run_attempt:receipt.githubRunAttempt,github_actor_id:receipt.githubActorId,
+      github_workflow_sha:receipt.githubWorkflowSha,github_workflow_ref:'wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main'};
+    const before=structuredClone(row);
+    expect(()=>assertCompletedRow(target,row,receipt)).not.toThrow();
+    expect(()=>assertCompletedPermit(target,row,receipt,permit)).not.toThrow();
+    expect(row).toEqual(before);
+    for(const patch of [{updated_at:'changed'}, {content_en:'changed'}, {title_en:'changed'}, {id:'other-record'}])expect(()=>assertCompletedRow(target,{...row,...patch},receipt)).toThrow();
+    for(const patch of [{status:'issued'},{status:'uncertain'},{github_run_id:999},{github_workflow_sha:'a'.repeat(40)}, {payload_sha256:'a'.repeat(64)},{saved_updated_at:'changed'},{operation:'rollback'},{record_id:'other-record'}])expect(()=>assertCompletedPermit(target,row,receipt,{...permit,...patch})).toThrow();
+  });
+});
+
+describe('bounded read-only navigation retries',()=>{
+  it('retries transport timeouts and returns the successful GET',async()=>{
+    const timeout=Object.assign(new Error('Navigation timed out'),{name:'TimeoutError'});
+    const response={status:()=>200},page={goto:vi.fn().mockRejectedValueOnce(timeout).mockResolvedValueOnce(response)};
+    await expect(navigateLocation(page,'https://flashcast.com.my/en/locations/mont-kiara')).resolves.toEqual({response,attempts:2});
+    expect(page.goto).toHaveBeenCalledTimes(2);
+  });
+  it('stops after three timeouts and does not retry other errors or HTTP failures',async()=>{
+    const timeout=Object.assign(new Error('Navigation timed out'),{name:'TimeoutError'});
+    const page={goto:vi.fn().mockRejectedValue(timeout)};
+    await expect(navigateLocation(page,'https://flashcast.com.my')).rejects.toThrow('Navigation timed out');expect(page.goto).toHaveBeenCalledTimes(3);
+    const broken={goto:vi.fn().mockRejectedValue(new Error('A real acceptance failure'))};
+    await expect(navigateLocation(broken,'https://flashcast.com.my')).rejects.toThrow('A real acceptance failure');expect(broken.goto).toHaveBeenCalledTimes(1);
+    const response={status:()=>404},missing={goto:vi.fn().mockResolvedValue(response)};
+    await expect(navigateLocation(missing,'https://flashcast.com.my/missing')).resolves.toEqual({response,attempts:1});expect(missing.goto).toHaveBeenCalledTimes(1);
   });
 });

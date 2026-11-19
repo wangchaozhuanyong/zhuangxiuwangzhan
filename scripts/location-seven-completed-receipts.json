@@ -1,0 +1,39 @@
+{
+  "schema": "location-seven-completed-receipts/v1",
+  "parentRunId": 44527250913,
+  "identitySha256": "565e828b5fba6d18be74e8765abbd96dac8bf03c389fb86f57500f902f8e7db7",
+  "receipts": [
+    {
+      "slug": "petaling-jaya",
+      "id": "0211fd88-54c7-4e5a-bdcc-5452601c779f",
+      "permitId": "cd2efba9-0275-45c0-a690-9b96ae692592",
+      "savedUpdatedAt": "2026-11-19T12:50:03.207943+00:00",
+      "githubRunId": 44527250913,
+      "githubRunAttempt": 1,
+      "githubActorId": 276684684,
+      "githubWorkflowSha": "579f8de37e7911e24bc87dffcc76ea8c3c8e0a67",
+      "filesSha256": {
+        "completion.json": "804f6e36ac23740ec4b4f826a5226ff2c75b2131fb10634d580cde600ff1d1a3",
+        "permit-issued.json": "b3ba1e6d7cac96ff46af1a8d3f2cf6399de46f803c4cc1f32889a002feea64d1",
+        "publish-receipt.json": "f0052caf39e345824070c2f010804ad16a78c15fb4b7913a49e629f5757b0568",
+        "before-browser.json": "548b7b890dde5dad39efadfbb4109eec26cb4e9f168227f32c84a3ad33d1e823"
+      }
+    },
+    {
+      "slug": "subang-jaya",
+      "id": "5ad0e8bf-04c6-43e1-9596-7fb6f6112543",
+      "permitId": "531f4db6-411c-4aae-b637-3c48979722f3",
+      "savedUpdatedAt": "2026-11-19T12:50:22.601751+00:00",
+      "githubRunId": 44527250913,
+      "githubRunAttempt": 1,
+      "githubActorId": 276684684,
+      "githubWorkflowSha": "579f8de37e7911e24bc87dffcc76ea8c3c8e0a67",
+      "filesSha256": {
+        "completion.json": "970a90ba8e3885aaf065a92913f5c467398a50f480902983cdf9331586f8af23",
+        "permit-issued.json": "549482e6d2c84fbd2dcad1fff38cda39ecd8cc8f9375a862c143f685b31f01ce",
+        "publish-receipt.json": "af0efdaa83252d02fa564c3d6f7cacda5310ef01647bceffffc3fd52749365b2",
+        "before-browser.json": "ae2f03c0911b6b53c1b047b43b3a98968f9bf37a4223d4f1b0d4cf6649bde73e"
+      }
+    }
+  ]
+}

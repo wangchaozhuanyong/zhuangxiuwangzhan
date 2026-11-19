@@ -43,6 +43,14 @@ export async function checkRawMetadata(row, lang, identity) {
   }
   throw lastError;
 }
+// Retry transport timeouts only. Status, content, metadata and layout assertions
+// stay outside this retry so a real acceptance failure cannot become a pass.
+export async function navigateLocation(page,url) {
+  for(let attempt=1;attempt<=3;attempt++) {
+    try {return {response:await page.goto(url,{waitUntil:'commit',timeout:20000}),attempts:attempt};}
+    catch(error) {if(attempt===3||error?.name!=='TimeoutError')throw error;}
+  }
+}
 export async function checkAreaBrowser({browser,row,body,identity,widths,output,mode,baseline=[]}) {
   const results=[];
   const display=await displayLabels();
@@ -53,7 +61,7 @@ export async function checkAreaBrowser({browser,row,body,identity,widths,output,
       page.on('pageerror',e=>errors.push(e.message));
       const url=`https://flashcast.com.my/${lang}/locations/${row.slug}`;
       const expected=plain(display(body[`content_${lang}`],lang));
-      const response=await page.goto(url,{waitUntil:'commit',timeout:45000});
+      const {response,attempts:navigationAttempts}=await navigateLocation(page,url);
       await page.waitForFunction(expected=>{
         const header=document.querySelector('#main-content .fc-route-section-head');
         return header && [...header.querySelectorAll(':scope > p')].map(p=>p.innerText).join(' ').replace(/\s+/g,' ').trim()===expected;
@@ -83,7 +91,7 @@ export async function checkAreaBrowser({browser,row,body,identity,widths,output,
         assert.deepEqual(data.hreflang,prior.hreflang);
       }
       const {mainText,introText,...details}=data;
-      const result={slug:row.slug,lang,width,mode,status:response.status(),browser:'bundled Chromium',...details,introCharacters:clean(introText).length,visibleMainCharacters:clean(mainText).length,exactApprovedText:true,errors};
+      const result={slug:row.slug,lang,width,mode,status:response.status(),browser:'bundled Chromium',navigationAttempts,...details,introCharacters:clean(introText).length,visibleMainCharacters:clean(mainText).length,exactApprovedText:true,errors};
       results.push(result);
       write(resolve(output,`${mode}-browser.json`),results);
       if(width===390||width===1440) {
