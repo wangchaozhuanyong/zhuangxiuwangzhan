@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {readCandidates,assertBaseline,assertEnvironment,digest,COMPLETED_RECEIPTS,assertCompletedRow,assertCompletedPermit} from '../../scripts/publish-location-seven-bodies.mjs';
+import {readCandidates,selectCandidates,CHERAS_TARGET,assertBaseline,assertEnvironment,digest,COMPLETED_RECEIPTS,assertCompletedRow,assertCompletedPermit} from '../../scripts/publish-location-seven-bodies.mjs';
 import {navigateLocation} from '../../scripts/lib/location-body-acceptance.mjs';
 import {MANAGED_AREAS,findManagedTarget,managedAction} from '../../supabase/functions/_shared/managed-targets.ts';
 import {issueManagedPermit} from '../../supabase/functions/content-publish/permit-issuer.ts';
@@ -15,6 +15,12 @@ describe('remaining seven exact regional body releases',()=>{
     expect(candidates.map(c=>c.t.slug)).toEqual(['petaling-jaya','subang-jaya','mont-kiara','puchong','klang','shah-alam','cheras']);
     expect(new Set(candidates.map(c=>c.t.id)).size).toBe(7);
     expect(()=>assertEnvironment({},'a'.repeat(40))).toThrow();
+  });
+  it('selects only the still-untouched Cheras tuple without including any completed row',()=>{
+    const selected=selectCandidates(CHERAS_TARGET);
+    expect(selected.map(c=>c.t.slug)).toEqual(['cheras']);
+    expect(selected[0].t).toBe(candidates.find(c=>c.t.slug==='cheras')!.t);
+    expect(()=>selectCandidates('another-area')).toThrow();
   });
   it.each(candidates)('$t.slug freezes exact bilingual source and resolves its own tuple despite historical targets',({t,desired})=>{
     expect(Object.keys(desired).sort()).toEqual(['content_en','content_zh']);
@@ -49,9 +55,9 @@ describe('remaining seven exact regional body releases',()=>{
   it('guards the exact approval before credentials and keeps all writes in content-publish',()=>{
     const workflow=readFileSync('.github/workflows/content-publish-approved.yml','utf8');
     const script=readFileSync('scripts/publish-location-seven-bodies.mjs','utf8');
-    expect(workflow).toContain("runs-on: ${{ inputs.target == 'location-seven-body-20261119-v1' && 'ubuntu-24.04' || 'ubuntu-latest' }}");
+    expect(workflow).toContain("runs-on: ${{ (inputs.target == 'location-seven-body-20261119-v1' || inputs.target == 'location-cheras-final-20261119-v1') && 'ubuntu-24.04' || 'ubuntu-latest' }}");
     expect(workflow.indexOf('owner-approved-location-seven-after-kl-20261119')).toBeLessThan(workflow.indexOf('Confirm production source and required secrets'));
-    expect(workflow).toContain("inputs.target == 'location-seven-body-20261119-v1' && inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || ''");
+    expect(workflow).toContain("(inputs.target == 'location-seven-body-20261119-v1' || inputs.target == 'location-cheras-final-20261119-v1') && inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || ''");
     expect(script).not.toMatch(/\.from\(['"]service_areas['"]\)\s*\.(?:update|insert|upsert|delete)\(/);
     expect(script).toContain('ownerApproved:true,explicitExecution:true');
     expect(script).toContain("mode:'dry-run'");
