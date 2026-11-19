@@ -168,7 +168,7 @@ concurrency:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.target == 'location-seven-body-20261119-v1' && 'ubuntu-24.04' || 'ubuntu-latest' }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
