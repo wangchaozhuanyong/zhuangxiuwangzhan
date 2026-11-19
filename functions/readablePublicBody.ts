@@ -132,8 +132,10 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   const serviceAreaPath = path.match(/^\/locations\/([^/]+)\/([^/]+)$/);
   const serviceArea = serviceAreaPath && findServiceAreaRoute(serviceAreaPath[1], serviceAreaPath[2]);
   if (serviceArea) {
-    const page = serviceAreaPageText[serviceArea.path][lang];
-    const overview = `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(paragraph).join("")}</section>`;
+    const localizedCopy = serviceAreaPageText[serviceArea.path];
+    const page = lang === "ms" ? ("ms" in localizedCopy ? localizedCopy.ms : null) : localizedCopy[lang];
+    if (!page) return "";
+    const overview = `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(value => paragraph(plain(value))).join("")}</section>`;
     const faq = `<section><h2>${escape(locationPageText[lang].faqTitle(page.area))}</h2><h3>${escape(page.question)}</h3>${paragraph(page.answer)}</section>`;
     return wrapBody(`<h1>${escape(page.heading)}</h1>${paragraph(page.description)}${overview}${faq}`, lang);
   }
