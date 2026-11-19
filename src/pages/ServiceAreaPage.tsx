@@ -29,7 +29,11 @@ export default function ServiceAreaPage() {
 
   if (!route || !area) return <NotFound />;
 
-  const page = pageText[route.path][language];
+  const localizedCopy = pageText[route.path];
+  const page = language === "ms"
+    ? ("ms" in localizedCopy ? localizedCopy.ms : null)
+    : localizedCopy[language];
+  if (!page) return <NotFound />;
   const copy = locationPageText[language];
   const areaPath = `/locations/${area}`;
   const servicePath = `/services/${route.parentService}`;
@@ -53,7 +57,7 @@ export default function ServiceAreaPage() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={page.title} description={page.description} canonicalPath={route.path} keywords={page.keywords} />
+      <PageMeta title={page.title} description={page.description} canonicalPath={route.path} keywords={page.keywords} malayReady={"ms" in localizedCopy} />
       <JsonLdService name={page.entityName} description={page.description} areaServed={page.area} />
       <JsonLdFAQ faqs={faqs} />
       <JsonLdBreadcrumb items={breadcrumbs} />
@@ -73,7 +77,7 @@ export default function ServiceAreaPage() {
         description={page.description}
         actions={<Link to={quotePath}>{copy.quote}<ArrowUpRight aria-hidden="true" /></Link>}
       />
-      <SchemeASection title={page.bodyHeading} description={page.body} children={null} />
+      <SchemeASection title={page.bodyHeading} description={page.body.map(stripHtml)} children={null} />
       <SchemeASection title={copy.faqTitle(page.area)}>
         <SchemeAFaqList items={faqs} />
       </SchemeASection>

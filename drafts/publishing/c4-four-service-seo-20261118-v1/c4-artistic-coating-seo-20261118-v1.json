@@ -1,0 +1,568 @@
+{
+  "schema": "flashcast-service-seo-review-candidate/v1",
+  "preparedAt": "2026-11-18 03:01:08 UTC",
+  "state": "prepared-awaiting-owner-approval",
+  "source": {
+    "path": "docs/seo/codex-tasks/C4-meta-values.md",
+    "sha256": "88a09a2145ed2798d18fe847322d41d22ce3e2439b055de8ba1d1f8abaa49715",
+    "exactValues": true
+  },
+  "authorization": {
+    "credentialMode": "cron",
+    "header": "x-cron-secret",
+    "secretName": "CONTENT_PUBLISH_SECRET",
+    "ownerApproved": false,
+    "explicitExecution": false,
+    "approvalId": null,
+    "managedPermit": null
+  },
+  "admission": {
+    "registeredInProtectedTargets": false,
+    "serverDryRunPerformed": false,
+    "requiredBeforePublish": [
+      "Register the exact runtime_target and its candidate source in the existing protected publisher.",
+      "Run a zero-write server preview for the exact row, SEO fields and expectedUpdatedAt.",
+      "Receive explicit ownerApproved authorization for this exact candidate.",
+      "Use the approved main workflow with its verified GitHub OIDC identity and a fresh one-time row-scoped permit."
+    ]
+  },
+  "runtime_target": {
+    "id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+    "slug": "artistic-coating",
+    "contentType": "service",
+    "table": "services",
+    "taskId": "c4-four-service-seo-20261118-v1",
+    "actionId": "publish-c4-artistic-coating-seo-20261118-v1",
+    "candidateVersion": "c4-artistic-coating-seo-20261118-v1",
+    "scope": "flashcast.com.my:services:d862312d-d5f3-4bb7-9bf0-137ed71c87be:seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
+    "changedFields": [
+      "seo_title_en",
+      "seo_title_zh",
+      "seo_description_en",
+      "seo_description_zh"
+    ],
+    "baselineProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_en",
+      "seo_description_ms",
+      "seo_description_zh",
+      "seo_title_en",
+      "seo_title_ms",
+      "seo_title_zh",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "expectedUpdatedAt": "2026-10-27T03:52:31.828249+00:00",
+    "versionField": "updated_at",
+    "retainedProjectionFields": [
+      "alt_en",
+      "alt_ms",
+      "alt_zh",
+      "common_projects_en",
+      "common_projects_ms",
+      "common_projects_zh",
+      "content_en",
+      "content_ms",
+      "content_zh",
+      "created_at",
+      "excerpt_en",
+      "excerpt_ms",
+      "excerpt_zh",
+      "faqs_en",
+      "faqs_ms",
+      "faqs_zh",
+      "id",
+      "image_url",
+      "process_steps_en",
+      "process_steps_ms",
+      "process_steps_zh",
+      "scope_items_en",
+      "scope_items_ms",
+      "scope_items_zh",
+      "seo_description_ms",
+      "seo_title_ms",
+      "slug",
+      "sort_order",
+      "status",
+      "suitable_for_en",
+      "suitable_for_ms",
+      "suitable_for_zh",
+      "title_en",
+      "title_ms",
+      "title_zh",
+      "updated_at",
+      "version"
+    ],
+    "requiresParentRun": true,
+    "rollbackAllowed": true,
+    "baselineFieldsSha256": "7ce16f2718dc783bda5f7150565e8ea952ee317454dd799ec1ab2de0ce06e4f7",
+    "desiredFieldsSha256": "c91573489303221044fffebecfd0ff7baa6c5c81fd01b748ede109dae441c23d",
+    "rollbackFieldsSha256": "f87a881bd08de737894a85212f5dd249c806c5067eab81484d624a878a5f5ecc",
+    "retainedFieldsSha256": "5f28cc283e126b0ac36c83b42e0d44cfc48c2fe93be86cb15b148dd2e6a4cde5"
+  },
+  "before": {
+    "id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+    "slug": "artistic-coating",
+    "alt_en": "Decorative wall finish planning reference",
+    "alt_ms": "Rujukan perancangan kemasan dinding hiasan",
+    "alt_zh": "艺术墙面饰面规划参考",
+    "status": "published",
+    "faqs_en": [
+      {
+        "a": "Artistic wall coating is a decorative finish that can create texture, depth, and distinctive visual effects on selected walls.",
+        "q": "What is artistic wall coating?"
+      },
+      {
+        "a": "Durability depends on wall condition, coating type, application method, sealing, and daily use. Maintenance needs should be confirmed before work starts.",
+        "q": "How durable is it?"
+      },
+      {
+        "a": "Cost depends on wall area, selected finish, surface preparation, number of layers, and site condition. A quotation should be confirmed after reviewing the wall.",
+        "q": "How much does it cost?"
+      }
+    ],
+    "faqs_ms": [
+      {
+        "a": "Kemasan dinding artistik ialah kemasan hiasan yang menghasilkan tekstur, kedalaman dan kesan visual tersendiri pada dinding terpilih.",
+        "q": "Apakah kemasan dinding artistik?"
+      },
+      {
+        "a": "Ketahanan bergantung pada keadaan dinding, jenis kemasan, kaedah aplikasi, lapisan pelindung dan penggunaan harian. Sahkan keperluan penyelenggaraan sebelum kerja bermula.",
+        "q": "Sejauh manakah ketahanannya?"
+      },
+      {
+        "a": "Kos bergantung pada keluasan dinding, kemasan yang dipilih, penyediaan permukaan, bilangan lapisan dan keadaan tapak. Minta sebut harga selepas keadaan dinding diperiksa.",
+        "q": "Berapakah kosnya?"
+      }
+    ],
+    "faqs_zh": [
+      {
+        "a": "它是一种有质感的装饰涂装，能做出纹理、层次和特别的视觉效果。",
+        "q": "什么是艺术墙面涂装？"
+      },
+      {
+        "a": "耐用度会受墙面状态、涂装类型、施工方式、封层和日常使用影响，施工前应先确认维护要求。",
+        "q": "耐用吗？"
+      },
+      {
+        "a": "费用会根据面积、效果、墙面处理、层数和现场情况变化，需要看过墙面和需求后确认报价。",
+        "q": "价格大概多少？"
+      }
+    ],
+    "version": 1,
+    "title_en": "Artistic Wall Coating and Feature Wall Planning",
+    "title_ms": "Kemasan Dinding Artistik dan Perancangan Dinding Fokus",
+    "title_zh": "艺术墙面涂装与特色墙规划",
+    "image_url": "/images/services/artistic-coating.webp",
+    "content_en": "<p>Artistic wall coating helps explore colour, texture, reflected light and maintenance for interior feature walls. FLASH CAST first reviews the wall condition and design direction, then confirms materials and application within an approved sample and written scope.</p><h2>Check the substrate and use</h2><p>Share wall dimensions, photos, existing finishes and any dampness or cracking. Damp, loose or uneven substrates need an assessment of preparation work; a decorative finish should not simply cover an unresolved problem.</p><h2>Confirm the effect with physical samples</h2><p>Compare texture, metallic appearance or other decorative effects against samples, lighting and viewing distance. Product identity, system, suitable substrate, coverage and care follow the selected product documentation. A rendering does not prove an installed finish.</p><h2>Quotation and next step</h2><p>Area, preparation, selected finish, samples, protection and access affect the quotation. For wider coordination, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share wall photos and requirements through the <a href=\"/en/quote\">free quotation form</a>. This page does not claim authorised distribution, a brand partnership or a general performance guarantee.</p>\n<h2>What should be agreed if the space remains in use?</h2><p>Alongside wall information, explain whether the room remains occupied, where furniture and retained finishes sit, and any access, ventilation or building work-hour limits. The responsible applicator should confirm protection, moving, work sequence and return-to-use arrangements for the actual product and site, with clear ownership. No move-in time or substrate diagnosis is established from photos alone.</p><h2>How should a sample relate to the wall-finishing quotation?</h2><p>Match the selected sample and material revision to the actual wall locations. Ask which substrate preparation, sample work, protection, application, edge finishing and waste removal are included, assessment-dependent or charged separately. Compare equivalent scopes rather than totals alone. Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking.</p>",
+    "content_ms": "<p>Salutan dinding artistik membantu meneroka warna, tekstur, cahaya yang dipantulkan dan penyelenggaraan untuk dinding fokus dalaman. FLASH CAST mula-mula menyemak keadaan dinding dan arah reka bentuk, kemudian mengesahkan bahan dan aplikasi dalam sampel yang diluluskan dan skop bertulis.</p><h2>Periksa substrat dan gunakan</h2><p>Kongsi dimensi dinding, foto, kemasan sedia ada dan sebarang kelembapan atau retak. Substrat lembap, longgar atau tidak rata memerlukan penilaian kerja penyediaan; kemasan hiasan tidak seharusnya hanya meliputi masalah yang tidak dapat diselesaikan.</p><h2>Sahkan kesan dengan sampel fizikal</h2><p>Bandingkan tekstur, penampilan logam atau kesan hiasan lain terhadap sampel, pencahayaan dan jarak tontonan. Identiti produk, sistem, substrat yang sesuai, liputan dan penjagaan ikut dokumentasi produk yang dipilih. Paparan tidak membuktikan kemasan yang dipasang.</p><h2>Sebut harga dan langkah seterusnya</h2><p>Keluasan kawasan, kerja penyediaan, kemasan terpilih, sampel, perlindungan dan akses tapak boleh mempengaruhi sebut harga. Untuk skop yang lebih luas, lihat <a href=\"/ms/services/design\">perancangan reka bentuk dalaman</a>. Kongsi foto dinding dan keperluan projek melalui <a href=\"/ms/quote\">borang permintaan sebut harga</a>. Halaman ini tidak menyatakan bahawa sesuatu produk atau jenama telah diluluskan dan tidak menjanjikan prestasi umum.</p>",
+    "content_zh": "<p>艺术墙面涂装可用于讨论室内特色墙的颜色、肌理、光感与维护需求。FLASH CAST 会先核对墙面状况和设计方向，再按样板与书面范围确认材料和施工。</p><h2>先看基层与使用条件</h2><p>提供墙面尺寸、照片、现有饰面及受潮或开裂情况。潮湿、松动或不平整基层应先评估处理范围，不能仅靠饰面覆盖问题。</p><h2>用实物样板确认效果</h2><p>纹理、金属感或其他装饰效果应结合样板、照明和观看距离比较。产品名称、体系、适用基层、用量和维护方法须按所选产品的当前资料确认，不以效果图代替真实施工效果。</p><h2>报价与下一步</h2><p>面积、基层处理、选定饰面、样板确认、保护和现场出入都会影响报价。需要整体空间协调时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>；可通过 <a href=\"/zh/quote\">免费报价入口</a> 提供墙面照片和需求。本页不声明任何品牌的授权经销、合作关系或通用性能保证。</p>\n<h2>有人使用的空间要先确认哪些施工安排？</h2><p>除墙面资料外，说明房间是否继续使用、家具与保留饰面的位置，以及进出场、通风和物业施工时段限制。请施工负责方按实际产品与现场条件确认保护、搬移、工序和可恢复使用的安排，并写清谁负责；不预先保证入住时间或仅凭照片判断基层问题。</p><h2>样板与墙面施工报价怎样对应？</h2><p>将选定样板和材料版本与实际墙面位置对应，询问基层处理、样板制作、保护、施工、收边及清运哪些已包含，哪些需评估或另计，避免把不同范围的总价直接比较。报价免费；上门量房在30公里以内免费，超过30公里收费，预约前核对地点与收费。</p>",
+    "created_at": "2026-05-29T10:14:07.591592+00:00",
+    "excerpt_en": "Review the wall condition, colour, texture, samples and care needs before confirming the finish and work scope.",
+    "excerpt_ms": "Semak keadaan dinding, warna, tekstur, sampel dan keperluan penjagaan sebelum mengesahkan kemasan dan skop kerja.",
+    "excerpt_zh": "先核对墙面状态、颜色、肌理、样板与维护需求，再确认饰面及施工范围。",
+    "sort_order": 80,
+    "updated_at": "2026-10-27T03:52:31.828249+00:00",
+    "seo_title_en": "Artistic Wall Coating and Feature Walls Kuala Lumpur | FLASH CAST",
+    "seo_title_ms": "Kemasan Dinding Artistik di Kuala Lumpur | FLASH CAST",
+    "seo_title_zh": "吉隆坡艺术墙面涂装与特色墙规划 | FLASH CAST",
+    "scope_items_en": [
+      "Wall dimensions and existing condition",
+      "Colour and texture direction",
+      "Selected product and sample confirmation",
+      "Surface-preparation scope",
+      "Protection, access and maintenance requirements"
+    ],
+    "scope_items_ms": [
+      "Salutan berasaskan kapur Remmers (Kalkfarbe)",
+      "Kesan metalik Artisto Fill",
+      "Plaster hiasan (Dekorputz)",
+      "Kemasan gaya Venetian",
+      "Kesan batu semula jadi dan konkrit",
+      "Kemasan Marmorino dan Stucco",
+      "Kesan karat dan pengoksidaan",
+      "Campuran dan padanan warna tersuai"
+    ],
+    "scope_items_zh": [
+      "墙面尺寸与现状核对",
+      "颜色与肌理方向",
+      "所选产品与样板确认",
+      "基层处理范围",
+      "保护、出入与维护要求"
+    ],
+    "suitable_for_en": [
+      "Homeowners wanting premium feature walls",
+      "Interior designers seeking unique finishes",
+      "Hotels and hospitality venues",
+      "Restaurants and F&B interiors",
+      "Commercial showrooms and lobbies"
+    ],
+    "suitable_for_ms": [
+      "Pemilik rumah yang mahukan dinding aksen eksklusif",
+      "Pereka dalaman yang mencari kemasan unik",
+      "Hotel dan premis hospitaliti",
+      "Restoran dan ruang dalaman F&B",
+      "Bilik pameran dan lobi komersial"
+    ],
+    "suitable_for_zh": [
+      "想提升质感的住宅业主",
+      "室内设计师",
+      "酒店与接待空间",
+      "餐饮空间",
+      "商业展厅与大堂"
+    ],
+    "process_steps_en": [
+      {
+        "desc": "Share dimensions, photos and the intended effect.",
+        "title": "Brief and site information"
+      },
+      {
+        "desc": "Check the current wall and preparation requirements for the selected product.",
+        "title": "Substrate and material review"
+      },
+      {
+        "desc": "Review physical samples, work stages, protection and the written quotation.",
+        "title": "Sample and scope confirmation"
+      },
+      {
+        "desc": "Coordinate the agreed system and work scope.",
+        "title": "Work and stage checks"
+      },
+      {
+        "desc": "Confirm any sealing, cleaning and care requirements against product and project documents.",
+        "title": "Care and handover"
+      }
+    ],
+    "process_steps_ms": [
+      {
+        "desc": "Lihat sampel fizikal dan pilih kemasan yang sesuai dengan ruang serta gaya anda.",
+        "title": "Rundingan dan pemilihan warna"
+      },
+      {
+        "desc": "Bersihkan dan sapukan lapisan asas pada dinding supaya permukaannya sedia untuk kerja kemasan.",
+        "title": "Penyediaan permukaan"
+      },
+      {
+        "desc": "Sapukan sampel pada dinding di tapak untuk mendapatkan kelulusan terhadap hasil sebenar.",
+        "title": "Ujian sampel"
+      },
+      {
+        "desc": "Juruteknik terlatih menyapu kemasan secara berlapis dan teliti.",
+        "title": "Aplikasi penuh"
+      },
+      {
+        "desc": "Sapukan lapisan pelindung untuk meningkatkan ketahanan dan memudahkan pembersihan.",
+        "title": "Lapisan pelindung"
+      }
+    ],
+    "process_steps_zh": [
+      {
+        "desc": "提供尺寸、照片和期望效果。",
+        "title": "需求与现场资料"
+      },
+      {
+        "desc": "检查现况，并按所选产品资料确认准备要求。",
+        "title": "基层与材料核对"
+      },
+      {
+        "desc": "核对实物样板、工序、保护和书面报价。",
+        "title": "样板与范围确认"
+      },
+      {
+        "desc": "按确认体系和范围协调工序及阶段检查。",
+        "title": "施工与检查"
+      },
+      {
+        "desc": "所需封层、清洁与维护按产品资料和项目文件确认。",
+        "title": "维护与交付说明"
+      }
+    ],
+    "common_projects_en": [
+      "Living room TV feature wall",
+      "Master bedroom accent wall",
+      "Hotel lobby and corridor coating",
+      "Restaurant interior wall finish",
+      "Office reception feature wall"
+    ],
+    "common_projects_ms": [
+      "Dinding aksen di ruang TV ruang tamu",
+      "Dinding aksen bilik tidur utama",
+      "Kemasan dinding lobi dan koridor hotel",
+      "Kemasan dinding dalaman restoran",
+      "Dinding aksen di kaunter penerimaan pejabat"
+    ],
+    "common_projects_zh": [
+      "艺术背景墙",
+      "主卧强调墙",
+      "酒店大堂墙面",
+      "餐厅墙面",
+      "办公接待区",
+      "展示墙"
+    ],
+    "seo_description_en": "Discuss feature-wall colour, texture, preparation and maintenance in Kuala Lumpur and Selangor. Confirm the selected finish with samples and a written quotation.",
+    "seo_description_ms": "Bincangkan ciri-warna dinding, tekstur, penyediaan dan penyelenggaraan di Kuala Lumpur dan Selangor. Sahkan kemasan yang dipilih dengan sampel dan sebut harga bertulis.",
+    "seo_description_zh": "讨论吉隆坡与雪兰莪特色墙的颜色、肌理、基层与维护条件，按实物样板和书面范围确认艺术墙面饰面及报价。"
+  },
+  "desired": {
+    "seo_title_en": "Artistic Wall Coating KL | Feature Walls | FLASH CAST",
+    "seo_title_zh": "吉隆坡艺术涂料｜特色墙施工｜FLASH CAST",
+    "seo_description_en": "Artistic wall coating and feature walls in Kuala Lumpur and Selangor, with surface preparation and finish samples agreed before application.",
+    "seo_description_zh": "吉隆坡与雪兰莪艺术涂料与特色墙施工。先确认基层处理与样板效果，再安排大面积施工。"
+  },
+  "rollback": {
+    "seo_title_en": "Artistic Wall Coating and Feature Walls Kuala Lumpur | FLASH CAST",
+    "seo_title_zh": "吉隆坡艺术墙面涂装与特色墙规划 | FLASH CAST",
+    "seo_description_en": "Discuss feature-wall colour, texture, preparation and maintenance in Kuala Lumpur and Selangor. Confirm the selected finish with samples and a written quotation.",
+    "seo_description_zh": "讨论吉隆坡与雪兰莪特色墙的颜色、肌理、基层与维护条件，按实物样板和书面范围确认艺术墙面饰面及报价。"
+  },
+  "dryRunRequest": {
+    "contentType": "service",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-10-27T03:52:31.828249+00:00",
+    "ownerApproved": false,
+    "explicitExecution": false,
+    "record": {
+      "id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+      "slug": "artistic-coating",
+      "alt_en": "Decorative wall finish planning reference",
+      "alt_ms": "Rujukan perancangan kemasan dinding hiasan",
+      "alt_zh": "艺术墙面饰面规划参考",
+      "status": "published",
+      "faqs_en": [
+        {
+          "a": "Artistic wall coating is a decorative finish that can create texture, depth, and distinctive visual effects on selected walls.",
+          "q": "What is artistic wall coating?"
+        },
+        {
+          "a": "Durability depends on wall condition, coating type, application method, sealing, and daily use. Maintenance needs should be confirmed before work starts.",
+          "q": "How durable is it?"
+        },
+        {
+          "a": "Cost depends on wall area, selected finish, surface preparation, number of layers, and site condition. A quotation should be confirmed after reviewing the wall.",
+          "q": "How much does it cost?"
+        }
+      ],
+      "faqs_ms": [
+        {
+          "a": "Kemasan dinding artistik ialah kemasan hiasan yang menghasilkan tekstur, kedalaman dan kesan visual tersendiri pada dinding terpilih.",
+          "q": "Apakah kemasan dinding artistik?"
+        },
+        {
+          "a": "Ketahanan bergantung pada keadaan dinding, jenis kemasan, kaedah aplikasi, lapisan pelindung dan penggunaan harian. Sahkan keperluan penyelenggaraan sebelum kerja bermula.",
+          "q": "Sejauh manakah ketahanannya?"
+        },
+        {
+          "a": "Kos bergantung pada keluasan dinding, kemasan yang dipilih, penyediaan permukaan, bilangan lapisan dan keadaan tapak. Minta sebut harga selepas keadaan dinding diperiksa.",
+          "q": "Berapakah kosnya?"
+        }
+      ],
+      "faqs_zh": [
+        {
+          "a": "它是一种有质感的装饰涂装，能做出纹理、层次和特别的视觉效果。",
+          "q": "什么是艺术墙面涂装？"
+        },
+        {
+          "a": "耐用度会受墙面状态、涂装类型、施工方式、封层和日常使用影响，施工前应先确认维护要求。",
+          "q": "耐用吗？"
+        },
+        {
+          "a": "费用会根据面积、效果、墙面处理、层数和现场情况变化，需要看过墙面和需求后确认报价。",
+          "q": "价格大概多少？"
+        }
+      ],
+      "version": 1,
+      "title_en": "Artistic Wall Coating and Feature Wall Planning",
+      "title_ms": "Kemasan Dinding Artistik dan Perancangan Dinding Fokus",
+      "title_zh": "艺术墙面涂装与特色墙规划",
+      "image_url": "/images/services/artistic-coating.webp",
+      "content_en": "<p>Artistic wall coating helps explore colour, texture, reflected light and maintenance for interior feature walls. FLASH CAST first reviews the wall condition and design direction, then confirms materials and application within an approved sample and written scope.</p><h2>Check the substrate and use</h2><p>Share wall dimensions, photos, existing finishes and any dampness or cracking. Damp, loose or uneven substrates need an assessment of preparation work; a decorative finish should not simply cover an unresolved problem.</p><h2>Confirm the effect with physical samples</h2><p>Compare texture, metallic appearance or other decorative effects against samples, lighting and viewing distance. Product identity, system, suitable substrate, coverage and care follow the selected product documentation. A rendering does not prove an installed finish.</p><h2>Quotation and next step</h2><p>Area, preparation, selected finish, samples, protection and access affect the quotation. For wider coordination, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share wall photos and requirements through the <a href=\"/en/quote\">free quotation form</a>. This page does not claim authorised distribution, a brand partnership or a general performance guarantee.</p>\n<h2>What should be agreed if the space remains in use?</h2><p>Alongside wall information, explain whether the room remains occupied, where furniture and retained finishes sit, and any access, ventilation or building work-hour limits. The responsible applicator should confirm protection, moving, work sequence and return-to-use arrangements for the actual product and site, with clear ownership. No move-in time or substrate diagnosis is established from photos alone.</p><h2>How should a sample relate to the wall-finishing quotation?</h2><p>Match the selected sample and material revision to the actual wall locations. Ask which substrate preparation, sample work, protection, application, edge finishing and waste removal are included, assessment-dependent or charged separately. Compare equivalent scopes rather than totals alone. Quotations are free. Site measurement is free within 30 km and chargeable beyond 30 km; confirm the location and applicable charge before booking.</p>",
+      "content_ms": "<p>Salutan dinding artistik membantu meneroka warna, tekstur, cahaya yang dipantulkan dan penyelenggaraan untuk dinding fokus dalaman. FLASH CAST mula-mula menyemak keadaan dinding dan arah reka bentuk, kemudian mengesahkan bahan dan aplikasi dalam sampel yang diluluskan dan skop bertulis.</p><h2>Periksa substrat dan gunakan</h2><p>Kongsi dimensi dinding, foto, kemasan sedia ada dan sebarang kelembapan atau retak. Substrat lembap, longgar atau tidak rata memerlukan penilaian kerja penyediaan; kemasan hiasan tidak seharusnya hanya meliputi masalah yang tidak dapat diselesaikan.</p><h2>Sahkan kesan dengan sampel fizikal</h2><p>Bandingkan tekstur, penampilan logam atau kesan hiasan lain terhadap sampel, pencahayaan dan jarak tontonan. Identiti produk, sistem, substrat yang sesuai, liputan dan penjagaan ikut dokumentasi produk yang dipilih. Paparan tidak membuktikan kemasan yang dipasang.</p><h2>Sebut harga dan langkah seterusnya</h2><p>Keluasan kawasan, kerja penyediaan, kemasan terpilih, sampel, perlindungan dan akses tapak boleh mempengaruhi sebut harga. Untuk skop yang lebih luas, lihat <a href=\"/ms/services/design\">perancangan reka bentuk dalaman</a>. Kongsi foto dinding dan keperluan projek melalui <a href=\"/ms/quote\">borang permintaan sebut harga</a>. Halaman ini tidak menyatakan bahawa sesuatu produk atau jenama telah diluluskan dan tidak menjanjikan prestasi umum.</p>",
+      "content_zh": "<p>艺术墙面涂装可用于讨论室内特色墙的颜色、肌理、光感与维护需求。FLASH CAST 会先核对墙面状况和设计方向，再按样板与书面范围确认材料和施工。</p><h2>先看基层与使用条件</h2><p>提供墙面尺寸、照片、现有饰面及受潮或开裂情况。潮湿、松动或不平整基层应先评估处理范围，不能仅靠饰面覆盖问题。</p><h2>用实物样板确认效果</h2><p>纹理、金属感或其他装饰效果应结合样板、照明和观看距离比较。产品名称、体系、适用基层、用量和维护方法须按所选产品的当前资料确认，不以效果图代替真实施工效果。</p><h2>报价与下一步</h2><p>面积、基层处理、选定饰面、样板确认、保护和现场出入都会影响报价。需要整体空间协调时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>；可通过 <a href=\"/zh/quote\">免费报价入口</a> 提供墙面照片和需求。本页不声明任何品牌的授权经销、合作关系或通用性能保证。</p>\n<h2>有人使用的空间要先确认哪些施工安排？</h2><p>除墙面资料外，说明房间是否继续使用、家具与保留饰面的位置，以及进出场、通风和物业施工时段限制。请施工负责方按实际产品与现场条件确认保护、搬移、工序和可恢复使用的安排，并写清谁负责；不预先保证入住时间或仅凭照片判断基层问题。</p><h2>样板与墙面施工报价怎样对应？</h2><p>将选定样板和材料版本与实际墙面位置对应，询问基层处理、样板制作、保护、施工、收边及清运哪些已包含，哪些需评估或另计，避免把不同范围的总价直接比较。报价免费；上门量房在30公里以内免费，超过30公里收费，预约前核对地点与收费。</p>",
+      "created_at": "2026-05-29T10:14:07.591592+00:00",
+      "excerpt_en": "Review the wall condition, colour, texture, samples and care needs before confirming the finish and work scope.",
+      "excerpt_ms": "Semak keadaan dinding, warna, tekstur, sampel dan keperluan penjagaan sebelum mengesahkan kemasan dan skop kerja.",
+      "excerpt_zh": "先核对墙面状态、颜色、肌理、样板与维护需求，再确认饰面及施工范围。",
+      "sort_order": 80,
+      "updated_at": "2026-10-27T03:52:31.828249+00:00",
+      "seo_title_en": "Artistic Wall Coating KL | Feature Walls | FLASH CAST",
+      "seo_title_ms": "Kemasan Dinding Artistik di Kuala Lumpur | FLASH CAST",
+      "seo_title_zh": "吉隆坡艺术涂料｜特色墙施工｜FLASH CAST",
+      "scope_items_en": [
+        "Wall dimensions and existing condition",
+        "Colour and texture direction",
+        "Selected product and sample confirmation",
+        "Surface-preparation scope",
+        "Protection, access and maintenance requirements"
+      ],
+      "scope_items_ms": [
+        "Salutan berasaskan kapur Remmers (Kalkfarbe)",
+        "Kesan metalik Artisto Fill",
+        "Plaster hiasan (Dekorputz)",
+        "Kemasan gaya Venetian",
+        "Kesan batu semula jadi dan konkrit",
+        "Kemasan Marmorino dan Stucco",
+        "Kesan karat dan pengoksidaan",
+        "Campuran dan padanan warna tersuai"
+      ],
+      "scope_items_zh": [
+        "墙面尺寸与现状核对",
+        "颜色与肌理方向",
+        "所选产品与样板确认",
+        "基层处理范围",
+        "保护、出入与维护要求"
+      ],
+      "suitable_for_en": [
+        "Homeowners wanting premium feature walls",
+        "Interior designers seeking unique finishes",
+        "Hotels and hospitality venues",
+        "Restaurants and F&B interiors",
+        "Commercial showrooms and lobbies"
+      ],
+      "suitable_for_ms": [
+        "Pemilik rumah yang mahukan dinding aksen eksklusif",
+        "Pereka dalaman yang mencari kemasan unik",
+        "Hotel dan premis hospitaliti",
+        "Restoran dan ruang dalaman F&B",
+        "Bilik pameran dan lobi komersial"
+      ],
+      "suitable_for_zh": [
+        "想提升质感的住宅业主",
+        "室内设计师",
+        "酒店与接待空间",
+        "餐饮空间",
+        "商业展厅与大堂"
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Share dimensions, photos and the intended effect.",
+          "title": "Brief and site information"
+        },
+        {
+          "desc": "Check the current wall and preparation requirements for the selected product.",
+          "title": "Substrate and material review"
+        },
+        {
+          "desc": "Review physical samples, work stages, protection and the written quotation.",
+          "title": "Sample and scope confirmation"
+        },
+        {
+          "desc": "Coordinate the agreed system and work scope.",
+          "title": "Work and stage checks"
+        },
+        {
+          "desc": "Confirm any sealing, cleaning and care requirements against product and project documents.",
+          "title": "Care and handover"
+        }
+      ],
+      "process_steps_ms": [
+        {
+          "desc": "Lihat sampel fizikal dan pilih kemasan yang sesuai dengan ruang serta gaya anda.",
+          "title": "Rundingan dan pemilihan warna"
+        },
+        {
+          "desc": "Bersihkan dan sapukan lapisan asas pada dinding supaya permukaannya sedia untuk kerja kemasan.",
+          "title": "Penyediaan permukaan"
+        },
+        {
+          "desc": "Sapukan sampel pada dinding di tapak untuk mendapatkan kelulusan terhadap hasil sebenar.",
+          "title": "Ujian sampel"
+        },
+        {
+          "desc": "Juruteknik terlatih menyapu kemasan secara berlapis dan teliti.",
+          "title": "Aplikasi penuh"
+        },
+        {
+          "desc": "Sapukan lapisan pelindung untuk meningkatkan ketahanan dan memudahkan pembersihan.",
+          "title": "Lapisan pelindung"
+        }
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "提供尺寸、照片和期望效果。",
+          "title": "需求与现场资料"
+        },
+        {
+          "desc": "检查现况，并按所选产品资料确认准备要求。",
+          "title": "基层与材料核对"
+        },
+        {
+          "desc": "核对实物样板、工序、保护和书面报价。",
+          "title": "样板与范围确认"
+        },
+        {
+          "desc": "按确认体系和范围协调工序及阶段检查。",
+          "title": "施工与检查"
+        },
+        {
+          "desc": "所需封层、清洁与维护按产品资料和项目文件确认。",
+          "title": "维护与交付说明"
+        }
+      ],
+      "common_projects_en": [
+        "Living room TV feature wall",
+        "Master bedroom accent wall",
+        "Hotel lobby and corridor coating",
+        "Restaurant interior wall finish",
+        "Office reception feature wall"
+      ],
+      "common_projects_ms": [
+        "Dinding aksen di ruang TV ruang tamu",
+        "Dinding aksen bilik tidur utama",
+        "Kemasan dinding lobi dan koridor hotel",
+        "Kemasan dinding dalaman restoran",
+        "Dinding aksen di kaunter penerimaan pejabat"
+      ],
+      "common_projects_zh": [
+        "艺术背景墙",
+        "主卧强调墙",
+        "酒店大堂墙面",
+        "餐厅墙面",
+        "办公接待区",
+        "展示墙"
+      ],
+      "seo_description_en": "Artistic wall coating and feature walls in Kuala Lumpur and Selangor, with surface preparation and finish samples agreed before application.",
+      "seo_description_ms": "Bincangkan ciri-warna dinding, tekstur, penyediaan dan penyelenggaraan di Kuala Lumpur dan Selangor. Sahkan kemasan yang dipilih dengan sampel dan sebut harga bertulis.",
+      "seo_description_zh": "吉隆坡与雪兰莪艺术涂料与特色墙施工。先确认基层处理与样板效果，再安排大面积施工。"
+    },
+    "managedCandidate": {
+      "taskId": "c4-four-service-seo-20261118-v1",
+      "actionId": "publish-c4-artistic-coating-seo-20261118-v1",
+      "operation": "publish",
+      "scope": "flashcast.com.my:services:d862312d-d5f3-4bb7-9bf0-137ed71c87be:seo_title_en,seo_title_zh,seo_description_en,seo_description_zh",
+      "candidateVersion": "c4-artistic-coating-seo-20261118-v1"
+    }
+  }
+}

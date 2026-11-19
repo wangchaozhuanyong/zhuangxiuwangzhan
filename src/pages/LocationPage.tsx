@@ -31,8 +31,59 @@ import { pageHeroImages } from "@/lib/pageHeroImages";
 import { siteConfig } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { buildQuotePath } from "@/lib/quoteContext";
-import { plainTextParagraphs, stripHtml } from "@/lib/text";
-import { findSelangorWarehouseIntroLink } from "@/lib/selangorWarehouseIntroLink";
+import { isHtmlText, splitContentParagraphs, stripHtml } from "@/lib/text";
+import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
+import { findSelangorWarehouseIntroLink, type WarehouseIntroLink } from "@/lib/selangorWarehouseIntroLink";
+
+const renderIntroHtml = (html: string) => <span dangerouslySetInnerHTML={{ __html: html }} />;
+
+function renderLinkedIntro(html: string, link: WarehouseIntroLink) {
+  if (html) {
+    const paragraph = document.createElement("span");
+    paragraph.innerHTML = html;
+    const match = (paragraph.textContent || "").match(new RegExp(
+      link.anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+"),
+    ));
+    if (match?.index !== undefined) {
+      const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+      const anchorRange = document.createRange();
+      let offset = 0;
+      let node: Node | null;
+      while ((node = walker.nextNode())) {
+        const end = offset + (node.textContent?.length || 0);
+        if (match.index >= offset && match.index < end) anchorRange.setStart(node, match.index - offset);
+        const endOfAnchor = match.index + match[0].length;
+        if (endOfAnchor > offset && endOfAnchor <= end) {
+          anchorRange.setEnd(node, endOfAnchor - offset);
+          break;
+        }
+        offset = end;
+      }
+      const before = document.createRange();
+      before.selectNodeContents(paragraph);
+      before.setEnd(anchorRange.startContainer, anchorRange.startOffset);
+      const after = document.createRange();
+      after.selectNodeContents(paragraph);
+      after.setStart(anchorRange.endContainer, anchorRange.endOffset);
+      const renderPart = (part: Range) => {
+        const span = document.createElement("span");
+        let content: Node = part.cloneContents();
+        const common = part.commonAncestorContainer;
+        let ancestor = common instanceof Element ? common : common.parentElement;
+        while (ancestor && ancestor !== paragraph) {
+          const wrapper = ancestor.cloneNode(false);
+          wrapper.appendChild(content);
+          content = wrapper;
+          ancestor = ancestor.parentElement;
+        }
+        span.append(content);
+        return renderIntroHtml(span.innerHTML);
+      };
+      return <>{renderPart(before)}<Link to={link.to} className="underline underline-offset-4">{renderPart(anchorRange)}</Link>{renderPart(after)}</>;
+    }
+  }
+  return <>{link.before}<Link to={link.to} className="underline underline-offset-4">{link.anchor}</Link>{link.after}</>;
+}
 
 export default function LocationPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -64,11 +115,21 @@ export default function LocationPage() {
   if (!location) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/locations/${slug || ""}`} noIndex /><SchemeAContentState action={<Link to="/locations">{copy.backHome}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
-  const introParagraphs = plainTextParagraphs(translateDisplayText(location.intro || "", language));
-  const warehouseLink = findSelangorWarehouseIntroLink(introParagraphs, location.slug, language);
-  const introContent = introParagraphs.map((paragraph, index) => warehouseLink?.paragraphIndex === index
-    ? <>{warehouseLink.before}<Link to={warehouseLink.to} className="underline underline-offset-4">{warehouseLink.anchor}</Link>{warehouseLink.after}</>
-    : paragraph);
+  const introParagraphs = splitContentParagraphs(translateDisplayText(location.intro || "", language)).flatMap((paragraph) => {
+    if (typeof document === "undefined" || !isHtmlText(paragraph)) {
+      const text = stripHtml(paragraph);
+      return text ? [{ text, html: "" }] : [];
+    }
+    const html = sanitizeServiceOverviewHtml(paragraph, language, { emphasisOnly: true });
+    const fragment = document.createElement("template");
+    fragment.innerHTML = html;
+    const text = (fragment.content.textContent || "").replace(/\s+/g, " ").trim();
+    return text ? [{ text, html }] : [];
+  });
+  const warehouseLink = findSelangorWarehouseIntroLink(introParagraphs.map(({ text }) => text), location.slug, language);
+  const introContent = introParagraphs.map(({ text, html }, index) => warehouseLink?.paragraphIndex === index
+    ? renderLinkedIntro(html, warehouseLink)
+    : html ? renderIntroHtml(html) : text);
   const faqs = location.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) }));
   const projectItems: SchemeAListingItem[] = location.projects.map((project, index) => ({
     id: `${project.title}-${index}`,
