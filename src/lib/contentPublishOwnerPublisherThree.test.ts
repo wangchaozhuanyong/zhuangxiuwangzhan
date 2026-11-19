@@ -24,7 +24,7 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
     expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
-    expect(historicalTargets).toHaveLength(98); // Includes four additional exact C4 SEO candidates; historical bindings are preserved.
+    expect(historicalTargets).toHaveLength(99); // Includes the four C4 SEO candidates and one KL body candidate; historical bindings are preserved.
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

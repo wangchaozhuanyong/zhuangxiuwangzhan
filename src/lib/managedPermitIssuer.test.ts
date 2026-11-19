@@ -48,18 +48,20 @@ describe("protected managed CMS permit issuer", () => {
   it.each([...MANAGED_SERVICES.slice(-3).filter((target) => target.rollbackAllowed !== false), ...MANAGED_AREAS, ...MANAGED_BLOGS.filter((target) => target.rollbackAllowed !== false && !target.rollbackFieldsSha256)])(
     "binds a distinct publish and rollback permit to $slug", async (target) => {
       const publish = { ...base, taskId: target.taskId, actionId: target.actionId,
-        candidateVersion: target.candidateVersion, recordId: target.id, slug: target.slug, scope: target.scope };
+        candidateVersion: target.candidateVersion, recordId: target.id, slug: target.slug, scope: target.scope,
+        ...(target.baselineProjectionFields ? { expectedUpdatedAt: target.expectedUpdatedAt!,
+          payloadSha256: target.desiredFieldsSha256!, rollbackPayloadSha256: target.rollbackFieldsSha256! } : {}) };
       const issued = clientFor();
       await expect(issueManagedPermit(issued.client, publish, now)).resolves.toMatchObject({ operation: "publish" });
       const rollback = { ...publish, permitId: "22222222-2222-4222-8222-222222222222",
         actionId: `rollback-${target.candidateVersion}`,
         candidateVersion: `${target.candidateVersion}-rollback-v1`, operation: "rollback" as const,
-        expectedUpdatedAt: "2026-09-21T12:01:00Z", payloadSha256: base.rollbackPayloadSha256,
+        expectedUpdatedAt: "2026-09-21T12:01:00Z", payloadSha256: publish.rollbackPayloadSha256,
         rollbackPayloadSha256: undefined, parentPermitId: base.permitId,
         parentRunId: target.contentType === "blog" || target.requiresParentRun ? 12345 : undefined };
       const parent = { status: "completed", operation: "publish", task_id: target.taskId,
         record_id: target.id, slug: target.slug, scope: target.scope,
-        candidate_version: target.candidateVersion, rollback_payload_sha256: base.rollbackPayloadSha256,
+        candidate_version: target.candidateVersion, rollback_payload_sha256: publish.rollbackPayloadSha256,
         saved_updated_at: rollback.expectedUpdatedAt, github_run_id: 12345 };
       await expect(issueManagedPermit(clientFor(parent).client, rollback, now))
         .resolves.toMatchObject({ operation: "rollback" });

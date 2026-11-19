@@ -65,8 +65,8 @@ describe("original Google four-row protected current channel", () => {
     expect(PAID_FOUR_CURRENT_TARGETS).toHaveLength(4);
     expect(new Set(PAID_FOUR_CURRENT_TARGETS.map(t => t.actionId)).size).toBe(4);
     const prior = MANAGED_TARGETS.filter(t => !PAID_FOUR_CURRENT_TARGETS.includes(t) && t.contentType !== "translation_patch");
-    // Includes NEXT8 KW-05971, two original material targets and four exact C4 SEO candidates.
-    expect(prior).toHaveLength(94);
+    // Includes NEXT8 KW-05971, two original materials, four C4 SEO candidates and one KL body candidate.
+    expect(prior).toHaveLength(95);
     expect(() => readPaidFourCurrentCandidates(Buffer.concat([bytes, Buffer.from("\n")]))).toThrow("source bytes differ");
     expect(() => buildPaidFourPermitLookup("english-kitchen-en2-exact-v1")).toThrow("namespace");
   });
