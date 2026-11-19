@@ -4,11 +4,14 @@ export const stripHtml = (value = "") =>
     .replace(/\s+/g, " ")
     .trim();
 
-// Preserve CMS paragraph boundaries while returning text for React to escape.
-export const plainTextParagraphs = (value = "") =>
+export const splitContentParagraphs = (value = "") =>
   value
     .replace(/<\/p\s*>/gi, "\n\n")
-    .split(/\n\s*\n/)
+    .split(/\n\s*\n/);
+
+// Preserve CMS paragraph boundaries while returning text for React to escape.
+export const plainTextParagraphs = (value = "") =>
+  splitContentParagraphs(value)
     .map((paragraph) => stripHtml(paragraph))
     .filter(Boolean);
 

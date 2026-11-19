@@ -23,9 +23,12 @@ export type RouteHeroImagePreload = {
 const MOBILE_MEDIA = "(max-width: 767px)";
 const TABLET_MEDIA = "(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)";
 const DESKTOP_MEDIA = "(min-width: 1024px), (min-width: 768px) and (max-width: 1023px) and (orientation: landscape)";
+// The framed hero uses a 58% desktop column and the shared frame gutters on smaller screens.
+const DIGITAL_LOCK_HERO_SIZES = "(min-width: 1536px) 835.2px, (min-width: 1024px) calc((100vw - 2 * clamp(32px, 3vw, 48px)) * 0.58), (min-width: 768px) 92vw, (min-width: 375px) calc(100vw - 32px), calc(100vw - 24px)";
 
 /** Props shared by SchemeARouteHero and both document/intent preloads. */
 export function getRouteHeroImageProps({ image, imageSourceWidth, tabletImage, tabletImageSourceWidth, mobileImage, mobileImageSourceWidth, showIntro = true }: RouteHeroImageOptions) {
+  const usesDigitalLockFrameSizes = showIntro && image === "/images/services/digital-lock.webp";
   const pictureSource = (src: string, widths: number[], sourceWidth: number | undefined, quality: number, media: string) => ({
     media,
     srcSet: isSupabasePublicObjectUrl(src)
@@ -38,9 +41,9 @@ export function getRouteHeroImageProps({ image, imageSourceWidth, tabletImage, t
     sourceWidth: imageSourceWidth,
     width: showIntro ? 1600 : 2160,
     height: showIntro ? 1100 : 720,
-    targetAspectRatio: showIntro ? { width: 16, height: 11 } : { width: 3, height: 1 },
+    targetAspectRatio: usesDigitalLockFrameSizes ? undefined : showIntro ? { width: 16, height: 11 } : { width: 3, height: 1 },
     resize: "cover" as const,
-    sizes: showIntro ? "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw" : "(min-width: 1536px) 1440px, (min-width: 1024px) 94vw, 100vw",
+    sizes: usesDigitalLockFrameSizes ? DIGITAL_LOCK_HERO_SIZES : showIntro ? "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw" : "(min-width: 1536px) 1440px, (min-width: 1024px) 94vw, 100vw",
     candidateWidths: [560, 720, 960, 1200, 1600],
     quality: 86,
     pictureSources: [

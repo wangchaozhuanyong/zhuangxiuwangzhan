@@ -22,7 +22,7 @@ const sameLanguageHref = (value: string, language: "en" | "zh" | "ms") => {
   }
 };
 
-export const sanitizeServiceOverviewHtml = (raw: string, language: "en" | "zh" | "ms", options: { preserveLists?: boolean } = {}) => {
+export const sanitizeServiceOverviewHtml = (raw: string, language: "en" | "zh" | "ms", options: { preserveLists?: boolean; emphasisOnly?: boolean } = {}) => {
   if (!raw.trim()) return "";
   if (typeof document === "undefined") return escapeHtml(stripHtml(raw));
 
@@ -42,7 +42,9 @@ export const sanitizeServiceOverviewHtml = (raw: string, language: "en" | "zh" |
     if (DROP_WITH_CONTENT.has(tag)) return;
 
     const href = tag === "a" ? sameLanguageHref(element.getAttribute("href") || "", language) : null;
-    const allowedTag = ALLOWED_TAGS.has(tag) || (options.preserveLists && ["ul", "ol", "li"].includes(tag));
+    const allowedTag = options.emphasisOnly
+      ? tag === "strong" || tag === "em"
+      : ALLOWED_TAGS.has(tag) || (options.preserveLists && ["ul", "ol", "li"].includes(tag));
     const safeElement = allowedTag && (tag !== "a" || href)
       ? document.createElement(tag)
       : null;

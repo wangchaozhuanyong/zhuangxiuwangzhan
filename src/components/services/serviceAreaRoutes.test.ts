@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { onRequest } from "../../../functions/_middleware";
 import { findServiceAreaRoute } from "@/lib/serviceAreaRoutes";
 import pageText from "./serviceAreaPageText.json";
+import { stripHtml } from "@/lib/text";
 
 const origin = "https://flashcast.com.my";
 const paths = Object.keys(pageText);
-const languages = ["en", "zh", "ms"] as const;
 
 const generated = vi.hoisted(() => ({ manifest: {} as Record<string, { noIndex?: boolean }>, sitemap: "" }));
 vi.mock("../../../functions/seo-manifest.json", async (importOriginal) => {
@@ -40,18 +41,34 @@ async function readEdge(path: string) {
 }
 
 describe("C1 service and area routes", () => {
-  it.each(paths.flatMap(path => languages.map(language => ({ path, language }))))(
-    "serves qualified metadata for $language$path", async ({ path, language }) => {
+  it("copies all seven approved bilingual records and four body paragraphs verbatim", () => {
+    const document = readFileSync("docs/seo/cross-pages-batch-2.md", "utf8");
+    const sections = [...document.matchAll(/^## `(\/locations\/[^`]+)`\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)];
+    expect(sections).toHaveLength(7);
+    for (const [, path, section] of sections) {
+      const approved = Object.assign({}, ...[...section.matchAll(/```json\s*\n([\s\S]*?)\n```/g)]
+        .map(([, json]) => JSON.parse(json)));
+      expect(Object.keys(approved).sort()).toEqual(["en", "zh"]);
+      expect(pageText[path as keyof typeof pageText]).toEqual(approved);
+      expect(approved.en.body).toHaveLength(4);
+      expect(approved.zh.body).toHaveLength(4);
+    }
+  });
+
+  it.each(paths.flatMap(path => Object.entries(pageText[path as keyof typeof pageText])
+    .map(([language, expected]) => ({ path, language, expected }))))(
+    "serves qualified metadata for $language$path", async ({ path, language, expected }) => {
       const [, , area, service] = path.split("/");
       const route = findServiceAreaRoute(area, service);
       expect(route?.path).toBe(path);
+      if (["condo-renovation", "landed-house-renovation"].includes(service)) expect(route?.parentService).toBe("renovation");
       const localizedPath = "/" + language + path;
-      const expected = pageText[path as keyof typeof pageText][language];
+      const languages = Object.keys(pageText[path as keyof typeof pageText]);
       const meta = generated.manifest[localizedPath];
       expect(meta).toMatchObject({
         title: expected.title, description: expected.description, canonical: origin + localizedPath,
         available_locales: [...languages], source_complete: true, qualification: "eligible", owned_static: true,
-        hreflang: { en: origin + "/en" + path, zh: origin + "/zh" + path, ms: origin + "/ms" + path },
+        hreflang: Object.fromEntries(languages.map(locale => [locale, origin + "/" + locale + path])),
       });
       expect(meta.noIndex).not.toBe(true);
       expect(generated.sitemap).toContain("<loc>" + origin + localizedPath + "</loc>");
@@ -61,7 +78,8 @@ describe("C1 service and area routes", () => {
       expect(response.status).toBe(200);
       expect(html).toContain('<title data-rh="true">' + expected.title + "</title>");
       expect(html).toContain('rel="canonical" href="' + origin + localizedPath + '"');
-      expect(html).toContain('hreflang="ms-MY" href="' + origin + "/ms" + path + '"');
+      if (languages.includes("ms")) expect(html).toContain('hreflang="ms-MY" href="' + origin + "/ms" + path + '"');
+      else expect(html).not.toContain('hreflang="ms-MY"');
       expect(html).not.toMatch(/name="robots" content="noindex/);
       for (const schema of ["Service", "FAQPage", "BreadcrumbList"]) expect(html).toContain('"@type":"' + schema + '"');
       expect(html).toContain(expected.question.replace(/&/g, "\\u0026"));
@@ -71,8 +89,21 @@ describe("C1 service and area routes", () => {
       expect(readable?.querySelector("h1")?.textContent).toBe(expected.heading);
       const overview = readable?.querySelector("section");
       expect(overview?.querySelector("h2")?.textContent).toBe(expected.bodyHeading);
-      expect(Array.from(overview?.querySelectorAll("p") ?? [], node => node.textContent)).toEqual(expected.body);
+      expect(Array.from(overview?.querySelectorAll("p") ?? [], node => node.textContent)).toEqual(expected.body.map(stripHtml));
+      expect(overview?.innerHTML).not.toContain("&lt;p&gt;");
       expect(readable?.querySelector("section:last-child h3")?.textContent).toBe(expected.question);
+    },
+  );
+
+  it.each(paths.filter(path => !("ms" in pageText[path as keyof typeof pageText])))(
+    "excludes untranslated Malay %s and retains the existing noindex fallback", async path => {
+      const localizedPath = "/ms" + path;
+      expect(generated.manifest[localizedPath]).toBeUndefined();
+      expect(generated.sitemap).not.toContain("<loc>" + origin + localizedPath + "</loc>");
+      const response = await readEdge(localizedPath);
+      expect(response.status).toBe(200);
+      const document = new DOMParser().parseFromString(await response.text(), "text/html");
+      expect(document.querySelector('meta[name="robots"]')?.getAttribute("content")).toMatch(/\bnoindex\b/);
     },
   );
 

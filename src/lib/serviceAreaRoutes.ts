@@ -4,6 +4,13 @@ const serviceAreaRoutes = {
   "/locations/kuala-lumpur/bathroom-renovation": "bathroom",
   "/locations/petaling-jaya/condo-renovation": "renovation",
   "/locations/selangor/landed-house-renovation": "renovation",
+  "/locations/kuala-lumpur/condo-renovation": "renovation",
+  "/locations/petaling-jaya/kitchen-renovation": "kitchen",
+  "/locations/cheras/condo-renovation": "renovation",
+  "/locations/subang-jaya/landed-house-renovation": "renovation",
+  "/locations/kuala-lumpur/digital-lock": "digital-lock",
+  "/locations/selangor/office-renovation": "office-renovation",
+  "/locations/petaling-jaya/landed-house-renovation": "renovation",
 } as const;
 
 type ServiceAreaPath = keyof typeof serviceAreaRoutes;

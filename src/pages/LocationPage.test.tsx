@@ -16,8 +16,8 @@ vi.mock("@/hooks/usePublishedContent", async (importOriginal) => ({
       ...locationsData[slug],
       name: language === "zh" ? (locationsData[slug].nameZh || locationsData[slug].name) : locationsData[slug].name,
       intro: language === "zh"
-        ? `<p>第一段介绍。</p><p>${slug === "selangor" ? "仓储相关服务仅限货架、通道规划、地面标线及存储分区，具体范围以现场评估与报价为准。" : "第二段服务。"}</p><p>第三段报价。</p>`
-        : `<p>First introduction.</p><p>${slug === "selangor" ? "For warehouse-related needs, the confirmed scope is limited to racking, aisle planning, floor marking, and storage zoning; exact work is subject to a site review and quotation." : "Second service."}</p><p>Third quotation.</p>`,
+        ? `<p><strong>第一段</strong><em>介绍</em>。</p><p>${slug === "selangor" ? "<strong>仓储相关服务</strong>仅限货架、通道规划、地面标线及存储分区，具体范围以现场评估与报价为准。" : "第二段服务。"}</p><p>第三段报价。</p>`
+        : `<p><strong onclick="alert(1)">First</strong> <em>introduction</em>.<script>unsafe text</script></p><p>${slug === "selangor" ? "For <strong>warehouse-related needs</strong>, the confirmed scope is limited to racking, aisle planning, floor marking, and storage zoning; exact work is subject to a site review and quotation." : "Second service."}</p><p>Third quotation.</p>`,
     },
     isPending: false,
   }),
@@ -55,8 +55,12 @@ describe("LocationPage CMS paragraph rendering", () => {
           : ["First introduction.", slug === "selangor" ? "For warehouse-related needs, the confirmed scope is limited to racking, aisle planning, floor marking, and storage zoning; exact work is subject to a site review and quotation." : "Second service.", "Third quotation."],
       );
       const warehouse = intro!.querySelectorAll(`a[href="/${language}/services/warehouse"]`);
+      const firstParagraph = intro!.querySelector(".fc-route-section-head p");
+      expect(firstParagraph?.querySelector("strong")?.textContent).toBe(language === "zh" ? "第一段" : "First");
+      expect(firstParagraph?.querySelector("em")?.textContent).toBe(language === "zh" ? "介绍" : "introduction");
+      expect(firstParagraph?.querySelector("script, [onclick]")).toBeNull();
       expect(warehouse).toHaveLength(slug === "selangor" ? 1 : 0);
-      if (slug === "selangor") expect(warehouse[0].textContent).toBe(language === "zh" ? "仓储相关服务" : "warehouse-related needs");
+      if (slug === "selangor") expect(warehouse[0].querySelector("strong")?.textContent).toBe(language === "zh" ? "仓储相关服务" : "warehouse-related needs");
       if (slug === "kuala-lumpur") expect(container.querySelectorAll(`.fc-route-section a[href^="/${language}/services/"]`).length).toBeGreaterThan(0);
       const reviewedLabel = language === "zh" ? "可讨论的项目类型：" : "PROJECT TYPES TO DISCUSS:";
       const reviewedHeading = language === "zh" ? "概念参考与规划资料" : "Concept References and Planning Guides";
