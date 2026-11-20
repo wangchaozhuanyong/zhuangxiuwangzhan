@@ -51,10 +51,20 @@ export async function navigateLocation(page,url) {
     catch(error) {if(attempt===3||error?.name!=='TimeoutError')throw error;}
   }
 }
-export async function checkAreaBrowser({browser,row,body,identity,widths,output,mode,baseline=[]}) {
+async function waitForLocationReady(page) {
+  await page.waitForFunction(()=>{
+    const content=document.querySelector('#main-content')?.closest('.public-route-content');
+    if(!content||content.hasAttribute('inert')||content.getAttribute('aria-busy')==='true'||content.dataset.routeVisualState!=='ready')return false;
+    if(document.documentElement.hasAttribute('data-public-boot'))return false;
+    return [...document.querySelectorAll('#flashcast-public-boot,.scheme-a-page-loader--overlay')].every(el=>{
+      const style=getComputedStyle(el);return style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0||el.getClientRects().length===0;
+    });
+  },undefined,{timeout:45000});
+}
+export async function checkAreaBrowser({browser,row,body,identity,widths,output,mode,baseline=[],languages=['en','zh']}) {
   const results=[];
   const display=await displayLabels();
-  for(const lang of ['en','zh']) for(const width of widths) {
+  for(const lang of languages) for(const width of widths) {
     const context=await browser.newContext({viewport:{width,height:900},locale:lang==='en'?'en-MY':'zh-CN'});
     try {
       const page=await context.newPage(), errors=[];
@@ -67,6 +77,7 @@ export async function checkAreaBrowser({browser,row,body,identity,widths,output,
         return header && [...header.querySelectorAll(':scope > p')].map(p=>p.innerText).join(' ').replace(/\s+/g,' ').trim()===expected;
       },expected,{timeout:45000});
       await page.evaluate(()=>document.fonts.ready);
+      await waitForLocationReady(page);
       const data=await page.evaluate(()=>{
         const main=document.querySelector('#main-content'), header=main.querySelector('.fc-route-section-head');
         const ps=[...header.querySelectorAll(':scope > p')];
@@ -91,11 +102,12 @@ export async function checkAreaBrowser({browser,row,body,identity,widths,output,
         assert.deepEqual(data.hreflang,prior.hreflang);
       }
       const {mainText,introText,...details}=data;
-      const result={slug:row.slug,lang,width,mode,status:response.status(),browser:'bundled Chromium',navigationAttempts,...details,introCharacters:clean(introText).length,visibleMainCharacters:clean(mainText).length,exactApprovedText:true,errors};
+      const result={slug:row.slug,lang,width,mode,status:response.status(),browser:'bundled Chromium',navigationAttempts,routeReady:true,...details,introCharacters:clean(introText).length,visibleMainCharacters:clean(mainText).length,exactApprovedText:true,errors};
       results.push(result);
       write(resolve(output,`${mode}-browser.json`),results);
       if(width===390||width===1440) {
         await page.locator('#main-content .fc-route-section-head').first().evaluate(el=>scrollTo(0,scrollY+el.getBoundingClientRect().top-110));
+        await waitForLocationReady(page);
         await page.screenshot({path:resolve(output,`${mode}-${lang}-${width}.png`)});
       }
       console.log(JSON.stringify({slug:row.slug,lang,width,mode,introCharacters:result.introCharacters,strong:result.headings.length,overflow:result.overflow}));

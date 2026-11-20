@@ -13,6 +13,7 @@ import {issueManagedPermit,readManagedPermit} from '../supabase/functions/conten
 import {write,checkRawMetadata,checkAreaBrowser,checkAreaSitemap} from './lib/location-body-acceptance.mjs';
 
 export const TARGET='location-seven-body-20261119-v1';
+export const CHERAS_TARGET='location-cheras-final-20261119-v1';
 export const APPROVAL_ID='owner-approved-location-seven-after-kl-20261119';
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const WORKFLOW='wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main';
@@ -75,6 +76,11 @@ export function readCandidates() {
     return {t,desired};
   });
 }
+export function selectCandidates(target) {
+  assert([TARGET,CHERAS_TARGET].includes(target),'Unknown regional publishing selector');
+  const candidates=readCandidates();
+  return target===CHERAS_TARGET?candidates.filter(c=>c.t.slug==='cheras'):candidates;
+}
 export function assertBaseline(t,row) {
   assert.equal(row.id,t.id);assert.equal(row.slug,t.slug);assert.equal(row.status,'published');
   assert.equal(row.updated_at,t.expectedUpdatedAt,'Version changed; refresh the candidate');
@@ -85,7 +91,7 @@ export function assertEnvironment(e,sha) {
   assert.equal(e.GITHUB_REPOSITORY,'wangchaozhuanyong/zhuangxiuwangzhan');assert.equal(e.GITHUB_REPOSITORY_ID,'1248188229');
   assert.equal(e.GITHUB_WORKFLOW_REF,WORKFLOW);assert.equal(e.GITHUB_EVENT_NAME,'workflow_dispatch');
   assert.equal(e.GITHUB_SHA,sha);assert.match(sha,/^[a-f0-9]{40}$/);
-  assert.equal(e.PUBLISH_TARGET,TARGET);assert.equal(e.APPROVAL_ID,APPROVAL_ID);
+  assert([TARGET,CHERAS_TARGET].includes(e.PUBLISH_TARGET));assert.equal(e.APPROVAL_ID,APPROVAL_ID);
   assert.equal(e.MANAGED_OPERATION,'publish');assert(!e.MANAGED_PERMIT_ID&&!e.PARENT_RUN_ID);
   assert(['dry-run','publish'].includes(e.PUBLISH_MODE));
   assert.equal(new URL(e.VITE_SUPABASE_URL).origin,'https://rbsnyexjifounogswrjp.supabase.co');
@@ -96,7 +102,7 @@ export function assertEnvironment(e,sha) {
 async function main() {
   const e=process.env;assert.equal(resolve(process.cwd()),resolve(ROOT));
   assertEnvironment(e,execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim());
-  const candidates=readCandidates(),previous=readCompletedEvidence(),output=resolve(ROOT,'audits',`content-publish-${e.GITHUB_RUN_ID}`,'location-seven');
+  const candidates=selectCandidates(e.PUBLISH_TARGET),previous=e.PUBLISH_TARGET===TARGET?readCompletedEvidence():new Map(),output=resolve(ROOT,'audits',`content-publish-${e.GITHUB_RUN_ID}`,'location-seven');
   const reader=createClient(e.VITE_SUPABASE_URL,e.VITE_SUPABASE_ANON_KEY,{auth:{persistSession:false}});
   const issuer=e.PUBLISH_MODE==='publish'?createClient(e.VITE_SUPABASE_URL,e.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false}}):null;
   const completedPermit=async receipt=>{const {data,error}=await issuer.from('managed_cms_release_permits').select('*').eq('permit_id',receipt.permitId).maybeSingle();assert(!error,'Completed permit lookup failed');return data;};
@@ -130,8 +136,10 @@ async function main() {
     assert.equal(digest(await read(c.t)),digest(c.before));
     write(join(output,c.t.slug,'preview.json'),{before:c.before,desired:c.desired,rollback:c.rollback,preview,productionWrites:0});
   }
-  write(join(output,'before-sitemap.json'),await checkAreaSitemap(['kuala-lumpur',...candidates.map(c=>c.t.slug)]));
-  if(!issuer){write(join(output,'completion.json'),{ok:true,mode:'dry-run',records:7,alreadyPublished:2,pendingPreviews:5,productionWrites:0});return;}
+  const allSlugs=['kuala-lumpur',...readCandidates().map(c=>c.t.slug)];
+  const alreadyPublished=candidates.filter(c=>c.completed).length,pendingPreviews=candidates.length-alreadyPublished;
+  write(join(output,'before-sitemap.json'),await checkAreaSitemap(allSlugs));
+  if(!issuer){write(join(output,'completion.json'),{ok:true,mode:'dry-run',records:candidates.length,alreadyPublished,pendingPreviews,productionWrites:0});return;}
   const ipv4=await lookup('flashcast.com.my',{family:4});
   write(join(output,'browser-transport.json'),{host:'flashcast.com.my',currentPublicDnsAddress:ipv4.address,quic:false,httpsCertificateValidation:true});
   const browser=await chromium.launch({headless:true,args:['--disable-quic',`--host-resolver-rules=MAP flashcast.com.my ${ipv4.address}`]});
@@ -170,8 +178,8 @@ async function main() {
     }
   } finally {await browser.close();}
   assert.equal(digest(await read(klTarget)),digest(klBefore),'KL changed during this batch');
-  write(join(output,'after-sitemap.json'),await checkAreaSitemap(['kuala-lumpur',...candidates.map(c=>c.t.slug)]));
-  write(join(output,'completion.json'),{ok:true,mode:'publish',records:7,newWrites:5,alreadyPublished:2,fieldsPerRecord:2,credentialMode:'x-cron-secret',identity:verified,klUnchanged:true});
+  write(join(output,'after-sitemap.json'),await checkAreaSitemap(allSlugs));
+  write(join(output,'completion.json'),{ok:true,mode:'publish',records:candidates.length,newWrites:pendingPreviews,alreadyPublished,fieldsPerRecord:2,credentialMode:'x-cron-secret',identity:verified,klUnchanged:true});
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(error=>{
   let message=String(error?.message||'Seven-area publication failed');
