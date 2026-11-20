@@ -1,5 +1,4 @@
 import { projectTypes, budgetRanges } from "@/i18n/quoteOptions";
-import { isMalayContentReady } from "@/i18n/localizedContent";
 import { interactionText } from "@/i18n/interactionText";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -226,7 +225,7 @@ const Quote = () => {
   if (status === "success") {
     return (
       <main className="fc-route-page fc-route-form-page fc-route-quote-page" data-route-pending={pageLoading || undefined}>
-        <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
+        <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined} title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
         <section className="fc-route-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
             <div id="quote-success-status" role="status" aria-live="polite" tabIndex={-1} className="subpage-form-panel p-6 md:p-8 focus:outline-none">
@@ -288,7 +287,7 @@ const Quote = () => {
 
   return (
     <main className="fc-route-page fc-route-form-page fc-route-quote-page" data-route-pending={pageLoading || undefined}>
-      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined}
+      <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined}
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
         keywords={pageContent?.seo_keywords || t.metaKeywords}

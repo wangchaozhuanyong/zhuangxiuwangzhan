@@ -1,6 +1,7 @@
 import { estimateBlogReadMinutes } from "../src/lib/blogMeta";
 import { PUBLIC_BLOG_FIELDS, PUBLIC_MATERIAL_CARD_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
 import { hasMalayContent } from "../src/i18n/localizedContent";
+import { qualifiesMalayLocale } from "../src/lib/publicContentQualification.mjs";
 
 export type PublicProjectionRecord = Record<string, unknown>;
 
@@ -218,7 +219,10 @@ const CMS_PAGE_FIELDS = [
 ] as const;
 
 const projectCmsPage = (row: PublicProjectionRecord) => {
-  const projected = pickFields(row, CMS_PAGE_FIELDS);
+  const projected: PublicProjectionRecord = {
+    ...pickFields(row, CMS_PAGE_FIELDS),
+    preload_malay_indexable: qualifiesMalayLocale(row, "cms_page"),
+  };
   const sections = toRows(row.cms_sections).map((section) => pickFields(section, CMS_SECTION_FIELDS));
   if (sections.length) projected.cms_sections = sections;
   return projected;
@@ -228,7 +232,10 @@ export const projectSitePageBundleForPreload = (bundle: PublicProjectionRecord) 
   const projected: PublicProjectionRecord = {};
   const legacyRows = toRows(bundle.site_pages);
   const cmsRows = toRows(bundle.cms_pages);
-  if (legacyRows.length) projected.site_pages = legacyRows.map((row) => pickFields(row, SITE_PAGE_FIELDS));
+  if (legacyRows.length) projected.site_pages = legacyRows.map((row) => ({
+    ...pickFields(row, SITE_PAGE_FIELDS),
+    preload_malay_indexable: qualifiesMalayLocale(row, "site_page"),
+  }));
   if (cmsRows.length) projected.cms_pages = cmsRows.map(projectCmsPage);
   return projected;
 };

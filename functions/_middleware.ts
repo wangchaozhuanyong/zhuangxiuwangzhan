@@ -21,7 +21,7 @@ import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFa
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
 import { faqPageQuestions, mapPublishedFaqRow, resolveFaqPageCategories } from "../src/lib/publicFaqs";
 import { buildExpandedReadableBody } from "./expandedReadableBody";
-import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
+import { sourceKinds, sourceFields, knownSourceTemplates, isNativeMalayPage, qualifiesLocale, qualifiesMalayLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
 import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { isExcludedFromPublicSitemap } from "../src/lib/publicSitemapExclusions.mjs";
@@ -1259,6 +1259,9 @@ const buildDynamicSeoEntry = (
   const title = formatPublicSeoTitle(rawTitle);
   const canonicalPath = key === "/" ? "/en" : key;
   const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh|ms)/, "") || "/";
+  const malayIndexable = isNativeMalayPage(pathWithoutLanguage) && (kind === "site_page" || kind === "cms_page")
+    ? qualifiesMalayLocale(row, kind)
+    : hasMalayContent(row);
   const enPath = pathWithoutLanguage === "/" ? "/en" : `/en${pathWithoutLanguage}`;
   const zhPath = pathWithoutLanguage === "/" ? "/zh" : `/zh${pathWithoutLanguage}`;
   const keywordValue = selectedField("seo_keywords") || readString(row, "category");
@@ -1287,7 +1290,7 @@ const buildDynamicSeoEntry = (
 
   return {
     lang,
-    noIndex: lang === "ms" && !hasMalayContent(row),
+    noIndex: lang === "ms" && !malayIndexable,
     path: pathWithoutLanguage,
     title: boundProjectMetadata?.title || sanitizePublicDraftMarkers(stripMarkup(title)).slice(0, 180),
     description: boundProjectMetadata?.description || sanitizePublicDraftMarkers(stripMarkup(rawDescription)).slice(0, 300),
@@ -1297,7 +1300,7 @@ const buildDynamicSeoEntry = (
     hreflang: {
       en: `${PUBLIC_SITE_URL}${enPath}`,
       zh: `${PUBLIC_SITE_URL}${zhPath}`,
-      ...(hasMalayContent(row) ? { ms: `${PUBLIC_SITE_URL}/ms${pathWithoutLanguage === "/" ? "" : pathWithoutLanguage}` } : {}),
+      ...(malayIndexable ? { ms: `${PUBLIC_SITE_URL}/ms${pathWithoutLanguage === "/" ? "" : pathWithoutLanguage}` } : {}),
       xDefault: `${PUBLIC_SITE_URL}${enPath}`,
     },
     ogImage: absolutePublicUrl(resolvedImage),
@@ -1824,7 +1827,11 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<link\b[^>]*rel="canonical"[^>]*>/i, `<link data-rh="true" rel="canonical" href="${canonical}" />`);
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="zh-CN"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="zh-CN" href="${escapeHtml(meta.hreflang.zh)}" />`);
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="en"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="en" href="${escapeHtml(meta.hreflang.en)}" />`);
-  if (meta.hreflang.ms && !meta.noIndex) out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="ms-MY"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="ms-MY" href="${escapeHtml(meta.hreflang.ms)}" />`);
+  if (meta.hreflang.ms && !meta.noIndex) {
+    out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="ms-MY"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="ms-MY" href="${escapeHtml(meta.hreflang.ms)}" />`);
+  } else {
+    out = out.replace(/<link\b[^>]*hreflang="ms-MY"[^>]*>/gi, "");
+  }
   if (meta.noIndex) out = replaceOrInsertTag(out, /<meta\b[^>]*name="robots"[^>]*>/i, '<meta data-rh="true" name="robots" content="noindex, follow" />');
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="x-default"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="x-default" href="${escapeHtml(meta.hreflang.xDefault)}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta data-rh="true" property="og:site_name" content="${siteName}" />`);
@@ -1934,7 +1941,7 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
   for (const [path, { row, kind }] of current) {
     if (isRedirectOnlySitemapPath(`/en${path === "/" ? "" : path}`)) continue;
     const url = (language: string) => `${PUBLIC_SITE_URL}/${language}${path === "/" ? "" : path}`;
-    const locales = (["en", "zh", "ms"] as const).filter((language) => (qualifiesLocale(row, kind, language) && (language !== "ms" || hasMalayContent(row)))
+    const locales = (["en", "zh", "ms"] as const).filter((language) => (language === "ms" ? qualifiesMalayLocale(row, kind) : qualifiesLocale(row, kind, language))
       || Boolean((manifest as Record<string, SeoEntry>)[new URL(url(language)).pathname]?.owned_static));
     const alternates = locales.map((language) => `<xhtml:link rel="alternate" hreflang="${language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en"}" href="${escapeHtml(url(language))}" />`).join("");
     for (const language of locales) blocks.push(`<url><loc>${escapeHtml(url(language))}</loc>${alternates}<xhtml:link rel="alternate" hreflang="x-default" href="${escapeHtml(url(locales.includes("en") ? "en" : language))}" /></url>`);

@@ -4,7 +4,9 @@ export const sourceKinds: Readonly<Record<PublicSourceTable, PublicContentKind>>
 export const sourceFields: Readonly<Record<PublicSourceTable, string>>;
 export const knownSourceTemplates: Partial<Readonly<Record<PublicSourceTable, ReadonlySet<string>>>>;
 export function hasCompleteMalayContent(row: Record<string, unknown> | null | undefined): boolean;
+export function isNativeMalayPage(path: string): boolean;
 export function qualifiesLocale(row: Record<string, unknown>, kind: PublicContentKind, language: "en" | "zh" | "ms"): boolean;
+export function qualifiesMalayLocale(row: Record<string, unknown>, kind: PublicContentKind): boolean;
 export function currentSourcePath(row: Record<string, unknown>, kind: PublicContentKind): string | null;
 export function serializeSourcePath(path: string): string;
 export function pickPublicSourceOwners(rows: Partial<Record<PublicSourceTable, Record<string, unknown>[]>>): Map<string, { row: Record<string, unknown>; kind: PublicContentKind }>;

@@ -11,6 +11,22 @@ export const sourceFields = {
  cms_pages:"id,status,path,title_en,title_ms,title_zh,seo_title_en,seo_title_ms,seo_title_zh,seo_description_en,seo_description_ms,seo_description_zh,seo_keywords_en,seo_keywords_ms,seo_keywords_zh,deleted_at,cms_sections(status,deleted_at,content_en,content_ms,content_zh)",
 };
 const present = value => typeof value === "string" ? Boolean(value.replace(/<[^>]*>/g," ").replace(/&(?:nbsp|#160);/g," ").trim()) : Array.isArray(value) ? value.some(present) : value && typeof value === "object" ? Object.values(value).some(present) : false;
+
+// These exact React routes supply the primary content independently of site_pages.
+// Their published CMS rows provide metadata rather than the route body.
+const nativeMalayPageKeys = new Map([
+ ["/blog", "blog"],
+ ["/contact", "contact"],
+ ["/faq", "faq"],
+ ["/locations", "locations"],
+ ["/materials", "materials"],
+ ["/process", "process"],
+ ["/projects", "projects"],
+ ["/quote", "quote"],
+ ["/services", "services"],
+]);
+export const isNativeMalayPage = path => nativeMalayPageKeys.has(path);
+
 export const hasCompleteMalayContent = row => {
  if (!row || ["title","seo_title","seo_description"].some(field=>!present(row[`${field}_ms`]))) return false;
  const fields=["content","description","excerpt","items","scope_items","faqs","process_steps","suitable_for","common_projects","highlights","client_need","pros","cons","suitable_spaces","benefits","construction_notes","recommended_pairing","note","price_scope","price_note"];
@@ -25,9 +41,17 @@ export const qualifiesLocale = (row,kind,lang) => {
   const sections=(Array.isArray(row.cms_sections)?row.cms_sections:[]).filter(s=>s.status === "published"&&!s.deleted_at);
   return (title||sections.some(s=>present(s[`content_${lang}`]?.title))) && sections.some(s=>["rich_text","content","text","items"].some(f=>present(s[`content_${lang}`]?.[f])));
  }
+ // Still require the published row's full Malay metadata and translation parity.
+ // Alias, template and generic CMS rows cannot use the native route's body.
+ if (kind === "site_page" && lang === "ms" && isNativeMalayPage(row.path) &&
+     nativeMalayPageKeys.get(row.path) === row.page_key && hasCompleteMalayContent(row)) return true;
+
  const core={service:["scope_items","process_steps","faqs"],project:["highlights"],material:["excerpt","pros","suitable_spaces"],landing_page:["benefits","faqs"],site_page:["items"]};
  return title && (present(row[`content_${lang}`]) || (core[kind]||[]).some(f=>present(row[`${f}_${lang}`])));
 };
+export const qualifiesMalayLocale = (row,kind) =>
+ hasCompleteMalayContent(row) && qualifiesLocale(row,kind,"ms");
+
 export const serializeSourcePath = path => path.split("/").map(segment => {
  try { return encodeURIComponent(decodeURIComponent(segment)); }
  catch { return encodeURIComponent(segment); }

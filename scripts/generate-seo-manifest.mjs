@@ -2,7 +2,7 @@ import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMa
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { resolveFurnitureDisplay } from "../src/lib/furnitureDisplaySafety.mjs";
 import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/publicSeoTitle.mjs";
-import { pickPublicSourceOwners, hasCompleteMalayContent } from "../src/lib/publicContentQualification.mjs";
+import { pickPublicSourceOwners, qualifiesMalayLocale } from "../src/lib/publicContentQualification.mjs";
 import { readFileSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
 import { loadMaterialSeoCategories, qualifiesLocale, currentSourcePath, serializeSourcePath, snapshotProvenance, isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
@@ -369,7 +369,7 @@ for (const lang of ["en", "zh"]) {
 // Malay routes are emitted only from complete published translations. Missing
 // translations remain readable through the runtime fallback, outside discovery.
 for (const [path, { row, kind }] of sourceOwners) {
-  if (!hasCompleteMalayContent(row) || !qualifiesLocale(row, kind, "ms")) continue;
+  if (!qualifiesMalayLocale(row, kind)) continue;
   const localized = `/ms${path === "/" ? "" : path}`;
   if (isRedirectSource(localized)) continue;
   const source = manifest[`/en${path === "/" ? "" : path}`] || manifest[`/zh${path === "/" ? "" : path}`];

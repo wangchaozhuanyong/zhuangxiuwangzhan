@@ -205,3 +205,34 @@ test('template exception cannot admit other invalid paths or bypass row eligibil
  const deleted=records(0);deleted.cms_pages=[{...row('cms_pages',1),path:'/services/:slug',deleted_at:'2026-10-03'}];
  await assert.rejects(snapshot(deleted),/seo_source_invalid:cms_pages/);
 });
+
+test('native React page metadata qualifies exactly the reviewed Malay routes', async () => {
+ const paths = ['/blog', '/contact', '/faq', '/locations', '/materials', '/process', '/projects', '/quote', '/services'];
+ const nativeRow = (path, i) => ({
+  id: String(i).padStart(8, '0'), status: 'published', path, page_key: path.slice(1),
+  title_en: 'Overview', title_zh: '概览', title_ms: 'Gambaran keseluruhan',
+  seo_title_ms: 'Gambaran keseluruhan', seo_description_ms: 'Gambaran keseluruhan halaman ini.',
+  content_en: '', content_zh: '', content_ms: '', items_en: [], items_ms: [],
+ });
+ const rows = records(0);
+ rows.site_pages = [...paths, '/generic-cms-page', '/products'].map(nativeRow);
+ let manifest = await buildQualifiedManifest(await snapshot(rows));
+ for (const path of paths) {
+  for (const lang of ['en', 'zh', 'ms']) {
+   const meta = manifest[`/${lang}${path}`];
+   assert.deepEqual(meta.available_locales, ['en', 'zh', 'ms']);
+   assert.equal(meta.hreflang.ms, `https://flashcast.com.my/ms${path}`);
+  }
+ }
+ for (const path of ['/generic-cms-page', '/products']) assert.ok(!manifest[`/ms${path}`]);
+ assertDocuments(manifest);
+
+ rows.site_pages[2].seo_description_ms = '';
+ rows.site_pages[8].page_key = 'generic';
+ manifest = await buildQualifiedManifest(await snapshot(rows));
+ assert.ok(!manifest['/ms/faq']);
+ assert.ok(!manifest['/ms/services']);
+ assert.deepEqual(manifest['/en/faq'].available_locales, ['en', 'zh']);
+ assert.deepEqual(manifest['/en/services'].available_locales, ['en', 'zh']);
+ assertDocuments(manifest);
+});

@@ -1,5 +1,4 @@
 import { projectCategoryLabels as categoryLabels } from "@/i18n/publicUtilityText";
-import { isMalayContentReady } from "@/i18n/localizedContent";
 import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useMemo } from "react";
 import { usePublicListingState } from "@/hooks/usePublicListingState";
@@ -66,7 +65,7 @@ export default function Projects() {
 
   return (
     <main className="fc-route-page fc-route-projects-page" data-route-pending={pageLoading || isLoading || undefined}>
-      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
+      <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }]} />
       <SchemeARouteHero
         kind="listing"
