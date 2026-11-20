@@ -4,7 +4,9 @@ const serviceAreaCopy = JSON.parse(readFileSync(new URL("../src/components/servi
 const cabinetText = JSON.parse(readFileSync(new URL("../src/i18n/customCabinetsText.json", import.meta.url), "utf8"));
 export const SITE_URL = (process.env.VITE_SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 export const OG_IMAGE = `${SITE_URL}/og-image.webp`;
-export const COMPANY = "FLASH CAST SDN. BHD.";
+// Title suffix only. The registered name stays in schema and llms.txt; using the
+// full legal name here pushed dozens of titles past the 60-character display limit.
+export const COMPANY = "FLASH CAST";
 
 const page = (lang, path, title, description, keywords = "", extra = {}) => ({
   lang,
