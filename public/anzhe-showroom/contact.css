@@ -1,0 +1,76 @@
+.contact-symbols{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.ct-icon{width:20px;height:20px;flex:none;display:block}
+.mast-inner{column-gap:clamp(12px,2vw,32px)}
+.lang-switch button:focus-visible{outline:2px solid currentColor;outline-offset:-5px}
+.mast-contact,.ct-actions,.ct-panel-actions{display:flex;align-items:center;gap:8px}
+.mast-contact a,.ct-actions a,.ct-panel-actions a{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;text-decoration:none;font-size:14px;font-weight:630;line-height:1.25}
+.mast-contact a{padding:0 13px;white-space:nowrap;font-size:13px}
+.ct-wa,.ct-primary{background:#315540;color:#fffef5}
+.ct-wa:hover,.ct-primary:hover{background:#244432}
+.ct-call{border:1px solid #99a18d;color:#303b2d}
+.ct-call:hover{background:#e7ecdc}
+.ct-company{font:650 12px/1.4 var(--mono);letter-spacing:.055em;color:#d7ddc7;margin:0 0 14px}
+.ct-section{background:#303b30;color:#fcfbef;scroll-margin-top:8px}
+.ct-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(32px,6vw,100px);align-items:start;padding-block:clamp(32px,4.3vw,70px)}
+.ct-advisor h2{margin:0;max-width:19ch;font-size:clamp(36px,4.2vw,66px);line-height:1.06;font-weight:630;letter-spacing:-.045em;text-wrap:balance}
+.ct-intro{margin:16px 0 24px;max-width:48ch;font-size:clamp(15px,1.15vw,18px);line-height:1.6;color:#e4e9d9}
+.ct-actions,.ct-panel-actions{flex-wrap:wrap}
+.ct-actions a,.ct-panel-actions a{padding:12px 17px}
+.ct-actions .ct-primary{background:#e7edd5;color:#253b2d}
+.ct-actions .ct-primary:hover{background:#fffef5}
+.ct-actions .ct-secondary{border:1px solid #93a18b;color:#f9faec}
+.ct-actions .ct-secondary:hover{background:#43513f}
+.ct-other{border-top:1px solid #64715d;margin:24px 0 0;padding-top:12px;display:grid;gap:2px;font-size:14px}
+.ct-other>div{display:grid;grid-template-columns:minmax(56px,.23fr) 1fr;gap:14px;align-items:baseline}
+.ct-other dt{color:#c1cbb6}.ct-other dd{margin:0}
+.ct-other a,.ct-other summary{color:inherit;text-underline-offset:4px}
+.ct-other a{display:inline-flex;align-items:center;min-height:36px;overflow-wrap:anywhere}
+.ct-other dd>span{user-select:all}
+.ct-wechat{display:inline-block;vertical-align:top;margin-inline-start:10px}
+.ct-wechat summary{cursor:pointer;text-decoration:underline;font-size:12px;min-height:32px;line-height:1.8;color:#d6e1c9}
+.ct-wechat[open]{display:block;margin:3px 0 0}
+.ct-qr{display:flex;align-items:end;gap:12px;flex-wrap:wrap}
+.ct-qr img{object-fit:contain;background:white;max-width:100%;height:auto}
+.ct-qr button{font-size:12px;min-height:44px;background:transparent;border:1px solid #9aa88e;color:#fff;padding:7px 12px}
+[data-contact-status]{display:block;color:#eff6df;margin-top:4px}
+.ct-office{min-width:0;border:1px solid #bfc4b0;background:#f0efe3;color:#293429;padding:clamp(20px,2.5vw,38px)}
+.ct-office h3{display:flex;align-items:center;gap:11px;margin:0 0 12px;font-size:clamp(21px,2.05vw,31px);line-height:1.2;font-weight:630;letter-spacing:-.028em}
+.ct-office h3 .ct-icon{color:#924328;width:24px;height:24px}
+.ct-office address{font-style:normal;font-size:clamp(16px,1.25vw,19px);line-height:1.5}
+.ct-hours{display:grid;grid-template-columns:auto 1fr;gap:clamp(8px,2.4vw,32px);margin:18px 0 14px;padding-block:14px;border-block:1px solid #aab39c}
+.ct-hours dt,.ct-directions>p{font-size:13px;font-weight:550;color:#4b5946}
+.ct-hours dd{margin:0;line-height:1.4}
+.ct-hours strong,.ct-hours span{display:block}.ct-hours strong{font-size:15px;font-weight:640}.ct-hours span{font-size:13px;margin-top:4px;color:#53604d}
+.ct-directions>p{margin:0 0 5px}.ct-directions>div{display:flex;flex-wrap:wrap;gap:0 19px}
+.ct-directions a{min-height:44px;display:inline-flex;align-items:center;gap:6px;color:#354a36;text-decoration:underline;text-underline-offset:4px;font-size:14px;font-weight:630}
+.ct-directions i{font-style:normal;font-weight:500}
+.ct-section :focus-visible{outline-color:#d8a580}.ct-office :focus-visible{outline-color:#8b4024}
+.ct-panel-actions{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);align-items:stretch;margin:13px 0 0}.ct-panel-actions a{text-align:center}.ct-panel-actions .ct-secondary{border:1px solid #94a088;color:#374a35}
+@media (max-width:1170px){.mast-contact .ct-call span{display:none}.mast-contact .ct-call{width:44px;padding:0}.site-nav{gap:clamp(10px,2vw,29px)}}
+@media (max-width:900px){
+  .mast-inner .site-nav :is(a,button){padding-inline:4px}
+  .mast-inner .site-nav :is(a,button):focus-visible{outline-width:2px;outline-offset:-4px}
+}
+@media (min-width:701px) and (max-width:900px){
+  .mast-inner{display:grid;grid-template-columns:1fr auto auto;row-gap:0;padding-top:4px}
+  .mast-inner .site-nav{grid-column:1/-1;grid-row:2;display:flex;justify-content:space-between;gap:10px;margin:0;border-top:1px solid #c7caba}
+  .mast-inner .lang-switch{grid-row:1;grid-column:2}.mast-contact{grid-row:1;grid-column:3}.mast-inner .brand{min-height:51px}
+}
+@media (max-width:700px){
+  .mast-inner{grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto;column-gap:8px;padding-top:5px}
+  .mast-inner .site-nav{grid-row:2;margin-top:5px}.mast-inner .lang-switch{grid-column:2;grid-row:1}
+  .mast-contact{grid-column:3;grid-row:1;gap:3px}.mast-contact a,.mast-contact .ct-call{width:44px;height:44px;padding:0}.mast-contact a>span{display:none}
+  .mast-inner .site-nav :is(a,button){text-align:center;line-height:1.16}
+  .mast-inner .brand{height:auto;min-height:52px}
+  .ct-layout{grid-template-columns:1fr;gap:22px;padding-block:30px}
+  .ct-company{font-size:11px;margin-bottom:9px}.ct-advisor h2{font-size:clamp(29px,7.8vw,42px);max-width:23ch}
+  .ct-intro{margin:11px 0 16px}.ct-actions a{min-height:46px;flex:1 1 auto;padding:10px 12px}
+  .ct-other{margin-top:17px;padding-top:8px}.ct-other a,.ct-wechat summary{min-height:44px}.ct-office{padding:17px}
+  .ct-hours{margin:14px 0 8px;padding-block:12px}.ct-qr img{width:130px}
+}
+@media (max-width:510px){
+  .mast-inner .brand{flex-direction:column;align-items:flex-start;justify-content:center;gap:3px}
+  .mast-inner .brand small{display:block;padding:0;border:0;font-size:7px;letter-spacing:.13em}
+  .mast-inner .lang-switch button{min-width:32px;padding:0 5px}
+}
+@media (max-width:380px){.ct-actions a{font-size:13px;padding:9px 10px;gap:5px}.ct-other>div{gap:9px}.ct-wechat{display:block;margin-left:0}.ct-directions>div{column-gap:12px}.ct-office{padding:14px}}
