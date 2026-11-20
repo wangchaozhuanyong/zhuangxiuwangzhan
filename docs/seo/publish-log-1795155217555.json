@@ -1,0 +1,7 @@
+[
+  {
+    "slug": "bangsar",
+    "action": "error",
+    "error": "TypeError: fetch failed"
+  }
+]

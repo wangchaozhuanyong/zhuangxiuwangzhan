@@ -1,0 +1,134 @@
+[
+  {
+    "slug": "bangsar",
+    "action": "dry-run",
+    "contentEn": 2813,
+    "contentZh": 919
+  },
+  {
+    "slug": "bukit-jalil",
+    "action": "dry-run",
+    "contentEn": 2608,
+    "contentZh": 816
+  },
+  {
+    "slug": "setapak",
+    "action": "dry-run",
+    "contentEn": 2646,
+    "contentZh": 803
+  },
+  {
+    "slug": "kepong",
+    "action": "dry-run",
+    "contentEn": 2580,
+    "contentZh": 778
+  },
+  {
+    "slug": "damansara",
+    "action": "dry-run",
+    "contentEn": 2647,
+    "contentZh": 861
+  },
+  {
+    "slug": "kota-damansara",
+    "action": "dry-run",
+    "contentEn": 2689,
+    "contentZh": 806
+  },
+  {
+    "slug": "ampang",
+    "action": "dry-run",
+    "contentEn": 2522,
+    "contentZh": 790
+  },
+  {
+    "slug": "sri-petaling",
+    "action": "dry-run",
+    "contentEn": 2605,
+    "contentZh": 784
+  },
+  {
+    "slug": "wangsa-maju",
+    "action": "dry-run",
+    "contentEn": 2653,
+    "contentZh": 789
+  },
+  {
+    "slug": "seri-kembangan",
+    "action": "dry-run",
+    "contentEn": 2476,
+    "contentZh": 763
+  },
+  {
+    "slug": "kajang",
+    "action": "dry-run",
+    "contentEn": 2532,
+    "contentZh": 801
+  },
+  {
+    "slug": "balakong",
+    "action": "dry-run",
+    "contentEn": 2359,
+    "contentZh": 763
+  },
+  {
+    "slug": "ara-damansara",
+    "action": "dry-run",
+    "contentEn": 2734,
+    "contentZh": 815
+  },
+  {
+    "slug": "rawang",
+    "action": "dry-run",
+    "contentEn": 2624,
+    "contentZh": 792
+  },
+  {
+    "slug": "setia-alam",
+    "action": "dry-run",
+    "contentEn": 2693,
+    "contentZh": 827
+  },
+  {
+    "slug": "sungai-buloh",
+    "action": "dry-run",
+    "contentEn": 2561,
+    "contentZh": 807
+  },
+  {
+    "slug": "cyberjaya",
+    "action": "dry-run",
+    "contentEn": 2581,
+    "contentZh": 766
+  },
+  {
+    "slug": "putrajaya",
+    "action": "dry-run",
+    "contentEn": 2570,
+    "contentZh": 783
+  },
+  {
+    "slug": "desa-parkcity",
+    "action": "dry-run",
+    "contentEn": 2755,
+    "contentZh": 847
+  },
+  {
+    "slug": "taman-tun-dr-ismail",
+    "action": "dry-run",
+    "contentEn": 2557,
+    "contentZh": 814
+  },
+  {
+    "slug": "semenyih",
+    "action": "dry-run",
+    "contentEn": 2478,
+    "contentZh": 767
+  },
+  {
+    "slug": "selangor",
+    "action": "dry-run",
+    "contentEn": 2644,
+    "contentZh": 870
+  }
+]
