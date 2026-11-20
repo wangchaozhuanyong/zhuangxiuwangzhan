@@ -49,7 +49,7 @@ describe('remaining seven exact regional body releases',()=>{
     const helper=pathToFileURL(resolve('scripts/lib/location-body-acceptance.mjs')).href;
     const code=`import {expectedMetadata} from ${JSON.stringify(helper)}; console.log(JSON.stringify(await expectedMetadata({slug:'kuala-lumpur',seo_title_en:'Kuala Lumpur Renovation',seo_description_en:'Original English description',seo_title_zh:'Kuala Lumpur 装修公司',seo_description_zh:'中文说明'},'zh',{brand_name:'FLASH CAST',company_name:'FLASH CAST SDN. BHD.'})));`;
     const metadata=JSON.parse(execFileSync(process.execPath,['--input-type=module','-e',code],{encoding:'utf8'}));
-    expect(metadata.title).toBe('吉隆坡装修公司 | FLASH CAST SDN. BHD.');
+    expect(metadata.title).toBe('吉隆坡装修公司 | FLASH CAST');
     expect(metadata.description).toBe('中文说明');
   });
   it('guards the exact approval before credentials and keeps all writes in content-publish',()=>{

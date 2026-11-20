@@ -8,6 +8,8 @@ import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 import { processPageText } from "@/i18n/processPageText";
 import { designServicePageText } from "@/i18n/designServicePageText";
 import { surfaceRepairPageText } from "@/i18n/surfaceRepairPageText";
+import { materialCategoryPageText } from "@/i18n/materialCategoryPageText";
+import { materialSubcategoryPageText } from "@/i18n/materialSubcategoryPageText";
 
 const row = { slug: "current", status: "published", title_en: "Current title", title_zh: "当前标题", excerpt_en: "Current summary", excerpt_zh: "当前摘要",
   content_en: '<h2>Full section</h2><p>Full body <a href="/en/quote">Enquire</a></p>', content_zh: '<h2>完整章节</h2><p>完整正文 <a href="/zh/quote">咨询</a></p>',
@@ -63,6 +65,51 @@ describe.each(["en", "zh"] as const)("expanded %s raw HTML", lang => {
     const html = buildExpandedReadableBody(`/${lang}/blog/current`, { row: { ...row, [`content_${lang}`]: `<p>Safe</p><script>bad()</script><a href="javascript:bad()">Bad</a><a href="/${lang === "en" ? "zh" : "en"}/quote">Other language</a></noscript>` } });
     expect(html).not.toMatch(/<script|javascript:|<\/noscript>|bad\(\)/);
     expect(new JSDOM(html).window.document.querySelector('a[href^="javascript:"]')).toBeNull();
+  });
+});
+
+describe.each(["en", "zh"] as const)("static material taxonomy in initial %s HTML", lang => {
+  it("renders real furniture subcategories without inventory from the independent store", () => {
+    const path = `/${lang}/materials/category/furniture`;
+    const html = buildExpandedReadableBody(path, { materials: [], resolveMaterialLink: href => href });
+    const dom = new JSDOM(html);
+    const document = dom.window.document;
+    expect(document.body.textContent).toContain(materialCategoryPageText[lang].browseSubcategories);
+    expect(document.querySelectorAll(`a[href^="${path}/"]`)).toHaveLength(6);
+    expect(document.querySelector(`a[href^="/${lang}/furniture"]`)).toBeNull();
+    dom.window.close();
+  });
+
+  it("uses the actual cabinet fallback products and points to their canonical links", () => {
+    const path = `/${lang}/materials/category/whole-house-custom/kitchen-cabinets`;
+    const canonicalLinks: Record<string, string> = {
+      [`/${lang}/materials/melamine-grey-oak`]: `/${lang}/materials/melamine-cabinet-grey-oak`,
+      [`/${lang}/materials/acrylic-high-gloss-white`]: `/${lang}/materials/acrylic-cabinet-gloss-white`,
+    };
+    const html = buildExpandedReadableBody(path, {
+      materials: [{ ...row, category: "Whole House Custom", subcategory: "kitchen-cabinets", status: "draft" }],
+      resolveMaterialLink: href => canonicalLinks[href],
+    });
+    const dom = new JSDOM(html);
+    const document = dom.window.document;
+    expect([...document.querySelectorAll("li h3 a")].map((anchor) => anchor.getAttribute("href"))).toEqual(Object.values(canonicalLinks));
+    expect(document.querySelector('a[href*="built-in-cabinet-cost"]')).toBeNull();
+    expect(document.body.textContent).not.toContain(row[`title_${lang}`]);
+    expect(document.querySelectorAll("h1")).toHaveLength(1);
+    dom.window.close();
+  });
+
+  it("retains the visible planning guidance for an empty subcategory and ignores unknown routes", () => {
+    const path = `/${lang}/materials/category/bathroom/toilet`;
+    const html = buildExpandedReadableBody(path, { materials: [], resolveMaterialLink: href => href });
+    const dom = new JSDOM(html);
+    const document = dom.window.document;
+    expect(document.body.textContent).toContain(materialSubcategoryPageText[lang].comingSoon);
+    expect(document.querySelector(`a[href="/${lang}/services/bathroom"]`)).not.toBeNull();
+    expect(document.querySelector("li h3 a")).toBeNull();
+    dom.window.close();
+    expect(buildExpandedReadableBody(`/${lang}/materials/category/unknown`, { materials: [] })).toBe("");
+    expect(buildExpandedReadableBody(`/${lang}/materials/category/furniture/unknown`, { materials: [] })).toBe("");
   });
 });
 

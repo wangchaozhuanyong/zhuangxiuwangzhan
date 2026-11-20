@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { withCompanyBrandSuffix } from "./publisher-public-readback.mjs";
 
-test("public metadata matches PageMeta company suffix when the CMS title has no brand", () => {
+test("public metadata uses the short brand when the CMS title has no brand", () => {
   assert.equal(withCompanyBrandSuffix("Rental unit renovation", {
     brandName: "FLASH CAST", companyName: "FLASH CAST SDN. BHD.",
-  }), "Rental unit renovation | FLASH CAST SDN. BHD.");
+  }), "Rental unit renovation | FLASH CAST");
 });
 
 test("public metadata does not duplicate an existing brand in the CMS title", () => {
@@ -14,10 +14,10 @@ test("public metadata does not duplicate an existing brand in the CMS title", ()
   }), "Renovasi unit sewa | FLASH CAST");
 });
 
-test("public metadata does not duplicate the company name", () => {
+test("public metadata shortens the explicit legacy suffix", () => {
   assert.equal(withCompanyBrandSuffix("Renovation | FLASH CAST SDN. BHD.", {
     brandName: "FLASH CAST", companyName: "FLASH CAST SDN. BHD.",
-  }), "Renovation | FLASH CAST SDN. BHD.");
+  }), "Renovation | FLASH CAST");
 });
 
 test("public metadata verification fails closed when the title or public brand settings are missing", () => {

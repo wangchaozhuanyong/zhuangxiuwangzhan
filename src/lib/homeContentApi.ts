@@ -31,6 +31,8 @@ import {
   type PublicContentResult,
 } from "@/lib/publicContentStatus";
 import { mapPublicHomeFaqs } from "@/lib/publicHomeFaqs";
+import { mapPublishedFaqRow } from "@/lib/publicFaqs";
+import { qualifiesMalayLocale } from "@/lib/publicContentQualification.mjs";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 import { stripHtml } from "@/lib/text";
 
@@ -96,6 +98,7 @@ export type PublishedAboutSection = {
 
 export type PublishedSitePage = {
   translationComplete?: boolean;
+  malayIndexable?: boolean;
   id: string;
   page_key: string;
   path: string;
@@ -183,6 +186,11 @@ const firstList = <T = unknown>(...values: unknown[]): T[] => {
   return [];
 };
 
+const isSitePageMalayIndexable = (row: UnknownRecord, kind: "site_page" | "cms_page") =>
+  typeof row.preload_malay_indexable === "boolean"
+    ? row.preload_malay_indexable
+    : qualifiesMalayLocale(row, kind);
+
 const mapPublishedCmsPage = (
   cmsRow: UnknownRecord,
   language: Language,
@@ -218,6 +226,8 @@ const mapPublishedCmsPage = (
 
   return {
     translationComplete: hasMalayContent(cmsRow),
+    // The legacy row owns page metadata when both row types are present.
+    malayIndexable: legacy ? legacy.malayIndexable : isSitePageMalayIndexable(cmsRow, "cms_page"),
     id: readText(cmsRow, "id"),
     page_key: readText(cmsRow, "page_key"),
     path: readText(cmsRow, "path", legacy?.path || ""),
@@ -240,6 +250,7 @@ const mapPublishedCmsPage = (
 
 const mapLegacySitePage = (row: UnknownRecord, language: Language): PublishedSitePage => ({
   translationComplete: hasMalayContent(row),
+  malayIndexable: isSitePageMalayIndexable(row, "site_page"),
   id: readText(row, "id"),
   page_key: readText(row, "page_key"),
   path: readText(row, "path"),
@@ -448,12 +459,7 @@ export const getPublishedFaqs = async (language: Language, pageKey = "general", 
   if (!hasPublicContentDatabaseClient()) return [];
 
   const data = await fetchPublishedFaqRows(pageKey, signal);
-  return (data || []).map((item) => ({
-    id: item.id,
-    category: item.page_key || "general",
-    question: pickLocalizedText(item, "question", language),
-    answer: pickLocalizedText(item, "answer", language),
-  }));
+  return data.map((item) => mapPublishedFaqRow(item, language));
 };
 
 export const getPublishedHomeSection = async (

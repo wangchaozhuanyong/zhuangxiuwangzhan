@@ -17,12 +17,14 @@ import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreload
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
+import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFaqPageBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
+import { faqPageQuestions, mapPublishedFaqRow, resolveFaqPageCategories } from "../src/lib/publicFaqs";
 import { buildExpandedReadableBody } from "./expandedReadableBody";
-import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
+import { sourceKinds, sourceFields, knownSourceTemplates, isNativeMalayPage, qualifiesLocale, qualifiesMalayLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
 import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
+import { isExcludedFromPublicSitemap } from "../src/lib/publicSitemapExclusions.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
 import { notFoundPageText } from "../src/i18n/notFoundPageText";
@@ -34,6 +36,7 @@ import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPage
 import { stripHtml } from "../src/lib/text";
 import { getSocialProfileUrls } from "../src/lib/socialProfiles";
 import { getPublicSiteName, getPublicBrandAliases, getChineseBrandLine, getChineseBrandAssociation, withChineseBrandMetadata } from "../src/i18n/brandIdentity";
+import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/publicSeoTitle.mjs";
 import {
   PUBLIC_LANGUAGE_COOKIE,
   readCookieValue,
@@ -1253,9 +1256,12 @@ const buildDynamicSeoEntry = (
   const rawTitle = kind === "service_area" ? translateDisplayText(sourceTitle, lang) : sourceTitle;
   const rawDescription = kind === "service_area" ? translateDisplayText(sourceDescription, lang) : sourceDescription;
   const boundProjectMetadata = kind === "project" ? projectPublicMetadata(row, lang) : undefined;
-  const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST SDN. BHD.`;
+  const title = formatPublicSeoTitle(rawTitle);
   const canonicalPath = key === "/" ? "/en" : key;
   const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh|ms)/, "") || "/";
+  const malayIndexable = isNativeMalayPage(pathWithoutLanguage) && (kind === "site_page" || kind === "cms_page")
+    ? qualifiesMalayLocale(row, kind)
+    : hasMalayContent(row);
   const enPath = pathWithoutLanguage === "/" ? "/en" : `/en${pathWithoutLanguage}`;
   const zhPath = pathWithoutLanguage === "/" ? "/zh" : `/zh${pathWithoutLanguage}`;
   const keywordValue = selectedField("seo_keywords") || readString(row, "category");
@@ -1284,7 +1290,7 @@ const buildDynamicSeoEntry = (
 
   return {
     lang,
-    noIndex: lang === "ms" && !hasMalayContent(row),
+    noIndex: lang === "ms" && !malayIndexable,
     path: pathWithoutLanguage,
     title: boundProjectMetadata?.title || sanitizePublicDraftMarkers(stripMarkup(title)).slice(0, 180),
     description: boundProjectMetadata?.description || sanitizePublicDraftMarkers(stripMarkup(rawDescription)).slice(0, 300),
@@ -1294,7 +1300,7 @@ const buildDynamicSeoEntry = (
     hreflang: {
       en: `${PUBLIC_SITE_URL}${enPath}`,
       zh: `${PUBLIC_SITE_URL}${zhPath}`,
-      ...(hasMalayContent(row) ? { ms: `${PUBLIC_SITE_URL}/ms${pathWithoutLanguage === "/" ? "" : pathWithoutLanguage}` } : {}),
+      ...(malayIndexable ? { ms: `${PUBLIC_SITE_URL}/ms${pathWithoutLanguage === "/" ? "" : pathWithoutLanguage}` } : {}),
       xDefault: `${PUBLIC_SITE_URL}${enPath}`,
     },
     ogImage: absolutePublicUrl(resolvedImage),
@@ -1541,6 +1547,14 @@ const fetchPublicSitePageBundle = async (env: Record<string, string | undefined>
   return legacyRows === null || cmsRows === null ? null : bundle;
 };
 
+const fetchPublicFaqPageRows = (env: Record<string, string | undefined>, key: string) =>
+  fetchFreshPublicRowsResult(env, "faqs", (url) => {
+    url.searchParams.set("select", "id,status,page_key,question_en,answer_en,question_zh,answer_zh,question_ms,answer_ms");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("page_key", "in.(general,home)");
+    url.searchParams.set("order", "sort_order.asc");
+  }, { route: key, stage: "faq-page" });
+
 const fetchPublicCtaBlock = async (env: Record<string, string | undefined>, blockKey: string) => {
   const rows = await fetchPublicRows(env, `cta_blocks:${blockKey}`, "cta_blocks", (url) => {
     url.searchParams.set("select", "*");
@@ -1750,6 +1764,14 @@ const getExactLegacyRedirectPath = (pathname: string) => {
   return EXACT_LEGACY_REDIRECTS[cleaned] || null;
 };
 
+const resolveReadableMaterialLink = (href: string) => {
+  const { pathname, hash } = new URL(href, PUBLIC_SITE_URL);
+  const canonical = getExactLegacyRedirectPath(pathname) || pathname;
+  const pages = manifest as Record<string, SeoEntry>;
+  const englishFallback = canonical.startsWith("/ms/") ? canonical.replace(/^\/ms\//, "/en/") : "";
+  return pages[canonical] || (englishFallback && pages[englishFallback]) ? canonical + hash : undefined;
+};
+
 const getProductsToMaterialsRedirectPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
   const match = cleaned.match(/^\/(en|zh|ms)\/products(?:\/([^/]+))?$/);
@@ -1785,7 +1807,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   const safeMeta = {
     ...meta,
     ...withChineseBrandMetadata({
-      title: sanitizePublicDraftMarkers(meta.title),
+      title: normalizePublicSeoTitle(sanitizePublicDraftMarkers(meta.title)),
       description: sanitizePublicDraftMarkers(meta.description),
     }, meta.lang, new URL(meta.canonical).pathname, siteSettings),
   };
@@ -1813,7 +1835,11 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<link\b[^>]*rel="canonical"[^>]*>/i, `<link data-rh="true" rel="canonical" href="${canonical}" />`);
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="zh-CN"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="zh-CN" href="${escapeHtml(meta.hreflang.zh)}" />`);
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="en"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="en" href="${escapeHtml(meta.hreflang.en)}" />`);
-  if (meta.hreflang.ms && !meta.noIndex) out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="ms-MY"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="ms-MY" href="${escapeHtml(meta.hreflang.ms)}" />`);
+  if (meta.hreflang.ms && !meta.noIndex) {
+    out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="ms-MY"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="ms-MY" href="${escapeHtml(meta.hreflang.ms)}" />`);
+  } else {
+    out = out.replace(/<link\b[^>]*hreflang="ms-MY"[^>]*>/gi, "");
+  }
   if (meta.noIndex) out = replaceOrInsertTag(out, /<meta\b[^>]*name="robots"[^>]*>/i, '<meta data-rh="true" name="robots" content="noindex, follow" />');
   out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="x-default"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="x-default" href="${escapeHtml(meta.hreflang.xDefault)}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta data-rh="true" property="og:site_name" content="${siteName}" />`);
@@ -1923,7 +1949,7 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
   for (const [path, { row, kind }] of current) {
     if (isRedirectOnlySitemapPath(`/en${path === "/" ? "" : path}`)) continue;
     const url = (language: string) => `${PUBLIC_SITE_URL}/${language}${path === "/" ? "" : path}`;
-    const locales = (["en", "zh", "ms"] as const).filter((language) => (qualifiesLocale(row, kind, language) && (language !== "ms" || hasMalayContent(row)))
+    const locales = (["en", "zh", "ms"] as const).filter((language) => (language === "ms" ? qualifiesMalayLocale(row, kind) : qualifiesLocale(row, kind, language))
       || Boolean((manifest as Record<string, SeoEntry>)[new URL(url(language)).pathname]?.owned_static));
     const alternates = locales.map((language) => `<xhtml:link rel="alternate" hreflang="${language === "zh" ? "zh-CN" : language === "ms" ? "ms-MY" : "en"}" href="${escapeHtml(url(language))}" />`).join("");
     for (const language of locales) blocks.push(`<url><loc>${escapeHtml(url(language))}</loc>${alternates}<xhtml:link rel="alternate" hreflang="x-default" href="${escapeHtml(url(locales.includes("en") ? "en" : language))}" /></url>`);
@@ -2004,7 +2030,7 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
       const parsedLocation = new URL(location);
       if (parsedLocation.origin !== PUBLIC_SITE_URL) continue;
       const pathname = parsedLocation.pathname;
-      if (isRedirectOnlySitemapPath(pathname)) continue;
+      if (isRedirectOnlySitemapPath(pathname) || isExcludedFromPublicSitemap(pathname)) continue;
       if (liveSitemapAvailable && !(manifest as Record<string, SeoEntry>)[pathname]?.owned_static && !dynamicLocations.has(location)) continue;
       const furnitureSlug = pathname.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
       if (furnitureSlug) {
@@ -2230,6 +2256,7 @@ export const onRequest: PagesFunction = async (context) => {
   }
 
   const key = normalizePath(url.pathname);
+  const faqPageLanguage = /^\/(en|zh|ms)\/faq$/.exec(key)?.[1] as "en" | "zh" | "ms" | undefined;
   const englishMeta = key.startsWith("/ms") ? (manifest as Record<string, SeoEntry>)[key.replace(/^\/ms(?=\/|$)/, "/en")] : undefined;
   const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...localizeMalayMaterialFallback(englishMeta, key), lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
   const isPublicLanguagePath = /^\/(?:en|zh|ms)(?:\/|$)/.test(key);
@@ -2367,6 +2394,7 @@ export const onRequest: PagesFunction = async (context) => {
     homeJournalPosts,
     homeServiceAreas,
     processSteps,
+    faqPageRows,
   ] = await Promise.all([
     prepared.settings,
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
@@ -2399,6 +2427,7 @@ export const onRequest: PagesFunction = async (context) => {
       url.searchParams.set("select", "step_number,title_en,title_ms,title_zh,description_en,description_ms,description_zh,status");
       url.searchParams.set("status", "eq.published"); url.searchParams.set("order", "step_number.asc");
     }) : Promise.resolve(null),
+    meta && faqPageLanguage ? fetchPublicFaqPageRows(stringEnv, key) : Promise.resolve(null),
   ]);
   prepared.finishData();
   const finishTransform = timing.start("transform");
@@ -2423,13 +2452,25 @@ export const onRequest: PagesFunction = async (context) => {
     ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
     : [];
   if (shouldInjectHomeBundle && isHomePageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
+  let faqPageBody = "";
+  if (meta && faqPageLanguage) {
+    const published = faqPageRows?.ok ? faqPageRows.rows.filter((row) => row.status === "published") : [];
+    const questionsFor = (pageKey: string) => published.filter((row) => row.page_key === pageKey)
+      .map((row) => mapPublishedFaqRow(row, faqPageLanguage));
+    const categories = resolveFaqPageCategories(faqPageLanguage, questionsFor("general"), questionsFor("home"));
+    faqPageBody = buildReadableFaqPageBody(faqPageLanguage, categories, dynamicRouteState?.row);
+    meta = { ...meta, faqs: faqPageQuestions(categories) };
+  }
   const html = await response.text();
-  const readableBody = buildReadableFurnitureListingBody(key, furnitureListing)
+  const readableBody = faqPageBody || buildReadableFurnitureListingBody(key, furnitureListing)
     || buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
-  const expandedBody = readableBody || buildExpandedReadableBody(key, { row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, processSteps });
+  const expandedBody = readableBody || buildExpandedReadableBody(key, {
+    row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, processSteps,
+    resolveMaterialLink: resolveReadableMaterialLink,
+  });
   let transformed = meta ? injectSeo(html, meta, siteSettings, expandedBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
@@ -2525,7 +2566,8 @@ export const onRequest: PagesFunction = async (context) => {
 
   const generatedResponse = new Response(transformed, { status: meta ? response.status : 404, headers });
   // A revision change during generation must not mix old keys with new settings.
-  const cacheWrite = meta && confirmedRevision && siteSettings?.updated_at === confirmedRevision
+  // A failed optional FAQ read shows the page fallback, but must not replace a good cached version.
+  const cacheWrite = meta && faqPageRows?.ok !== false && confirmedRevision && siteSettings?.updated_at === confirmedRevision
     && edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest
     ? Promise.all([
         edgeCache.put(publicHtmlCacheRequest, generatedResponse.clone()),
@@ -2557,14 +2599,19 @@ export const onRequest: PagesFunction = async (context) => {
 
       const html = await appShellResponse.text();
       const fallbackOldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
+      const fallbackFaqCategories = faqPageLanguage ? resolveFaqPageCategories(faqPageLanguage) : null;
       // No current home FAQ source was bound on this exception path.
       const fallbackMeta = staticMeta && isHomePageKey(key)
         ? { ...staticMeta, faqs: [] }
-        : staticMeta && fallbackOldHouseLanguage
-          ? { ...staticMeta, faqs: mapOldHousePublicFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
-          : staticMeta;
+        : staticMeta && fallbackFaqCategories
+          ? { ...staticMeta, faqs: faqPageQuestions(fallbackFaqCategories) }
+          : staticMeta && fallbackOldHouseLanguage
+            ? { ...staticMeta, faqs: mapOldHousePublicFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
+            : staticMeta;
+      const fallbackFaqBody = faqPageLanguage && fallbackFaqCategories
+        ? buildReadableFaqPageBody(faqPageLanguage, fallbackFaqCategories) : "";
       let transformed = fallbackMeta
-        ? injectSeo(html, fallbackMeta, await preparePublicHtml().settings)
+        ? injectSeo(html, fallbackMeta, await preparePublicHtml().settings, fallbackFaqBody)
         : injectNoIndexNotFound(html, await preparePublicHtml().settings, key);
       // Keep the existing metadata/readable fallback unchanged, but do not
       // discard an already successful current-record read when an optional

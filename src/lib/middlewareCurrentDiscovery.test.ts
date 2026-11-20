@@ -105,6 +105,23 @@ describe("complete current runtime discovery", () => {
     expect(hidden.text).not.toContain("furniture/product/catalogue");
     expect(hidden.text).toContain(`${site}/en/about`);
   });
+  it.each(["sitemap.xml", "llms.txt"] as const)("omits legal paths in %s after combining static and published CMS data", async (asset) => {
+    const rows = records();
+    rows.site_pages = [
+      { ...row("site_pages", 1), path: "/privacy" },
+      { ...row("site_pages", 2), path: "/terms" },
+      { ...row("site_pages", 3), path: "/privacy-notice" },
+    ];
+    const legalPaths = ["/en/privacy", "/zh/privacy", "/en/terms", "/zh/terms"];
+    const result = await readDiscovery(rows, { asset, extraStaticPaths: legalPaths });
+    expect(result.response.status).toBe(200);
+    const locations = asset === "sitemap.xml"
+      ? [...result.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1])
+      : result.text.split("## Canonical URL List\n")[1].split("\n## Notes")[0].split("\n").map((line) => line.slice(2));
+    for (const path of legalPaths) expect(locations).not.toContain(`${site}${path}`);
+    expect(locations).toContain(`${site}/en/privacy-notice`);
+    expect(locations).toContain(`${site}/zh/about`);
+  });
   it.each(["sitemap.xml", "llms.txt"] as const)("withdraws equivalent encoded furniture URLs from %s without hiding other identities", async (asset) => {
     const equivalents = ["en", "zh"].flatMap((language) => [
       `/${language}/furniture/product/catalogue-%E6%A4%85`,

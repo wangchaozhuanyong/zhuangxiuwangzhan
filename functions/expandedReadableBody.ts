@@ -8,6 +8,9 @@ import { servicesPageText } from "../src/i18n/servicesPageText";
 import { projectsPageText } from "../src/i18n/projectsPageText";
 import { materialsPageText } from "../src/i18n/materialsPageText";
 import { blogPageText } from "../src/i18n/blogPageText";
+import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
+import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
+import { materialsData } from "../src/data/materials";
 import { getServiceProjectGuidance, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
 import { materialDetailPageText } from "../src/i18n/materialDetailPageText";
 import { projectDetailPageText } from "../src/i18n/projectDetailPageText";
@@ -21,7 +24,8 @@ import { stripHtml } from "../src/lib/text";
 
 type Row = Record<string, unknown>;
 type Lang = "en" | "zh" | "ms";
-type Sources = { row?: Row | null; services?: Row[] | null; materials?: Row[] | null; projects?: Row[] | null; blogPosts?: Row[] | null; processSteps?: Row[] | null };
+type ResolveMaterialLink = (href: string) => string | undefined;
+type Sources = { row?: Row | null; services?: Row[] | null; materials?: Row[] | null; projects?: Row[] | null; blogPosts?: Row[] | null; processSteps?: Row[] | null; resolveMaterialLink?: ResolveMaterialLink };
 const text = (value: unknown) => typeof value === "string" ? value : "";
 const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const plain = (value: unknown, lang: Lang) => stripHtml(translateDisplayText(text(value), lang));
@@ -76,6 +80,65 @@ function processBody(sources: Sources, lang: Lang) {
   return wrap(`<h1>${escape(field("title") || copy.title)}</h1>${paragraph(field("description") || copy.description)}${heading(copy.sectionTitle)}${paragraph(field("content") || copy.sectionDescription)}<ol>${visible.map(step =>
     `<li><h3>${escape(step.title)}</h3>${paragraph(step.desc)}${list("", [...step.details])}</li>`
   ).join("")}</ol>`, lang);
+}
+
+function materialSubcategoryGuidanceBody(
+  categorySlug: string,
+  categoryName: string,
+  subcategoryName: string,
+  lang: Lang,
+  renderLink: (path: string, label: string) => string,
+) {
+  const guidance = getMaterialSubcategoryGuidance(categorySlug, categoryName, subcategoryName, lang);
+  return heading(guidance.checklistTitle) + paragraph(guidance.checklistDescription)
+    + guidance.checklist.map(item => heading(item.title) + paragraph(item.description)).join("")
+    + heading(guidance.relatedTitle) + paragraph(guidance.relatedDescription)
+    + guidance.relatedLinks.map(item => renderLink(item.href, item.title)).join(" · ");
+}
+
+function materialTaxonomyFallbackBody(
+  categorySlug: string,
+  subcategorySlug: string | undefined,
+  lang: Lang,
+  resolveLink?: ResolveMaterialLink,
+) {
+  // Use the same static categories that the browser merges with published data.
+  // In particular, their furniture branch is separate from the furniture store.
+  const category = materialsData.find(item => item.slug === categorySlug);
+  if (!category) return "";
+  const subcategory = category.subcategories.find(item => item.slug === subcategorySlug);
+  if (subcategorySlug && !subcategory) return "";
+
+  const renderLink = (path: string, title: string) => {
+    const href = resolveLink?.(`/${lang}${path}`);
+    return href ? `<a href="${escape(href)}">${escape(title)}</a>` : escape(title);
+  };
+  const categoryCopy = materialCategoryPageText[lang];
+  const subcategoryCopy = materialSubcategoryPageText[lang];
+  const categoryPath = `/materials/category/${category.slug}`;
+  const categoryName = translateMaterialCategory(category.name, lang);
+  const name = subcategory ? translateMaterialSubcategory(subcategory.name, lang) : categoryName;
+  let body = `<h1>${escape(name)}</h1>${paragraph(plain((subcategory || category).description, lang))}`;
+
+  if (subcategory) {
+    body += materialSubcategoryGuidanceBody(category.slug, categoryName, name, lang, renderLink);
+  } else if (category.subcategories.length) {
+    body += heading(categoryCopy.browseSubcategories) + `<ul>${category.subcategories.map(item =>
+      `<li><h3>${renderLink(`${categoryPath}/${item.slug}`, translateMaterialSubcategory(item.name, lang))}</h3>${paragraph(plain(item.description, lang))}</li>`
+    ).join("")}</ul>`;
+  }
+  const items = category.items.filter(item => !subcategory || item.subcategory === subcategory.slug);
+  if (items.length) {
+    body += heading(subcategory ? subcategoryCopy.products(name) : categoryCopy.allProducts(name));
+    body += `<ul>${items.map(item => {
+      const title = plain(item.name, lang);
+      const spaces = item.suitableSpaces.map(space => translateSpaceLabel(space, lang)).join(" / ");
+      return `<li><h3>${renderLink(`/materials/${item.slug}`, title)}</h3>${paragraph(spaces)}</li>`;
+    }).join("")}</ul>`;
+  } else if (subcategory) {
+    body += heading(subcategoryCopy.products(name)) + paragraph(subcategoryCopy.comingSoon);
+  }
+  return wrap(body, lang);
 }
 
 // This supplements the existing reviewed renderers without rewriting their
@@ -179,21 +242,16 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
   const category = path.match(/^\/materials\/category\/([^/]+)(?:\/([^/]+))?$/);
   const kind = path.slice(1);
   const collection = ({ services: sources.services, projects: sources.projects, materials: sources.materials, blog: sources.blogPosts } as Record<string, Row[] | null | undefined>)[category ? "materials" : kind];
-  if (!collection) return "";
-  const rows = collection.filter(item => item.status === "published" && safeSlug(item.slug) && text(item[`title_${lang}`]).trim()
-    && (!category || taxonomy(item.category) === category[1] && (!category[2] || taxonomy(item.subcategory) === category[2])));
-  if (!rows.length) return "";
+  const rows = collection?.filter(item => item.status === "published" && safeSlug(item.slug) && text(item[`title_${lang}`]).trim()
+    && (!category || taxonomy(item.category) === category[1] && (!category[2] || taxonomy(item.subcategory) === category[2]))) || [];
+  if (!rows.length) return category ? materialTaxonomyFallbackBody(category[1], category[2], lang, sources.resolveMaterialLink) : "";
   const copy = ({ services: servicesPageText, projects: projectsPageText, materials: materialsPageText, blog: blogPageText } as const)[category ? "materials" : kind as "services" | "projects" | "materials" | "blog"];
   if (!copy) return "";
   const categoryName = category ? translateMaterialCategory(text(rows[0].category), lang) : "";
   const categoryTitle = category?.[2] ? translateMaterialSubcategory(text(rows[0].subcategory), lang) : categoryName;
   let body = `<h1>${escape(categoryTitle || copy[lang].title)}</h1>${paragraph(category ? plain(rows[0][`excerpt_${lang}`], lang) : copy[lang].intro)}`;
   if (category?.[2]) {
-    const guidance = getMaterialSubcategoryGuidance(category[1], categoryName, categoryTitle, lang);
-    body += heading(guidance.checklistTitle) + paragraph(guidance.checklistDescription)
-      + guidance.checklist.map(item => heading(item.title) + paragraph(item.description)).join("")
-      + heading(guidance.relatedTitle) + paragraph(guidance.relatedDescription)
-      + guidance.relatedLinks.map(item => link(item.href, item.title, lang)).join(" · ");
+    body += materialSubcategoryGuidanceBody(category[1], categoryName, categoryTitle, lang, (href, title) => link(href, title, lang));
   }
   body += `<ul>${rows.map(item =>
     `<li><h2>${link(`/${category ? "materials" : kind}/${safeSlug(item.slug)}`, plain(item[`title_${lang}`], lang), lang)}</h2>${paragraph(plain(item[`excerpt_${lang}`], lang))}</li>`

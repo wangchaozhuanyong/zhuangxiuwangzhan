@@ -4,7 +4,8 @@ import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 import { siteConfig } from "@/config/site";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { withChineseBrandMetadata } from "@/i18n/brandIdentity";
+import { getPublicSiteName, withChineseBrandMetadata } from "@/i18n/brandIdentity";
+import { formatPublicSeoTitle } from "@/lib/publicSeoTitle.mjs";
 import { useStructuredDataNode } from "@/contexts/StructuredDataContext";
 import { languageTag } from "@/i18n/languageDetection";
 
@@ -49,7 +50,7 @@ const PageMeta = ({
   const companyName = settings.company_name || siteConfig.name;
   const defaultImage = addCacheBuster(settings.og_image_url || siteConfig.ogImage, settings.updated_at);
   const image = absoluteMetaImage(ogImage || "", defaultImage, siteConfig.ogImage);
-  const baseTitle = title.includes(brandName) || title.includes(companyName) ? title : `${title} | ${companyName}`;
+  const baseTitle = formatPublicSeoTitle(title, getPublicSiteName(settings), [brandName, companyName]);
   const path = canonicalPath ? stripLanguagePrefix(canonicalPath) : stripLanguagePrefix(window.location.pathname);
   const metadata = noIndex ? { title: baseTitle, description }
     : withChineseBrandMetadata({ title: baseTitle, description }, language, path, settings);

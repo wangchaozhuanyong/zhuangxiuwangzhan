@@ -73,7 +73,7 @@ describe("exact cabinet two-anchor protected channel", () => {
   it("still rejects wrong-language, stale, wrong-brand and body-only title matches", () => {
     for (const page of config.publicPaths) {
       const other = config.publicPaths.find(x => x.path !== page.path)!;
-      for (const title of [other.expected, "Built-In Cabinet Cost Factors in Malaysia", page.expected.replace("FLASH CAST SDN. BHD.", "Another company")]) {
+      for (const title of [other.expected, "Built-In Cabinet Cost Factors in Malaysia", page.expected.replace(/FLASH CAST$/, "Another company")]) {
         expect(inspectPublicReadback(page, 200, `<title>${title}</title><p>${page.expected}</p>`).found).toBe(false);
       }
       const check = inspectPublicReadback({ ...page, forbidden: ["unapproved"], requiredPhrases: ["required source"] }, 200, `<title>${page.expected}</title><p>unapproved</p>`);

@@ -166,7 +166,8 @@ describe("Edge Chinese brand identity from current published sources", () => {
   it.each(fixtures)("adds the route brand while preserving current CMS metadata on /zh$path", async fixture => {
     const { response, document, node, path } = await render("zh", fixture);
     expect(response.status).toBe(200);
-    expect(document.title).toBe(fixture.table === "site_pages" ? fixture.brand : `${fixture.brand} | ${fixture.row.seo_title_zh}`);
+    const expectedTitle = String(fixture.row.seo_title_zh).replace(/ SDN\. BHD\.$/, "");
+    expect(document.title).toBe(fixture.table === "site_pages" ? fixture.brand : `${fixture.brand} | ${expectedTitle}`);
     const description = metadata(document, 'meta[name="description"]');
     if (fixture.path === "") expect(description).toBe("闪铸装饰亦称“闪铸设计”，为吉隆坡、雪兰莪与巴生谷提供住宅及商业装修、室内设计、定制柜体与项目协调。按现场情况和确认范围准备报价。");
     else expect(description?.startsWith(String(fixture.row.seo_description_zh))).toBe(true);
@@ -192,7 +193,7 @@ describe("Edge Chinese brand identity from current published sources", () => {
     const original = fixtures.find(fixture => fixture.path === "/services/design")!;
     const fixture = { ...original, row: { ...original.row, seo_title_zh: `闪铸设计 | ${original.row.seo_title_zh}` } };
     const { document } = await render("zh", fixture);
-    expect(document.title).toBe(fixture.row.seo_title_zh);
+    expect(document.title).toBe(String(fixture.row.seo_title_zh).replace(/ SDN\. BHD\.$/, ""));
     expect(document.title.split("闪铸设计")).toHaveLength(2);
   });
 
@@ -205,6 +206,15 @@ describe("Edge Chinese brand identity from current published sources", () => {
     expect(document.title).toBe(language === "zh" ? original.brand : title);
     expect(metadata(document, 'meta[name="description"]')?.startsWith(description)).toBe(true);
     expectMetadataParity(document, node);
+  });
+
+  it("uses the short public brand for an unbranded live CMS title", async () => {
+    const original = fixtures.find(fixture => fixture.path === "/services/design")!;
+    const fixture = { ...original, row: { ...original.row, seo_title_en: "Current interior design scope" } };
+    const { document, node } = await render("en", fixture);
+    expect(document.title).toBe("Current interior design scope | FLASH CAST");
+    expectMetadataParity(document, node);
+    expectBrandIdentity(document, node);
   });
 
   it("does not attach FLASH CAST Chinese aliases to another configured company", async () => {

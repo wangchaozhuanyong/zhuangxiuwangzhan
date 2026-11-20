@@ -1,5 +1,4 @@
 import { contactEntryText } from "@/i18n/contactEntryText";
-import { isMalayContentReady } from "@/i18n/localizedContent";
 import { malayFormat } from "@/i18n/malayText";
 import { interactionText } from "@/i18n/interactionText";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
@@ -168,7 +167,7 @@ const Contact = () => {
 
   return (
     <main className="fc-route-page fc-route-form-page fc-route-contact-page" data-route-pending={pageLoading || undefined}>
-      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined}
+      <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined}
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
         keywords={pageContent?.seo_keywords || t.metaKeywords}

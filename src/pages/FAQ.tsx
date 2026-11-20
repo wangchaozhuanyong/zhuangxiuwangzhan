@@ -1,5 +1,3 @@
-import { isMalayContentReady } from "@/i18n/localizedContent";
-import { malayText } from "@/i18n/malayText";
 import { useMemo } from "react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -11,6 +9,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { faqPageText } from "@/i18n/faqPageText";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { faqPageQuestions, resolveFaqPageCategories } from "@/lib/publicFaqs";
 
 const FAQ = () => {
   const { language } = useLanguage();
@@ -19,18 +18,14 @@ const FAQ = () => {
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "faq");
   const { data: generalFaqs, isLoading } = usePublishedFaqs(language, "general");
   const { data: homeFaqs, isLoading: homeLoading } = usePublishedFaqs(language, "home");
-  const categories = useMemo(() => {
-    const publishedFaqs = [...(generalFaqs || []), ...(homeFaqs || [])].filter((item, index, list) => list.findIndex((faq) => faq.question === item.question) === index);
-    if (!publishedFaqs.length) return t.categories;
-    return [{ category: language === "ms" ? malayText("General") : (language === "zh" ? "常见问题" : "General"), items: publishedFaqs.map((item) => ({ q: item.question, a: item.answer })) }];
-  }, [generalFaqs, homeFaqs, t.categories, language]);
-  const allFaqs = categories.flatMap((category) => category.items.map((item) => ({ question: item.q, answer: item.a })));
+  const categories = useMemo(() => resolveFaqPageCategories(language, generalFaqs, homeFaqs), [generalFaqs, homeFaqs, language]);
+  const allFaqs = faqPageQuestions(categories);
   const showCategoryHeadings = categories.length > 1;
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.faq);
 
   return (
     <main className="fc-route-page" data-route-pending={pageLoading || isLoading || homeLoading || undefined}>
-      <PageMeta malayReady={isMalayContentReady(pageContent)} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
+      <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
       <JsonLdFAQ faqs={allFaqs} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.eyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.title} description={pageContent?.description || t.intro} />

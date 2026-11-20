@@ -16,6 +16,10 @@ import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryN
 import { furnitureListingPagePath, furnitureProductPath, localizeFurnitureProduct, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
 import { findSelangorWarehouseIntroLink } from "../src/lib/selangorWarehouseIntroLink";
 import { plainTextParagraphs } from "../src/lib/text";
+import { faqPageText } from "../src/i18n/faqPageText";
+import { languageTag, type Language } from "../src/i18n/languageDetection";
+import { localizedContentValue } from "../src/i18n/localizedContentValue";
+import type { resolveFaqPageCategories } from "../src/lib/publicFaqs";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = ["/services/builtin", "/services/kitchen", "/services/renovation", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
@@ -36,6 +40,22 @@ export function buildReadableHomeFaqBody(key: string, faqs: readonly { question:
   return `<main lang="${lang}">${overview}<section data-flashcast-readable-home-faq><h2>${title}</h2>${faqs.map(faq => `<h3>${escape(faq.question)}</h3><p>${escape(faq.answer)}</p>`).join("")}</section></main>`;
 }
 const plain = (v: unknown) => decode(text(v).replace(/<[^>]*>/g, "")).trim();
+
+export function buildReadableFaqPageBody(
+  language: Language, categories: ReturnType<typeof resolveFaqPageCategories>, page?: Record<string, unknown>,
+) {
+  const copy = faqPageText[language];
+  const title = text(localizedContentValue(page, "title", language, copy.title));
+  const intro = text(localizedContentValue(page, "description", language, copy.intro));
+  const showCategoryHeadings = categories.length > 1;
+  const questionHeading = showCategoryHeadings ? "h3" : "h2";
+  const sections = categories.map(({ category, items }) => {
+    const heading = showCategoryHeadings ? `<h2>${escape(category)}</h2>` : "";
+    const questions = items.map(({ q, a }) => `<${questionHeading}>${escape(q)}</${questionHeading}><p>${escape(a)}</p>`).join("");
+    return `<section>${heading}${questions}</section>`;
+  }).join("");
+  return `<main data-flashcast-readable-body lang="${languageTag(language)}"><h1>${escape(title)}</h1><p>${escape(intro)}</p>${sections}</main>`;
+}
 
 export function buildReadableFurnitureListingBody(key: string, listing: ReturnType<typeof getFurnitureListingPage> | null) {
   if (!listing?.validSelection || !listing.category) return "";

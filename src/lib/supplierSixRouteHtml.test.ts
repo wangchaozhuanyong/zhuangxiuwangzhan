@@ -38,12 +38,12 @@ describe("supplier product route HTML through the current middleware", () => {
         } as Parameters<typeof onRequest>[0]);
         const body = await html.text();
         const meta = manifest[route as keyof typeof manifest];
-        const escapedTitle = `${safe[lang].name} | FLASH CAST SDN. BHD.`
+        const escapedTitle = `${safe[lang].name} | FLASH CAST`
           .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         const escapedDescription = safe[lang].shortDescription.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
         expect(html.status).toBe(200);
-        expect(body).toContain(`<title data-rh="true">${escapedTitle}`);
+        expect(body).toContain(`<title data-rh="true">${escapedTitle}</title>`);
         expect(body).toContain(`name="description" content="${escapedDescription}"`);
         expect(body).toContain(`rel="canonical" href="${meta.canonical}"`);
         expect(body).toContain(`hreflang="en" href="${meta.hreflang.en}"`);

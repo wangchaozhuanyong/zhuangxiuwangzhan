@@ -44,13 +44,25 @@ const snapshot=async(rows,cap=500,failure)=>readCompleteSeoSources({url:'http://
 const outputs=['public/sitemap.xml','public/seo-manifest.json','functions/seo-manifest.json','public/llms.txt'];
 const assertDocuments=manifest=>{
  const xml=buildQualifiedSitemap(manifest),llms=buildQualifiedLlms(manifest);
- const expected=Object.values(manifest).map(m=>m.canonical).sort();
+ const expected=Object.entries(manifest).filter(([path])=>!/^\/(?:en|zh)\/(?:privacy|terms)$/.test(path)).map(([,m])=>m.canonical).sort();
  assert.deepEqual([...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1]).sort(),expected);
  assert.deepEqual(llms.split('## Canonical URL List\n')[1].split('\n## Notes')[0].split('\n').filter(s=>s.startsWith('- ')).map(s=>s.slice(2)).sort(),expected);
  assert.equal(new Set(Object.values(manifest).map(m=>m.source_version)).size,1);
- for(const m of Object.values(manifest))for(const url of Object.values(m.hreflang))assert.ok(expected.includes(url));
+ const canonicalPages=new Set(Object.values(manifest).map(m=>m.canonical));
+ for(const m of Object.values(manifest))for(const url of Object.values(m.hreflang))assert.ok(canonicalPages.has(url));
  return {xml,llms};
 };
+test('keeps legal page metadata while omitting the four canonical paths from discovery documents',async()=>{
+ const manifest=await buildQualifiedManifest(await snapshot(records(0)));
+ const {xml,llms}=assertDocuments(manifest);
+ for(const route of ['/en/privacy','/en/terms','/zh/privacy','/zh/terms']){
+  const meta=manifest[route];
+  assert.equal(meta.qualification,'eligible');
+  assert.ok(meta.source_complete);
+  assert.ok(!xml.includes(meta.canonical));
+  assert.ok(!llms.includes(meta.canonical));
+ }
+});
 for(const cap of [100,1000])test(`8 tables x 551 complete exact URLs at server cap ${cap}`,async()=>{
  const rows=records(551);const source=await snapshot(rows,cap);const empty=await snapshot(records(0));
  const base=await buildQualifiedManifest(empty);const manifest=await buildQualifiedManifest(source);
@@ -90,7 +102,7 @@ test('published metadata-only built-in pages override seeds without admitting em
  const rows=records(0);
  rows.site_pages=[{...row('site_pages',1),path:'/contact',content_en:'',content_zh:'',items_en:[],items_zh:[],seo_title_en:'Current contact metadata',seo_title_zh:'当前联系元信息',seo_description_en:'Current description',seo_description_zh:'当前说明'}, {...row('site_pages',2),path:'/metadata-only-dynamic',content_en:'',content_zh:'',items_en:[],items_zh:[],seo_title_en:'Metadata alone is not a body'}];
  const manifest=await buildQualifiedManifest(await snapshot(rows));
- assert.equal(manifest['/en/contact'].title,'Current contact metadata | FLASH CAST SDN. BHD.');
+ assert.equal(manifest['/en/contact'].title,'Current contact metadata | FLASH CAST');
  assert.equal(manifest['/zh/contact'].description,'当前说明');
  assert.equal(manifest['/en/contact'].owned_static,true);
  assert.deepEqual(manifest['/en/contact'].available_locales,['en','zh']);
@@ -107,6 +119,14 @@ test('metadata-only builtin retains its localized seed title and validates relat
   assert.equal(manifest['/zh/contact'].title,seed['/zh/contact'].title);
   assert.equal(manifest['/zh/contact'].ogImage,expected);
  }
+});
+
+test('a saved legacy SEO suffix is shortened in each emitted locale', async () => {
+ const rows=records(0);
+ rows.blog_posts=[{...row('blog_posts',1),seo_title_en:'Current title | FLASH CAST SDN. BHD.',seo_title_zh:'当前标题｜FLASH CAST SDN. BHD.'}];
+ const manifest=await buildQualifiedManifest(await snapshot(rows));
+ assert.equal(manifest['/en/blog/current-blog_posts-1'].title,'Current title | FLASH CAST');
+ assert.equal(manifest['/zh/blog/current-blog_posts-1'].title,'当前标题｜FLASH CAST');
 });
 test('real three script entrypoints write coherent documents; failing source preserves all prior bytes',async()=>{
  const runRoot=mkdtempSync(join(evidenceRoot,'actual-entrypoints-'));symlinkSync(resolve('src'),join(runRoot,'src'));symlinkSync(resolve('node_modules'),join(runRoot,'node_modules'));
@@ -184,4 +204,35 @@ test('template exception cannot admit other invalid paths or bypass row eligibil
  }
  const deleted=records(0);deleted.cms_pages=[{...row('cms_pages',1),path:'/services/:slug',deleted_at:'2026-10-03'}];
  await assert.rejects(snapshot(deleted),/seo_source_invalid:cms_pages/);
+});
+
+test('native React page metadata qualifies exactly the reviewed Malay routes', async () => {
+ const paths = ['/blog', '/contact', '/faq', '/locations', '/materials', '/process', '/projects', '/quote', '/services'];
+ const nativeRow = (path, i) => ({
+  id: String(i).padStart(8, '0'), status: 'published', path, page_key: path.slice(1),
+  title_en: 'Overview', title_zh: '概览', title_ms: 'Gambaran keseluruhan',
+  seo_title_ms: 'Gambaran keseluruhan', seo_description_ms: 'Gambaran keseluruhan halaman ini.',
+  content_en: '', content_zh: '', content_ms: '', items_en: [], items_ms: [],
+ });
+ const rows = records(0);
+ rows.site_pages = [...paths, '/generic-cms-page', '/products'].map(nativeRow);
+ let manifest = await buildQualifiedManifest(await snapshot(rows));
+ for (const path of paths) {
+  for (const lang of ['en', 'zh', 'ms']) {
+   const meta = manifest[`/${lang}${path}`];
+   assert.deepEqual(meta.available_locales, ['en', 'zh', 'ms']);
+   assert.equal(meta.hreflang.ms, `https://flashcast.com.my/ms${path}`);
+  }
+ }
+ for (const path of ['/generic-cms-page', '/products']) assert.ok(!manifest[`/ms${path}`]);
+ assertDocuments(manifest);
+
+ rows.site_pages[2].seo_description_ms = '';
+ rows.site_pages[8].page_key = 'generic';
+ manifest = await buildQualifiedManifest(await snapshot(rows));
+ assert.ok(!manifest['/ms/faq']);
+ assert.ok(!manifest['/ms/services']);
+ assert.deepEqual(manifest['/en/faq'].available_locales, ['en', 'zh']);
+ assert.deepEqual(manifest['/en/services'].available_locales, ['en', 'zh']);
+ assertDocuments(manifest);
 });
