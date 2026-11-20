@@ -1,5 +1,5 @@
 // Real public GETs and browser rendering only. Never submit forms, write telemetry or inject CMS data.
-import { formatPublicSeoTitle, PUBLIC_SEO_BRAND } from "../../src/lib/publicSeoTitle.mjs";
+import { formatPublicSeoTitle, normalizePublicSeoTitle, PUBLIC_SEO_BRAND } from "../../src/lib/publicSeoTitle.mjs";
 
 const norm = (value) => String(value || "").replace(/\s+/g, " ").trim();
 const decode = (value) => String(value).replace(/&#(x[\da-f]+|\d+);|&(amp|lt|gt|quot|apos|#39);/gi, (_, code, name) => code
@@ -12,6 +12,11 @@ export function withCompanyBrandSuffix(title, { brandName, companyName } = {}) {
   if (!value.trim() || !brand.trim() || !company.trim()) throw Error("CMS title and current public brand settings are required for metadata verification");
   const publicName = brand.toLowerCase() === PUBLIC_SEO_BRAND.toLowerCase() ? PUBLIC_SEO_BRAND : company;
   return formatPublicSeoTitle(value, publicName, [brand, company]);
+}
+export function normalizeStrictTitleExpectations(paths) {
+  return paths.map((page) => page.strictMetadataTitle
+    ? { ...page, expected: normalizePublicSeoTitle(page.expected) }
+    : page);
 }
 export function inspectRawMetadata(html, title, description, strictTitle = false) {
   const actualTitle = decode(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] || "");

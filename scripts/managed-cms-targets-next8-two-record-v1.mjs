@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { normalizeStrictTitleExpectations } from "./lib/publisher-public-readback.mjs";
 
 const sourcePath = "drafts/publishing/fc-20261016-industry-keyword-next-eight-pages-v1/frozen-next8-two-row-candidates.json";
 const sourceSha256 = "e6811bf7e41aee127de04434111cc1df2dd86de874b054984701fbaa299efc07";
@@ -55,7 +56,7 @@ export function readNext8TwoRecordCandidates(bytes) {
         || entry.conditional_inverse.parentRunId !== null || entry.conditional_inverse.saved_updated_at !== null) {
       throw new Error("NEXT8 exact identity, full41, two-field digest or protected37/MS11 differs.");
     }
-    const publicPaths = entry.public_paths;
+    const publicPaths = normalizeStrictTitleExpectations(entry.public_paths);
     return [name, {
       ...target, recordId: target.id, actionClass: "cms_write", keyField: "id", status: "published",
       exactPatchOnly: true, desiredFields: entry.desired, sourceCandidatePath: sourcePath,
