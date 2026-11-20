@@ -24,6 +24,7 @@ import { buildExpandedReadableBody } from "./expandedReadableBody";
 import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
 import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
+import { isExcludedFromPublicSitemap } from "../src/lib/publicSitemapExclusions.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
 import { notFoundPageText } from "../src/i18n/notFoundPageText";
@@ -2014,7 +2015,7 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
       const parsedLocation = new URL(location);
       if (parsedLocation.origin !== PUBLIC_SITE_URL) continue;
       const pathname = parsedLocation.pathname;
-      if (isRedirectOnlySitemapPath(pathname)) continue;
+      if (isRedirectOnlySitemapPath(pathname) || isExcludedFromPublicSitemap(pathname)) continue;
       if (liveSitemapAvailable && !(manifest as Record<string, SeoEntry>)[pathname]?.owned_static && !dynamicLocations.has(location)) continue;
       const furnitureSlug = pathname.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
       if (furnitureSlug) {

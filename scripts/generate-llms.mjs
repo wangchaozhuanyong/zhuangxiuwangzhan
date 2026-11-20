@@ -1,9 +1,11 @@
 import { isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
+import { isExcludedFromPublicSitemap } from "../src/lib/publicSitemapExclusions.mjs";
 const siteUrl=(process.env.VITE_SITE_URL||"https://flashcast.com.my").replace(/\/$/, "");
 export function buildQualifiedLlms(manifest) {
 const versions=new Set(Object.values(manifest).map(meta=>meta.source_version));
 if(versions.size!==1||Object.values(manifest).some(meta=>!meta.source_complete||meta.qualification!=="eligible"||!meta.source_hash))throw new Error("seo_manifest_unqualified");
 const entries = Object.entries(manifest)
+  .filter(([route]) => !isExcludedFromPublicSitemap(route))
   .map(([route, meta]) => ({ route, ...meta }))
   .sort((a, b) => {
     const priority = (route) => {

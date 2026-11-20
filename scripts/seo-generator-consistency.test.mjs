@@ -44,13 +44,25 @@ const snapshot=async(rows,cap=500,failure)=>readCompleteSeoSources({url:'http://
 const outputs=['public/sitemap.xml','public/seo-manifest.json','functions/seo-manifest.json','public/llms.txt'];
 const assertDocuments=manifest=>{
  const xml=buildQualifiedSitemap(manifest),llms=buildQualifiedLlms(manifest);
- const expected=Object.values(manifest).map(m=>m.canonical).sort();
+ const expected=Object.entries(manifest).filter(([path])=>!/^\/(?:en|zh)\/(?:privacy|terms)$/.test(path)).map(([,m])=>m.canonical).sort();
  assert.deepEqual([...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1]).sort(),expected);
  assert.deepEqual(llms.split('## Canonical URL List\n')[1].split('\n## Notes')[0].split('\n').filter(s=>s.startsWith('- ')).map(s=>s.slice(2)).sort(),expected);
  assert.equal(new Set(Object.values(manifest).map(m=>m.source_version)).size,1);
- for(const m of Object.values(manifest))for(const url of Object.values(m.hreflang))assert.ok(expected.includes(url));
+ const canonicalPages=new Set(Object.values(manifest).map(m=>m.canonical));
+ for(const m of Object.values(manifest))for(const url of Object.values(m.hreflang))assert.ok(canonicalPages.has(url));
  return {xml,llms};
 };
+test('keeps legal page metadata while omitting the four canonical paths from discovery documents',async()=>{
+ const manifest=await buildQualifiedManifest(await snapshot(records(0)));
+ const {xml,llms}=assertDocuments(manifest);
+ for(const route of ['/en/privacy','/en/terms','/zh/privacy','/zh/terms']){
+  const meta=manifest[route];
+  assert.equal(meta.qualification,'eligible');
+  assert.ok(meta.source_complete);
+  assert.ok(!xml.includes(meta.canonical));
+  assert.ok(!llms.includes(meta.canonical));
+ }
+});
 for(const cap of [100,1000])test(`8 tables x 551 complete exact URLs at server cap ${cap}`,async()=>{
  const rows=records(551);const source=await snapshot(rows,cap);const empty=await snapshot(records(0));
  const base=await buildQualifiedManifest(empty);const manifest=await buildQualifiedManifest(source);
