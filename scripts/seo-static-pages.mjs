@@ -235,7 +235,7 @@ const staticDefs = [
   {
     "lang": "zh",
     "path": "/locations/kuala-lumpur/digital-lock",
-    "title": "吉隆坡电子锁安装｜智能门锁｜FLASH CAST",
+    "title": "吉隆坡公寓电子锁安装｜门体兼容核对｜FLASH CAST",
     "description": "吉隆坡公寓与有地住宅电子锁安装。先核对门体兼容与大楼审批，再供应、安装、录入使用者并做交付测试。",
     "keywords": "吉隆坡电子锁安装, 智能门锁, 公寓门锁更换",
     "schemaType": "Service",
