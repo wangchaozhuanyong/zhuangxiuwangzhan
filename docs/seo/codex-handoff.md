@@ -162,30 +162,45 @@ const homeFaqs = shouldInjectHomeBundle && isHomePageKey(key)
 
 ---
 
-## 任务 4：hreflang 指向不在 sitemap 的页面
+## 任务 4：9 个站内页的马来语版本漏进 sitemap
 
 ### 现象
 
-18 条 hreflang 的 `ms-my` 指向了不在 sitemap 的马来语页面：
+`site_pages` 表里有 15 条记录，**马来语字段全部齐全**，但只有 3 条的 `/ms/` 版本进了 sitemap：
 
-```
-/en/blog  [ms-my] -> /ms/blog   : target not in sitemap
-/en/faq   [ms-my] -> /ms/faq    : target not in sitemap
-/en/locations [ms-my] -> /ms/locations : target not in sitemap
-... 共 18 条（9 个列表页 × en/zh）
-```
+| 路径 | /en/ | /zh/ | /ms/ |
+|---|---|---|---|
+| `/` | IN | IN | **IN** |
+| `/about` | IN | IN | **IN** |
+| `/promotions` | IN | IN | **IN** |
+| `/faq` | IN | IN | **OUT** |
+| `/services` | IN | IN | **OUT** |
+| `/quote` | IN | IN | **OUT** |
+| `/projects` | IN | IN | **OUT** |
+| `/materials` | IN | IN | **OUT** |
+| `/process` | IN | IN | **OUT** |
+| `/locations` | IN | IN | **OUT** |
+| `/contact` | IN | IN | **OUT** |
+| `/blog` | IN | IN | **OUT** |
 
-原因：这些 `/ms/` 列表页马来语内容不全，被判为不可索引，但 hreflang 仍然声明。
+页面本身可访问、标题是马来语、canonical 自指正确，就是不在 sitemap 里。
 
-### 做法
+### 与任务 4 旧描述的关系
 
-hreflang 只对「目标页面可索引」的语言输出 alternate。需要在构建 manifest 或中间件构造 hreflang 时，检查目标页面的资格。
+之前说的「18 条 hreflang 指向不在 sitemap 的页面」，就是这 9 个页面 × en/zh 两条。**两件事是同一个根因**，修好 sitemap 收录，hreflang 问题也会消失。
 
-参考：`available_locales` 字段已经在 manifest 里记录每个页面哪些语言可用。让 hreflang 生成读这个字段，而不是无条件输出三语。
+### 排查方向
+
+1. `scripts/generate-sitemap.mjs` 里是否有针对 `/ms/` 的路径白名单，恰好漏了这 9 条。
+2. `buildQualifiedSitemap` 对 `site_page` 类型的 ms 资格判定，是否读取了不同的字段组合。
+3. 对比 `/about`（进了）和 `/contact`（没进）在 `site_pages` 行里的差异——两者 ms 字段看起来都齐，差异点就是判定依据。
+4. manifest 里这 9 条的 `available_locales` 是否缺少 `ms`。
 
 ### 验收
 
-重跑审计脚本 `python docs/seo/audit_head_tags.py`，`non-reciprocal hreflang` 从 18 降到 0。
+- sitemap 增加 9 个 URL（1,374 → 1,383）
+- 重跑 `python docs/seo/audit_head_tags.py`，`non-reciprocal hreflang` 从 18 降到 0
+- `curl https://flashcast.com.my/ms/faq` 仍返回 200 且标题为马来语
 
 ---
 
