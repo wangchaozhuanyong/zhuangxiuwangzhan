@@ -1,5 +1,7 @@
 import { PUBLIC_BLOG_FIELDS, PUBLIC_MATERIAL_CARD_FIELDS, PUBLIC_SERVICE_FIELDS } from "../src/lib/publicContentFields";
 import "../src/i18n/malayContent";
+import { ANZHE_SHOWROOM_HOST } from "../src/config/anzheShowroom";
+import { ANZHE_ASSET_PREFIX, serveAnzheShowroom } from "./anzheShowroom";
 import { hasMalayContent } from "../src/i18n/localizedContent";
 import { isOptionalHomeSectionEnabled } from "../src/lib/homeOptionalSections";
 import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
@@ -2178,6 +2180,14 @@ export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
   const url = new URL(request.url);
   const env = ((context as unknown as { env?: PagesEnv }).env ?? {}) as PagesEnv;
+
+  if (url.hostname === ANZHE_SHOWROOM_HOST) {
+    return serveAnzheShowroom(request, env.ASSETS, getRequestLanguage(request),
+      getPublicHtmlDeploymentVersion(env));
+  }
+  if (url.pathname === ANZHE_ASSET_PREFIX || url.pathname.startsWith(ANZHE_ASSET_PREFIX + "/")) {
+    return new Response(null, { status: 404 });
+  }
 
   if (request.method !== "GET" && request.method !== "HEAD") {
     return next();

@@ -20,6 +20,7 @@ export const homeEditorialText = {
     materialsPaletteLabel: "色彩与触感",
     materialsCta: "浏览材料库",
     builtinsCta: "了解全屋定制",
+    smartLocksCta: "选购 ANZHE 电子锁",
   },
   en: {
     servicesTitle: "Spaces shaped around your life.",
@@ -42,6 +43,7 @@ export const homeEditorialText = {
     materialsPaletteLabel: "Colour & texture",
     materialsCta: "Explore materials",
     builtinsCta: "Explore custom built-ins",
+    smartLocksCta: "Explore ANZHE smart locks",
   },
 
   ms: {
@@ -65,5 +67,6 @@ export const homeEditorialText = {
     materialsPaletteLabel: "Warna & tekstur",
     materialsCta: "Teroka bahan",
     builtinsCta: "Terokai terbina dalam tersuai",
+    smartLocksCta: "Lihat kunci pintar ANZHE",
   },
 } as const;

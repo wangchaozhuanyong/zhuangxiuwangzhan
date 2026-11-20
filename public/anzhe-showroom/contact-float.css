@@ -1,0 +1,73 @@
+#quick-contact {
+  position: fixed;
+  z-index: 10;
+  inset-inline-end: max(22px,env(safe-area-inset-right));
+  bottom: max(20px,env(safe-area-inset-bottom));
+  width: max-content;
+  color: #26332d;
+}
+#quick-contact[data-obstructed],body:has(dialog[open]) #quick-contact {
+  visibility: hidden;
+  pointer-events: none;
+}
+#quick-contact:has(.qc-trigger[aria-expanded="true"]) {z-index:20}
+.qc-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 17px;
+  border: 1px solid #465d4f;
+  border-radius: 3px;
+  background: #253d31;
+  color: #fffef7;
+  box-shadow: 0 3px 14px #1b261735;
+  font: 630 14px/1.2 var(--body);
+}
+#quick-contact svg {display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.qc-trigger[aria-expanded="false"] svg:nth-child(2),.qc-trigger[aria-expanded="true"] svg:first-child {display:none!important}
+.qc-options {
+  position: absolute;
+  inset-inline-end: 0;
+  bottom: calc(100% + 8px);
+  width: min(264px,calc(100vw - 30px));
+  max-height: calc(100dvh - 98px);
+  overflow: auto;
+  background: #faf9f0;
+  border: 1px solid #919b85;
+  box-shadow: 0 8px 32px #18231930;
+}
+.qc-options strong {
+  display: block;
+  padding: 13px 16px 10px;
+  font-size: 15px;
+  line-height: 1.35;
+  border-bottom: 1px solid #adb39e;
+}
+.qc-link {
+  display: grid;
+  grid-template-columns: 23px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 15px;
+  min-height: 48px;
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.3;
+  text-decoration: none;
+}
+.qc-link + .qc-link {border-top:1px solid #d7d9ca}
+.qc-link i {font-style:normal;color:#626b5b}
+.qc-link[data-qc="wa"] {color:#21513b;background:#edf1e6}
+.qc-link:focus-visible {outline-offset:-4px}
+@media (hover:hover) {
+  .qc-trigger:hover {background:#314c3c}
+  .qc-link:hover {background:#e3e7d9}
+}
+@media (max-width:700px) {
+  #quick-contact {inset-inline-end:max(12px,env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
+  .qc-trigger {height:48px;width:48px;padding:0;border-radius:50%}
+  .qc-trigger span {display:none}
+}
+@media print {#quick-contact {display:none!important}}
