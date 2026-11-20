@@ -2,6 +2,7 @@ import { ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react
 import type { FocusEvent, PointerEvent } from "react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
+import { ANZHE_SHOWROOM_ORIGIN } from "@/config/anzheShowroom";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
@@ -347,6 +348,9 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
           <div className="home-materials__actions">
             <LocalizedLink to="/materials">{editorial.materialsCta}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
             <LocalizedLink to="/services/builtin">{editorial.builtinsCta}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+            <a id="smart-locks" href={`${ANZHE_SHOWROOM_ORIGIN}/${language}/`}>
+              {editorial.smartLocksCta}<ArrowUpRight aria-hidden="true" />
+            </a>
           </div>
         </div>
       </section>
