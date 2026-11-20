@@ -69,7 +69,7 @@ describe("FAQ page no-JavaScript HTML", () => {
     expect(html).not.toContain("Duplicate home answer");
   });
 
-  it.each([[], null])("keeps the page's localized fallback when published FAQs are empty or unavailable (%j)", async (responseRows) => {
+  it.each([{ state: "empty", responseRows: [] }, { state: "unavailable", responseRows: null }])("keeps the localized fallback when published FAQs are $state", async ({ responseRows }) => {
     const { response, faq, readable } = await render("zh", responseRows);
     const fallbackQuestions = faqPageText.zh.categories.flatMap(({ items }) => items.map(({ q }) => q));
     expect(response.status).toBe(200);
