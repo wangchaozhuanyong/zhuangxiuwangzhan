@@ -141,7 +141,11 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   }
   const reviewedOffice = key === "/en/services/office-renovation";
   const reviewedSelangor = path === "/locations/selangor";
-  if ((!reviewedOffice && !reviewedSelangor && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
+  // Region pages carry their body in the CMS service_areas row. Match them by
+  // shape so a newly published area does not need a code change to become
+  // readable to crawlers. The list route itself has no second segment.
+  const isLocationDetail = /^\/locations\/[a-z0-9][a-z0-9-]*$/.test(path);
+  if ((!reviewedOffice && !reviewedSelangor && !isLocationDetail && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
   if (row.slug !== path.split("/").pop()) return "";
   const field = (base: string) => row[`${base}_${lang}`];
   const title = plain(field("title"));
