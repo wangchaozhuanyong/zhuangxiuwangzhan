@@ -41,24 +41,24 @@ J: Kami beroperasi di seluruh Kuala Lumpur dan Selangor, termasuk Petaling Jaya,
 ```
 Q: Are you a registered contractor?
 
-A: Yes. FLASH CAST is a registered Malaysian company (SSM 202501027419 / 1628831-M). We provide itemised quotations that separate confirmed work, exclusions and owner-supplied items, so you know exactly what is included before work starts.
+A: Yes. FLASH CAST is a registered Malaysian company (SSM 202501027419 / 1628831-M) and a CIDB registered contractor (0120260929-WP177947, Grade G3, registered until September 2028). We provide itemised quotations that separate confirmed work, exclusions and owner-supplied items, so you know exactly what is included before work starts.
 ```
 
 **ZH**
 ```
 问：你们是注册承包商吗？
 
-答：是。FLASH CAST 是马来西亚注册公司（SSM 202501027419 / 1628831-M），也是 CIDB 注册承包商（{CIDB_NO}）。我们提供分项报价，把确认工程、排除项目与业主自购物品分开列清，开工前你就知道哪些包含、哪些不包含。
+答：是。FLASH CAST 是马来西亚注册公司（SSM 202501027419 / 1628831-M），也是 CIDB 注册承包商（0120260929-WP177947，G3 级，注册至 2028 年 9 月）。我们提供分项报价，把确认工程、排除项目与业主自购物品分开列清，开工前你就知道哪些包含、哪些不包含。
 ```
 
 **MS**
 ```
 S: Adakah anda kontraktor berdaftar?
 
-J: Ya. FLASH CAST ialah syarikat Malaysia yang berdaftar (SSM 202501027419 / 1628831-M) dan kontraktor berdaftar CIDB ({CIDB_NO}). Kami menyediakan sebut harga terperinci yang mengasingkan kerja yang disahkan, pengecualian dan item daripada pemilik, supaya anda tahu apa yang termasuk sebelum kerja bermula.
+J: Ya. FLASH CAST ialah syarikat Malaysia yang berdaftar (SSM 202501027419 / 1628831-M) dan kontraktor berdaftar CIDB (0120260929-WP177947, Gred G3, berdaftar hingga September 2028). Kami menyediakan sebut harga terperinci yang mengasingkan kerja yang disahkan, pengecualian dan item daripada pemilik, supaya anda tahu apa yang termasuk sebelum kerja bermula.
 ```
 
-**注意**：`{CIDB_NO}` 请填入你的 CIDB 注册号。
+**注意**：已填入 CIDB 号 `0120260929-WP177947`（G3 级，有效期至 28/09/2028）。证书到期前 60 天内需续期，续期后记得同步更新这里的日期。
 
 **CTA**：链到 `/about`
 
