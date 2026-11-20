@@ -4,6 +4,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { build } from "esbuild";
 import { loadMaterialSeoPaths } from "./seo-material-pages.mjs";
+import { isExcludedFromPublicSitemap } from "../src/lib/publicSitemapExclusions.mjs";
 
 const BASE = (process.env.PREVIEW_URL || process.env.SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const RUN_EDGE_CHECKS = process.env.VERIFY_EDGE_SEO === "1";
@@ -182,7 +183,9 @@ const manifestLocs = Object.keys(manifest).map((path) => `https://flashcast.com.
 const sitemapSet = new Set(sitemapLocs);
 const manifestSet = new Set(manifestLocs);
 const missingInManifest = sitemapLocs.filter((loc) => !manifestSet.has(loc));
-const missingInSitemap = manifestLocs.filter((loc) => !sitemapSet.has(loc));
+const isExcludedSitemapLoc = (loc) => isExcludedFromPublicSitemap(new URL(loc).pathname);
+const missingInSitemap = manifestLocs.filter((loc) => !isExcludedSitemapLoc(loc) && !sitemapSet.has(loc));
+const excludedInSitemap = sitemapLocs.filter(isExcludedSitemapLoc);
 const materialSeoLocs = materialSeoPaths.flatMap((path) => [
   `https://flashcast.com.my/en${path}`,
   `https://flashcast.com.my/zh${path}`,
@@ -192,6 +195,7 @@ const missingMaterialInSitemap = materialSeoLocs.filter((loc) => !sitemapSet.has
 
 if (missingInManifest.length) failures.push(`manifest: sitemap URLs missing from manifest: ${missingInManifest.slice(0, 5).join(", ")}`);
 if (missingInSitemap.length) failures.push(`sitemap: manifest URLs missing from sitemap: ${missingInSitemap.slice(0, 5).join(", ")}`);
+if (excludedInSitemap.length) failures.push(`sitemap: excluded URLs present: ${excludedInSitemap.join(", ")}`);
 if (missingMaterialInManifest.length) failures.push(`manifest: material category URLs missing from manifest: ${missingMaterialInManifest.slice(0, 5).join(", ")}`);
 if (missingMaterialInSitemap.length) failures.push(`sitemap: material category URLs missing from sitemap: ${missingMaterialInSitemap.slice(0, 5).join(", ")}`);
 
