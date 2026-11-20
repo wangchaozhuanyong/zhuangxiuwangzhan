@@ -1764,6 +1764,14 @@ const getExactLegacyRedirectPath = (pathname: string) => {
   return EXACT_LEGACY_REDIRECTS[cleaned] || null;
 };
 
+const resolveReadableMaterialLink = (href: string) => {
+  const { pathname, hash } = new URL(href, PUBLIC_SITE_URL);
+  const canonical = getExactLegacyRedirectPath(pathname) || pathname;
+  const pages = manifest as Record<string, SeoEntry>;
+  const englishFallback = canonical.startsWith("/ms/") ? canonical.replace(/^\/ms\//, "/en/") : "";
+  return pages[canonical] || (englishFallback && pages[englishFallback]) ? canonical + hash : undefined;
+};
+
 const getProductsToMaterialsRedirectPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
   const match = cleaned.match(/^\/(en|zh|ms)\/products(?:\/([^/]+))?$/);
@@ -2459,7 +2467,10 @@ export const onRequest: PagesFunction = async (context) => {
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
-  const expandedBody = readableBody || buildExpandedReadableBody(key, { row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, processSteps });
+  const expandedBody = readableBody || buildExpandedReadableBody(key, {
+    row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, processSteps,
+    resolveMaterialLink: resolveReadableMaterialLink,
+  });
   let transformed = meta ? injectSeo(html, meta, siteSettings, expandedBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
