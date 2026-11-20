@@ -48,17 +48,17 @@ A: Yes. FLASH CAST is a registered Malaysian company (SSM 202501027419 / 1628831
 ```
 问：你们是注册承包商吗？
 
-答：是。FLASH CAST 是马来西亚注册公司（SSM 202501027419 / 1628831-M）。我们提供分项报价，把确认工程、排除项目与业主自购物品分开列清，开工前你就知道哪些包含、哪些不包含。
+答：是。FLASH CAST 是马来西亚注册公司（SSM 202501027419 / 1628831-M），也是 CIDB 注册承包商（{CIDB_NO}）。我们提供分项报价，把确认工程、排除项目与业主自购物品分开列清，开工前你就知道哪些包含、哪些不包含。
 ```
 
 **MS**
 ```
 S: Adakah anda kontraktor berdaftar?
 
-J: Ya. FLASH CAST ialah syarikat Malaysia yang berdaftar (SSM 202501027419 / 1628831-M). Kami menyediakan sebut harga terperinci yang mengasingkan kerja yang disahkan, pengecualian dan item daripada pemilik, supaya anda tahu apa yang termasuk sebelum kerja bermula.
+J: Ya. FLASH CAST ialah syarikat Malaysia yang berdaftar (SSM 202501027419 / 1628831-M) dan kontraktor berdaftar CIDB ({CIDB_NO}). Kami menyediakan sebut harga terperinci yang mengasingkan kerja yang disahkan, pengecualian dan item daripada pemilik, supaya anda tahu apa yang termasuk sebelum kerja bermula.
 ```
 
-**注意**：如果你有 CIDB 注册号，加在这一条里效果更好。没有就只用 SSM，不要写"CIDB registered"。
+**注意**：`{CIDB_NO}` 请填入你的 CIDB 注册号。
 
 **CTA**：链到 `/about`
 
@@ -124,24 +124,24 @@ J: Untuk pengubahsuaian separa, biasanya boleh — kami bekerja bilik demi bilik
 ```
 Q: How long does a kitchen renovation take?
 
-A: A typical condo kitchen takes about {X} to {Y} weeks from demolition to handover, assuming cabinets and countertops are confirmed before work starts. Landed homes with layout changes or new plumbing run longer. The schedule is stated in the quotation so you can plan around it.
+A: A typical condo kitchen takes about 4 to 8 weeks from demolition to handover, assuming cabinets and countertops are confirmed before work starts. Landed homes with layout changes or new plumbing run longer. The schedule is stated in the quotation so you can plan around it.
 ```
 
 **ZH**
 ```
 问：厨房装修要多久？
 
-答：一般公寓厨房从拆除到交付约需 {X} 至 {Y} 周，前提是橱柜与台面在开工前已确认。需要改格局或新增水管的有关地住宅会更长。工期会写进报价单，方便你安排时间。
+答：一般公寓厨房从拆除到交付约需 4 至 8 周，前提是橱柜与台面在开工前已确认。需要改格局或新增水管的有关地住宅会更长。工期会写进报价单，方便你安排时间。
 ```
 
 **MS**
 ```
 S: Berapa lama pengubahsuaian dapur mengambil masa?
 
-J: Dapur kondominium biasa mengambil masa kira-kira {X} hingga {Y} minggu dari perobohan hingga serahan, dengan syarat kabinet dan permukaan disahkan sebelum kerja bermula. Rumah teres yang melibatkan ubah susun atur atau paip baharu mengambil masa lebih lama. Jadual dinyatakan dalam sebut harga supaya anda boleh merancang.
+J: Dapur kondominium biasa mengambil masa kira-kira 4 hingga 8 minggu dari perobohan hingga serahan, dengan syarat kabinet dan permukaan disahkan sebelum kerja bermula. Rumah teres yang melibatkan ubah susun atur atau paip baharu mengambil masa lebih lama. Jadual dinyatakan dalam sebut harga supaya anda boleh merancang.
 ```
 
-**注意**：`{X}` 和 `{Y}` 必须你填真实数字。给区间，不要给单个数字——单数字会被当成承诺。
+**注意**：4–8 周是你确认的区间（1–2 个月）。这是区间不是承诺，报价单里仍会按实际施工范围写明。
 
 **CTA**：链到 `/locations/kuala-lumpur/kitchen-renovation`
 
@@ -153,21 +153,21 @@ J: Dapur kondominium biasa mengambil masa kira-kira {X} hingga {Y} minggu dari p
 ```
 Q: Do you provide warranty?
 
-A: Yes, with the scope and duration stated in the quotation or project document rather than promised verbally. Defects reported within the agreed period are inspected and rectified; items supplied by the owner or by third parties are handled under their own terms.
+A: Yes. Our workmanship and the materials we supply carry a one-year warranty from handover. The exact scope is stated in the quotation or project document rather than promised verbally. Defects reported within that period are inspected and rectified; items supplied by the owner or by third parties are handled under their own terms.
 ```
 
 **ZH**
 ```
 问：有保修吗？
 
-答：有，保修范围与期限会写进报价单或项目文件，而不是口头承诺。在约定期限内提出的缺陷，我们会检查并处理；业主自购或第三方提供的项目，按其自身条款处理。
+答：有。我们的施工与自有材料自交付起保修一年，具体范围写进报价单或项目文件，而不是口头承诺。保修期内提出的缺陷会检查并处理；业主自购或第三方提供的项目，按其自身条款处理。
 ```
 
 **MS**
 ```
 S: Adakah anda memberikan jaminan?
 
-J: Ya, dengan skop dan tempoh dinyatakan dalam sebut harga atau dokumen projek, bukan janji lisan. Kecacatan yang dilaporkan dalam tempoh yang dipersetujui akan diperiksa dan diperbaiki; item daripada pemilik atau pihak ketiga tertakluk pada terma masing-masing.
+J: Ya. Kerja kami dan bahan yang kami bekalkan dilindungi jaminan satu tahun dari tarikh penyerahan. Skop sebenar dinyatakan dalam sebut harga atau dokumen projek dan bukan dijanjikan secara lisan. Kecacatan yang dilaporkan dalam tempoh itu akan diperiksa dan diperbaiki; item yang dibekalkan pemilik atau pihak ketiga dikendalikan mengikut terma masing-masing.
 ```
 
 **注意**：不要写具体年数。项目里所有文案都是"以报价单为准"，保持这个口径。
