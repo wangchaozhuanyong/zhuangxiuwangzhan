@@ -17,8 +17,9 @@ import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreload
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
+import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFaqPageBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
+import { faqPageQuestions, mapPublishedFaqRow, resolveFaqPageCategories } from "../src/lib/publicFaqs";
 import { buildExpandedReadableBody } from "./expandedReadableBody";
 import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
 import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
@@ -1542,6 +1543,14 @@ const fetchPublicSitePageBundle = async (env: Record<string, string | undefined>
   return legacyRows === null || cmsRows === null ? null : bundle;
 };
 
+const fetchPublicFaqPageRows = (env: Record<string, string | undefined>, key: string) =>
+  fetchFreshPublicRowsResult(env, "faqs", (url) => {
+    url.searchParams.set("select", "id,status,page_key,question_en,answer_en,question_zh,answer_zh,question_ms,answer_ms");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("page_key", "in.(general,home)");
+    url.searchParams.set("order", "sort_order.asc");
+  }, { route: key, stage: "faq-page" });
+
 const fetchPublicCtaBlock = async (env: Record<string, string | undefined>, blockKey: string) => {
   const rows = await fetchPublicRows(env, `cta_blocks:${blockKey}`, "cta_blocks", (url) => {
     url.searchParams.set("select", "*");
@@ -2231,6 +2240,7 @@ export const onRequest: PagesFunction = async (context) => {
   }
 
   const key = normalizePath(url.pathname);
+  const faqPageLanguage = /^\/(en|zh|ms)\/faq$/.exec(key)?.[1] as "en" | "zh" | "ms" | undefined;
   const englishMeta = key.startsWith("/ms") ? (manifest as Record<string, SeoEntry>)[key.replace(/^\/ms(?=\/|$)/, "/en")] : undefined;
   const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...localizeMalayMaterialFallback(englishMeta, key), lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
   const isPublicLanguagePath = /^\/(?:en|zh|ms)(?:\/|$)/.test(key);
@@ -2368,6 +2378,7 @@ export const onRequest: PagesFunction = async (context) => {
     homeJournalPosts,
     homeServiceAreas,
     processSteps,
+    faqPageRows,
   ] = await Promise.all([
     prepared.settings,
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
@@ -2400,6 +2411,7 @@ export const onRequest: PagesFunction = async (context) => {
       url.searchParams.set("select", "step_number,title_en,title_ms,title_zh,description_en,description_ms,description_zh,status");
       url.searchParams.set("status", "eq.published"); url.searchParams.set("order", "step_number.asc");
     }) : Promise.resolve(null),
+    meta && faqPageLanguage ? fetchPublicFaqPageRows(stringEnv, key) : Promise.resolve(null),
   ]);
   prepared.finishData();
   const finishTransform = timing.start("transform");
@@ -2424,8 +2436,17 @@ export const onRequest: PagesFunction = async (context) => {
     ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
     : [];
   if (shouldInjectHomeBundle && isHomePageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
+  let faqPageBody = "";
+  if (meta && faqPageLanguage) {
+    const published = faqPageRows?.ok ? faqPageRows.rows.filter((row) => row.status === "published") : [];
+    const questionsFor = (pageKey: string) => published.filter((row) => row.page_key === pageKey)
+      .map((row) => mapPublishedFaqRow(row, faqPageLanguage));
+    const categories = resolveFaqPageCategories(faqPageLanguage, questionsFor("general"), questionsFor("home"));
+    faqPageBody = buildReadableFaqPageBody(faqPageLanguage, categories, dynamicRouteState?.row);
+    meta = { ...meta, faqs: faqPageQuestions(categories) };
+  }
   const html = await response.text();
-  const readableBody = buildReadableFurnitureListingBody(key, furnitureListing)
+  const readableBody = faqPageBody || buildReadableFurnitureListingBody(key, furnitureListing)
     || buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
@@ -2526,7 +2547,8 @@ export const onRequest: PagesFunction = async (context) => {
 
   const generatedResponse = new Response(transformed, { status: meta ? response.status : 404, headers });
   // A revision change during generation must not mix old keys with new settings.
-  const cacheWrite = meta && confirmedRevision && siteSettings?.updated_at === confirmedRevision
+  // A failed optional FAQ read shows the page fallback, but must not replace a good cached version.
+  const cacheWrite = meta && faqPageRows?.ok !== false && confirmedRevision && siteSettings?.updated_at === confirmedRevision
     && edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest
     ? Promise.all([
         edgeCache.put(publicHtmlCacheRequest, generatedResponse.clone()),
@@ -2558,14 +2580,19 @@ export const onRequest: PagesFunction = async (context) => {
 
       const html = await appShellResponse.text();
       const fallbackOldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
+      const fallbackFaqCategories = faqPageLanguage ? resolveFaqPageCategories(faqPageLanguage) : null;
       // No current home FAQ source was bound on this exception path.
       const fallbackMeta = staticMeta && isHomePageKey(key)
         ? { ...staticMeta, faqs: [] }
-        : staticMeta && fallbackOldHouseLanguage
-          ? { ...staticMeta, faqs: mapOldHousePublicFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
-          : staticMeta;
+        : staticMeta && fallbackFaqCategories
+          ? { ...staticMeta, faqs: faqPageQuestions(fallbackFaqCategories) }
+          : staticMeta && fallbackOldHouseLanguage
+            ? { ...staticMeta, faqs: mapOldHousePublicFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
+            : staticMeta;
+      const fallbackFaqBody = faqPageLanguage && fallbackFaqCategories
+        ? buildReadableFaqPageBody(faqPageLanguage, fallbackFaqCategories) : "";
       let transformed = fallbackMeta
-        ? injectSeo(html, fallbackMeta, await preparePublicHtml().settings)
+        ? injectSeo(html, fallbackMeta, await preparePublicHtml().settings, fallbackFaqBody)
         : injectNoIndexNotFound(html, await preparePublicHtml().settings, key);
       // Keep the existing metadata/readable fallback unchanged, but do not
       // discard an already successful current-record read when an optional

@@ -1,5 +1,4 @@
 import { isMalayContentReady } from "@/i18n/localizedContent";
-import { malayText } from "@/i18n/malayText";
 import { useMemo } from "react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -11,6 +10,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { faqPageText } from "@/i18n/faqPageText";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { faqPageQuestions, resolveFaqPageCategories } from "@/lib/publicFaqs";
 
 const FAQ = () => {
   const { language } = useLanguage();
@@ -19,12 +19,8 @@ const FAQ = () => {
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "faq");
   const { data: generalFaqs, isLoading } = usePublishedFaqs(language, "general");
   const { data: homeFaqs, isLoading: homeLoading } = usePublishedFaqs(language, "home");
-  const categories = useMemo(() => {
-    const publishedFaqs = [...(generalFaqs || []), ...(homeFaqs || [])].filter((item, index, list) => list.findIndex((faq) => faq.question === item.question) === index);
-    if (!publishedFaqs.length) return t.categories;
-    return [{ category: language === "ms" ? malayText("General") : (language === "zh" ? "常见问题" : "General"), items: publishedFaqs.map((item) => ({ q: item.question, a: item.answer })) }];
-  }, [generalFaqs, homeFaqs, t.categories, language]);
-  const allFaqs = categories.flatMap((category) => category.items.map((item) => ({ question: item.q, answer: item.a })));
+  const categories = useMemo(() => resolveFaqPageCategories(language, generalFaqs, homeFaqs), [generalFaqs, homeFaqs, language]);
+  const allFaqs = faqPageQuestions(categories);
   const showCategoryHeadings = categories.length > 1;
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.faq);
 

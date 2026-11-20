@@ -31,6 +31,7 @@ import {
   type PublicContentResult,
 } from "@/lib/publicContentStatus";
 import { mapPublicHomeFaqs } from "@/lib/publicHomeFaqs";
+import { mapPublishedFaqRow } from "@/lib/publicFaqs";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 import { stripHtml } from "@/lib/text";
 
@@ -448,12 +449,7 @@ export const getPublishedFaqs = async (language: Language, pageKey = "general", 
   if (!hasPublicContentDatabaseClient()) return [];
 
   const data = await fetchPublishedFaqRows(pageKey, signal);
-  return (data || []).map((item) => ({
-    id: item.id,
-    category: item.page_key || "general",
-    question: pickLocalizedText(item, "question", language),
-    answer: pickLocalizedText(item, "answer", language),
-  }));
+  return data.map((item) => mapPublishedFaqRow(item, language));
 };
 
 export const getPublishedHomeSection = async (
