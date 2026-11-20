@@ -56,7 +56,8 @@ def section(url):
 
 
 def main():
-    with urllib.request.urlopen(SITEMAP, timeout=40) as r:
+    req = urllib.request.Request(SITEMAP, headers={"User-Agent": "Mozilla/5.0 (compatible; flashcast-audit)"})
+    with urllib.request.urlopen(req, timeout=40) as r:
         urls = re.findall(r"<loc>(.*?)</loc>", r.read().decode("utf-8", "ignore"))
     print(f"sitemap urls: {len(urls)}")
 
