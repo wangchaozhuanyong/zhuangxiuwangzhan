@@ -68,7 +68,7 @@ describe("public page metadata", () => {
     const description = "保留后台确认的服务范围、地点与咨询说明。";
     act(() => root.render(<HelmetProvider><PageMeta title={title} description={description} canonicalPath={path} /></HelmetProvider>));
     await vi.waitFor(() => {
-      expect(document.title).toBe(path.startsWith("/services/") ? `${brand} | ${title} | FLASH CAST SDN. BHD.` : brand);
+      expect(document.title).toBe(path.startsWith("/services/") ? `${brand} | ${title} | FLASH CAST` : brand);
       const actualDescription = document.querySelector('meta[name="description"]')?.getAttribute("content") || "";
       if (path === "/") expect(actualDescription).toBe("闪铸装饰亦称“闪铸设计”，为吉隆坡、雪兰莪与巴生谷提供住宅及商业装修、室内设计、定制柜体与项目协调。按现场情况和确认范围准备报价。");
       else expect(actualDescription.startsWith(description)).toBe(true);
@@ -95,7 +95,7 @@ describe("public page metadata", () => {
     const description = "The published English consultation scope remains intact.";
     act(() => root.render(<HelmetProvider><PageMeta title="Published English scope" description={description} canonicalPath={path} /></HelmetProvider>));
     await vi.waitFor(() => {
-      expect(document.title).toBe("Published English scope | FLASH CAST SDN. BHD.");
+      expect(document.title).toBe("Published English scope | FLASH CAST");
       expect(document.querySelector('meta[name="description"]')).toHaveAttribute("content", description);
       for (const alias of ["闪铸装饰", "闪铸设计", "闪铸装修"]) {
         expect(document.title).not.toContain(alias);
@@ -107,7 +107,7 @@ describe("public page metadata", () => {
   it("keeps an unrelated Chinese route and a different company outside the brand association", async () => {
     act(() => root.render(<HelmetProvider><PageMeta title="联系页面" description="原始联系说明。" canonicalPath="/faqs" /></HelmetProvider>));
     await vi.waitFor(() => {
-      expect(document.title).toBe("联系页面 | FLASH CAST SDN. BHD.");
+      expect(document.title).toBe("联系页面 | FLASH CAST");
       expect(document.querySelector('meta[name="description"]')).toHaveAttribute("content", "原始联系说明。");
     });
     state.settings = { ...state.settings, company_name: "Different company", brand_name: "Different brand" };
@@ -115,6 +115,15 @@ describe("public page metadata", () => {
     await vi.waitFor(() => {
       expect(document.title).toBe("后台首页 | Different company");
       expect(document.querySelector('meta[name="description"]')).toHaveAttribute("content", "其它公司的公开说明。");
+    });
+  });
+
+  it("shortens an explicit legacy CMS title suffix after hydration", async () => {
+    state.language = "ms";
+    act(() => root.render(<HelmetProvider><PageMeta title="Pembaikan kebocoran｜FLASH CAST SDN. BHD." description="Panduan pembaikan." canonicalPath="/blog/bathroom-leakage-renovation-malaysia" /></HelmetProvider>));
+    await vi.waitFor(() => {
+      expect(document.title).toBe("Pembaikan kebocoran｜FLASH CAST");
+      expect(document.querySelector('meta[property="og:title"]')).toHaveAttribute("content", document.title);
     });
   });
 });

@@ -34,6 +34,7 @@ import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPage
 import { stripHtml } from "../src/lib/text";
 import { getSocialProfileUrls } from "../src/lib/socialProfiles";
 import { getPublicSiteName, getPublicBrandAliases, getChineseBrandLine, getChineseBrandAssociation, withChineseBrandMetadata } from "../src/i18n/brandIdentity";
+import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/publicSeoTitle.mjs";
 import {
   PUBLIC_LANGUAGE_COOKIE,
   readCookieValue,
@@ -1253,7 +1254,7 @@ const buildDynamicSeoEntry = (
   const rawTitle = kind === "service_area" ? translateDisplayText(sourceTitle, lang) : sourceTitle;
   const rawDescription = kind === "service_area" ? translateDisplayText(sourceDescription, lang) : sourceDescription;
   const boundProjectMetadata = kind === "project" ? projectPublicMetadata(row, lang) : undefined;
-  const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST SDN. BHD.`;
+  const title = formatPublicSeoTitle(rawTitle);
   const canonicalPath = key === "/" ? "/en" : key;
   const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh|ms)/, "") || "/";
   const enPath = pathWithoutLanguage === "/" ? "/en" : `/en${pathWithoutLanguage}`;
@@ -1785,7 +1786,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   const safeMeta = {
     ...meta,
     ...withChineseBrandMetadata({
-      title: sanitizePublicDraftMarkers(meta.title),
+      title: normalizePublicSeoTitle(sanitizePublicDraftMarkers(meta.title)),
       description: sanitizePublicDraftMarkers(meta.description),
     }, meta.lang, new URL(meta.canonical).pathname, siteSettings),
   };

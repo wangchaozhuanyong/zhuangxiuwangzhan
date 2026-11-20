@@ -1,6 +1,7 @@
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { resolveFurnitureDisplay } from "../src/lib/furnitureDisplaySafety.mjs";
+import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/publicSeoTitle.mjs";
 import { pickPublicSourceOwners, hasCompleteMalayContent } from "../src/lib/publicContentQualification.mjs";
 import { readFileSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
@@ -105,7 +106,7 @@ const addDynamic = (lang, basePath, slug, title, description, metadata = {}) => 
   const enPath = `/en${path}`;
   const zhPath = `/zh${path}`;
   const rawTitle = title || COMPANY;
-  const safeTitle = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
+  const safeTitle = sanitizeSeoText(formatPublicSeoTitle(rawTitle, COMPANY));
   const safeDescription = sanitizeSeoText(description || rawTitle).slice(0, 300);
   const correctedOgImage = metadata.ogImage ? resolveReviewedImageSource(metadata.ogImage) : undefined;
   const dynamicOgImage = correctedOgImage
@@ -165,7 +166,7 @@ const addSitePage = (lang, row) => {
   }
   const existing = manifest[localized] || {};
   const rawTitle = title || sectionTitle || existing.title || COMPANY;
-  const safeTitle = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
+  const safeTitle = sanitizeSeoText(formatPublicSeoTitle(rawTitle, COMPANY));
   const bodyDescription = String(row[`content_${lang}`] || "").slice(0, 4096).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   const safeDescription = sanitizeSeoText(description || bodyDescription || existing.description || rawTitle || COMPANY).slice(0, 300);
   manifest[localized] = {
@@ -374,7 +375,7 @@ for (const [path, { row, kind }] of sourceOwners) {
   const source = manifest[`/en${path === "/" ? "" : path}`] || manifest[`/zh${path === "/" ? "" : path}`];
   if (!source) continue;
   const rawTitle = row.seo_title_ms || row.title_ms;
-  const title = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
+  const title = sanitizeSeoText(formatPublicSeoTitle(rawTitle, COMPANY));
   manifest[localized] = {
     ...source, ...snapshotProvenance(snapshot, kind, row.id || path, "ms"),
     lang: "ms", title, description: sanitizeSeoText(row.seo_description_ms).slice(0, 300),
@@ -388,6 +389,7 @@ for (const [path, { row, kind }] of sourceOwners) {
 // Alternates attest only routes actually emitted by this complete snapshot.
 for (const route of Object.keys(manifest)) if (isRedirectSource(route)) delete manifest[route];
 for(const meta of Object.values(manifest)) {
+ meta.title=normalizePublicSeoTitle(meta.title);
  const en=`/en${meta.path === "/" ? "" : meta.path}`;const zh=`/zh${meta.path === "/" ? "" : meta.path}`;const ms=`/ms${meta.path === "/" ? "" : meta.path}`;
  meta.available_locales=["en","zh","ms"].filter(lang=>Boolean(manifest[lang==="en"?en:lang==="zh"?zh:ms]));
  meta.hreflang={...(manifest[en]?{en:manifest[en].canonical}:{}),...(manifest[zh]?{zh:manifest[zh].canonical}:{}),...(manifest[ms]?{ms:manifest[ms].canonical}:{}),xDefault:(manifest[en]||manifest[zh]||manifest[ms]).canonical};

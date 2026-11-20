@@ -90,7 +90,7 @@ test('published metadata-only built-in pages override seeds without admitting em
  const rows=records(0);
  rows.site_pages=[{...row('site_pages',1),path:'/contact',content_en:'',content_zh:'',items_en:[],items_zh:[],seo_title_en:'Current contact metadata',seo_title_zh:'当前联系元信息',seo_description_en:'Current description',seo_description_zh:'当前说明'}, {...row('site_pages',2),path:'/metadata-only-dynamic',content_en:'',content_zh:'',items_en:[],items_zh:[],seo_title_en:'Metadata alone is not a body'}];
  const manifest=await buildQualifiedManifest(await snapshot(rows));
- assert.equal(manifest['/en/contact'].title,'Current contact metadata | FLASH CAST SDN. BHD.');
+ assert.equal(manifest['/en/contact'].title,'Current contact metadata | FLASH CAST');
  assert.equal(manifest['/zh/contact'].description,'当前说明');
  assert.equal(manifest['/en/contact'].owned_static,true);
  assert.deepEqual(manifest['/en/contact'].available_locales,['en','zh']);
@@ -107,6 +107,14 @@ test('metadata-only builtin retains its localized seed title and validates relat
   assert.equal(manifest['/zh/contact'].title,seed['/zh/contact'].title);
   assert.equal(manifest['/zh/contact'].ogImage,expected);
  }
+});
+
+test('a saved legacy SEO suffix is shortened in each emitted locale', async () => {
+ const rows=records(0);
+ rows.blog_posts=[{...row('blog_posts',1),seo_title_en:'Current title | FLASH CAST SDN. BHD.',seo_title_zh:'当前标题｜FLASH CAST SDN. BHD.'}];
+ const manifest=await buildQualifiedManifest(await snapshot(rows));
+ assert.equal(manifest['/en/blog/current-blog_posts-1'].title,'Current title | FLASH CAST');
+ assert.equal(manifest['/zh/blog/current-blog_posts-1'].title,'当前标题｜FLASH CAST');
 });
 test('real three script entrypoints write coherent documents; failing source preserves all prior bytes',async()=>{
  const runRoot=mkdtempSync(join(evidenceRoot,'actual-entrypoints-'));symlinkSync(resolve('src'),join(runRoot,'src'));symlinkSync(resolve('node_modules'),join(runRoot,'node_modules'));
