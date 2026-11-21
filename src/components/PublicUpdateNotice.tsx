@@ -2,19 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminLang } from "@/lib/adminPreferences";
 import { reloadDocumentSafely } from "@/lib/navigationProtection";
-import { runReadQuery } from "@/lib/interactionPolicy";
+import { subscribePublicVersion } from "@/lib/publicVersionChecks";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { publicUpdateNoticeText } from "@/i18n/publicUpdateNoticeText";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import {
   createCurrentPublicVersion,
-  fetchPublicVersion,
   hasNewPublicVersion,
   isPublicVersionEndpointAvailable,
   type PublicVersion,
 } from "@/lib/publicVersion";
-
-const PUBLIC_VERSION_CHECK_INTERVAL_MS = 30 * 1000;
 
 const PublicUpdateNotice = ({ surface = "public" }: { surface?: "public" | "admin" }) => {
   const queryClient = useQueryClient();
@@ -30,64 +27,30 @@ const PublicUpdateNotice = ({ surface = "public" }: { surface?: "public" | "admi
   useEffect(() => {
     if (!isPublicVersionEndpointAvailable(window.location.hostname)) return;
 
-    let active = true;
-    let requestController: AbortController | null = null;
-    let requestInFlight = false;
-
     updateAvailableRef.current = false;
     pendingRef.current = null;
     setUpdateAvailable(false);
     baselineRef.current = createCurrentPublicVersion();
 
-    const checkForUpdate = async (force = false) => {
-      if (requestInFlight || updateAvailableRef.current) return;
-      if (!force && document.visibilityState === "hidden") return;
-
-      requestInFlight = true;
-      requestController = new AbortController();
-
-      try {
-        const latest = await runReadQuery(requestController.signal, fetchPublicVersion);
-        if (!active) return;
-
-        const baseline = baselineRef.current;
-        if (!baseline) {
-          baselineRef.current = latest;
-          return;
-        }
-
-        if (baseline.contentVersion && latest.contentVersion && baseline.contentVersion !== latest.contentVersion) {
-          await Promise.all([queryClient.invalidateQueries({ queryKey: ["published"] }), queryClient.invalidateQueries({ queryKey: ["site-settings"] })]);
-        }
-        if (hasNewPublicVersion(baseline, { ...latest, contentVersion: baseline.contentVersion })) {
-          pendingRef.current = latest;
-          updateAvailableRef.current = true;
-          setUpdateAvailable(true);
-          return;
-        }
-
+    return subscribePublicVersion(async latest => {
+      const baseline = baselineRef.current;
+      if (!baseline) {
         baselineRef.current = latest;
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        // Version checks are best-effort and must never block the public site.
-      } finally {
-        requestInFlight = false;
+        return;
       }
-    };
 
-    void checkForUpdate(true);
-    const intervalId = window.setInterval(() => void checkForUpdate(), PUBLIC_VERSION_CHECK_INTERVAL_MS);
-    const onPageActive = () => void checkForUpdate();
-    window.addEventListener("focus", onPageActive);
-    document.addEventListener("visibilitychange", onPageActive);
+      if (baseline.contentVersion && latest.contentVersion && baseline.contentVersion !== latest.contentVersion) {
+        await Promise.all([queryClient.invalidateQueries({ queryKey: ["published"] }), queryClient.invalidateQueries({ queryKey: ["site-settings"] })]);
+      }
+      if (hasNewPublicVersion(baseline, { ...latest, contentVersion: baseline.contentVersion })) {
+        pendingRef.current = latest;
+        updateAvailableRef.current = true;
+        setUpdateAvailable(true);
+        return;
+      }
 
-    return () => {
-      active = false;
-      requestController?.abort();
-      window.clearInterval(intervalId);
-      window.removeEventListener("focus", onPageActive);
-      document.removeEventListener("visibilitychange", onPageActive);
-    };
+      baselineRef.current = latest;
+    }, () => updateAvailableRef.current);
   }, [queryClient]);
 
   if (!updateAvailable || menuOpen || hasOpenDialog) return null;

@@ -17,6 +17,7 @@ export const navigationTranslations: Record<string, Record<string, string>> = {
   "nav.design": { en: "Interior Design", zh: "室内设计" ,
                   ms: "Rekaan Dalaman",
                 },
+  "nav.smartLocks": { en: "Smart locks", zh: "电子锁", ms: "Kunci pintar" },
   "nav.materials": { en: "Materials", zh: "材料库" ,
                      ms: "Bahan",
                    },

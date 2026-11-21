@@ -33,6 +33,7 @@ import type { ContactEntryPanelProps } from "@/components/ContactEntryPanel";
 import { contactEntryText } from "@/i18n/contactEntryText";
 import { wechatContactText } from "@/i18n/wechatContactText";
 import {
+  getPublicNavigationTarget,
   primaryPublicNavigationItems,
   publicNavigationGroups,
   type PublicNavGroupKey,
@@ -619,7 +620,7 @@ export const SchemeANavbar = () => {
                         {group.items.map((item) => (
                           <li key={item.path}>
                             <LocalizedLink
-                              to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path}
+                              to={item.path === "/quote" ? QUOTE_FORM_PATH : getPublicNavigationTarget(item.path, language, location)}
                               aria-current={isActivePath(location.pathname, item.path) && currentItem.path === item.path ? "page" : undefined}
                               tabIndex={expanded ? undefined : -1}
                               onClick={(event) => {
@@ -726,6 +727,7 @@ export const SchemeAFooterPrelude = () => {
 };
 
 export const SchemeAFooter = () => {
+  const location = useLocation();
   const { language } = useLanguage();
   const translate = (key: string) => getNavigationLabel(key, language);
   const settings = useSiteSettings();
@@ -736,7 +738,7 @@ export const SchemeAFooter = () => {
   const chineseBrandLine = getChineseBrandLine(settings, language);
 
   return (
-    <footer className="scheme-a-footer">
+    <footer className="scheme-a-footer" id="site-footer">
       <div className="scheme-a-footer__surface">
         <div className="scheme-a-footer__wordmark scheme-a-frame" aria-hidden="true"><span>FLASH</span><em>CAST</em></div>
         <div className="scheme-a-footer__frame scheme-a-frame">
@@ -770,7 +772,7 @@ export const SchemeAFooter = () => {
               {footerNavigationGroups.map((group) => (
                 <section key={group.titleKey}>
                   <p>{footer[group.titleKey]}</p>
-                  {group.items.map((item) => <LocalizedLink key={item.path} to={item.path}>{translate(item.labelKey)}<ArrowUpRight aria-hidden="true" /></LocalizedLink>)}
+                  {group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight aria-hidden="true" /></LocalizedLink>)}
                 </section>
               ))}
             </nav>
@@ -778,7 +780,7 @@ export const SchemeAFooter = () => {
               {publicNavigationGroups.map((group) => (
                 <details key={group.key}>
                   <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
-                  <div>{group.items.map((item) => <LocalizedLink key={item.path} to={item.path}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
+                  <div>{group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
                 </details>
               ))}
             </nav>
