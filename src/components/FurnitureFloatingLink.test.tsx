@@ -45,7 +45,7 @@ for (const language of ["zh", "en", "ms"] as const) {
         expect(row).toHaveTextContent(text.wechat);
         expect(row).toHaveTextContent("fixture_wechat_only");
         const qr = document.querySelector<HTMLDetailsElement>(".fc-contact-panel__qr")!;
-        expect(qr).not.toHaveAttribute("open");
+        expect(qr).toHaveAttribute("open");
         expect(qr.querySelector("summary")).toHaveTextContent(text.showWechatQr);
         expect(qr.querySelector("img")).toHaveAttribute("src", siteConfig.wechatQrUrl);
         const save = qr.querySelector<HTMLAnchorElement>(".fc-contact-panel__qr-save")!;
@@ -57,6 +57,8 @@ for (const language of ["zh", "en", "ms"] as const) {
         expect(original).toHaveAttribute("href", siteConfig.wechatQrDownloadUrl);
         expect(original).toHaveAttribute("target", "_blank");
         expect(original.rel).toContain("noopener");
+        await act(async () => qr.querySelector<HTMLElement>("summary")!.click());
+        expect(qr).not.toHaveAttribute("open");
         await act(async () => qr.querySelector<HTMLElement>("summary")!.click());
         expect(qr).toHaveAttribute("open");
         const copy = row.querySelector<HTMLButtonElement>("button")!;
