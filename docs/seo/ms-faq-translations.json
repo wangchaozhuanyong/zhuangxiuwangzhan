@@ -1,90 +1,90 @@
 {
   "100": {
-    "question_ms": "Apakah yang termasuk dalam sebut harga, dan apa yang tidak",
-    "answer_ms": "Termasuk: buruh, bahan yang disenaraikan, pembuangan sisa, dan penyelarasan yang dinyatakan. Tidak termasuk melainkan dinyatakan: item yang dibekalkan pemilik, penyerahan kepada pihak berkuasa, deposit pengurusan bangunan, dan kerja pihak ketiga seperti pemasangan penghawa dingin oleh pembekal peralatan."
+    "question_ms": "Apakah yang termasuk dalam sebut harga dan apakah yang tidak termasuk?",
+    "answer_ms": "Termasuk: kos tenaga kerja, bahan yang disenaraikan, pembuangan sisa, dan penyelarasan yang dinyatakan. Tidak termasuk melainkan dinyatakan: item yang dibekalkan pemilik, pengemukaan permohonan kepada pihak berkuasa, deposit pengurusan bangunan, dan kerja pihak ketiga seperti pemasangan penghawa dingin oleh pembekal peralatan."
   },
   "110": {
-    "question_ms": "Mengapa sebut harga mengandungi item sementara",
-    "answer_ms": "Kerana sesetengah keadaan hanya kelihatan selepas perobohan. Lantai bilik mandi yang dinaikkan, paip berkarat di belakang jubin, atau dinding yang ternyata struktur ialah contoh lazim. Item itu ditandakan sebagai sementara dengan pendekatan yang dinyatakan, dan kami mengesahkannya sebelum kerja tambahan diteruskan dan bukan dibilkan selepasnya."
+    "question_ms": "Mengapakah sebut harga menyenaraikan butiran yang masih tertakluk pada pengesahan?",
+    "answer_ms": "Kerana sesetengah keadaan hanya kelihatan selepas perobohan. Lantai bilik mandi yang dinaikkan, paip berkarat di belakang jubin, atau dinding yang kemudian didapati merupakan sebahagian daripada struktur bangunan ialah contoh lazim. Butiran tersebut ditandakan sebagai tertakluk pada pengesahan, berserta cara menanganinya. Kami mengesahkannya sebelum meneruskan kerja tambahan, bukannya mengenakan caj selepas kerja siap."
   },
   "120": {
-    "question_ms": "Bolehkah anda menyebut harga daripada lukisan atau foto tanpa lawatan tapak",
-    "answer_ms": "Kami boleh memberikan julat indikatif daripada lukisan atau foto, tetapi bukan sebut harga muktamad. Ketebalan pintu, keadaan substrat, akses dan keperluan pengurusan semuanya mengubah angka, dan tiada satu pun boleh dinilai daripada gambar."
+    "question_ms": "Bolehkah anda menyediakan sebut harga berdasarkan lukisan atau foto tanpa lawatan tapak?",
+    "answer_ms": "Kami boleh memberikan julat anggaran berdasarkan lukisan atau foto, tetapi bukan sebut harga muktamad. Ketebalan pintu, keadaan lapisan asas, akses ke tapak dan syarat pihak pengurusan bangunan semuanya mempengaruhi kos. Perkara ini tidak dapat dinilai berdasarkan foto sahaja."
   },
   "130": {
-    "question_ms": "Berapa lama dari pertanyaan hingga permulaan kerja",
-    "answer_ms": "Ia bergantung pada skop dan kelulusan. Pengubahsuaian mudah biasanya boleh bergerak dari sebut harga disahkan ke permulaan dalam {X} minggu. Apa-apa yang memerlukan penyerahan pihak berkuasa tempatan atau kelulusan pengurusan bangunan mengambil masa lebih lama, dan masa menunggu itu perlu dirancang dan bukan ditemui kemudian."
+    "question_ms": "Berapa lama dari pertanyaan hingga permulaan kerja?",
+    "answer_ms": "Ia bergantung pada skop dan kelulusan. Bagi pengubahsuaian ringkas, kerja biasanya boleh bermula dalam tempoh {X} minggu selepas sebut harga disahkan. Kerja yang memerlukan pengemukaan permohonan kepada pihak berkuasa tempatan atau kelulusan pihak pengurusan bangunan mengambil masa lebih lama. Tempoh menunggu ini perlu diambil kira sejak awal."
   },
   "140": {
-    "question_ms": "Bagaimanakah pembayaran disusun",
-    "answer_ms": "Pembayaran mengikut kemajuan, bukan satu jumlah pendahuluan. Jadual dinyatakan dalam sebut harga dan terikat pada pencapaian yang ditetapkan, jadi setiap bayaran sepadan dengan kerja yang benar-benar selesai dan boleh diperiksa."
+    "question_ms": "Bagaimanakah pembayaran disusun?",
+    "answer_ms": "Bayaran dibuat mengikut kemajuan kerja. Jumlah penuh tidak dibayar sekali gus sebelum kerja bermula. Jadual bayaran dinyatakan dalam sebut harga dan mengikut peringkat kerja yang ditetapkan. Setiap bayaran sepadan dengan kerja yang benar-benar selesai dan boleh diperiksa."
   },
   "150": {
-    "question_ms": "Adakah anda memerlukan deposit",
-    "answer_ms": "Ya, deposit diperlukan untuk mengesahkan jadual dan memesan bahan. Jumlah dan syarat pemulangannya dinyatakan dalam sebut harga, dan bakinya terikat pada pencapaian kemajuan."
+    "question_ms": "Adakah anda memerlukan deposit?",
+    "answer_ms": "Ya, deposit diperlukan untuk mengesahkan jadual dan memesan bahan. Jumlah dan syarat pemulangannya dinyatakan dalam sebut harga, dan baki bayaran dijelaskan mengikut peringkat kemajuan kerja."
   },
   "160": {
-    "question_ms": "Adakah kos yang perlu saya jangkakan di luar sebut harga",
-    "answer_ms": "Tiga perkara lazimnya berada di luar sebut harga pengubahsuaian: deposit pengurusan bangunan yang boleh dipulangkan tetapi melibatkan aliran tunai, yuran penyerahan kepada pihak berkuasa, dan perkakas atau kelengkapan yang anda bekalkan sendiri. Minta perkara ini disenaraikan secara berasingan supaya tiada kejutan."
+    "question_ms": "Adakah kos yang perlu saya jangkakan di luar sebut harga?",
+    "answer_ms": "Tiga perkara lazimnya berada di luar sebut harga pengubahsuaian: deposit pengurusan bangunan yang boleh dipulangkan tetapi tetap perlu diambil kira dalam aliran tunai, yuran pengemukaan permohonan kepada pihak berkuasa, dan perkakas atau kelengkapan yang anda bekalkan sendiri. Minta perkara ini disenaraikan secara berasingan supaya tiada kejutan."
   },
   "170": {
-    "question_ms": "Berapa lama pengubahsuaian mengambil masa",
-    "answer_ms": "Dapur atau bilik mandi lazimnya mengambil {X} hingga {Y} minggu. Unit penuh mengambil {X} hingga {Y} minggu. Rumah bertanah dengan sambungan mengambil masa lebih lama, dan tempoh kelulusan berada sebelum kerja dan bukan di dalamnya."
+    "question_ms": "Berapa lama pengubahsuaian mengambil masa?",
+    "answer_ms": "Dapur atau bilik mandi lazimnya mengambil masa 4 hingga 8 minggu dari perobohan hingga serahan. Pengubahsuaian seluruh unit mengambil masa lebih lama, manakala pengubahsuaian rumah bertanah yang melibatkan kerja sambungan bangunan memerlukan masa yang lebih panjang lagi. Tempoh kelulusan berlaku sebelum kerja bermula dan tidak dikira dalam tempoh pengubahsuaian."
   },
   "180": {
-    "question_ms": "Apakah yang menyebabkan kelewatan",
-    "answer_ms": "Empat perkara, mengikut kekerapan: kelulusan pengurusan mengambil masa lebih lama daripada dijangka, perubahan diminta selepas kerja bermula, bahan tiba lewat, dan cuaca untuk kerja luaran. Dua yang pertama ialah yang paling anda kawal secara langsung."
+    "question_ms": "Apakah yang menyebabkan kelewatan?",
+    "answer_ms": "Empat perkara, mengikut kekerapan: kelulusan pengurusan mengambil masa lebih lama daripada dijangka, perubahan diminta selepas kerja bermula, bahan tiba lewat, dan cuaca yang menjejaskan kerja luar. Dua yang pertama ialah yang paling anda kawal secara langsung."
   },
   "190": {
-    "question_ms": "Bolehkah kami tinggal di unit semasa pengubahsuaian",
-    "answer_ms": "Untuk kerja separa, biasanya boleh, jika bilik dibuat secara berturutan dan satu bilik mandi serta dapur kekal boleh digunakan. Untuk pengubahsuaian penuh yang melibatkan servis di seluruh unit, kami menyarankan penginapan sementara, kerana pemotongan air dan elektrik menjadikan kehidupan harian tidak praktikal."
+    "question_ms": "Bolehkah kami tinggal di unit semasa pengubahsuaian?",
+    "answer_ms": "Untuk kerja separa, biasanya boleh, jika kerja dibuat satu bilik pada satu masa dan satu bilik mandi serta dapur kekal boleh digunakan. Untuk pengubahsuaian penuh yang melibatkan sistem air dan elektrik di seluruh unit, kami menyarankan penginapan sementara kerana bekalan air dan elektrik perlu dihentikan buat sementara waktu, sekali gus menyukarkan kehidupan harian."
   },
   "200": {
-    "question_ms": "Bolehkah kerja dilakukan pada waktu malam atau hujung minggu",
-    "answer_ms": "Di rumah bertanah, kadangkala boleh, tertakluk pada peraturan bunyi tempatan. Di kondo dan pejabat, hampir tidak pernah kerana kebanyakan bangunan mengehadkan kerja kepada waktu siang hari bekerja, dan sesetengah melarang kerja berbunyi sepenuhnya semasa tempoh peperiksaan atau cuti umum."
+    "question_ms": "Bolehkah kerja dilakukan pada waktu malam atau hujung minggu?",
+    "answer_ms": "Di rumah bertanah, kadangkala boleh, tertakluk pada peraturan bunyi bising setempat. Di kondominium dan pejabat, kerja pada waktu tersebut hampir tidak pernah dibenarkan. Kebanyakan bangunan hanya membenarkan kerja pada waktu siang pada hari bekerja. Ada juga yang tidak membenarkan sebarang kerja yang bising semasa tempoh peperiksaan atau cuti umum."
   },
   "210": {
-    "question_ms": "Siapa yang membayar deposit pengurusan",
-    "answer_ms": "Pemilik, biasanya, dan ia boleh dipulangkan selepas pemeriksaan. Elok disahkan syarat pemulangan sebelum kerja bermula kerana sesetengah bangunan memotong untuk kerosakan kawasan bersama, pembuangan sisa lewat atau kerja di luar waktu yang dibenarkan."
+    "question_ms": "Siapa yang membayar deposit pengurusan?",
+    "answer_ms": "Biasanya, pemilik yang membayarnya. Deposit itu boleh dipulangkan selepas pemeriksaan. Sebaiknya sahkan syarat pemulangan sebelum kerja bermula kerana sesetengah pihak pengurusan membuat potongan daripada deposit jika kawasan bersama rosak, sisa binaan tidak dibuang pada waktunya atau kerja dibuat di luar waktu yang dibenarkan."
   },
   "220": {
-    "question_ms": "Adakah anda menguruskan penyerahan kepada pihak berkuasa tempatan",
-    "answer_ms": "Ya untuk skop lukisan dan penyerahan yang dinyatakan dalam sebut harga. Apa-apa yang memerlukan pensijilan profesional seperti struktur, kebakaran atau kejuruteraan M&E dikenal pasti sebelum kerja bermula, bersama siapa yang bertanggungjawab ke atasnya."
+    "question_ms": "Adakah anda menguruskan pengemukaan permohonan kepada pihak berkuasa tempatan?",
+    "answer_ms": "Ya, kami menguruskan penyediaan lukisan dan pengemukaan permohonan mengikut skop dalam sebut harga. Sebelum kerja bermula, kami mengenal pasti perkara yang memerlukan pensijilan profesional, seperti struktur, keselamatan kebakaran atau kejuruteraan mekanikal dan elektrikal (M&E), serta pihak yang bertanggungjawab."
   },
   "230": {
-    "question_ms": "Bolehkah saya menanggalkan dinding struktur",
-    "answer_ms": "Hanya dengan input kejuruteraan dan kelulusan. Dinding yang kelihatan bukan struktur mungkin masih menanggung beban, dan rasuk mungkin diperlukan di tempat ia ditanggalkan. Membuka dinding struktur tanpa kelulusan berisiko perintah pemulihan semula dan, yang lebih penting, keselamatan bangunan."
+    "question_ms": "Bolehkah saya merobohkan dinding struktur?",
+    "answer_ms": "Hanya selepas penilaian kejuruteraan struktur dibuat dan kelulusan diperoleh. Dinding yang kelihatan seperti dinding bukan struktur mungkin masih menanggung beban. Rasuk mungkin diperlukan di tempat dinding itu dirobohkan. Merobohkan dinding struktur tanpa kelulusan boleh menyebabkan anda diarahkan untuk memulihkannya kepada keadaan asal. Lebih penting lagi, tindakan itu boleh menjejaskan keselamatan bangunan."
   },
   "240": {
-    "question_ms": "Adakah anda memberikan jaminan",
-    "answer_ms": "Ya, dengan skop dan tempoh dinyatakan dalam sebut harga atau dokumen projek dan bukan dijanjikan secara lisan. Kecacatan yang dilaporkan dalam tempoh yang dipersetujui akan diperiksa dan diperbaiki."
+    "question_ms": "Adakah anda memberikan jaminan?",
+    "answer_ms": "Ya. Kerja kami dan bahan yang kami bekalkan dilindungi jaminan satu tahun dari tarikh serahan. Skop sebenar dinyatakan dalam sebut harga atau dokumen projek dan bukan dijanjikan secara lisan. Kecacatan yang dilaporkan dalam tempoh itu akan diperiksa dan diperbaiki."
   },
   "250": {
-    "question_ms": "Apakah yang tidak diliputi jaminan",
-    "answer_ms": "Lazimnya kerosakan akibat salah guna, kerja pihak lain selepas penyerahan, retak mendap normal, dan item yang dibekalkan pemilik atau pihak ketiga. Item itu mengikut terma pengeluar masing-masing."
+    "question_ms": "Apakah yang tidak diliputi jaminan?",
+    "answer_ms": "Lazimnya kerosakan akibat salah guna, kerosakan akibat kerja pihak lain selepas serahan, retakan akibat mendapan biasa, dan item yang dibekalkan pemilik atau pihak ketiga. Barangan yang dibekalkan oleh pemilik atau pihak ketiga tertakluk pada terma pengeluar masing-masing."
   },
   "260": {
-    "question_ms": "Siapa yang perlu saya hubungi jika berlaku masalah selepas penyerahan",
-    "answer_ms": "Kenalan yang sama yang mengendalikan projek anda. Laporkan isu dengan foto dan keterangan bila ia muncul; kami akan mengatur pemeriksaan dan mengesahkan secara bertulis apa yang akan dilakukan dan bila."
+    "question_ms": "Siapa yang perlu saya hubungi jika berlaku masalah selepas serahan?",
+    "answer_ms": "Hubungi orang yang mengendalikan projek anda sebelum ini. Sertakan foto dan nyatakan bila masalah itu mula berlaku. Kami akan mengatur pemeriksaan dan mengesahkan secara bertulis tindakan yang akan diambil dan bila tindakan itu akan dibuat."
   },
   "270": {
-    "question_ms": "Bolehkah saya membekalkan bahan sendiri",
-    "answer_ms": "Boleh. Apabila anda membekalkan, sebut harga meliputi pemasangan sahaja, dan keserasian disahkan sebelum kerja dijadualkan. Simpan kepingan simpanan untuk jubin dan lamina, kerana memadankan kelompok yang telah dihentikan pengeluaran kemudian adalah sukar."
+    "question_ms": "Bolehkah saya membekalkan bahan sendiri?",
+    "answer_ms": "Boleh. Jika anda membekalkan bahan sendiri, sebut harga meliputi pemasangan sahaja, dan keserasian disahkan sebelum kerja dijadualkan. Simpan lebihan jubin dan lamina daripada kelompok pengeluaran yang sama. Sukar untuk mendapatkan padanan apabila produk itu tidak lagi dikeluarkan."
   },
   "280": {
-    "question_ms": "Bolehkah saya melihat sampel sebelum membuat keputusan",
-    "answer_ms": "Boleh, dan kami menyarankannya. Warna pada skrin tidak boleh dipercayai, dan kemasan seperti matte berbanding berkilat atau venir berbanding lamina kelihatan sangat berbeza dalam cahaya siang. Sahkan sampel sebelum panel dipotong, kerana menukar kemasan selepasnya lambat dan mahal."
+    "question_ms": "Bolehkah saya melihat sampel sebelum membuat keputusan?",
+    "answer_ms": "Boleh, dan kami menyarankannya. Warna pada skrin tidak boleh dipercayai, dan perbezaan antara kemasan kusam dengan kemasan berkilat, atau antara venir dengan lamina, lebih jelas dalam cahaya semula jadi. Sahkan sampel sebelum panel dipotong kerana menukar kemasan selepas panel dipotong mengambil masa yang lama dan melibatkan kos yang tinggi."
   },
   "290": {
-    "question_ms": "Bolehkah saya menetapkan jenama tertentu",
-    "answer_ms": "Boleh, dan ia selalunya keputusan yang betul untuk perkakas dan perkakasan. Untuk bahan yang memerlukan kemahiran pemasangan seperti sistem kalis air, pelekat dan salutan, sahkan bahawa produk yang ditetapkan ialah yang dipasang dilatih, kerana produk baik yang dipasang dengan salah tetap gagal."
+    "question_ms": "Bolehkah saya menetapkan jenama tertentu?",
+    "answer_ms": "Boleh, dan ia selalunya keputusan yang betul untuk perkakas dan perkakasan. Bagi bahan yang memerlukan kemahiran pemasangan, seperti sistem kalis air, pelekat dan salutan, pastikan pemasang telah dilatih untuk menggunakan produk yang ditetapkan. Produk yang baik sekalipun akan gagal jika digunakan dengan cara yang salah."
   },
   "300": {
-    "question_ms": "Adakah anda bekerja dengan perabot atau kelengkapan sedia ada saya",
-    "answer_ms": "Boleh. Tandakan apa yang kekal sebelum menyebut harga perobohan, supaya susun atur baharu diperiksa terhadap titik tetap itu. Mengekalkan almari atau permukaan kerja biasanya menjimatkan wang, tetapi hanya jika pelan baharu benar-benar muat di sekelilingnya."
+    "question_ms": "Bolehkah perabot atau kelengkapan sedia ada saya dikekalkan?",
+    "answer_ms": "Boleh. Tandakan barangan yang hendak dikekalkan sebelum sebut harga untuk kerja perobohan disediakan, supaya susun atur baharu boleh disemak dengan mengambil kira kedudukan barangan tersebut. Mengekalkan almari atau permukaan kaunter biasanya menjimatkan kos, tetapi hanya jika ruang di sekelilingnya sesuai dengan susun atur baharu."
   },
   "310": {
-    "question_ms": "Apakah jenis kerja yang anda ambil",
-    "answer_ms": "Pengubahsuaian kediaman, kerja kondo dan rumah bertanah, dapur dan bilik mandi, kabinet tersuai dan perabot terbina dalam, reka bentuk dalaman dan perancangan ruang, fit-out pejabat dan kedai, kerja kilang dan gudang, pengecatan dan salutan dinding, jubin dan lantai, siling dan sekatan, elektrik dan paip, serta pemasangan kunci digital."
+    "question_ms": "Apakah jenis kerja yang anda jalankan?",
+    "answer_ms": "Pengubahsuaian kediaman, kerja kondominium dan rumah bertanah, dapur dan bilik mandi, kabinet tersuai dan perabot terbina dalam, reka bentuk dalaman dan perancangan ruang, kerja penyiapan ruang dalaman pejabat dan kedai, kerja kilang dan gudang, pengecatan dan salutan dinding, jubin dan lantai, siling dan dinding sekatan, elektrik dan paip, serta pemasangan kunci digital."
   }
 }
