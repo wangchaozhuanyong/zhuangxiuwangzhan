@@ -438,39 +438,383 @@
   },
   "/locations/kuala-lumpur/digital-lock": {
     "en": {
-      "heading": "Digital Lock Installation in Kuala Lumpur",
+      "heading": "Replacing a Digital Lock in Kuala Lumpur",
       "area": "Kuala Lumpur",
       "service": "Digital Lock",
-      "question": "Will a digital lock fit a Kuala Lumpur condo door?",
-      "answer": "Usually, but the door has to be checked first: thickness, whether the existing lock is a mortise or rim type, whether the door closes squarely, and whether the building allows the door hardware to be changed at all. Some condos treat the main door as common property, so confirm with management before drilling.",
-      "title": "Digital Lock Installation Kuala Lumpur | FLASH CAST",
-      "description": "Digital lock installation in Kuala Lumpur condos and landed homes. Door compatibility and building approval checked first, then supply, installation, user enrolment and handover testing.",
-      "keywords": "digital lock installation kuala lumpur, smart lock kl, digital lock condo door",
-      "entityName": "Digital Lock Installation Kuala Lumpur",
-      "bodyHeading": "Check the door and the building rules first",
-      "body": [
-        "<p>Kuala Lumpur condo doors vary more than people expect. Newer buildings often use fire-rated timber doors with a standard mortise preparation, which most digital locks can work with. Older buildings may have thinner doors, a rim lock, or a door that has already been trimmed and no longer closes squarely. Landed homes and shoplots add metal gates and glass doors into the mix, and each needs a different fixing method. None of this can be judged from a photo alone.</p>",
-        "<p>Two approvals matter before any drilling. The first is the building's: some condos classify the main door and its hardware as common property, and changing the lock without approval can lead to a reinstatement order. The second is physical: if the cut-out has to be enlarged, the door loses material that cannot be added back, so the model has to match the existing preparation rather than the other way round. Both are checked on site, and the approach is confirmed in writing before work starts.</p>",
-        "<p>The features worth paying for depend on how the household actually works. A rental unit needs easy re-issuing of access for each new tenant and a clear audit trail; a family home with elderly parents needs a physical key that still works when the battery is flat, and a PIN that is easy to read in low light. A lock with every feature but the wrong backset will not close, and a lock that needs a hub for remote access adds a device that has to stay powered.</p>",
-        "<p>At handover, every user is enrolled and tested, the mechanical override is demonstrated, and the power-failure behaviour of that specific model is shown rather than described. Keep the override key outside the unit. If the lock later misbehaves, check the door alignment before suspecting the electronics.</p>"
+      "title": "Kuala Lumpur Condo Digital Lock Fitting | FLASH CAST",
+      "description": "Planning a digital lock replacement in Kuala Lumpur? Check condo door fit, grille clearance and management approval before arranging installation and testing.",
+      "keywords": "kuala lumpur condo digital lock, door lock replacement kuala lumpur, condo door measurements",
+      "entityName": "Kuala Lumpur Digital Lock Installation",
+      "sections": [
+        {
+          "heading": "What should you check before replacing a lock in Kuala Lumpur?",
+          "paragraphs": [
+            "Start with the door and frame, the building rules, and the fitting scope. A condo entrance, a terrace house with a grille and a narrow aluminium door can require different hardware. Gather the measurements and management requirements before buying a lock or reserving a fitting slot. This gives you a way to compare quotations for the same job."
+          ],
+          "checks": [
+            "Photograph the whole door from both sides, with the frame in view. Then open it and photograph the edge, the existing faceplate and the strike on the frame. Include the outer grille if there is one.",
+            "Ask management which fittings can be replaced, whether proposed drilling needs written approval and when workers can enter. Tell them if the door carries a fire-rating label.",
+            "Ask the installer to identify the work included in the quotation. Check whether it covers removing the old lock, adjusting the opening, setting up users and testing the door after installation."
+          ],
+          "topics": []
+        },
+        {
+          "heading": "How do you check whether a condo entrance door will take a digital lock?",
+          "paragraphs": [
+            "Close the door gently and watch whether the existing latch enters its strike without lifting or pulling the door. An uneven gap, a loose hinge or a catch that rubs can remain a problem after changing the lock. Check the door before deciding which lock body to buy."
+          ],
+          "checks": [
+            "Timber door with a recessed mortise lock. The existing pocket can sometimes be reused. Compare its dimensions, the faceplate and the latch position with the new lock drawing.",
+            "Timber door with a surface-mounted lock. Removing the old lock can leave screw holes on the door face. Establish whether the new fitting needs a new recess and how any exposed holes will be treated.",
+            "Narrow aluminium frame. The flat strip beside the glass or panel limits the width of the lock faceplate and handle. Measure usable space and check for glazing, trim and other hardware before altering the frame."
+          ],
+          "topics": [
+            {
+              "heading": "Which measurements should you show the installer?",
+              "paragraphs": [
+                "Record the door thickness at its edge, the distance from the edge to the centre of the handle, the faceplate and opening sizes, and the available width on each face. Photograph a tape measure next to each reading. Show the swing direction and the side the hinges sit on.",
+                "If the door and grille both have handles, measure the clearance where those parts pass one another with both leaves shut. Measure at the intended panel height. A wide-looking gap elsewhere may be narrowed by a handle, decorative trim or the grille latch."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "What should you give condo management before booking the work?",
+          "paragraphs": [
+            "Describe the job as a lock replacement and tell management whether the installer proposes new holes, a larger pocket or a change to the strike plate. Ask whether the building treats the entrance door or its finish as a controlled fitting. For a marked fire-rated assembly, bring the door label and the proposed fitting details to management or the door supplier before approving an alteration."
+          ],
+          "checks": [],
+          "topics": [
+            {
+              "heading": "Access window, deposit and contractor details",
+              "paragraphs": [
+                "Ask for the correct renovation or maintenance form, work and drilling hours, deposit and refund conditions, and any requirement for the installer’s name, vehicle or loading-bay reservation. Confirm the exact booking window after management replies. Allow time for the installer to demonstrate and test the lock before the permitted slot ends."
+              ]
+            },
+            {
+              "heading": "Drilling and changes to the door frame",
+              "paragraphs": [
+                "Separate a swap using existing openings from work that cuts the door or moves its strike. Ask the installer to show the proposed change and how it affects the finish. If the existing approved scope turns out to be insufficient on site, pause and reconfirm with management and the owner before drilling."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Landed homes and terraces with an outer grille",
+          "paragraphs": [
+            "Check the grille and main door as a pair. Decide which leaf should carry the digital lock and keep both leaves usable from inside. Measure panel projection, handle movement and the clear space in front of any camera or reader. Ask how a guest will reach the keypad if the grille is shut.",
+            "For a door that faces rain or direct sun, confirm the exact model’s exposure rating and fitting instructions. Check app or wireless features at the door itself if they matter to your household. Bring up children, older residents, guests or carers so the installer can help choose access methods each person can use."
+          ],
+          "checks": [],
+          "topics": []
+        },
+        {
+          "heading": "Installation day and handover checks",
+          "paragraphs": [
+            "The installer should show how the new body lines up with the existing opening and confirm any change before cutting. Once fitted, work through the checks with the people who use the door and keep the model details for maintenance."
+          ],
+          "checks": [
+            "Check the door opens and closes freely. Test the latch, strike and locking movement from both sides, using the actual grille and door positions you use every day.",
+            "Enroll and test one person at a time. Record which methods are supported, how to remove a guest credential and how to transfer control if a tenant moves out.",
+            "Ask for a demonstration of the low-battery warning, the backup key or emergency supply, and the inside release. Store the backup key somewhere you can reach when locked out.",
+            "Check the written quotation and handover record for the model, the work carried out, any door adjustments and the applicable after-sales terms."
+          ],
+          "topics": []
+        }
+      ],
+      "modelHeading": "Which ANZHE models illustrate different door types?",
+      "modelIntro": "Start with the door type. Open a model page to check the actual panel, installation price and access methods for that model. Final fit depends on the measured opening, frame and clearance.",
+      "models": [
+        {
+          "slug": "v37j-p16",
+          "name": "V37J-P16",
+          "description": "An entrance-door example. Check the space needed for the push-pull body and the line of view outside."
+        },
+        {
+          "slug": "d10b",
+          "name": "D10B",
+          "description": "A narrow-frame aluminium door example. Confirm there is enough flat frame width to seat the panel."
+        },
+        {
+          "slug": "g13",
+          "name": "G13",
+          "description": "An interior-door example. Use the model information to confirm the intended fitting and how the inside privacy control works."
+        }
+      ],
+      "areasHeading": "How do you check service coverage outside Kuala Lumpur?",
+      "areasDescription": "Share the property area, door photos and the type of work you need. For an installation quotation, confirm what the service includes and whether your door needs adjustments.",
+      "areasLink": "Browse service areas",
+      "faqs": [
+        {
+          "question": "Can a condo fire-rated door keep its existing opening?",
+          "answer": "Ask the installer to identify the door label, existing lock type and proposed new fitting. A similar appearance does not confirm compatibility. Check the permitted scope with management or the door supplier before cutting the door or frame."
+        },
+        {
+          "question": "Can I keep my grille while changing the main door lock?",
+          "answer": "Often the grille can stay if both leaves clear each other. Check at the panel and handle heights with both leaves shut, and confirm that a shut grille leaves the keypad or reader reachable."
+        },
+        {
+          "question": "Do I have to book the installer before the management office replies?",
+          "answer": "Gather photos, the proposed fitting and contractor details first. Confirm work hours and access before setting a firm appointment. If drilling or a new strike position becomes necessary, obtain approval for that change before work continues."
+        },
+        {
+          "question": "How can I compare installed prices for the same door?",
+          "answer": "Compare the same model and confirm whether each written quotation includes old-lock removal, any approved opening adjustments, user setup and handover testing. Ask which items would be treated as additional work."
+        }
       ]
     },
     "zh": {
-      "heading": "吉隆坡电子锁安装",
+      "heading": "吉隆坡公寓与排屋换电子锁",
       "area": "吉隆坡",
       "service": "电子锁",
-      "question": "吉隆坡公寓的门能装电子锁吗？",
-      "answer": "通常可以，但要先看门：厚度、现有锁是 mortise 还是附加锁、门扇是否关得正，以及大楼是否允许更改门锁五金。部分公寓把大门视为公共财产，动钻之前先问管理处。",
-      "title": "吉隆坡公寓电子锁安装｜门体兼容核对｜FLASH CAST",
-      "description": "吉隆坡公寓与有地住宅电子锁安装。先核对门体兼容与大楼审批，再供应、安装、录入使用者并做交付测试。",
-      "keywords": "吉隆坡电子锁安装, 智能门锁, 公寓门锁更换",
+      "title": "吉隆坡公寓换电子锁｜门型与进场核对｜FLASH CAST",
+      "description": "吉隆坡公寓及排屋更换电子锁指南。先核对门厚、旧锁体和铁闸净距，再向管理处确认施工范围、时段与交付验收。",
+      "keywords": "吉隆坡公寓换电子锁, 吉隆坡门锁安装, 公寓电子锁管理处审批",
       "entityName": "吉隆坡电子锁安装",
-      "bodyHeading": "先看门，再看大楼规定",
-      "body": [
-        "<p>吉隆坡公寓的门差异比多数人想的大。较新的大楼多用防火木门，锁孔是标准 mortise 做法，主流电子锁基本都能装。较老的楼可能有更薄的门、附加式（rim）锁，或者门扇已经被修整过、关不严——关不严的门装任何电子锁都会出问题，因为斜舌对不上锁扣。有地住宅与店屋还会混进铁门、玻璃门与推拉门，各自需要完全不同的固定与走线方式。这些都无法只看照片判断，必须到现场量门厚、看锁体、试关门。量门厚这件事听起来简单，但防火门常有饰面层，标称厚度与实际可用厚度差几毫米，就可能决定某个型号装不进去。</p>",
-        "<p>动钻之前有两道关要过。第一道是大楼的：部分公寓把大门与门锁五金归为公共财产，未获批准就换锁，可能被要求恢复原状，而恢复一扇已经开过孔的门比换锁贵得多。第二道是物理的：如果锁孔需要扩大，门就少了材料、补不回来，所以必须让型号去匹配现有锁孔，而不是让门去迁就型号。这两项都在现场核对，做法在开工前书面确认，包括如果开孔后发现门芯材质不适合，如何止损。还有一类情况要提前说：如果大门与铁门都要换，两者要能配合使用，铁门的锁位与木门的门锁高度最好一起定，否则装完会发现开门顺序很别扭。</p>",
-        "<p>值不值得花钱的功能，取决于这户人实际怎么用。出租单位需要能方便地为每个新租客重发权限、并在租客搬走后一键失效，同时留下清楚的开门记录；有年长父母的家庭需要电池耗尽时仍然能用的实体钥匙，以及弱光下也看得清的密码键盘；有小孩的家庭可能更在意门内反锁与防猫眼开启。功能齐全但锁边距（backset）不对的锁装上去关不严；需要额外网关才能远程的锁，等于多一个必须一直通电的设备，断电就等于失去远程功能，这一点在停电频繁的地区要提前想清楚。电池类型也值得问：碱性电池通常比充电电池撑得久，但更换时若是特殊规格，家里最好常备一组。</p>",
-        "<p>交付时每位使用者都完成录入并实测，包括老人与小孩的手指能不能识别；演示机械应急开锁，并说明钥匙放在哪里；现场展示该型号在断电时的真实表现——是保持原状态、自动开还是自动锁，而不是口头说明。应急钥匙请放在单位之外的可靠位置，不要放在屋内抽屉。日后如果出现感应不灵或自动弹开，先查门扇是否下沉偏移、锁扣板是否松动，再怀疑电子部分，因为这类问题的实际原因多数在门上。最后建议保留一次上门记录，注明型号、安装日期与当时设定，日后换电池或加使用者时可以对照。</p>"
+      "sections": [
+        {
+          "heading": "在吉隆坡更换电子锁，开工前要确认哪三件事？",
+          "paragraphs": [
+            "先确认门体能否适配、管理处允许做哪些工序，以及书面报价包含什么。公寓防火木门、排屋双层门和窄框铝门的安装位置各有差异。先把现场情况描述清楚，再对照型号的安装尺寸，可以避免买到门边装不下、锁舌碰不到锁扣或铁闸关不上的款式。",
+            "需要询价时，可以一次说明物业所在区域、门型、旧锁是否还能正常关上，以及希望使用钥匙、指纹、密码、门卡还是手机。家里有长辈、小孩或轮换租客的，顺便列出谁需要哪种开门方式。现场确认适配后再决定功能与款式，比较报价也会有统一标准。"
+          ],
+          "checks": [
+            "拍整扇门的正反面、门边旧锁、门框扣板和铰链。再拍一张双层门同时关闭的照片，说明铁闸与内门的开门方向和把手位置。卷尺与测量位置一起入镜，照片更容易用于初步筛选。",
+            "向管理处说明是否只换锁、是否要钻孔或挪扣板。询问书面批准、施工登记、噪音时段、工人名单与搬运路线，有防火标签的门一并说明门扇和门框上的标记。",
+            "核对报价里有没有拆旧、同孔换装或修孔、旧孔收边、用户录入、测试和交付。需要额外改门时，要求把工序、费用和确认方式分别写清楚。"
+          ],
+          "topics": []
+        },
+        {
+          "heading": "公寓入户门怎样判断能不能装电子锁？",
+          "paragraphs": [
+            "先用目前的锁试关门。门扇靠上门框时，看看斜舌是否能自然进入扣板，关门时有没有必须抬门或用力推的情况。若门下沉、铰链松动或门框偏斜，应先确认门的维修范围。新锁装上以后仍靠门扇和扣板对准，换了锁也需要解决原来的定位问题。"
+          ],
+          "checks": [
+            "内嵌锁体木门。锁体藏在门边开口里。比对旧开口的深度、宽度和锁舌位置，再看新锁体和扣板能否利用原来的位置。带装饰线条的门也要量平整可用的面板宽度。",
+            "表面附加锁木门。旧锁靠门面固定，拆除后可能露出螺丝孔或旧面板轮廓。如果新款要改成内嵌锁体，先定新开口与旧孔收边办法，把木门削薄的位置也交给安装方检查。",
+            "窄框铝门。可用宽度指的是绕开玻璃压条、挡边和其它五金后，真正可以固定面板的平面。门款带玻璃时，还要弄清固定件与玻璃的距离。选型时用实测框宽对照产品图。"
+          ],
+          "topics": [
+            {
+              "heading": "门厚与门框宽度要量什么",
+              "paragraphs": [
+                "在旧锁附近量门扇厚度，顺手记下旧锁面板长度、门边到把手中心的距离、旧锁孔深度和扣板位置。门上有凸出的饰面或包边时，分别拍下凸出范围和可固定的平面，别只把门的标称厚度交给安装方。",
+                "门外有铁闸时，把铁闸和大门都关上，再在准备装面板与把手的高度量两者之间的净距。铁闸上的把手、横杆或门扣可能恰好和新锁的位置重叠。要用摄像头或识别功能时，同时检查镜头前的遮挡和门外可站立的位置。"
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "管理处审批要准备哪些资料？",
+          "paragraphs": [
+            "预约前先把更换方式列清楚，尤其是门扇是否有防火标识、施工会不会动到外侧面板、是否沿用旧锁孔和扣板。把门况照片、型号尺寸与预计工序交给管理处，询问这类工作属于简单维修还是需要申请的改动。防火门、门框和配套五金是否允许改动，可再向门的供应方核实。"
+          ],
+          "checks": [],
+          "topics": [
+            {
+              "heading": "装修申请、押金和施工时段",
+              "paragraphs": [
+                "向管理处确认用哪张表格、由业主还是租客递交、是否要押金、验收退款要什么记录。分别问允许进场的时间和允许产生噪音的时间，填写施工人员资料，确认可以走哪道入口、能否预约货梯，以及卸货车停在哪里。把这些要求转给安装方，留出录入用户与试锁的时间。"
+              ]
+            },
+            {
+              "heading": "钻孔、改门框和处理旧孔",
+              "paragraphs": [
+                "能沿用旧开口的工作与需要扩大锁孔、移动扣板或修整门边的工作，应在申请和报价里分开写。如果到场才发现门芯、旧开口或门框结构和照片不一样，先让安装方解释变更的位置与范围，再根据管理处要求补确认。签收前查看旧孔、木屑和门框表面如何处理。"
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "有地住宅与排屋的双层门要怎样搭配",
+          "paragraphs": [
+            "排屋入口有铁闸和木门时，先决定平日关哪道门、访客从哪一侧操作，以及家人从室内退出时怎样开门。把两道门的把手扫过范围都画出来，检查同一高度会不会相撞。如果一边门常锁住，确认遮挡后还能伸手够到键盘或感应区，再决定锁装在哪一扇。",
+            "门口直晒、会淋雨或有很大温差时，核对具体型号的适用环境、是否需要雨棚或额外保护。希望用手机查看提醒的，在实际安装点测试网络覆盖，再问该型号是否需要网关。日常用得到的开门方式、备份方式和电池更换便利性，比单看功能数量更能帮助选型。",
+            "家里多代同住时，可以为常住者和访客分别安排开门方式，交付时再现场实测。有人手部不方便，或常提着东西回家，可以提前体验键盘、卡片和把手操作。计划出租的单位，也要问如何撤掉前一位使用者的权限，再给新住户授权。"
+          ],
+          "checks": [],
+          "topics": []
+        },
+        {
+          "heading": "安装当天的流程与交付验收",
+          "paragraphs": [
+            "开工时先对照报价和批复范围，确认拆哪把旧锁、能否保留原锁孔、哪些部件需要调整。请安装方说明预计的开孔位置、外侧面板覆盖范围和需要保留的门上标记。发现实际门况和事先资料不同，先确认新的做法和费用，再继续施工。"
+          ],
+          "checks": [
+            "装好后先试门扇，再试锁。用平日的力度开关几次，从里面和外面分别操作。实际把铁闸也关上，检查把手、锁舌和扣板有没有碰擦。",
+            "请每位常住者自己完成一次录入和试开。讲清日后怎样加人、移除旧用户，以及忘记密码时有哪些已支持的恢复方式。正式密码由住户设置。",
+            "现场演示低电量提醒、该型号的应急供电或备用钥匙，以及室内开门方式。把备用钥匙放在锁外仍可取得的地方，记好电池规格和更换办法。",
+            "带走标明型号和已完成工序的安装记录。把旧孔处理、额外门体修整与售后范围写在报价或验收资料上，日后报修时可以对照。"
+          ],
+          "topics": []
+        }
+      ],
+      "modelHeading": "不同门型可以参考哪些 ANZHE 型号？",
+      "modelIntro": "先按门型看下面的型号页，再查产品面板、含安装价和支持的开门方式。是否能安装，以实测门厚、门框和两道门的净距为准。",
+      "models": [
+        {
+          "slug": "v37j-p16",
+          "name": "V37J-P16",
+          "description": "入户门参考。对照推拉锁体的安装空间，并检查外侧摄像头前是否有铁闸遮挡。"
+        },
+        {
+          "slug": "d10b",
+          "name": "D10B",
+          "description": "窄框铝门参考。下单前用实测的可固定平面宽度对照面板尺寸。"
+        },
+        {
+          "slug": "g13",
+          "name": "G13",
+          "description": "室内门参考。可先核对客房或房间的门型，以及室内反锁的使用方式。"
+        }
+      ],
+      "areasHeading": "吉隆坡以外怎样查安装服务范围？",
+      "areasDescription": "可以先提供物业所在地区、门型照片、旧锁情况及希望施工的时间。询价时问清供应、安装、门体修整、录入和交付的具体范围。",
+      "areasLink": "查看服务地区",
+      "faqs": [
+        {
+          "question": "公寓防火木门能沿用原先的锁孔吗？",
+          "answer": "要先核对门上的标记、旧锁体、新款安装图和扣板位置。外观看起来相近的型号，锁槽深度和锁舌位置也可能不同。动到门扇、门框或防火门配套五金前，先把拟议做法交管理处或门的供应方确认。"
+        },
+        {
+          "question": "保留铁闸，只更换木门上的电子锁可以吗？",
+          "answer": "要看两道门关上时的实际净距。请在面板和把手高度都量一次，并确认铁闸闭合时居民从外面还能操作键盘、门卡感应区或其他常用开门方式。如果锁面需要向外凸出，安装前用实际尺寸确认。"
+        },
+        {
+          "question": "管理处还没回复，可以先约安装日期吗？",
+          "answer": "可以先准备门况照片、产品尺寸和拟施工范围。进场和噪音时段得到确认后再定上门时间，报价也以已明确的开孔或换装范围为准。如果到场后要追加改动，先补确认再做。"
+        },
+        {
+          "question": "为什么同一款锁在两扇门上的报价会不一样？",
+          "answer": "型号只是其中一项。旧锁拆除、沿用或修整锁孔、门框扣板调整、旧孔收边等工序，取决于原来的门况。请看书面报价里安装范围、需要另确认的工序及交付测试，再对照相同范围比较。"
+        }
+      ]
+    },
+    "ms": {
+      "heading": "Penukaran Kunci Digital di Kuala Lumpur",
+      "area": "Kuala Lumpur",
+      "service": "Kunci digital",
+      "title": "Kunci Digital Kondominium Kuala Lumpur | FLASH CAST",
+      "description": "Panduan menukar kunci digital di Kuala Lumpur. Semak pintu, bukaan kunci, jarak jeriji dan kelulusan pengurusan sebelum pemasangan.",
+      "keywords": "kunci digital kondominium kuala lumpur, tukar kunci pintu kuala lumpur, pemasangan kunci digital",
+      "entityName": "Pemasangan Kunci Digital di Kuala Lumpur",
+      "sections": [
+        {
+          "heading": "Apakah tiga perkara yang perlu disemak sebelum menukar kunci di Kuala Lumpur?",
+          "paragraphs": [
+            "Mulakan dengan keadaan pintu dan bingkai, peraturan pengurusan bangunan dan skop kerja pemasangan. Pintu kondominium, pintu rumah teres yang mempunyai jeriji dan pintu aluminium berbingkai sempit memerlukan semakan berbeza. Dapatkan ukuran dan syarat kerja sebelum membeli model atau menetapkan tarikh pemasangan."
+          ],
+          "checks": [
+            "Ambil gambar seluruh pintu dari dalam dan luar. Buka pintu dan ambil gambar bahagian sisi, plat kunci lama dan plat penyambut selak pada bingkai. Sertakan jeriji luar jika ada.",
+            "Tanya pengurusan sama ada pertukaran kunci dibenarkan, kerja menggerudi perlu mendapat kelulusan bertulis, dan bila pekerja boleh masuk. Maklumkan jika pintu mempunyai label penarafan kebakaran.",
+            "Minta skop dalam sebut harga menerangkan kerja menanggalkan kunci lama, mengubah suai bukaan jika perlu, mendaftarkan pengguna dan menguji pintu sebelum penyerahan."
+          ],
+          "topics": []
+        },
+        {
+          "heading": "Bagaimanakah menentukan kesesuaian pintu masuk kondominium?",
+          "paragraphs": [
+            "Cuba tutup pintu dengan perlahan. Perhatikan sama ada selak memasuki plat penyambut tanpa perlu mengangkat atau menarik daun pintu. Engsel longgar, bingkai tidak sejajar atau selak yang bergesel perlu diperiksa sebelum memilih badan kunci baharu."
+          ],
+          "checks": [
+            "Pintu kayu dengan kunci tanam. Badan kunci berada di dalam bukaan pada sisi pintu. Bandingkan kedalaman bukaan, saiz plat dan kedudukan selak dengan lukisan pemasangan model baharu.",
+            "Pintu kayu dengan kunci yang dipasang pada permukaan. Penanggalan kunci lama boleh meninggalkan lubang skru yang kelihatan. Pastikan kerja menebuk bukaan baharu dan menutup kesan lama termasuk dalam skop yang dipersetujui.",
+            "Pintu aluminium berbingkai sempit. Ukur lebar permukaan rata yang boleh digunakan selepas mengambil kira kaca, jalur kemasan dan perkakasan lain. Jangan membuat keputusan berdasarkan lebar bingkai keseluruhan sahaja."
+          ],
+          "topics": [
+            {
+              "heading": "Ukuran yang membantu pemasang membuat semakan",
+              "paragraphs": [
+                "Catat ketebalan sisi pintu, jarak dari sisi ke tengah pemegang, saiz bukaan dan keluasan permukaan rata pada kedua-dua muka pintu. Sertakan arah bukaan dan kedudukan engsel. Gambar dengan pita ukur membantu menunjukkan titik ukuran yang sebenar.",
+                "Jika pintu dan jeriji mempunyai pemegang, ukur jarak bersih pada paras panel dan pemegang ketika kedua-duanya ditutup. Jalur hiasan atau selak jeriji boleh mengecilkan ruang yang diperlukan oleh panel, kamera atau pembaca."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Apakah maklumat yang diperlukan oleh pengurusan bangunan?",
+          "paragraphs": [
+            "Terangkan sama ada cadangan itu menggunakan bukaan asal atau memerlukan lubang baharu, pembesaran bukaan atau perubahan pada plat penyambut. Serahkan gambar pintu, ukuran model dan skop cadangan. Untuk pintu berlabel penarafan kebakaran, semak syarat pada pintu dan perkakasannya dengan pengurusan atau pembekal pintu sebelum meluluskan perubahan."
+          ],
+          "checks": [],
+          "topics": [
+            {
+              "heading": "Waktu kerja, deposit dan pendaftaran pekerja",
+              "paragraphs": [
+                "Tanya borang yang perlu diisi, syarat deposit dan bayaran balik, waktu kerja bising, dan maklumat kontraktor yang perlu didaftarkan. Semak laluan masuk, tempat menurunkan peralatan dan tempahan lif barang jika diperlukan. Pilih waktu yang masih memberi ruang untuk ujian dan penerangan kepada pengguna."
+              ]
+            },
+            {
+              "heading": "Kerja menggerudi dan perubahan pada bingkai",
+              "paragraphs": [
+                "Bezakan pertukaran menggunakan bukaan sedia ada daripada kerja yang mengubah daun pintu atau bingkai. Minta pemasang menunjukkan lokasi perubahan dan cara kemasan lama akan ditangani. Jika keadaan sebenar berbeza daripada gambar, semak semula skop dan dapatkan pengesahan sebelum kerja diteruskan."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Rumah teres dengan jeriji atau dua lapis pintu",
+          "paragraphs": [
+            "Periksa kedua-dua daun pintu sebagai satu pasangan. Tentukan daun yang akan menerima kunci digital dan bagaimana penghuni membuka kedua-duanya dari dalam. Uji jarak apabila pemegang bergerak dan lihat sama ada jeriji menutup pandangan kamera atau menghalang capaian kepada pad kekunci.",
+            "Jika pintu terdedah kepada hujan atau cahaya matahari langsung, semak had pendedahan yang dinyatakan untuk model tersebut. Jika fungsi melalui aplikasi penting, uji liputan rangkaian di lokasi pintu dan tanya sama ada model menggunakan peranti tambahan. Pilih kaedah akses yang boleh digunakan oleh semua ahli rumah, termasuk warga emas, kanak-kanak dan tetamu."
+          ],
+          "checks": [],
+          "topics": []
+        },
+        {
+          "heading": "Proses pemasangan dan ujian penyerahan",
+          "paragraphs": [
+            "Sebelum kerja bermula, semak model, bukaan asal, kedudukan plat penyambut dan sebarang perubahan yang telah diluluskan. Minta pemasang menerangkan kerja tambahan sebelum ia dibuat. Pasang dan laraskan kunci, kemudian lakukan pemeriksaan bersama pengguna yang akan menggunakan pintu setiap hari."
+          ],
+          "checks": [
+            "Uji pintu dari bahagian dalam dan luar. Pastikan pintu boleh ditutup tanpa tersangkut. Tutup jeriji semasa menguji ruang untuk pemegang dan capaian ke panel.",
+            "Daftarkan dan uji pengguna seorang demi seorang. Minta ditunjukkan cara menambah pengguna, memadam akses tetamu dan menyerahkan kawalan kepada penghuni baharu.",
+            "Semak cara membaca amaran bateri lemah. Minta demonstrasi anak kunci sandaran atau bekalan kuasa kecemasan bagi model tersebut, serta cara membuka dari dalam.",
+            "Simpan maklumat model dan rekod kerja. Semak kerja penanggalan, pelarasan pintu, kemasan lubang lama dan terma selepas jualan pada sebut harga atau dokumen penyerahan."
+          ],
+          "topics": []
+        }
+      ],
+      "modelHeading": "Model ANZHE manakah yang boleh dijadikan rujukan mengikut jenis pintu?",
+      "modelIntro": "Buka halaman model untuk melihat panel, harga termasuk pemasangan dan kaedah akses. Kesesuaian perlu disemak menggunakan ukuran pintu, bingkai dan ruang antara kedua-dua daun.",
+      "models": [
+        {
+          "slug": "v37j-p16",
+          "name": "V37J-P16",
+          "description": "Contoh untuk pintu masuk. Periksa ruang bagi badan tarik dan tolak serta pandangan kamera di bahagian luar."
+        },
+        {
+          "slug": "d10b",
+          "name": "D10B",
+          "description": "Contoh untuk pintu aluminium berbingkai sempit. Padankan lebar permukaan rata dengan ukuran panel."
+        },
+        {
+          "slug": "g13",
+          "name": "G13",
+          "description": "Contoh untuk pintu dalaman. Semak jenis pintu bilik dan cara menggunakan fungsi privasi dari dalam."
+        }
+      ],
+      "areasHeading": "Bagaimanakah menyemak kawasan pemasangan di luar Kuala Lumpur?",
+      "areasDescription": "Kongsikan kawasan kediaman, gambar pintu, keadaan kunci lama dan waktu yang sesuai. Tanya skop pembekalan, pemasangan dan pelarasan pintu apabila meminta sebut harga.",
+      "areasLink": "Lihat kawasan perkhidmatan",
+      "faqs": [
+        {
+          "question": "Bolehkah bukaan asal pada pintu penarafan kebakaran dikekalkan?",
+          "answer": "Semak label pintu, jenis kunci sedia ada, ukuran bukaan dan lukisan pemasangan model baharu. Rujuk pengurusan atau pembekal pintu sebelum membuat perubahan pada pintu, bingkai atau perkakasan berkaitan."
+        },
+        {
+          "question": "Bolehkah jeriji dikekalkan apabila kunci pintu utama ditukar?",
+          "answer": "Ukur jarak bersih apabila kedua-dua daun ditutup. Semak pada paras panel dan pemegang, dan pastikan jeriji yang ditutup masih membolehkan pengguna mencapai pad kekunci atau pembaca."
+        },
+        {
+          "question": "Perlukah menempah waktu pemasangan sebelum pengurusan membalas?",
+          "answer": "Sediakan gambar, skop pemasangan dan butiran pekerja terlebih dahulu. Tetapkan waktu selepas pengurusan mengesahkan akses dan waktu kerja. Minta kelulusan semula jika kerja menggerudi atau mengubah bingkai menjadi perlu."
+        },
+        {
+          "question": "Bagaimanakah membandingkan dua sebut harga untuk model yang sama?",
+          "answer": "Semak sama ada kedua-duanya merangkumi penanggalan kunci lama, pelarasan bukaan, pendaftaran pengguna dan ujian penyerahan yang sama. Minta kerja tambahan dinyatakan secara berasingan dalam sebut harga."
+        }
       ]
     }
   },

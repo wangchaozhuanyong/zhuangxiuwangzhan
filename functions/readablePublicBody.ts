@@ -1,4 +1,5 @@
 import serviceAreaPageText from "../src/components/services/serviceAreaPageText.json";
+import { anzheShowroomModelUrl } from "../src/config/anzheShowroom";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
 import { getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
@@ -201,6 +202,26 @@ function buildReviewedCta(path: string, lang: "en" | "zh" | "ms", identity?: Rea
   return `<section data-flashcast-reviewed-cta aria-label="${heading}"><h2>${heading}</h2><p><a href="/${lang}/quote#quote-form">${quote}</a> · <a href="/${lang}/contact">${contact}</a></p>${links.length ? `<p>${links.join(" · ")}</p>` : ""}</section>`;
 }
 
+type ServiceAreaGuide = (typeof serviceAreaPageText)["/locations/kuala-lumpur/digital-lock"][Language];
+
+function buildServiceAreaGuide(guide: ServiceAreaGuide, lang: Language) {
+  const sections = guide.sections.map(section => {
+    const checks = section.checks.length
+      ? `<ul>${section.checks.map(item => `<li>${escape(item)}</li>`).join("")}</ul>`
+      : "";
+    const topics = section.topics.map(topic =>
+      `<h3>${escape(topic.heading)}</h3>${topic.paragraphs.map(paragraph).join("")}`
+    ).join("");
+    return `<section><h2>${escape(section.heading)}</h2>${section.paragraphs.map(paragraph).join("")}${checks}${topics}</section>`;
+  }).join("");
+  const models = guide.models.map(model =>
+    `<li><a href="${escape(anzheShowroomModelUrl(lang, model.slug))}">${escape(model.name)}</a> ${escape(model.description)}</li>`
+  ).join("");
+  return sections
+    + `<section><h2>${escape(guide.modelHeading)}</h2>${paragraph(guide.modelIntro)}<ul>${models}</ul></section>`
+    + `<section><h2>${escape(guide.areasHeading)}</h2>${paragraph(guide.areasDescription)}<p><a href="/${lang}/locations">${escape(guide.areasLink)}</a></p></section>`;
+}
+
 export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined, identity?: ReadableContactIdentity | null) {
   const match = key.match(/^\/(en|zh|ms)(\/.*)$/);
   if (!match) return "";
@@ -212,8 +233,13 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
     const localizedCopy = serviceAreaPageText[serviceArea.path];
     const page = lang === "ms" ? ("ms" in localizedCopy ? localizedCopy.ms : null) : localizedCopy[lang];
     if (!page) return "";
-    const overview = `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(value => paragraph(plain(value))).join("")}</section>`;
-    const faq = `<section><h2>${escape(locationPageText[lang].faqTitle(page.area))}</h2><h3>${escape(page.question)}</h3>${paragraph(page.answer)}</section>`;
+    const faqs = "faqs" in page ? page.faqs : [{ question: page.question, answer: page.answer }];
+    const overview = "sections" in page
+      ? buildServiceAreaGuide(page, lang)
+      : `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(value => paragraph(plain(value))).join("")}</section>`;
+    const faq = `<section><h2>${escape(locationPageText[lang].faqTitle(page.area))}</h2>${faqs.map(item =>
+      `<h3>${escape(item.question)}</h3>${paragraph(item.answer)}`
+    ).join("")}</section>`;
     return wrapBody(`<h1>${escape(page.heading)}</h1>${paragraph(page.description)}${overview}${faq}`, lang);
   }
   const reviewedOffice = key === "/en/services/office-renovation";

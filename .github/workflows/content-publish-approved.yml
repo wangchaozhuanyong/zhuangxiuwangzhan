@@ -18,6 +18,7 @@ on:
         default: all-20260906
         type: choice
         options:
+          - digital-lock-service-titles-20261121-v1
           - faq-start-timing-20261121-v2
           - location-cheras-final-20261119-v1
           - location-seven-body-20261119-v1
@@ -188,6 +189,11 @@ jobs:
           APPROVAL_ID: ${{ inputs.approval_id }}
         run: |
           test "$GITHUB_REF" = "refs/heads/main"
+          if [ "$PUBLISH_TARGET" = "digital-lock-service-titles-20261121-v1" ]; then
+            test "$APPROVAL_ID" = "owner-approved-kl-digital-lock-option-2-20261121" || exit 1
+            test "$MANAGED_OPERATION" = "publish" && test -z "$MANAGED_PERMIT_ID" && test -z "$PARENT_RUN_ID" || exit 1
+            case "$PUBLISH_MODE" in dry-run|publish) ;; *) exit 1 ;; esac
+          fi
           if [ "$PUBLISH_TARGET" = "c2-cabinet-prices-3fa4ff63-20261121-v1" ] ||
              [ "$PUBLISH_TARGET" = "c2-cabinet-prices-73142986-20261121-v1" ] ||
              [ "$PUBLISH_TARGET" = "c2-cabinet-prices-bf690bf8-20261121-v1" ]; then

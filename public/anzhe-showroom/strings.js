@@ -1,5 +1,6 @@
 window.showroomWords = {
   zh: {
+    mainInstallService: "查看电子锁安装服务",
     seoTitle: "吉隆坡电子锁｜ANZHE 智能门锁 含安装",
     seoAnswer: "ANZHE 电子锁在吉隆坡及雪兰莪含安装，17 款适用于入户门、室内门和窄框铝门，RM635.20 起。安装前核对门厚、锁体和门框宽度。",
     modelDetailsTitle: "型号索引",
@@ -14,7 +15,7 @@ window.showroomWords = {
     installAnswer4: "电池耗尽时，可按该型号说明使用机械钥匙，或通过应急供电口接移动电源后验证开门。开门后将电池更换或充电。",
     description:"查看 17 款 ANZHE 电子锁，按门型选款并对比功能与含安装价。吉隆坡及雪兰莪可联系 FLASH CAST 顾问确认适配。",
     returnToMain:'返回装修网站', returnToMainShort:'返回主站',
-    title:'ANZHE 安哲电子锁展厅｜FLASH CAST', skip:'跳至内容', catalog:'选购门锁', compare:'型号对比', install:'安装服务', language:'页面语言',
+    title:"ANZHE 电子锁型号与含安装价｜FLASH CAST", skip:'跳至内容', catalog:'选购门锁', compare:'型号对比', install:'安装服务', language:'页面语言',
     heroKind:'全自动推拉入户锁', hiddenPrint:'隐藏式指纹', indoorScreen:'4.5 英寸室内屏', included:'含安装',
     browse:'浏览 17 款', thisLock:'查看这款', side:'切换首图角度', outside:'门外', inside:'门内',
     series:'安哲智能门锁系列', galleryTitle:'按门型选锁', priceNote:'每款电子锁都包安装，无需额外费用。', doorType:'按门型筛选',
@@ -25,6 +26,7 @@ window.showroomWords = {
     frontGuide:'拍整扇门，连两侧门框一起入镜。', edgeGuide:'打开门，近拍门边的锁舌和面板。', back:'回到顶部 ↑', close:'关闭',
   },
   en: {
+    mainInstallService: "View digital lock installation services",
     seoTitle: "Digital Lock Kuala Lumpur & Selangor｜ANZHE Smart Locks with Installation",
     seoAnswer: "ANZHE digital locks are sold and installed in Kuala Lumpur and Selangor. Choose from 17 models for entrance doors, interior doors and narrow-frame aluminium doors, from RM635.20 with installation. We check door thickness, the lock body and frame width before fitting.",
     modelDetailsTitle: "Model index",
@@ -39,7 +41,7 @@ window.showroomWords = {
     installAnswer4: "Follow the instructions for your model. Use the mechanical key or connect a power bank to the emergency port so you can unlock as usual. Once the door is open, replace or recharge the batteries.",
     description:"Explore 17 ANZHE smart locks. Compare features and installed prices by door type. Ask FLASH CAST about installation in Kuala Lumpur and Selangor.",
     returnToMain:'Back to FLASH CAST', returnToMainShort:'Main site',
-    title:'ANZHE Smart Locks | FLASH CAST', skip:'Skip to content', catalog:'Explore locks', compare:'Compare models', install:'Installation', language:'Page language',
+    title:"ANZHE Smart Lock Models & Installed Prices | FLASH CAST", skip:'Skip to content', catalog:'Explore locks', compare:'Compare models', install:'Installation', language:'Page language',
     heroKind:'Fully automatic push-pull entrance lock', hiddenPrint:'Concealed fingerprint reader', indoorScreen:'4.5-inch indoor display', included:'Installation included',
     browse:'Explore all 17 locks', thisLock:'View this lock', side:'Choose a product angle', outside:'Outside', inside:'Inside',
     series:'ANZHE smart lock collection', galleryTitle:'Find a lock for your door', priceNote:'Installation is included with every smart lock at no extra charge.', doorType:'Filter by door type',
@@ -50,6 +52,7 @@ window.showroomWords = {
     frontGuide:'Photograph the full door and both sides of the frame.', edgeGuide:'Open the door and take a close-up of the latch and faceplate.', back:'Back to top ↑', close:'Close',
   },
   ms: {
+    mainInstallService: "Lihat perkhidmatan pemasangan kunci digital",
     seoTitle: "Kunci Digital Kuala Lumpur & Selangor｜Kunci Pintu ANZHE dengan Pemasangan",
     seoAnswer: "Kunci digital ANZHE dijual dan dipasang di Kuala Lumpur dan Selangor. Pilih daripada 17 model untuk pintu utama, pintu dalaman dan pintu aluminium berbingkai sempit, bermula RM635.20 termasuk pemasangan. Ketebalan pintu, badan kunci dan lebar bingkai diperiksa sebelum pemasangan.",
     modelDetailsTitle: "Indeks model",
@@ -64,7 +67,7 @@ window.showroomWords = {
     installAnswer4: "Ikut arahan untuk model anda. Gunakan anak kunci mekanikal atau sambungkan bank kuasa pada port kecemasan untuk membuka kunci seperti biasa. Selepas pintu dibuka, gantikan atau cas semula bateri.",
     description:"Lihat 17 kunci pintar ANZHE. Bandingkan ciri dan harga termasuk pemasangan mengikut jenis pintu. Semak kesesuaian dengan FLASH CAST di Kuala Lumpur dan Selangor.",
     returnToMain:'Kembali ke FLASH CAST', returnToMainShort:'Laman utama',
-    title:'Kunci Pintar ANZHE | FLASH CAST', skip:'Langkau ke kandungan', catalog:'Lihat kunci', compare:'Bandingkan model', install:'Pemasangan', language:'Bahasa halaman',
+    title:"Model & Harga Kunci Digital ANZHE | FLASH CAST", skip:'Langkau ke kandungan', catalog:'Lihat kunci', compare:'Bandingkan model', install:'Pemasangan', language:'Bahasa halaman',
     heroKind:'Kunci pintu utama tolak-tarik automatik sepenuhnya', hiddenPrint:'Pengimbas cap jari tersembunyi', indoorScreen:'Skrin dalaman 4.5 inci', included:'Termasuk pemasangan',
     browse:'Lihat semua 17 model', thisLock:'Lihat model ini', side:'Pilih sudut paparan', outside:'Bahagian luar', inside:'Bahagian dalam',
     series:'Koleksi kunci pintar ANZHE', galleryTitle:'Pilih kunci mengikut jenis pintu', priceNote:'Pemasangan disertakan untuk setiap kunci pintar tanpa caj tambahan.', doorType:'Tapis mengikut jenis pintu',
@@ -78,7 +81,7 @@ window.showroomWords = {
 
 Object.assign(window.showroomWords.zh, {
   retryExterior:'重试门外图片', retryInterior:'重试门内图片',
-  title:'ANZHE 安哲电子锁｜FLASH CAST', navigation:'页内导航', galleryTitle:'按门型选锁',
+  title:"ANZHE 电子锁型号与含安装价｜FLASH CAST", navigation:'页内导航', galleryTitle:'按门型选锁',
   allInstalled:'每款电子锁都包安装', noExtra:'无需额外费用', compareTitle:'两款差在哪？', compareIntro:'两款都支持掌静脉开门，室内屏的尺寸不同。', installedGap:'含安装价差', serviceArea:'安装地区',
   heroLine:'抬手开门，来客可视。', heroSummary:'掌静脉、人脸或隐藏式指纹开锁。门铃响起，可在室内屏查看来客，也可用手机远程视频对讲。',
   heroFigure:'V37J-P16 内外面板', exteriorAlt:'V37J-P16 门外面板和指纹把手', interiorAlt:'V37J-P16 门内面板及访客屏幕', viewsCaption:'内外面板实物图',
@@ -87,7 +90,7 @@ Object.assign(window.showroomWords.zh, {
 });
 Object.assign(window.showroomWords.en, {
   retryExterior:'Retry exterior photo', retryInterior:'Retry interior photo',
-  title:'ANZHE Smart Locks | FLASH CAST', navigation:'Page navigation', galleryTitle:'Shop by door type',
+  title:"ANZHE Smart Lock Models & Installed Prices | FLASH CAST", navigation:'Page navigation', galleryTitle:'Shop by door type',
   allInstalled:'Installation with every lock', noExtra:'No extra charge', compareTitle:'What changes?', compareIntro:'Both locks offer palm-vein entry. The indoor screens come in two sizes.', installedGap:'Price difference', serviceArea:'Installation area',
   heroLine:'Unlock with your palm. See who’s there.',heroSummary:'Use palm vein, face or concealed fingerprint recognition. See visitors on the indoor screen or speak to them by video on your phone.',
   heroFigure:'V37J-P16 exterior and interior panels',exteriorAlt:'V37J-P16 exterior panel and fingerprint handle',interiorAlt:'V37J-P16 interior panel and visitor screen',viewsCaption:'Exterior and interior panels',
@@ -96,7 +99,7 @@ Object.assign(window.showroomWords.en, {
 });
 Object.assign(window.showroomWords.ms, {
   retryExterior:'Cuba semula foto luar', retryInterior:'Cuba semula foto dalam',
-  title:'Kunci Pintar ANZHE | FLASH CAST',navigation:'Navigasi halaman', galleryTitle:'Pilih ikut jenis pintu',
+  title:"Model & Harga Kunci Digital ANZHE | FLASH CAST",navigation:'Navigasi halaman', galleryTitle:'Pilih ikut jenis pintu',
   allInstalled:'Pemasangan bagi setiap kunci', noExtra:'Tiada caj tambahan', compareTitle:'Apa bezanya?', compareIntro:'Kedua-duanya boleh dibuka dengan imbasan vena tapak tangan. Saiz skrin dalaman berbeza.', installedGap:'Beza harga', serviceArea:'Kawasan pemasangan',
   heroLine:'Buka dengan tapak tangan. Lihat siapa di luar.',heroSummary:'Buka pintu dengan imbasan vena tapak tangan, wajah atau cap jari. Lihat pelawat pada skrin dalaman atau berbual melalui panggilan video di telefon.',
   heroFigure:'Panel luar dan dalam V37J-P16',exteriorAlt:'Panel luar V37J-P16 dan pemegang dengan pengimbas cap jari',interiorAlt:'Panel dalam V37J-P16 dan skrin untuk melihat pelawat',viewsCaption:'Panel luar dan dalam',
