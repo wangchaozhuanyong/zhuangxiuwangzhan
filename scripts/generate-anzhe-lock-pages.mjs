@@ -452,7 +452,9 @@ ${renderSchema(model, copy, lang, words.title)}
   <a class="skip" href="#main-content">${escape(words.skip)}</a>
   <header class="mast">
     <div class="wrap mast-inner">
-      <a href="${home}" class="brand" aria-label="${escape(ui.home)}">${img(shared.logo, "ANZHE", true)}</a>
+      <div class="mast-brand-group">
+        <a href="${home}" class="brand" aria-label="${escape(ui.home)}">${img(shared.logo, "ANZHE", true)}</a>
+      </div>
       <nav class="site-nav" aria-label="${escape(words.navigation)}">
         <a href="${home}#collection">${escape(words.catalog)}</a>
         <a href="#specifications">${escape(ui.specs)}</a>
