@@ -306,7 +306,7 @@
     if(!phone.matches)drawWorkspace();
     return true;
   }
-  function show(id,opener) {
+  function show(id,opener,pointerOpened=false) {
     const p=lib().find(item=>item.id===id);if(!p)return;
     if(!list().some(item=>item.id===id)){
       state.filter='all';drawFilters();drawLists();
@@ -315,13 +315,15 @@
     if(phone.matches){
       if(detail().open){drawDetail();return;}
       state.returnY=window.scrollY;state.detailOrigin=opener||document.activeElement;
-      drawDetail();detail().showModal();layer('enter','directory-detail',()=>closeMobile(true),saved=>{
+      drawDetail();detail().showModal();
+      // Pointing devices enter the sheet itself. Keyboard activation keeps the first button focused.
+      if(pointerOpened)focus(detail());
+      layer('enter','directory-detail',()=>closeMobile(true),saved=>{
         if(!phone.matches)return false;
         restore(saved);
         show(state.id,focusable(opener)?opener:$('[data-dir-card="'+state.id+'"]'));
         $('.dir-mobile-scroll',detail()).scrollTop=saved.scroll;
       },()=>({...snapshot(),scroll:$('.dir-mobile-scroll',detail()).scrollTop}));
-      focus($('[data-dir-back]',detail()));
     }else{
       const head=$('#collection');
       head.scrollIntoView({block:'start',behavior:'instant'});
@@ -360,7 +362,7 @@
     if(d.dirPick!==undefined){select(d.dirPick);closePicker();return;}
     if(d.dirPicker!==undefined){openPicker(b);return;}
     if(d.dirPickClose!==undefined){closePicker();return;}
-    if(d.dirCard!==undefined){show(d.dirCard,b);return;}
+    if(d.dirCard!==undefined){show(d.dirCard,b,e.detail>0);return;}
     if(d.dirBack!==undefined){closeMobile();return;}
     if(d.dirPrev!==undefined||d.dirNext!==undefined){move(d.dirPrev!==undefined?-1:1);return;}
     if(d.dirView!==undefined){

@@ -90,6 +90,16 @@ const projectServiceSummary = (row: PublicProjectionRecord) =>
 export const projectServiceSummariesForPreload = (rows: PublicProjectionRecord[]) =>
   rows.map(projectServiceSummary);
 
+/** Emit the directory's repeated trilingual field names once. Rows with extra
+ * description fallbacks, or missing keys in older records, keep their own shape. */
+export const projectServiceDirectoryForPreload = (rows: PublicProjectionRecord[]) => ({
+  serviceColumns: SERVICE_SUMMARY_FIELDS,
+  services: projectServiceSummariesForPreload(rows).map(row =>
+    Object.keys(row).length === SERVICE_SUMMARY_FIELDS.length && SERVICE_SUMMARY_FIELDS.every(field => hasOwn(row, field))
+      ? SERVICE_SUMMARY_FIELDS.map(field => row[field])
+      : row),
+});
+
 const localizedDetail = (row: PublicProjectionRecord, fields: string[], language: "en" | "zh" | "ms", blog = false) => {
   const projected = pickFields(row, fields.filter(field => {
     const match = field.match(/^(.*)_(en|zh|ms)$/);

@@ -1,3 +1,6 @@
+import { ANZHE_SHOWROOM_ORIGIN, getAnzheShowroomEntry, type ShowroomSourcePage } from "./anzheShowroom";
+import type { Language } from "@/i18n/routes";
+
 export type PublicNavGroupKey = "spaces" | "services" | "studio" | "contact";
 
 export type PublicNavIconKey =
@@ -56,6 +59,7 @@ export const publicNavigationGroups: readonly PublicNavGroup[] = [
       { labelKey: "nav.surfaceRepair", path: "/services/surface-repair", icon: "services", previewImage: "/images/services/surface-repair/hero.webp" },
       { labelKey: "nav.oldHouse", path: "/services/old-house", icon: "oldHouse", previewImage: "/images/heroes/v2/hero-old-house-premium.webp" },
       { labelKey: "nav.materials", path: "/materials", icon: "materials", previewImage: "/images/heroes/v2/hero-materials-premium.webp" },
+      { labelKey: "nav.smartLocks", path: ANZHE_SHOWROOM_ORIGIN, icon: "products", previewImage: previewImages.services },
       { labelKey: "nav.promotions", path: "/promotions", icon: "promotions", previewImage: previewImages.contact },
     ],
   },
@@ -83,6 +87,10 @@ export const publicNavigationItems: PublicNavItem[] = publicNavigationGroups.fla
 export const primaryPublicNavigationItems = publicNavigationItems.filter((item) =>
   ["/", "/projects", "/services", "/services/design", "/materials", "/custom-cabinets"].includes(item.path),
 );
+
+export function getPublicNavigationTarget(path: string, language: Language, source: ShowroomSourcePage) {
+  return path === ANZHE_SHOWROOM_ORIGIN ? getAnzheShowroomEntry(language, source) : path;
+}
 
 export const findPublicNavigationItem = (path: string) =>
   publicNavigationItems.find((item) => item.path === path);

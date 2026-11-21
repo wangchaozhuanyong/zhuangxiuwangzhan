@@ -156,7 +156,13 @@ describe("public design boundary", () => {
     expect(`${publicRoutes}\n${pageModules}`.match(/import\("@\/styles\/routes\/public-pages\.css"\)/g)).toHaveLength(1);
     expect(`${publicRoutes}\n${pageModules}`).not.toMatch(/public-(?:home|forms)\.css|scheme-a-fidelity\.css/);
     expect(publicStyles.trimEnd()).toMatch(/@import "\.\.\/components\/public-section-spacing\.css";\n@tailwind components;$/);
-    expect(sectionSpacing).toContain("--public-section-space-end: 28px;");
+    const tokens = readFileSync(resolve(process.cwd(), "public/public-section-spacing.css"), "utf8");
+    expect(sectionSpacing).toContain('@import "../../../public/public-section-spacing.css"');
+    expect(tokens).toContain("--public-section-space-end: 28px;");
+    for (const language of ["en", "zh", "ms"]) {
+      const showroom = readFileSync(resolve(process.cwd(), "public/anzhe-showroom", language, "index.html"), "utf8");
+      expect(showroom).toContain('href="/public-section-spacing.css');
+    }
   });
 
   it("keeps the home materials content without the retired left rail", () => {

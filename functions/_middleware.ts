@@ -40,8 +40,7 @@ import { getSocialProfileUrls } from "../src/lib/socialProfiles";
 import { getPublicSiteName, getPublicBrandAliases, getChineseBrandLine, getChineseBrandAssociation, withChineseBrandMetadata } from "../src/i18n/brandIdentity";
 import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/publicSeoTitle.mjs";
 import {
-  PUBLIC_LANGUAGE_COOKIE,
-  readCookieValue,
+  readPublicLanguageCookie,
   resolvePreferredLanguage,
 } from "../src/i18n/languageDetection";
 import {
@@ -53,7 +52,7 @@ import {
   projectMaterialsForPreload,
   projectProjectSummariesForPreload,
   projectServiceAreaSummariesForPreload,
-  projectServiceSummariesForPreload,
+  projectServiceDirectoryForPreload,
   projectSitePageBundleForPreload,
 } from "./publicDataProjection";
 
@@ -1757,7 +1756,7 @@ const getUnprefixedPublicPath = (pathname: string) => {
 
 const getRequestLanguage = (request: Request) =>
   resolvePreferredLanguage({
-    savedLanguage: readCookieValue(request.headers.get("cookie"), PUBLIC_LANGUAGE_COOKIE),
+    savedLanguage: readPublicLanguageCookie(request.headers.get("cookie"), new URL(request.url).hostname),
     acceptLanguage: request.headers.get("accept-language"),
   });
 
@@ -2183,7 +2182,7 @@ export const onRequest: PagesFunction = async (context) => {
 
   if (url.hostname === ANZHE_SHOWROOM_HOST) {
     return serveAnzheShowroom(request, env.ASSETS, getRequestLanguage(request),
-      getPublicHtmlDeploymentVersion(env));
+      getPublicHtmlDeploymentVersion(env), context.waitUntil?.bind(context));
   }
   if (url.pathname === ANZHE_ASSET_PREFIX || url.pathname.startsWith(ANZHE_ASSET_PREFIX + "/")) {
     return new Response(null, { status: 404 });
@@ -2507,7 +2506,7 @@ export const onRequest: PagesFunction = async (context) => {
     publicDataPayload.serviceDetails = { [String(dynamicRouteState.row.slug)]: projectServiceDetailForPreload(dynamicRouteState.row, key.startsWith("/ms") ? "ms" : key.startsWith("/zh") ? "zh" : "en") };
   }
   if (services?.length) {
-    publicDataPayload.services = projectServiceSummariesForPreload(services);
+    Object.assign(publicDataPayload, projectServiceDirectoryForPreload(services));
   }
   if ((materials?.length || materialDetail) && (!productDetailSlug || materialDetail)) {
     const materialRows = materials?.length ? [...materials] : [];

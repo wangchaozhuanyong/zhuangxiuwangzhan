@@ -1,8 +1,9 @@
 import { ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
 import type { FocusEvent, PointerEvent } from "react";
+import { useLocation } from "react-router-dom";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
-import { ANZHE_SHOWROOM_ORIGIN } from "@/config/anzheShowroom";
+import { getAnzheShowroomEntry } from "@/config/anzheShowroom";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
@@ -54,6 +55,7 @@ const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
+  const location = useLocation();
   const settings = useSiteSettings();
   const copy = schemeAHomeText[language];
   const editorial = homeEditorialText[language];
@@ -348,7 +350,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
           <div className="home-materials__actions">
             <LocalizedLink to="/materials">{editorial.materialsCta}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
             <LocalizedLink to="/services/builtin">{editorial.builtinsCta}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
-            <a id="smart-locks" href={`${ANZHE_SHOWROOM_ORIGIN}/${language}/`}>
+            <a id="smart-locks" href={getAnzheShowroomEntry(language, { ...location, hash: "#smart-locks" })}>
               {editorial.smartLocksCta}<ArrowUpRight aria-hidden="true" />
             </a>
           </div>

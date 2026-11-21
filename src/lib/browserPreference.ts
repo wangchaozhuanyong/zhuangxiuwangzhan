@@ -9,9 +9,11 @@ const safeDecode = (value: string) => {
 };
 
 const readCookie = (name: string) => {
-  if (typeof document === "undefined" || !document.cookie) return null;
+  if (typeof document === "undefined") return null;
+  let cookies: string;
+  try { cookies = document.cookie; } catch { return null; }
 
-  for (const cookie of document.cookie.split(";")) {
+  for (const cookie of cookies.split(";")) {
     const trimmed = cookie.trim();
     const separatorIndex = trimmed.indexOf("=");
     if (separatorIndex === -1) continue;

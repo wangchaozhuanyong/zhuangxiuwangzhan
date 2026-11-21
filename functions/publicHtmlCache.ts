@@ -38,11 +38,13 @@ const applyPublicHtmlBrowserCacheHeaders = (headers: Headers) => {
   headers.set("expires", "0");
 };
 
-export const createHtmlEtag = async (html: string) => {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(html));
+export const createContentEtag = async (bytes: ArrayBuffer | Uint8Array<ArrayBuffer>) => {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
   const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
   return `"sha256-${hash}"`;
 };
+
+export const createHtmlEtag = (html: string) => createContentEtag(new TextEncoder().encode(html));
 
 const normalizeEtag = (etag: string) => etag.trim().replace(/^W\//i, "");
 
@@ -67,6 +69,15 @@ const requestAcceptsLastModified = (request: Request, lastModified: string) => {
     && lastModifiedTime <= ifModifiedSinceTime;
 };
 
+export function requestMatchesValidators(request: Request, headers: Headers) {
+  const etag = headers.get("etag");
+  const lastModified = headers.get("last-modified");
+  return Boolean(
+    (etag && requestAcceptsEtag(request, etag)) ||
+    (lastModified && requestAcceptsLastModified(request, lastModified))
+  );
+}
+
 export const createPublicHtmlBrowserResponse = (
   response: Response,
   request: Request,
@@ -75,13 +86,7 @@ export const createPublicHtmlBrowserResponse = (
   const headers = new Headers(response.headers);
   applyPublicHtmlBrowserCacheHeaders(headers);
   headers.set(HTML_CACHE_DEBUG_HEADER, state);
-  const etag = headers.get("etag");
-  const lastModified = headers.get("last-modified");
-
-  if (
-    (etag && requestAcceptsEtag(request, etag))
-    || (lastModified && requestAcceptsLastModified(request, lastModified))
-  ) {
+  if (requestMatchesValidators(request, headers)) {
     return new Response(null, { status: 304, headers });
   }
 

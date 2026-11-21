@@ -2,6 +2,10 @@
   'use strict';
   const words = window.showroomWords;
   const root = document.documentElement;
+  if (!window.showroomPolicy) {
+    // Keep the static styles usable when the independent boot script failed to load.
+    document.querySelectorAll('link[data-public-style]').forEach(link => { link.media = 'all'; });
+  }
   const base = root.dataset.root || '';
   const imageBundle = document.getElementById('offline-images');
   const offlineImages = imageBundle ? JSON.parse(imageBundle.textContent) : null;
@@ -18,20 +22,9 @@
     const url = new URL(location.href);
     return url.pathname.split('/').reverse().find(supported) || supported(url.searchParams.get('lang'));
   }
-  let saved;
-  try {
-    const cookie = document.cookie.split(';').map(s => s.trim()).find(s => s.startsWith('flashcast_lang='));
-    saved = supported(cookie?.split('=')[1]) || supported(localStorage.getItem('fc-lang'));
-  } catch {}
-  const preferred = (navigator.languages?.[0] || navigator.language || '').toLowerCase().split(/[-_]/)[0];
-  const initialPreference = saved || (offlineImages ? 'zh' : supported(preferred)) || 'en';
+  const initialPreference = window.showroomPolicy?.getDefaultLanguage() || (offlineImages ? 'zh' : 'en');
   let lang = languageFromURL() || initialPreference;
-  function saveLanguage(value) {
-    try {
-      localStorage.setItem('fc-lang',value);
-      if (location.protocol !== 'file:') document.cookie = 'flashcast_lang=' + value + '; Max-Age=31536000; Path=/; SameSite=Lax';
-    } catch {}
-  }
+  const saveLanguage = value => window.showroomPolicy?.rememberLanguage(value);
   let intent = {kind:'none'};
   const text = key => words[lang][key];
   const formatPrice = id => 'RM' + byModel.get(id).price.toLocaleString('en-MY');
@@ -118,6 +111,48 @@
     } finally { reconciling = false; }
   });
 
+  // A fragment keeps the return path out of HTTP requests.
+  // Keep it only on this history entry so reloads retain it and a fresh direct visit starts clean.
+  function readMainSiteReturn() {
+    const fragment = new URLSearchParams(location.hash.slice(1));
+    const entering = fragment.has('fc-return');
+    const raw = entering ? fragment.get('fc-return') : history.state?.showroomReturn;
+    if (typeof raw !== 'string') return null;
+    let destination = null;
+    try {
+      const main = 'https://flashcast.com.my';
+      const url = new URL(raw, main);
+      const path = decodeURIComponent(url.pathname);
+      if (raw.startsWith('/') && url.origin === main && /^\/(en|ms|zh)(?:\/|$)/.test(path) &&
+          !/[\\?#\x00-\x1f]/.test(path) && !path.includes('//') &&
+          !/^\/(en|ms|zh)\/(admin|auth|api)(?:\/|$)/i.test(path) &&
+          (!url.search || /^\?page=[1-9]\d{0,4}$/.test(url.search)) &&
+          (!url.hash || /^#[a-z][a-z0-9_-]{0,100}$/i.test(url.hash))) {
+        destination = url;
+      }
+    } catch {}
+    if (entering) {
+      const clean = new URL(location.href);
+      clean.hash = '';
+      history.replaceState({ ...history.state, showroomReturn: destination ? raw : null }, '', clean);
+    }
+    return destination?.href;
+  }
+  const mainSiteReturn = readMainSiteReturn();
+  if (mainSiteReturn) {
+    // Native section links create a fresh history entry, initially with no state.
+    const destination = new URL(mainSiteReturn);
+    const relative = destination.pathname + destination.search + destination.hash;
+    const retainReturn = () => {
+      if (history.state?.showroomReturn !== relative) {
+        history.replaceState({ ...history.state, showroomReturn: relative }, '');
+      }
+    };
+    window.addEventListener('popstate', retainReturn);
+    window.addEventListener('hashchange', retainReturn);
+    window.addEventListener('pagehide', retainReturn);
+  }
+
   const selectionChanged = () => window.dispatchEvent(new Event('showroom:selection'));
   function syncCompare() {
     window.directory.syncCompare();
@@ -144,9 +179,57 @@
     noteCompare(){ intent = {kind:'compare'};selectionChanged(); },
   };
 
+  function enableHeroImageRetry() {
+    for (const button of document.querySelectorAll('[data-hero-image-retry]')) {
+      const frame = button.closest('.panel-view');
+      const img = frame.querySelector('img');
+      const source = new URL(img.src);
+      let attempt = 0;
+      function showFailure() {
+        frame.dataset.imageState = 'error';
+        button.hidden = false;
+        button.disabled = false;
+      }
+      img.addEventListener('error', showFailure);
+      img.addEventListener('load', () => {
+        delete frame.dataset.imageState;
+        button.hidden = true;
+        button.disabled = false;
+      });
+      button.addEventListener('click', () => {
+        frame.dataset.imageState = 'retrying';
+        button.disabled = true;
+        if (source.protocol !== 'data:') source.searchParams.set('image_retry', String(++attempt));
+        img.src = source.href;
+      });
+      if (img.complete && !img.naturalWidth) showFailure();
+    }
+  }
+
   function render() {
-    root.lang = lang === 'zh' ? 'zh-Hans' : lang;
+    root.lang = window.showroomPolicy?.languageTag(lang) || lang;
     document.title = text('title');
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      const publicUrl = new URL('/' + lang + '/', canonical.href).href;
+      const description = text('description');
+      canonical.href = publicUrl;
+      document.querySelector('meta[name="description"]').content = description;
+      for (const [key,value] of Object.entries({url:publicUrl, title:document.title, description, locale:lang + '_MY'})) {
+        document.querySelector('meta[property="og:' + key + '"]').content = value;
+      }
+      const structured = document.querySelector('script[type="application/ld+json"]');
+      const collection = JSON.parse(structured.textContent);
+      Object.assign(collection,{url:publicUrl,name:document.title,description,inLanguage:lang==='zh'?'zh-Hans':root.lang});
+      structured.textContent = JSON.stringify(collection);
+    }
+    if (mainSiteReturn) {
+      const brand = document.querySelector('.mast .brand');
+      brand.href = mainSiteReturn;
+      brand.dataset.mainReturn = '';
+      brand.setAttribute('aria-label', text('returnToMain'));
+      brand.querySelector('small').textContent = '← ' + text('returnToMainShort');
+    }
     document.querySelectorAll('[data-t]').forEach(el => {el.textContent = text(el.dataset.t);});
     document.querySelectorAll('[data-alt]').forEach(el => {el.alt = text(el.dataset.alt);});
     document.querySelectorAll('[data-aria]').forEach(el => el.setAttribute('aria-label', text(el.dataset.aria)));
@@ -179,7 +262,7 @@
       }
       render();
     } else if (button.matches('[data-show-featured]')) {
-      window.directory.show('v37j-p16', button);
+      window.directory.show('v37j-p16', button, event.detail>0);
     } else if (button.matches('[data-nav-comparison],[data-choose-compare]')) {
       window.lockPanels.resume(button);
     } else if (button.matches('[data-example]')) {
@@ -207,8 +290,11 @@
       intent = {kind:'compare'};
     }
   }
+  enableHeroImageRetry();
   render();
   if (savedSelection?.directory) window.directory.restore(savedSelection.directory);
+  window.showroomInteractive = true;
+  window.dispatchEvent(new Event('showroom:ready'));
   addEventListener('pagehide',saveSelection);
   document.addEventListener('visibilitychange',()=>{if (document.hidden) saveSelection();});
 })();

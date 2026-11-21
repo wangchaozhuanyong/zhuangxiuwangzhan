@@ -5,6 +5,10 @@ export const languageTag = (language: Language) => language === "zh" ? "zh-CN" :
 
 const DEFAULT_LANGUAGE: Language = "en";
 export const PUBLIC_LANGUAGE_COOKIE = "flashcast_lang";
+export const SHARED_LANGUAGE_COOKIE = "flashcast_site_lang";
+export const PUBLIC_LANGUAGE_DOMAIN = "flashcast.com.my";
+export const sharesPublicLanguage = (hostname: string) =>
+  [PUBLIC_LANGUAGE_DOMAIN, "www." + PUBLIC_LANGUAGE_DOMAIN, "locks." + PUBLIC_LANGUAGE_DOMAIN].includes(hostname);
 
 export const isSupportedLanguage = (value?: string | null): value is Language =>
   value === "en" || value === "zh" || value === "ms";
@@ -67,3 +71,8 @@ export const resolvePreferredLanguage = ({
   if (isSupportedLanguage(savedLanguage)) return savedLanguage;
   return detectLanguageFromTags(parseAcceptLanguage(acceptLanguage));
 };
+
+export function readPublicLanguageCookie(cookies: string | null, hostname: string): string | null {
+  const shared = sharesPublicLanguage(hostname) ? readCookieValue(cookies, SHARED_LANGUAGE_COOKIE) : null;
+  return isSupportedLanguage(shared) ? shared : readCookieValue(cookies, PUBLIC_LANGUAGE_COOKIE);
+}
