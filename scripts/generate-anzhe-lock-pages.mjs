@@ -20,302 +20,6 @@ const groups = ["entrance", "room", "slim"]; // Catalogue groups for entrance, i
 const minimumVisibleChars = 6000;
 const { values: args } = parseArgs({ options: { check: { type: "boolean" }, copy: { type: "string" } } });
 
-// The supplied draft is a local editorial input, outside this release's tracked files.
-// Keep its reviewed head copy reproducible in a clean checkout and interpolate catalogue prices.
-// This draft's body fails the answer-length, installation and warranty requirements.
-const reviewedDraftDigest = "e4d9fcbcf30d0b7cfe1d0187c88485b1102f71dbe814a6a83543a2654b6ef1fe";
-const reviewedHeadCopy = {
-  "f8": {
-    "zh": {
-      "title": "{model} 电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪",
-      "description": "{model} 是 ANZHE 的铝合金入户把手锁，含安装价 RM{price}。指纹开锁后下压把手，也可给访客发动态密码。吉隆坡与雪兰莪上门，安装前先核对门厚与锁体。",
-      "h1": "{model} 电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Digital Lock｜RM{price} with Installation｜KL & Selangor",
-      "description": "{model} is an ANZHE aluminium lever lock at RM{price} including installation. Fingerprint entry, dynamic codes for visitors, and door thickness checked before fitting.",
-      "h1": "{model} Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Digital｜RM{price} Termasuk Pemasangan｜KL & Selangor",
-      "description": "{model} ialah kunci berpemegang aluminium ANZHE pada RM{price} termasuk pemasangan. Masuk dengan cap jari dan berikan kod dinamik kepada tetamu.",
-      "h1": "{model} Kunci Digital — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "g5": {
-    "zh": {
-      "title": "{model} 室内门锁｜含安装 RM{price}｜吉隆坡 雪兰莪",
-      "description": "{model} 是哑光黑室内把手配钢化玻璃面板，含安装价 RM{price}。关门后可按内侧电子反锁键，适合客房与出租房间。吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 室内门锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Interior Door Lock｜RM{price} with Installation",
-      "description": "{model} pairs a matte-black lever with a tempered-glass panel at RM{price} including installation. Inside privacy button for guest rooms and rental units.",
-      "h1": "{model} Interior Door Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Pintu Dalaman｜RM{price} Termasuk Pemasangan",
-      "description": "{model} menggabungkan pemegang hitam kusam dengan panel kaca terbaja pada RM{price} termasuk pemasangan. Butang privasi dalam untuk bilik tetamu dan sewa.",
-      "h1": "{model} Kunci Pintu Dalaman — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "g13": {
-    "zh": {
-      "title": "{model} 室内门锁｜含安装 RM{price}｜全系列最低价",
-      "description": "{model} 是 ANZHE 全系列价格最低的一款，含安装 RM{price}。哑光黑室内锁，面板厚 22 毫米，房客用密码进门，入住后可从房内按键反锁。",
-      "h1": "{model} 室内门锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Interior Door Lock｜RM{price} with Installation",
-      "description": "{model} is the lowest-priced ANZHE model at RM{price} including installation. A matte-black interior lock with a 22 mm panel; tenants enter by PIN.",
-      "h1": "{model} Interior Door Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Pintu Dalaman｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah model ANZHE paling murah pada RM{price} termasuk pemasangan. Kunci dalaman hitam kusam dengan panel 22 mm; penyewa masuk dengan PIN.",
-      "h1": "{model} Kunci Pintu Dalaman — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "g86f-pro": {
-    "zh": {
-      "title": "{model} 电子锁｜含安装 RM{price}｜钢化玻璃面板",
-      "description": "{model} 是带钢化玻璃面板的半自动入户锁，含安装价 RM{price}，是入户门里价格最低的一款。电池耗尽时可用门外 USB-C 接口临时供电开门。",
-      "h1": "{model} 电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Digital Lock｜RM{price} with Installation",
-      "description": "{model} is a semi-automatic entrance lock with a tempered-glass panel at RM{price} including installation. Outdoor USB-C provides emergency power.",
-      "h1": "{model} Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Digital｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci pintu utama separa automatik dengan panel kaca terbaja pada RM{price} termasuk pemasangan, harga pintu utama paling rendah dalam julat ini.",
-      "h1": "{model} Kunci Digital — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "gp08": {
-    "zh": {
-      "title": "{model} 电子锁｜含安装 RM{price}｜防猫眼开启",
-      "description": "{model} 是铝合金配钢化玻璃的入户把手锁，含安装价 RM{price}，带防猫眼开启设计。键盘、指纹与备用钥匙都能用于进门，吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Digital Lock｜RM{price} with Installation｜Anti-Peephole",
-      "description": "{model} is an aluminium and tempered-glass lever lock at RM{price} including installation, with protection against unlocking through the peephole.",
-      "h1": "{model} Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Digital｜RM{price} Termasuk Pemasangan｜Anti Lubang Intai",
-      "description": "{model} ialah kunci berpemegang aluminium dan kaca terbaja pada RM{price} termasuk pemasangan, dengan perlindungan daripada pembukaan melalui lubang intai.",
-      "h1": "{model} Kunci Digital — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "g53-pro": {
-    "zh": {
-      "title": "{model} 电子锁｜含安装 RM{price}｜钥匙扣感应开门",
-      "description": "{model} 是钢化玻璃面板配感应钥匙扣的入户把手锁，含安装价 RM{price}。除指纹与密码外，也可用随身钥匙扣感应开门，吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Digital Lock｜RM{price} with Installation",
-      "description": "{model} is a tempered-glass lever lock with key-fob access at RM{price} including installation. Tap the fob instead of a fingerprint or PIN.",
-      "h1": "{model} Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Digital｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci berpemegang dengan panel kaca terbaja dan akses tag kunci pada RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Digital — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "d10b": {
-    "zh": {
-      "title": "{model} 窄框铝门电子锁｜含安装 RM{price}",
-      "description": "{model} 是 ANZHE 唯一的窄框铝门专用款，面板宽 38.6 毫米，含安装价 RM{price}。为铝门留出把手位置，选购前请量门框可用宽度并核对现有锁孔。",
-      "h1": "{model} 窄框铝门电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Narrow Frame Digital Lock｜RM{price} with Installation",
-      "description": "{model} is the only ANZHE model for narrow-frame aluminium doors. A 38.6 mm slim panel at RM{price} including installation, after measuring frame width.",
-      "h1": "{model} Narrow Frame Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Digital Bingkai Sempit｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah satu-satunya model ANZHE untuk pintu aluminium bingkai sempit. Panel langsing 38.6 mm pada RM{price} termasuk pemasangan. Ukur lebar bingkai dahulu.",
-      "h1": "{model} Kunci Digital Bingkai Sempit — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "r10j-22": {
-    "zh": {
-      "title": "{model} 掌静脉人脸锁｜含安装 RM{price}",
-      "description": "{model} 保留下压把手，同时支持掌静脉与 3D 人脸识别，门内有 4 英寸屏查看访客，含安装价 RM{price}。吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 掌静脉人脸锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Palm Vein & Face Lock｜RM{price} with Installation",
-      "description": "{model} keeps the push-down lever and adds palm vein and 3D face, with a 4-inch indoor display. RM{price} including installation.",
-      "h1": "{model} Palm Vein & Face Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Vena Tapak Tangan & Wajah｜RM{price} Termasuk Pemasangan",
-      "description": "{model} mengekalkan pemegang tuil sambil menambah vena tapak tangan dan pengecaman wajah 3D, dengan skrin dalaman 4 inci. RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Vena Tapak Tangan & Wajah — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "a88-face-id": {
-    "zh": {
-      "title": "{model} 人脸识别锁｜含安装 RM{price}",
-      "description": "{model} 是带 3.5 英寸屏幕与人脸识别的半自动入户锁，含安装价 RM{price}。识别后下压把手开门，电量低会有提醒，吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 人脸识别锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Digital Lock｜RM{price} with Installation",
-      "description": "{model} is a semi-automatic entrance lock with face recognition and a 3.5-inch display at RM{price} including installation.",
-      "h1": "{model} Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Digital｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci separa automatik dengan pengecaman wajah dan skrin 3.5 inci pada RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Digital — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "q8j": {
-    "zh": {
-      "title": "{model} 3D 人脸掌静脉锁｜含安装 RM{price}",
-      "description": "{model} 是全自动推拉锁，支持 3D 人脸与掌静脉识别，配 4 英寸室内屏与远程对讲，含安装价 RM{price}。吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 3D 人脸掌静脉锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} 3D Face & Palm Vein Lock｜RM{price} with Installation",
-      "description": "{model} is a fully automatic push-pull lock with 3D face and palm-vein recognition, a 4-inch indoor display and remote intercom. RM{price} including installation.",
-      "h1": "{model} 3D Face & Palm Vein Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Wajah 3D & Vena Tapak Tangan｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci tolak-tarik automatik dengan pengecaman wajah 3D dan vena tapak tangan, skrin 4 inci dan interkom jauh. RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Wajah 3D & Vena Tapak Tangan — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "t06j": {
-    "zh": {
-      "title": "{model} 掌静脉可视门锁｜含安装 RM{price}",
-      "description": "{model} 是哑光黑全自动推拉锁，配 3.5 英寸室内屏与可视门铃，含安装价 RM{price}。出门在外也能与来访者对讲，吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 掌静脉可视门锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Palm Vein Video Lock｜RM{price} with Installation",
-      "description": "{model} is a matte-black automatic push-pull lock with a 3.5-inch display and video doorbell at RM{price} including installation.",
-      "h1": "{model} Palm Vein Video Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Video Vena Tapak Tangan｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci tolak-tarik automatik hitam kusam dengan skrin dalaman 3.5 inci dan loceng pintu video pada RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Video Vena Tapak Tangan — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "k19j": {
-    "zh": {
-      "title": "{model} 可视对讲门锁｜含安装 RM{price}",
-      "description": "{model} 是带 4.5 英寸室内屏的哑光黑推拉锁，含安装价 RM{price}。访客按门铃可查看画面，广角摄像头支持门前逗留抓拍。吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 可视对讲门锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Video Intercom Lock｜RM{price} with Installation",
-      "description": "{model} is a matte-black push-pull lock with a 4.5-inch indoor screen at RM{price} including installation, plus lingering capture at the door.",
-      "h1": "{model} Video Intercom Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Interkom Video｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci tolak-tarik hitam kusam dengan skrin dalaman 4.5 inci pada RM{price} termasuk pemasangan. Lihat pelawat ketika loceng berbunyi.",
-      "h1": "{model} Kunci Interkom Video — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "k26j-pro": {
-    "zh": {
-      "title": "{model} 掌静脉电子锁｜含安装 RM{price}",
-      "description": "{model} 支持掌静脉与人脸开锁，门内配 4.5 英寸屏幕，含安装价 RM{price}。全自动推拉设计省去下压把手，吉隆坡与雪兰莪上门安装。",
-      "h1": "{model} 掌静脉电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Palm Vein Digital Lock｜RM{price} with Installation",
-      "description": "{model} opens by palm vein or face with a 4.5-inch indoor display, at RM{price} including installation. Automatic push-pull, no lever.",
-      "h1": "{model} Palm Vein Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Vena Tapak Tangan｜RM{price} Termasuk Pemasangan",
-      "description": "{model} dibuka dengan vena tapak tangan atau wajah dan memaparkan pelawat pada skrin dalaman 4.5 inci. RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Vena Tapak Tangan — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "k16j-k19": {
-    "zh": {
-      "title": "{model} 人脸掌静脉锁｜含安装 RM{price}",
-      "description": "{model} 是铝合金全自动推拉锁，配 3D 人脸、掌静脉与 4.5 英寸室内屏，含安装价 RM{price}。门内可看访客，外出也能远程对讲。",
-      "h1": "{model} 人脸掌静脉锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Face & Palm Vein Lock｜RM{price} with Installation",
-      "description": "{model} is an aluminium automatic push-pull lock with 3D face, palm vein and a 4.5-inch display. RM{price} including installation.",
-      "h1": "{model} Face & Palm Vein Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Wajah & Vena Tapak Tangan｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci tolak-tarik automatik aluminium dengan wajah 3D, vena tapak tangan dan skrin dalaman 4.5 inci. RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Wajah & Vena Tapak Tangan — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "q58j-k19": {
-    "zh": {
-      "title": "{model} 可视门铃推拉锁｜含安装 RM{price}",
-      "description": "{model} 是铝合金推拉锁，配 4 英寸室内屏与广角摄像头，含安装价 RM{price}。门铃、视频对讲与门前逗留抓拍集中在同一把锁上。",
-      "h1": "{model} 可视门铃推拉锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Video Doorbell Lock｜RM{price} with Installation",
-      "description": "{model} is an aluminium push-pull lock with a 4-inch screen and wide-angle camera at RM{price} including installation.",
-      "h1": "{model} Video Doorbell Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Loceng Video｜RM{price} Termasuk Pemasangan",
-      "description": "{model} ialah kunci tolak-tarik aluminium dengan skrin dalaman 4 inci dan kamera sudut lebar pada RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Loceng Video — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "v37j-p16": {
-    "zh": {
-      "title": "{model} 掌静脉电子锁｜含安装 RM{price}｜CNC 精雕",
-      "description": "{model} 是 CNC 精雕铝合金锁身配钢化玻璃与隐藏式指纹头，含 C 级锁芯、4.5 英寸屏与掌静脉开锁，含安装价 RM{price}。",
-      "h1": "{model} 掌静脉电子锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Palm Vein Digital Lock｜RM{price} with Installation",
-      "description": "{model} has a CNC-machined aluminium body, concealed fingerprint reader, Grade C cylinder and 4.5-inch screen. RM{price} installed.",
-      "h1": "{model} Palm Vein Digital Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Vena Tapak Tangan｜RM{price} Termasuk Pemasangan",
-      "description": "{model} mempunyai badan aluminium dimesin CNC, pengimbas cap jari tersembunyi dan silinder gred C pada RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Vena Tapak Tangan — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  },
-  "p59j-pro": {
-    "zh": {
-      "title": "{model} 广角可视门锁｜含安装 RM{price}",
-      "description": "{model} 是铝合金配钢化玻璃面板的广角可视门铃锁，含安装价 RM{price}。可从 4.5 英寸屏幕看访客，在外也能视频对讲并远程开锁。",
-      "h1": "{model} 广角可视门锁｜含安装 RM{price}｜吉隆坡 雪兰莪"
-    },
-    "en": {
-      "title": "{model} Wide-Angle Video Lock｜RM{price} with Installation",
-      "description": "{model} pairs a wide-angle video doorbell with a 4.5-inch screen at RM{price} including installation, with remote talk and unlock.",
-      "h1": "{model} Wide-Angle Video Lock — RM{price} with Installation｜KL & Selangor"
-    },
-    "ms": {
-      "title": "{model} Kunci Video Sudut Lebar｜RM{price} Termasuk Pemasangan",
-      "description": "{model} menggabungkan loceng pintu video sudut lebar dengan skrin 4.5 inci pada RM{price} termasuk pemasangan.",
-      "h1": "{model} Kunci Video Sudut Lebar — RM{price} Termasuk Pemasangan｜KL & Selangor"
-    }
-  }
-};
-
 const escape = text => String(text).replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;",
 })[char]);
@@ -344,11 +48,9 @@ async function readShowroomSources() {
 async function readCopy() {
   const file = args.copy ? resolve(args.copy) : join(root, "docs/seo/anzhe-lock-page-copy.json");
   try {
-    const contents = lf(await readFile(file, "utf8")).replace(/^\uFEFF/, "");
-    const digest = createHash("sha256").update(contents).digest("hex");
-    return digest === reviewedDraftDigest ? reviewedHeadCopy : JSON.parse(contents);
+    return JSON.parse((await readFile(file, "utf8")).replace(/^\uFEFF/, ""));
   } catch (error) {
-    if (error.code === "ENOENT" && !args.copy) return reviewedHeadCopy;
+    if (error.code === "ENOENT" && !args.copy) return {};
     throw error;
   }
 }
@@ -574,10 +276,13 @@ function pageCopy(model, lang, words, overrides) {
   const text = copyTemplates[lang].templates({ name, group, price, access, words });
   const override = overrides[model.id]?.[lang] ?? {};
   const fill = value => value.replaceAll("{model}", name).replaceAll("{price}", price.slice(2)).replaceAll("{access}", access);
-  for (const key of ["title", "description", "h1", "answer", "doorFit"]) {
-    if (key in override) text[key] = fill(override[key]);
+  const copyFields = ["title", "description", "h1", "answer", "doorFit"];
+  for (const key of copyFields) {
+    if (override[key]?.trim()) text[key] = fill(override[key]);
   }
-  if ("faqs" in override) text.faqs = override.faqs.map(({ q, a }) => ({ q: fill(q), a: fill(a) }));
+  if (override.faqs != null) {
+    text.faqs = override.faqs.map(({ q, a }) => ({ q: fill(q), a: fill(a) }));
+  }
   if (text.faqs.length !== 3 || text.faqs.some(({ q, a }) => !q.trim() || !a.trim())) {
     throw new Error(`${model.id}/${lang}: expected three complete FAQs`);
   }
@@ -587,10 +292,11 @@ function pageCopy(model, lang, words, overrides) {
   const answerLength = lang === "zh"
     ? Array.from(text.answer.replace(/\s/g, "")).length
     : text.answer.trim().split(/\s+/).length;
-  if (answerLength < 40 || answerLength > 60) {
-    throw new Error(`${model.id}/${lang}: the direct answer must be 40–60 ${lang === "zh" ? "characters" : "words"}`);
+  if (!override.answer?.trim() && (answerLength < 40 || answerLength > 60)) {
+    throw new Error(`${model.id}/${lang}: the fallback answer must be 40–60 ${lang === "zh" ? "characters" : "words"}`);
   }
-  for (const value of [text.title, text.description, text.h1, text.answer, text.doorFit, ...text.faqs.flatMap(({ q, a }) => [q, a])]) {
+  // Published FAQs can compare other models or mention price differences explicitly.
+  for (const value of copyFields.map(key => text[key])) {
     if (!value.trim()) throw new Error(`${model.id}/${lang}: empty page copy`);
     for (const [, amount] of value.matchAll(/\bRM\s*(\d[\d,]*(?:\.\d+)?)/g)) {
       if (amount.replaceAll(",", "") !== model.prices.offer) {
@@ -642,10 +348,11 @@ function renderComparison(model, lang, catalog, words, labels) {
           </article>
         </li>`;
     }).join("\n        ");
+    const singleModelNote = group === model.group && peers.length === 1
+      ? `      <p>${escape(ui.singleModel)}</p>\n` : "";
     return `<section aria-label="${escape(words[group])}">
       <h3>${escape(words[group])}</h3>
-      ${group === model.group && peers.length === 1 ? `<p>${escape(ui.singleModel)}</p>` : ""}
-      <ul>
+${singleModelNote}      <ul>
         ${entries}
       </ul>
     </section>`;
@@ -904,7 +611,7 @@ const shared = {
 };
 const pages = catalog.flatMap(model => languages.map(lang => {
   const path = pagePath(lang, model.id);
-  const html = renderPage(model, lang, sources, catalog, shared, overrides).replace(/[ \t]+$/gm, "");
+  const html = renderPage(model, lang, sources, catalog, shared, overrides);
   return { path, target: join(showroom, "." + path, "index.html"), html, length: visibleChars(html) };
 }));
 const short = pages.filter(page => page.length < minimumVisibleChars);

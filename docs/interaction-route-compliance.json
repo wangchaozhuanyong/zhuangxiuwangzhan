@@ -1303,6 +1303,21 @@
       "evidence": "2026-10-29 reviewed local candidate: catalogue/details/colours, three languages, five widths, complete quote links and saved-state recovery. Production acceptance pending this release."
     }
   ],
+  "staticSubdomainRoutes": [
+    {
+      "origin": "https://locks.flashcast.com.my",
+      "path": "/:lang/lock/:slug/",
+      "source": "functions/anzheShowroom.ts",
+      "component": "Generated ANZHE model page",
+      "loading": "Static localized HTML with eager product image",
+      "refresh": "Existing public HTML validators and deployment-version cache key",
+      "navigation": "Ordinary same-model locale and comparison links; 301 to canonical path",
+      "editing": "Not applicable to read-only model pages",
+      "acceptance": "PASS_LOCAL_BROWSER",
+      "samplePath": "/zh/lock/v37j-p16/",
+      "evidence": "2026-11-21 e2e/anzhe-showroom-lock-pages.spec.ts: local Pages handler, desktop and mobile without JavaScript"
+    }
+  ],
   "validation": {
     "kind": "static-registration-and-source-checks",
     "acceptanceEvidence": "historical-local",
