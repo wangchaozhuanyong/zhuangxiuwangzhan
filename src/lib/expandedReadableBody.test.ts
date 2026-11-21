@@ -1,20 +1,33 @@
 import { JSDOM } from "jsdom";
 import { beforeAll, describe, expect, it } from "vitest";
 import { buildExpandedReadableBody } from "../../functions/expandedReadableBody";
-import { buildReadablePublicBody } from "../../functions/readablePublicBody";
+import { buildReadableCollectionBody, buildReadablePublicBody } from "../../functions/readablePublicBody";
 import { getServiceProjectGuidance } from "@/i18n/serviceDetailPageText";
 import { loadMalayContent } from "@/i18n/malayContentRuntime";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
+import { beforeAfterPageText } from "@/i18n/beforeAfterPageText";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { processPageText } from "@/i18n/processPageText";
 import { designServicePageText } from "@/i18n/designServicePageText";
 import { surfaceRepairPageText } from "@/i18n/surfaceRepairPageText";
-import { materialCategoryPageText } from "@/i18n/materialCategoryPageText";
+import { getMaterialCategoryGuidance, materialCategoryPageText } from "@/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "@/i18n/materialSubcategoryPageText";
 
 const row = { slug: "current", status: "published", title_en: "Current title", title_zh: "当前标题", excerpt_en: "Current summary", excerpt_zh: "当前摘要",
   content_en: '<h2>Full section</h2><p>Full body <a href="/en/quote">Enquire</a></p>', content_zh: '<h2>完整章节</h2><p>完整正文 <a href="/zh/quote">咨询</a></p>',
   category: "flooring", subcategory: "vinyl", scope: ["Published scope"], materials: [], highlights_en: [], highlights_zh: [],
 };
+it.each(["en", "zh", "ms"] as const)("exposes the %s planning comparisons in the initial HTML", lang => {
+  const dom = new JSDOM(buildExpandedReadableBody(`/${lang}/before-after`, {}));
+  const main = dom.window.document.querySelector("main[data-flashcast-readable-body]")!;
+  const copy = beforeAfterPageText[lang];
+  expect(main.querySelector("h1")?.textContent).toBe(copy.heroTitle);
+  expect(main.textContent).toContain(mediaLabels[lang].renderingConcept);
+  expect(Array.from(main.querySelectorAll("h3"), heading => heading.textContent))
+    .toEqual(copy.fallbackItems.map(item => item.title));
+  expect(main.querySelector(`a[href="/${lang}/quote#quote-form"]`)).toBeTruthy();
+  dom.window.close();
+});
 it.each(["en", "zh", "ms"] as const)("links the %s digital-lock service to the existing KL guide", async lang => {
   if (lang === "ms") await loadMalayContent();
   const key = `/${lang}/services/digital-lock`;
@@ -76,6 +89,41 @@ describe.each(["en", "zh"] as const)("expanded %s raw HTML", lang => {
     expect(html).not.toMatch(/<script|javascript:|<\/noscript>|bad\(\)/);
     expect(new JSDOM(html).window.document.querySelector('a[href^="javascript:"]')).toBeNull();
   });
+});
+
+it("includes a distinct guide on every reviewed Chinese category and leaves other languages alone", () => {
+  const slugs = [
+    "kitchen-cabinets", "whole-house-custom", "furniture", "bathroom", "countertops-stone-surfaces",
+    "flooring", "doors-windows", "wall-panels", "art-paint",
+  ];
+  const headings = new Set<string>();
+  for (const slug of slugs) {
+    const path = `/materials/category/${slug}`;
+    const guidance = getMaterialCategoryGuidance(slug, "zh");
+    expect(guidance).toBeDefined();
+    const html = buildExpandedReadableBody(`/zh${path}`, { materials: [] });
+    expect(html).toContain(guidance!.title);
+    for (const paragraph of guidance!.paragraphs) expect(html).toContain(paragraph);
+    expect(buildExpandedReadableBody(`/en${path}`, { materials: [] })).not.toContain(guidance!.title);
+    expect(buildExpandedReadableBody(`/ms${path}`, { materials: [] })).not.toContain(guidance!.title);
+    headings.add(guidance!.title);
+  }
+  expect(headings.size).toBe(slugs.length);
+});
+
+it("appends the top-level guide to published material markup without changing subcategory copy", () => {
+  const guidance = getMaterialCategoryGuidance("flooring", "zh")!;
+  const flooring = { materials: [row] };
+  const path = "/zh/materials/category/flooring";
+  expect(buildExpandedReadableBody(path, flooring)).toContain(guidance.title);
+  expect(buildExpandedReadableBody(path, flooring)).toContain('href="/zh/materials/current"');
+  expect(buildExpandedReadableBody(`${path}/vinyl`, flooring)).not.toContain(guidance.title);
+
+  const joinery = { materials: [{ ...row, category: "whole-house-custom", subcategory: "solid-wood-finish" }] };
+  const joineryPath = "/zh/materials/category/whole-house-custom";
+  const joineryGuide = getMaterialCategoryGuidance("whole-house-custom", "zh")!;
+  expect(buildReadableCollectionBody(joineryPath, joinery)).toContain(joineryGuide.title);
+  expect(buildReadableCollectionBody(`${joineryPath}/solid-wood-finish`, joinery)).not.toContain(joineryGuide.title);
 });
 
 describe.each(["en", "zh"] as const)("static material taxonomy in initial %s HTML", lang => {

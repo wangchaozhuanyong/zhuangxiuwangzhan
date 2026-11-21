@@ -1,8 +1,8 @@
+import seo from "./beforeAfterPageSeo.json";
+
 export const beforeAfterPageText = {
   en: {
-    metaTitle: "Renovation Planning Comparisons Kuala Lumpur | FLASH CAST",
-    metaDescription:
-      "Explore clearly labeled renovation planning comparisons for kitchens, living rooms and bathrooms. Visuals are not presented as completed customer projects.",
+    ...seo.en,
     metaKeywords:
       "renovation planning comparison Kuala Lumpur, home renovation concept Malaysia, interior planning Klang Valley",
     breadcrumbHome: "Home",
@@ -50,9 +50,7 @@ export const beforeAfterPageText = {
     ],
   },
   zh: {
-    metaTitle: "吉隆坡装修规划对比参考 | FLASH CAST",
-    metaDescription:
-      "查看厨房、客厅和浴室装修规划对比参考。所有视觉均按规划示意标注，不作为真实完工客户案例。",
+    ...seo.zh,
     metaKeywords: "吉隆坡装修规划对比, 马来西亚装修效果图, 巴生谷空间规划, 装修参考",
     breadcrumbHome: "首页",
     breadcrumbPage: "规划对比",
@@ -97,9 +95,7 @@ export const beforeAfterPageText = {
   },
 
   ms: {
-    metaTitle: "Perbandingan Perancangan Pengubahsuaian Kuala Lumpur | FLASH CAST",
-    metaDescription:
-      "Terokai perbandingan perancangan pengubahsuaian yang dilabel dengan jelas untuk dapur, ruang tamu dan bilik mandi. Visual tidak dibentangkan sebagai projek pelanggan yang telah siap.",
+    ...seo.ms,
     metaKeywords:
       "perbandingan perancangan ubah suai Kuala Lumpur, konsep ubah suai rumah Malaysia, perancangan dalaman Lembah Klang",
     breadcrumbHome: "Rumah",
@@ -111,7 +107,7 @@ export const beforeAfterPageText = {
       "Bandingkan rujukan ruang sedia ada dengan arah perancangan yang mungkin sebelum mengesahkan skop projek sebenar.",
     sectionTitle: "Bandingkan arah perancangan",
     sectionDescription:
-      "Penyampaian reka bentuk membandingkan susun atur, bahan dan pencahayaan. Seret setiap pembahagi untuk meneroka arah perancangan.",
+      "Gambaran reka bentuk membandingkan susun atur, bahan dan pencahayaan. Seret pembahagi untuk melihat setiap arah perancangan.",
     before: "Rujukan sedia ada",
     after: "Arah perancangan",
     itemDescription:

@@ -2,14 +2,32 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
 import { sourceKinds, type PublicSourceTable } from "@/lib/publicContentQualification.mjs";
 
-vi.mock("../../functions/seo-manifest.json", () => ({ default: Object.fromEntries(
-  ["/en/about", "/zh/about", "/en/furniture/product/catalogue", "/zh/furniture/product/catalogue",
+const site = "https://flashcast.com.my";
+const { reviewedTaxonomy, incompleteTaxonomy } = vi.hoisted(() => ({
+  reviewedTaxonomy: "/materials/category/bathroom/shower-screen",
+  incompleteTaxonomy: "/materials/category/bathroom/anti-slip-tile",
+}));
+vi.mock("../../functions/seo-manifest.json", () => {
+  const origin = "https://flashcast.com.my";
+  const fixed = ["/en/about", "/zh/about", "/en/furniture/product/catalogue", "/zh/furniture/product/catalogue",
     "/en/furniture/product/catalogue-%E6%A4%85", "/zh/furniture/product/catalogue-%E6%A4%85",
     "/en/furniture/product/catalogue-%e6%a4%85", "/zh/furniture/product/catalogue-%e6%a4%85",
     "/en/furniture/product/catalogue-%25e6%25a4%2585", "/en/furniture/product/another-%E6%A4%85",
-  ].map(path => [path, { owned_static: true }]),
-) }));
-const site = "https://flashcast.com.my";
+  ].map(path => [path, { owned_static: true }]);
+  const materialEntries = [reviewedTaxonomy, incompleteTaxonomy].flatMap(path => {
+    const publishedMalay = path === reviewedTaxonomy;
+    const locales = publishedMalay ? ["en", "zh", "ms"] : ["en", "zh"];
+    const href = (locale: string) => `${origin}/${locale}${path}`;
+    return locales.map(lang => [`/${lang}${path}`, {
+      owned_static: false, source_kind: "material_taxonomy", lang, path,
+      title: lang === "ms" ? "Sekatan Kaca Pancuran | Bilik Mandi" : "Material category",
+      description: lang === "ms" ? "Pilihan sekatan kaca pancuran." : "Material category description.",
+      canonical: href(lang), ogImage: origin + "/og-image.webp",
+      hreflang: { en: href("en"), zh: href("zh"), xDefault: href("en"), ...(publishedMalay ? { ms: href("ms") } : {}) },
+    }]);
+  });
+  return { default: Object.fromEntries([...fixed, ...materialEntries]) };
+});
 type Row = Record<string, unknown> & { id: string };
 const tables = Object.keys(sourceKinds) as PublicSourceTable[];
 const prefixes: Record<PublicSourceTable, string> = { projects: "/projects", blog_posts: "/blog", materials: "/materials", service_areas: "/locations", landing_pages: "/landing", services: "/services", site_pages: "", cms_pages: "" };
@@ -22,7 +40,7 @@ const records = (count = 0) => Object.fromEntries(tables.map(table => [table, Ar
 const xml = (paths: string[]) => `<urlset>${paths.map(path => `<url><loc>${site}${path}</loc></url>`).join("")}</urlset>`;
 const staticPaths = ["/en/about", "/zh/about", "/en/furniture/product/catalogue", "/zh/furniture/product/catalogue", ...tables.map(table => `/en${prefixes[table]}${prefixes[table] ? "/withdrawn" : "/withdrawn-" + table}`)];
 
-async function readDiscovery(rows = records(), options: { cap?: number; failureTable?: PublicSourceTable; later?: boolean; malformed?: unknown; hidden?: boolean; hiddenSlug?: string; overrides?: Record<string, unknown>[]; extraStaticPaths?: string[]; noConfig?: boolean; asset?: "sitemap.xml" | "llms.txt" } = {}) {
+async function readDiscovery(rows = records(), options: { cap?: number; failureTable?: PublicSourceTable; later?: boolean; malformed?: unknown; hidden?: boolean; hiddenSlug?: string; overrides?: Record<string, unknown>[]; extraStaticPaths?: string[]; extraStaticXml?: string; noConfig?: boolean; asset?: "sitemap.xml" | "llms.txt" } = {}) {
   const emptyTerminals = new Set<string>();
   const fetcher = vi.fn(async (input: RequestInfo | URL) => {
     const url = new URL(input instanceof Request ? input.url : String(input));
@@ -36,8 +54,11 @@ async function readDiscovery(rows = records(), options: { cap?: number; failureT
     return new Response(JSON.stringify(data));
   });
   vi.stubGlobal("fetch", fetcher);
+  const builtXml = xml([...staticPaths, ...(options.extraStaticPaths || [])]);
   const env = { ...(options.noConfig ? {} : { VITE_SUPABASE_URL: "https://fixture.supabase.co", VITE_SUPABASE_ANON_KEY: "fixture-public-key" }),
-    ASSETS: { fetch: async (request: Request) => new Response(request.url.endsWith("/sitemap.xml") ? xml([...staticPaths, ...(options.extraStaticPaths || [])]) : "# FLASH CAST\n\n## Canonical URL List\n- stale\n\n## Notes For AI Assistants\nUse official sources.") },
+    ASSETS: { fetch: async (request: Request) => new Response(request.url.endsWith("/sitemap.xml")
+      ? builtXml.replace("</urlset>", `${options.extraStaticXml || ""}</urlset>`)
+      : "# FLASH CAST\n\n## Canonical URL List\n- stale\n\n## Notes For AI Assistants\nUse official sources.") },
   };
   const response = await onRequest({ request: new Request(`${site}/${options.asset || "sitemap.xml"}`), env, next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
   return { response, text: await response.text(), emptyTerminals, fetcher };
@@ -104,6 +125,39 @@ describe("complete current runtime discovery", () => {
     const hidden = await readDiscovery(records(), { hidden: true });
     expect(hidden.text).not.toContain("furniture/product/catalogue");
     expect(hidden.text).toContain(`${site}/en/about`);
+  });
+  it("keeps built material taxonomy and its Malay alternates in complete live discovery", async () => {
+    const rows = records();
+    rows.site_pages = [{ ...row("site_pages", 1), path: reviewedTaxonomy }];
+    const extraStaticXml = ["en", "zh", "ms"].map(lang =>
+      `<url><loc>${site}/${lang}${reviewedTaxonomy}</loc><xhtml:link rel="alternate" hreflang="ms-MY" href="${site}/ms${reviewedTaxonomy}" /></url>`).join("");
+    const result = await readDiscovery(rows, { extraStaticXml, extraStaticPaths: ["/ms" + incompleteTaxonomy] });
+    expect(result.response.status).toBe(200);
+    const blocks = [...result.text.matchAll(/<url>[\s\S]*?<\/url>/g)].map(match => match[0]);
+    for (const lang of ["en", "zh", "ms"]) {
+      const matching = blocks.filter(block => block.includes(`<loc>${site}/${lang}${reviewedTaxonomy}</loc>`));
+      expect(matching).toHaveLength(1);
+      expect(matching[0]).toContain(`hreflang="ms-MY" href="${site}/ms${reviewedTaxonomy}"`);
+    }
+    expect(result.text).not.toContain("/ms" + incompleteTaxonomy);
+  });
+  it("keeps an unqualified Malay taxonomy route renderable but noindexed", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json([])));
+    const next = async () => new Response('<html lang="en"><head><title>App</title></head><body><div id="root"></div></body></html>', { headers: { "content-type": "text/html" } });
+    const request = (path: string) => onRequest({
+      request: new Request(site + path), next, env: { VITE_SUPABASE_URL: "https://taxonomy-fixture.supabase.co", VITE_SUPABASE_ANON_KEY: "fixture", ASSETS: { fetch: next } },
+    } as Parameters<typeof onRequest>[0]);
+    const qualified = await request("/ms" + reviewedTaxonomy);
+    const unqualified = await request("/ms" + incompleteTaxonomy);
+    expect(qualified.status).toBe(200);
+    expect(unqualified.status).toBe(200);
+    const localized = await qualified.text();
+    const fallback = await unqualified.text();
+    expect(localized).toContain("Sekatan Kaca Pancuran");
+    expect(localized).toContain(`hreflang="ms-MY" href="${site}/ms${reviewedTaxonomy}"`);
+    expect(localized).not.toContain("noindex");
+    expect(fallback).toContain('content="noindex, follow"');
+    expect(fallback).not.toContain('hreflang="ms-MY"');
   });
   it.each(["sitemap.xml", "llms.txt"] as const)("omits legal paths in %s after combining static and published CMS data", async (asset) => {
     const rows = records();

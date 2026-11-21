@@ -1,4 +1,5 @@
-import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, serializeSourcePath } from "../src/lib/publicContentQualification.mjs";
+import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, qualifiesMalayLocale, currentSourcePath, serializeSourcePath } from "../src/lib/publicContentQualification.mjs";
+import { reviewedMaterialMalayTerm } from "../supabase/functions/_shared/material-terminology.mjs";
 export { qualifiesLocale, currentSourcePath, serializeSourcePath };
 import { build } from "esbuild";
 
@@ -109,7 +110,9 @@ const buildCategorySeoEntry = (category) => {
       const subNameZh = zhLabel(subcategoryZhLabels, subNameEn);
       return {
         slug: subcategory.slug,
-        title_en: `${subNameEn} | ${nameEn}`,
+        title_en: category.slug === "countertops-stone-surfaces" && subcategory.slug === "quartz-countertops"
+          ? "Quartz Countertops | Stone Surfaces"
+          : `${subNameEn} | ${nameEn}`,
         title_zh: `${subNameZh} | ${nameZh}`,
         description_en:
           subcategory.description ||
@@ -124,7 +127,13 @@ const loadMaterialsData = async () => {
   if (!materialDataPromise) {
     materialDataPromise = build({
       stdin: {
-        contents: 'export { materialsData } from "./src/data/materials.ts"; export { translateDisplayText } from "./src/i18n/displayLabels.ts"; export { materialSubcategoryPageText } from "./src/i18n/materialSubcategoryPageText.ts";',
+        contents: [
+          'export { materialsData } from "./src/data/materials.ts";',
+          'export { translateDisplayText } from "./src/i18n/displayLabels.ts";',
+          'export { materialCatalogText } from "./src/i18n/materialCatalogText.ts";',
+          'export { materialCategoryPageText } from "./src/i18n/materialCategoryPageText.ts";',
+          'export { materialSubcategoryPageText } from "./src/i18n/materialSubcategoryPageText.ts";',
+        ].join("\n"),
         resolveDir: process.cwd(),
       },
       bundle: true,
@@ -205,6 +214,56 @@ export const loadMaterialSeoPaths = async (publishedMaterialRows = []) => {
     `/materials/category/${category.slug}`,
     ...category.subcategories.map((subcategory) => `/materials/category/${category.slug}/${subcategory.slug}`),
   ]);
+};
+
+export const loadMalayMaterialSeoEntries = async (publishedMaterialRows = []) => {
+  const {
+    materialsData, materialCatalogText, materialCategoryPageText, materialSubcategoryPageText,
+  } = await loadMaterialsData();
+  const sources = new Map();
+  for (const category of materialsData) {
+    sources.set(category.slug, { categoryName: category.name, ownedStatic: true });
+    for (const subcategory of category.subcategories) {
+      sources.set(`${category.slug}/${subcategory.slug}`, {
+        categoryName: category.name, subcategoryName: subcategory.name, ownedStatic: true,
+      });
+    }
+  }
+
+  // A new taxonomy path needs an exact published Malay material source and
+  // reviewed taxonomy names. An untranslated product does not qualify it.
+  const recordExcerpt = (key, categoryName, subcategoryName, excerpt) => {
+    const source = sources.get(key);
+    if (!source?.excerpt) {
+      sources.set(key, { categoryName, subcategoryName, ownedStatic: source?.ownedStatic ?? false, excerpt });
+    }
+  };
+  for (const row of publishedMaterialRows) {
+    if (!qualifiesMalayLocale(row, "material")) continue;
+    const excerpt = typeof row.excerpt_ms === "string"
+      ? row.excerpt_ms.replace(/<[^>]*>/g, " ").replace(/&(?:nbsp|#160);/g, " ").replace(/\s+/g, " ").trim()
+      : "";
+    const category = slugify(row.category);
+    const subcategory = slugify(row.subcategory || row.category);
+    if (!excerpt || !category || !subcategory) continue;
+    recordExcerpt(category, row.category, undefined, excerpt);
+    recordExcerpt(`${category}/${subcategory}`, row.category, row.subcategory || row.category, excerpt);
+  }
+
+  return Array.from(sources).flatMap(([key, source]) => {
+    const category = reviewedMaterialMalayTerm("category", source.categoryName);
+    const isSubcategory = Boolean(source.subcategoryName);
+    const name = isSubcategory ? reviewedMaterialMalayTerm("subcategory", source.subcategoryName) : category;
+    const description = source.excerpt || materialCatalogText.ms[key];
+    if (!category || !name || !description) return [];
+    const copy = isSubcategory ? materialSubcategoryPageText.ms : materialCategoryPageText.ms;
+    return [{
+      key,
+      ownedStatic: source.ownedStatic,
+      title: copy.metaTitle(name, isSubcategory ? category : materialCategoryPageText.ms.breadcrumbMaterials),
+      description: copy.metaDescription(description, name),
+    }];
+  });
 };
 
 

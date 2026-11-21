@@ -10,7 +10,7 @@ import { SchemeAContentState, SchemeAListingGrid, SchemeARouteHero, SchemeASecti
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory, translateSpaceLabel } from "@/i18n/displayLabels";
-import { materialCategoryPageText } from "@/i18n/materialCategoryPageText";
+import { getMaterialCategoryGuidance, materialCategoryPageText } from "@/i18n/materialCategoryPageText";
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
 import { customCabinetsHomeText } from "@/i18n/customCabinetsHomeText";
 
@@ -26,6 +26,7 @@ export default function MaterialCategoryPage() {
 
   const name = translateMaterialCategory(category.name, language);
   const description = translateDisplayText(category.description, language);
+  const guidance = getMaterialCategoryGuidance(category.slug, language);
   const subcategoryItems: SchemeAListingItem[] = category.subcategories.map((item) => ({ id: item.slug, title: translateMaterialSubcategory(item.name, language), description: translateDisplayText(item.description, language), meta: name, image: item.image, mediaDisclosure: isReviewedMaterialConceptImage(item.image) ? mediaLabels[language].materialPalette : undefined, imageAlt: item.alt || item.name, href: `/materials/category/${category.slug}/${item.slug}` }));
   const productItems: SchemeAListingItem[] = category.items.map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: item.suitableSpaces.map((space) => translateSpaceLabel(space, language)).join(" / "), meta: translateDisplayText(item.color || name, language), image: item.image, mediaDisclosure: isReviewedMaterialConceptImage(item.image) ? mediaLabels[language].materialPalette : undefined, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
 
@@ -36,5 +37,6 @@ export default function MaterialCategoryPage() {
     {category.slug === "whole-house-custom" && <SchemeASection><Button asChild size="lg"><Link to="/custom-cabinets">{customCabinetsHomeText[language].design}</Link></Button></SchemeASection>}
     {subcategoryItems.length ? <SchemeASection title={copy.browseSubcategories} description={description}><SchemeAListingGrid items={subcategoryItems} actionLabel={copy.view} /></SchemeASection> : null}
     {productItems.length ? <SchemeASection title={copy.allProducts(name)}><SchemeAListingGrid items={productItems} actionLabel={copy.view} /></SchemeASection> : null}
+    {guidance ? <SchemeASection title={guidance.title} description={guidance.paragraphs}>{null}</SchemeASection> : null}
   </main>;
 }
