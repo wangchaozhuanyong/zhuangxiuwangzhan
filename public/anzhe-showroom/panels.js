@@ -87,7 +87,7 @@
   const lang = () => Object.hasOwn(texts,window.showroom?.lang) ? window.showroom.lang : 'zh';
   const t = key => texts[lang()][key];
   const u = key => flowText[lang()][key];
-  const price = amount => 'RM' + amount.toLocaleString('en-MY');
+  const price = window.formatShowroomPrice;
   const data = tr => tr?.[lang()] || '';
   const count = () => chosen.length;
   const isCompared = id => chosen.includes(id);
