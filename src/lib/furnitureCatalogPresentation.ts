@@ -68,11 +68,16 @@ export const localizeFurnitureProduct = (product: FurnitureProduct, language: La
   if (product.localized) return product;
 
   const copy = (language === "zh" ? localizedProducts : localizedEnglishProducts)[product.slug];
+  const translated = { ...product, ...copy };
   const editorial = editorialDetails[product.slug];
   // Hand-checked copy follows the supplier identity and remains separate from regenerated translations.
   const details = language !== "ms" && editorial?.sourceUrl === product.sourceUrl ? editorial[language] : undefined;
-  const { note, ...fields } = details ?? {};
-  const display = resolveFurnitureDisplay({ ...product, ...copy, ...fields }, language === "ms" ? "en" : language);
+  const note = details?.note;
+  const display = resolveFurnitureDisplay({
+    ...translated,
+    shortDescription: details?.shortDescription ?? translated.shortDescription,
+    description: details?.description ?? translated.description,
+  }, language === "ms" ? "en" : language);
   if (language === "ms") return localizeMalayContent(display);
   if (!note || display.description.endsWith(note)) return display;
 
