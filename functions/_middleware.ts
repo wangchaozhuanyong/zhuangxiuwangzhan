@@ -19,7 +19,7 @@ import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreload
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFaqPageBody, buildReadableFurnitureListingBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
+import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFaqPageBody, buildReadableFurnitureListingBody, buildReadableFurnitureProductBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
 import { faqPageQuestions, mapPublishedFaqRow, resolveFaqPageCategories } from "../src/lib/publicFaqs";
 import { buildExpandedReadableBody } from "./expandedReadableBody";
@@ -2470,7 +2470,12 @@ export const onRequest: PagesFunction = async (context) => {
     meta = { ...meta, faqs: faqPageQuestions(categories) };
   }
   const html = await response.text();
-  const readableBody = faqPageBody || buildReadableFurnitureListingBody(key, furnitureListing)
+  // Reuse the already read visibility settings for related products. The client
+  // preload remains limited to this detail's own override.
+  const furnitureProductBody = meta && furnitureDetailSlug && furniturePreload && earlyFurnitureSetting
+    ? buildReadableFurnitureProductBody(key, furniturePreload.materials as FurnitureMaterialRow[], await earlyFurnitureSetting)
+    : "";
+  const readableBody = faqPageBody || furnitureProductBody || buildReadableFurnitureListingBody(key, furnitureListing)
     || buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
     || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)

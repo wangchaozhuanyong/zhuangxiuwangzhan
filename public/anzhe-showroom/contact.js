@@ -37,7 +37,7 @@
   function messageForModels(ids) {
     const picked=[...new Set(ids)].map(id=>models.get(id)).filter(Boolean);
     if(picked.length===2) {
-      const labels=picked.map(p=>p.name+' (RM'+p.price.toLocaleString('en-MY')+')');
+      const labels=picked.map(p=>p.name+' ('+window.formatShowroomPrice(p.price)+')');
       return words().compareWhatsApp(...labels);
     }
     if(picked.length===1) return window.lockPanels.messageFor(picked[0].id);

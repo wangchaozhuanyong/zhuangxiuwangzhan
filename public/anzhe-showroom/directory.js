@@ -63,7 +63,7 @@
   const t=k=>text[lang()][k];
   const loc=field=>field?.[lang()] || '';
   const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  const money=n=>'RM'+n.toLocaleString('en-MY');
+  const money=window.formatShowroomPrice;
   const asset=filename=>esc(site().asset('assets/'+filename));
   const priceLabel=p=>p.name+' · '+money(p.price)+' · '+t('installed');
   const viewName=()=>t(options()[state.view][0]);

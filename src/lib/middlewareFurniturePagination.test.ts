@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
 import catalog from "@/data/furnitureCatalog.json";
 import { furnitureText } from "@/i18n/furnitureText";
-import { localizeFurnitureProduct } from "@/lib/furnitureCatalogPresentation";
+import { furnitureProductPath, getFurnitureCatalogProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalogPresentation";
 
 const shell = '<!doctype html><html><head><title>Fixture</title></head><body><div id="root"></div></body></html>';
 const originalCaches = Object.getOwnPropertyDescriptor(globalThis, "caches");
@@ -154,7 +154,8 @@ describe("furniture pagination in original Edge HTML", () => {
       for (const request of preloadRequests) expect(request.searchParams.get("slug")).toBe(`eq.${decodedProductSlug}`);
       const summary = document.querySelector("[data-flashcast-geo-summary]");
       expect(summary).not.toBeNull();
-      expect(summary!.querySelector("h1")?.textContent).toBe(document.title);
+      expect(summary!.querySelector("h1")?.textContent).toBe(localizeFurnitureProduct(encodedProduct, language).name);
+      expect(summary!.querySelectorAll("[data-flashcast-readable-body]")).toHaveLength(1);
       expect(summary!.textContent).not.toContain("404");
     }
   });
@@ -165,12 +166,15 @@ describe("furniture pagination in original Edge HTML", () => {
     expect(enabled.response.status).toBe(200);
     expect(enabled.document.title).toContain(language === "en" ? "Current saved product" : "当前保存商品");
     expect(enabled.document.querySelector('meta[name="description"]')?.getAttribute("content")).toBe(language === "en" ? "Current saved summary" : "当前保存简介");
+    expect(enabled.document.querySelector("[data-flashcast-readable-body]")?.textContent)
+      .toContain(language === "en" ? "Current saved detail" : "当前保存详情");
     const hidden = fixture({ overrides: [productOverride(false)] });
     for (const slug of [encodedProduct.slug, canonicalProductSlug, decodedProductSlug]) {
       const withdrawn = await hidden(`/${language}/furniture/product/${slug}`);
       expect(withdrawn.response.status).toBe(404);
       expect(withdrawn.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, nofollow");
       expect(withdrawn.document.querySelector('link[rel="canonical"], link[rel="alternate"]')).toBeNull();
+      expect(withdrawn.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
     }
   });
 
@@ -193,10 +197,53 @@ describe("furniture pagination in original Edge HTML", () => {
       expect(result.response.status).toBe(404);
       expect(result.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, nofollow");
       expect(result.document.title).not.toContain("Current saved product");
+      expect(result.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
       const seedScript = result.document.querySelector("#flashcast-public-data");
       const payload = seedScript ? JSON.parse(seedScript.textContent!) : {};
       if (slug.startsWith("invalid-")) expect(payload.furnitureCatalog).toBeUndefined();
       else expect(payload.furnitureCatalog?.detailSlug).toBeTruthy();
     }
+  });
+
+  it.each(["en", "zh"] as const)("shows reviewed %s furniture specifications and excludes hidden related products", async (lang) => {
+    const bunkBed = catalog.products.find(product => product.slug === "ws-2102-wooden-bunk-bed-white")!;
+    const reviewed = localizeFurnitureProduct(bunkBed, lang);
+    const sameSubcategory = getFurnitureCatalogProductsForCategory(catalog.products, "bedroom", "bed-frame")
+      .filter(candidate => candidate.slug !== bunkBed.slug);
+    const hidden = sameSubcategory[0];
+    const read = fixture({ overrides: [{ ...productOverride(false), slug: hidden.slug }] });
+    const { response, document } = await read(`/${lang}${furnitureProductPath(bunkBed)}`);
+    const bodies = document.querySelectorAll("[data-flashcast-readable-body]");
+    expect(response.status).toBe(200);
+    expect(bodies).toHaveLength(1);
+    const body = bodies[0];
+    expect(body.querySelector("h1")?.textContent).toBe(reviewed.name);
+    expect(body.textContent).toContain(reviewed.price);
+    expect(body.textContent).toContain(reviewed.description);
+    expect(body.querySelector("dd")?.textContent).toBe(reviewed.sku);
+    expect(body.querySelector("img")?.getAttribute("alt")).toBe(`${reviewed.name} 1`);
+    expect(body.querySelector('a[href$="/furniture/bedroom/bed-frame"]')).not.toBeNull();
+    const related = [...body.querySelectorAll("ul a")].map(a => a.getAttribute("href"));
+    expect(related).toEqual(sameSubcategory.slice(1, 6).map(product => `/${lang}${furnitureProductPath(product)}`));
+  });
+
+  it("uses the detail's price fallback and only renders duplicate supplier text once", async () => {
+    const product = catalog.products.find(candidate => !candidate.price && candidate.shortDescription
+      && candidate.shortDescription === candidate.description)!;
+    const localized = localizeFurnitureProduct(product, "en");
+    const { document } = await fixture()(`/en${furnitureProductPath(product)}`);
+    const body = document.querySelector("[data-flashcast-readable-body]")!;
+    const paragraphs = [...body.querySelectorAll("p")].map(p => p.textContent);
+    const firstLine = localized.description.split("\n").map(line => line.trim()).find(Boolean);
+    expect(paragraphs).toContain("Price on request");
+    expect(paragraphs.filter(paragraph => paragraph === firstLine)).toHaveLength(1);
+  });
+
+  it("leaves Malay and unverified visibility reads on the existing fallback", async () => {
+    const product = catalog.products[0];
+    const unavailable = await fixture({ failedSetting: true })(`/en${furnitureProductPath(product)}`);
+    const malay = await fixture()(`/ms${furnitureProductPath(product)}`);
+    expect(unavailable.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
+    expect(malay.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
   });
 });

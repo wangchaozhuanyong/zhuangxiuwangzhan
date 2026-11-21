@@ -69,8 +69,7 @@
   .ct-hours{margin:14px 0 8px;padding-block:12px}.ct-qr img{width:130px}
 }
 @media (max-width:510px){
-  .mast-inner .brand{flex-direction:column;align-items:flex-start;justify-content:center;gap:3px}
-  .mast-inner .brand small{display:block;padding:0;border:0;font-size:7px;letter-spacing:.13em}
   .mast-inner .lang-switch button{min-width:32px;padding:0 5px}
 }
+@media (max-width:350px){.mast-inner{column-gap:4px}}
 @media (max-width:380px){.ct-actions a{font-size:13px;padding:9px 10px;gap:5px}.ct-other>div{gap:9px}.ct-wechat{display:block;margin-left:0}.ct-directions>div{column-gap:12px}.ct-office{padding:14px}}
