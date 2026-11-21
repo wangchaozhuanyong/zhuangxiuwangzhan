@@ -98,11 +98,11 @@ describe("ANZHE showroom on the independent hostname", () => {
     } finally { vi.unstubAllGlobals(); }
   });
 
-  it("grants immutable caching only when the public fingerprint matches the returned bytes", async () => {
+  it.each(["/public-section-spacing.css", "/public-contact-entry.css"])("only caches %s as immutable when its content matches its fingerprint", async (path) => {
     const body = "body{}";
     const hash = createHash("sha256").update(body).digest("hex").slice(0, 12);
     const asset = vi.fn(async () => new Response(body, { headers: { "content-type": "text/css", "cache-control": "immutable" } }));
-    const url = ANZHE_SHOWROOM_ORIGIN + "/public-section-spacing.css";
+    const url = ANZHE_SHOWROOM_ORIGIN + path;
     for (const suffix of ["", "?v=000000000000", "?v=bad"]) {
       const response = await requestPage(new Request(url + suffix), asset);
       expect(response.headers.get("cache-control")).toBe("no-cache, max-age=0, must-revalidate");

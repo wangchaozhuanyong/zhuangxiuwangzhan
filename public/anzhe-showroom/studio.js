@@ -223,14 +223,11 @@
       Object.assign(collection,{url:publicUrl,name:document.title,description,inLanguage:lang==='zh'?'zh-Hans':root.lang});
       structured.textContent = JSON.stringify(collection);
     }
-    if (mainSiteReturn) {
-      const brand = document.querySelector('.mast .brand');
-      const returnLabel = brand.querySelector('.brand-return');
-      brand.href = mainSiteReturn;
-      brand.dataset.mainReturn = '';
-      brand.setAttribute('aria-label', brand.querySelector('img').alt + ' · ' + text('returnToMain'));
-      returnLabel.textContent = '← ' + text('returnToMainShort');
-      returnLabel.hidden = false;
+    const back = document.querySelector('[data-main-return]');
+    if (mainSiteReturn && back) {
+      back.href = mainSiteReturn;
+      back.setAttribute('aria-label', text('returnToMain'));
+      back.hidden = false;
     }
     document.querySelectorAll('[data-t]').forEach(el => {el.textContent = text(el.dataset.t);});
     document.querySelectorAll('[data-alt]').forEach(el => {el.alt = text(el.dataset.alt);});
