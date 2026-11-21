@@ -75,10 +75,10 @@ async function imageInfo(file) {
   return { path: "/" + file, width, height };
 }
 
-async function stylesheet(path, source) {
+async function versionedAsset(path, source) {
   const contents = lf(await readFile(source, "utf8"));
   const hash = createHash("sha256").update(contents).digest("hex").slice(0, 12);
-  return `<link rel="stylesheet" href="${path}?v=${hash}">`;
+  return `${path}?v=${hash}`;
 }
 
 const copyTemplates = {
@@ -443,7 +443,8 @@ function renderPage(model, lang, sources, catalog, shared, overrides) {
   <meta property="og:description" content="${escape(copy.description)}">
   <meta property="og:image" content="${absolute(model.imageInfo.path)}">
   <meta property="og:image:alt" content="${escape(imageAlt)}">
-  ${shared.styles.join("\n  ")}
+  ${shared.styles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
+  <script defer src="${shared.updates}"></script>
   <script type="application/ld+json">
 ${renderSchema(model, copy, lang, words.title)}
   </script>
@@ -601,9 +602,10 @@ const catalog = await Promise.all(sources.lockCatalog.map(async model => {
   };
 }));
 const shared = {
+  updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
   styles: await Promise.all([
-    stylesheet("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
-    ...["studio.css", "directory.css", "contact.css"].map(file => stylesheet("/" + file, join(showroom, file))),
+    versionedAsset("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
+    ...["studio.css", "directory.css", "contact.css"].map(file => versionedAsset("/" + file, join(showroom, file))),
   ]),
   logo: await imageInfo("assets/anzhe-logo.webp"),
   face: await imageInfo("assets/guide-face.webp"),

@@ -1,13 +1,9 @@
-@media (prefers-reduced-motion: no-preference) {
-  #quick-contact[data-animate-placement] {transition:transform .18s ease-out}
-}
-
 .qc-options {
   position: absolute;
   inset-inline-end: 0;
   bottom: calc(100% + 8px);
-  width: min(264px,calc(100vw - 30px));
-  max-height: calc(100dvh - 98px - var(--fc-contact-lift, 0px));
+  width: min(306px,calc(100vw - 30px));
+  max-height: calc(100dvh - 98px);
   overflow: auto;
   background: #faf9f0;
   color: #26332d;
@@ -21,6 +17,32 @@
   line-height: 1.35;
   border-bottom: 1px solid #adb39e;
 }
+.qc-wechat {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) min(124px,45%);
+  grid-template-areas: "label qr" "account qr" "copy qr" "status status";
+  align-items: center;
+  gap: 3px 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #adb39e;
+}
+#qc-wechat-label {grid-area:label;align-self:end;font-size:15px;font-weight:650}
+.qc-wechat [data-contact-wechat] {grid-area:account;font-size:14px;overflow-wrap:anywhere;user-select:all}
+.qc-wechat img {grid-area:qr;display:block;width:100%;height:auto;background:white}
+.qc-wechat button {
+  grid-area: copy;
+  justify-self: start;
+  align-self: start;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid #919b85;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+}
+.qc-wechat [data-contact-status] {grid-area:status;color:#315540}
+.qc-wechat [data-contact-status]:empty {display:none}
 .qc-link {
   display: grid;
   grid-template-columns: 23px minmax(0,1fr) auto;
