@@ -1,5 +1,5 @@
 import serviceAreaPageText from "../src/components/services/serviceAreaPageText.json";
-import { anzheShowroomModelUrl } from "../src/config/anzheShowroom";
+import { ANZHE_SHOWROOM_ORIGIN, anzheShowroomModelUrl } from "../src/config/anzheShowroom";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
 import { getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
@@ -26,7 +26,19 @@ import { languageTag, type Language } from "../src/i18n/languageDetection";
 import { localizedContentValue } from "../src/i18n/localizedContentValue";
 import type { resolveFaqPageCategories } from "../src/lib/publicFaqs";
 // Same public content for every user agent; this fallback is rendered only without JS.
-export const readableBodyPaths = ["/services/builtin", "/services/kitchen", "/services/renovation", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
+export const readableBodyPaths = [
+  "/services/builtin", "/services/kitchen", "/services/renovation",
+  "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas",
+  "/locations/petaling-jaya/digital-lock",
+  "/locations/cheras/digital-lock",
+  "/locations/subang-jaya/digital-lock",
+  "/locations/mont-kiara/digital-lock",
+  "/locations/bangsar/digital-lock",
+  "/locations/puchong/digital-lock",
+  "/locations/selangor/digital-lock",
+  "/locations/shah-alam/digital-lock",
+  "/locations/kajang/digital-lock",
+] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
 const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const decode = (s: string) => s.replace(/&#(x[\da-f]+|\d+);?|&(amp|lt|gt|quot|apos|colon|Tab|NewLine);/gi, (m, n: string, name: string) => {
@@ -135,14 +147,17 @@ export function buildReadableFurnitureProductBody(
   return wrapBody(body, lang);
 }
 
+const publicSiteOrigin = "https://flashcast.com.my";
+const readableLinkOrigins = new Set([publicSiteOrigin, ANZHE_SHOWROOM_ORIGIN]);
+
 function publicHref(raw: string, lang: "en" | "zh" | "ms") {
   const href = decode(raw).trim();
   if (!href || Array.from(href).some(char => char.charCodeAt(0) <= 32 || char === "\\") || href.startsWith("//")) return null;
   try {
-    const url = new URL(href, "https://flashcast.com.my");
-    if (url.protocol !== "https:" || url.origin !== "https://flashcast.com.my" || url.username || url.password) return null;
+    const url = new URL(href, publicSiteOrigin);
+    if (url.protocol !== "https:" || !readableLinkOrigins.has(url.origin) || url.username || url.password) return null;
     if (url.pathname !== `/${lang}` && !url.pathname.startsWith(`/${lang}/`)) return null;
-    return `${url.pathname}${url.search}${url.hash}`;
+    return url.origin === publicSiteOrigin ? `${url.pathname}${url.search}${url.hash}` : url.href;
   } catch { return null; }
 }
 
@@ -237,10 +252,17 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
     const overview = "sections" in page
       ? buildServiceAreaGuide(page, lang)
       : `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(value => paragraph(plain(value))).join("")}</section>`;
+    let links = "";
+    if ("showroomLink" in page && typeof page.showroomLink === "string" && readableBodyPaths.some(allowedPath => allowedPath === serviceArea.path)) {
+      const showroom = publicHref(`${ANZHE_SHOWROOM_ORIGIN}/${lang}/`, lang);
+      if (showroom) {
+        links = `<nav aria-label="${escape(locationPageText[lang].resourceTitle(page.area))}"><a href="/${lang}/services/${serviceArea.parentService}">${escape(page.service)}</a> · <a href="${escape(showroom)}">${escape(page.showroomLink)}</a></nav>`;
+      }
+    }
     const faq = `<section><h2>${escape(locationPageText[lang].faqTitle(page.area))}</h2>${faqs.map(item =>
       `<h3>${escape(item.question)}</h3>${paragraph(item.answer)}`
     ).join("")}</section>`;
-    return wrapBody(`<h1>${escape(page.heading)}</h1>${paragraph(page.description)}${overview}${faq}`, lang);
+    return wrapBody(`<h1>${escape(page.heading)}</h1>${paragraph(page.description)}${overview}${links}${faq}`, lang);
   }
   const reviewedOffice = key === "/en/services/office-renovation";
   const reviewedSelangor = path === "/locations/selangor";

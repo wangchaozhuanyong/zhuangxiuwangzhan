@@ -827,7 +827,7 @@
       "source": "src/routes/publicRoutes.tsx",
       "loading": "Lazy route module and PublicRouteImageGate; localized page content renders without a CMS read",
       "refresh": "Retain static page content; shared public queries refresh related link labels independently",
-      "navigation": "Preserve public chrome and ScrollToTop; localized links to the parent area, parent service and quote",
+      "navigation": "Preserve public chrome and ScrollToTop; localized links to the parent area, parent service and quote; the nine digital lock area pages also link to the matching ANZHE showroom",
       "editing": "N/A: read-only route; quote opens the existing quote page",
       "acceptance": "PASS_LOCAL_SIMULATED",
       "samplePath": "/en/locations/kuala-lumpur/kitchen-renovation",
