@@ -123,7 +123,14 @@ async function serveStaticFile(request: Request, binding: AssetBinding, target: 
     headers.delete("content-length");
     body = bytes;
   }
-  headers.set("cache-control", fingerprintMatches ? "public, max-age=31536000, immutable" : "public, max-age=0, must-revalidate");
+  if (fingerprintMatches) {
+    headers.set("cache-control", "public, max-age=31536000, immutable");
+  } else {
+    // Pages can raise max-age=0 to the zone's browser TTL. Require validation on unpinned URLs.
+    headers.set("cache-control", "no-cache, max-age=0, must-revalidate");
+    headers.set("cdn-cache-control", "no-store");
+    headers.set("cloudflare-cdn-cache-control", "no-store");
+  }
   if (requestMatchesValidators(request, headers)) return new Response(null, { status: 304, headers });
   return new Response(request.method === "HEAD" ? null : body, { headers });
 }
