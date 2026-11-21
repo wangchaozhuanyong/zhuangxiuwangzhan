@@ -52,6 +52,22 @@ function openShowroom(lang: Locale) {
 }
 
 describe("ANZHE showroom comparison", () => {
+  it.each(locales)("keeps cents in installed prices, comparison gaps and WhatsApp messages in %s", lang => {
+    const site = openShowroom(lang);
+    try {
+      site.compare("g13", "g86f-pro");
+      expect(Array.from(site.panel.querySelectorAll(".pn-price strong"), price => price.textContent))
+        .toEqual(["RM635.20", "RM712"]);
+      expect(site.panel.querySelector(".pn-gap strong")?.textContent).toBe("RM76.80");
+      const link = site.panel.querySelector<HTMLAnchorElement>("[data-ask-pair]")!;
+      const message = new URL(link.href).searchParams.get("text");
+      expect(message).toContain("G13 (RM635.20)");
+      expect(message).toContain("G86F-Pro (RM712)");
+    } finally {
+      site.close();
+    }
+  });
+
   it.each(locales)("keeps all quoted pairs complete and symmetric in %s", lang => {
     const site = openShowroom(lang);
     try {
@@ -114,7 +130,7 @@ describe("ANZHE showroom comparison", () => {
       ]));
       const twins = site.compare("k19j", "k26j-pro");
       expect(twins.filter(row => row.group === "different")).toEqual([]);
-      expect(site.panel.querySelector(".pn-gap")?.textContent).toContain("RM165");
+      expect(site.panel.querySelector(".pn-gap")?.textContent).toContain("RM330");
     } finally {
       site.close();
     }

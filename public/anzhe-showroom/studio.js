@@ -27,7 +27,7 @@
   const saveLanguage = value => window.showroomPolicy?.rememberLanguage(value);
   let intent = {kind:'none'};
   const text = key => words[lang][key];
-  const formatPrice = id => 'RM' + byModel.get(id).price.toLocaleString('en-MY');
+  const formatPrice = id => window.formatShowroomPrice(byModel.get(id).price);
 
   // Each open surface owns one same-page history entry.
   // A rapid close followed by an open is reconciled when the browser finishes its pending back step.
@@ -225,10 +225,12 @@
     }
     if (mainSiteReturn) {
       const brand = document.querySelector('.mast .brand');
+      const returnLabel = brand.querySelector('.brand-return');
       brand.href = mainSiteReturn;
       brand.dataset.mainReturn = '';
-      brand.setAttribute('aria-label', text('returnToMain'));
-      brand.querySelector('small').textContent = '← ' + text('returnToMainShort');
+      brand.setAttribute('aria-label', brand.querySelector('img').alt + ' · ' + text('returnToMain'));
+      returnLabel.textContent = '← ' + text('returnToMainShort');
+      returnLabel.hidden = false;
     }
     document.querySelectorAll('[data-t]').forEach(el => {el.textContent = text(el.dataset.t);});
     document.querySelectorAll('[data-alt]').forEach(el => {el.alt = text(el.dataset.alt);});
@@ -236,7 +238,7 @@
     document.querySelectorAll('[data-lang]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.lang === lang)));
     document.querySelector('[data-hero-price]').textContent = formatPrice('v37j-p16');
     const samplePrices = [...document.querySelectorAll('[data-price-for]')].map(el => byModel.get(el.dataset.priceFor).price);
-    document.querySelector('[data-example-gap]').textContent = 'RM' + Math.abs(samplePrices[0] - samplePrices[1]).toLocaleString('en-MY');
+    document.querySelector('[data-example-gap]').textContent = window.formatShowroomPrice(Math.abs(samplePrices[0] - samplePrices[1]));
     document.querySelectorAll('[data-price-for]').forEach(el => {el.textContent = formatPrice(el.dataset.priceFor);});
     window.directory.refresh();
     window.lockPanels.refresh();
