@@ -4,6 +4,7 @@ import { readPreloadedPublicData } from "./publicPreload";
 import { registerPublicQuerySeedResolver } from "./publicQuerySeedCache";
 import { mapFurnitureCatalogSeed, type FurnitureMaterialRow } from "./furnitureCatalogPresentation";
 import { normalizeFurnitureSlug } from "./furnitureCatalogOverrides";
+import { resolveFurnitureSourceSlug } from "./furnitureProductUrls.mjs";
 
 /** Furniture routes load this mapper before their first synchronous seed claim.
  * Ordinary routes and the compact home cards never import the full catalog. */
@@ -15,9 +16,9 @@ export function getFurnitureQuerySeed(key: QueryKey): unknown {
   // A listing projection cannot establish a complete detail, or vice versa.
   const querySlug = typeof parameters.slug === "string" ? parameters.slug : undefined;
   if (parameters.slug !== undefined && querySlug === undefined) return undefined;
-  const detailSlug = normalizeFurnitureSlug(querySlug);
+  const detailSlug = resolveFurnitureSourceSlug(querySlug);
   if (parameters.slug !== undefined
-    && (detailSlug === undefined || normalizeFurnitureSlug(bundle.detailSlug) !== detailSlug)) return undefined;
+    && (detailSlug === undefined || resolveFurnitureSourceSlug(bundle.detailSlug) !== detailSlug)) return undefined;
   if (parameters.slug === undefined && bundle.detailSlug !== undefined) return undefined;
   const language = parameters.language === "zh" ? "zh" : "en";
   const products = mapFurnitureCatalogSeed(bundle.materials as FurnitureMaterialRow[], bundle.setting, language);

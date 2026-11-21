@@ -1,8 +1,27 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
 import catalog from "@/data/furnitureCatalog.json";
+import furnitureAliases from "@/data/furnitureProductUrlAliases.json";
 import { furnitureText } from "@/i18n/furnitureText";
 import { furnitureProductPath, getFurnitureCatalogProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalogPresentation";
+import { getLegacyFurnitureProductRedirectPath } from "@/lib/furnitureProductUrls.mjs";
+
+vi.mock("../../functions/seo-manifest.json", async () => {
+  // The production prebuild regenerates the input. Use the same generator
+  // with an empty, complete CMS snapshot instead of a stale checked-in copy.
+  const { execFileSync } = await import("node:child_process");
+  const generate = `
+    import { buildQualifiedManifest } from "./scripts/generate-seo-manifest.mjs";
+    const tables = ["projects", "blog_posts", "materials", "service_areas", "landing_pages", "services", "site_pages", "cms_pages"];
+    const rows = Object.fromEntries(tables.map(table => [table, []]));
+    const manifest = await buildQualifiedManifest({
+      rows, complete: true, readAt: "2026-11-21T00:00:00Z", sourceHash: "fixture", sourceVersion: "fixture",
+    });
+    console.log(JSON.stringify(manifest));
+  `;
+  const output = execFileSync(process.execPath, ["--input-type=module", "-e", generate], { encoding: "utf8", maxBuffer: 8_000_000 });
+  return { default: JSON.parse(output) };
+});
 
 const shell = '<!doctype html><html><head><title>Fixture</title></head><body><div id="root"></div></body></html>';
 const originalCaches = Object.getOwnPropertyDescriptor(globalThis, "caches");
@@ -14,7 +33,7 @@ class FixtureCache {
   async put(request: Request, response: Response) { this.entries.set(request.url, response.clone()); }
 }
 
-function fixture({ overrides = [] as Record<string, unknown>[], materials = [] as Record<string, unknown>[], failedSetting = false } = {}) {
+function fixture({ overrides = [] as Record<string, unknown>[], materials = [] as Record<string, unknown>[], failedSetting = false, assets = shell } = {}) {
   const cache = new FixtureCache();
   const pending: Promise<unknown>[] = [];
   const sourceUrl = `https://furniture-${++fixtureId}.supabase.co`;
@@ -29,9 +48,9 @@ function fixture({ overrides = [] as Record<string, unknown>[], materials = [] a
     return new Response(JSON.stringify(rows), { headers: { "content-type": "application/json" } });
   }));
   return async (path: string) => {
-    const response = await onRequest({ request: new Request(`https://flashcast.com.my${path}`), env: {
+    const response = await onRequest({ request: new Request(new URL(path, "https://flashcast.com.my")), env: {
       VITE_SUPABASE_URL: sourceUrl, VITE_SUPABASE_ANON_KEY: "fixture-public-key", CF_PAGES_COMMIT_SHA: "fixture-pagination",
-      ASSETS: { fetch: async () => new Response(shell, { headers: { "content-type": "text/html" } }) },
+      ASSETS: { fetch: async () => new Response(assets, { headers: { "content-type": "text/html" } }) },
     }, next: async () => new Response(shell), waitUntil: (task: Promise<unknown>) => pending.push(task) } as Parameters<typeof onRequest>[0]);
     const html = await response.text();
     await Promise.all(pending.splice(0));
@@ -46,9 +65,9 @@ afterEach(() => {
 });
 
 const productHrefs = (document: Document) => [...document.querySelectorAll('[data-flashcast-readable-furniture-listing] h2 a')].map(a => a.getAttribute("href"));
-const encodedProduct = catalog.products.find((product) => product.slug !== decodeURIComponent(product.slug))!;
+const encodedProduct = catalog.products.find((product) => decodeURIComponent(product.slug) === "mc-5011云朵悬浮")!;
 const decodedProductSlug = decodeURIComponent(encodedProduct.slug);
-const canonicalProductSlug = encodeURIComponent(decodedProductSlug);
+const canonicalProductSlug = "mc-5011-cloud-suspension";
 const productOverride = (enabled: boolean) => ({
   slug: encodedProduct.slug, enabled, name_en: "Current saved product", name_zh: "当前保存商品",
   shortDescription_en: "Current saved summary", shortDescription_zh: "当前保存简介",
@@ -91,7 +110,7 @@ describe("furniture pagination in original Edge HTML", () => {
       for (const [locale, prefix] of [["en", "en"], ["zh-CN", "zh"], ["x-default", "en"]]) {
         expect(first.document.querySelector(`link[hreflang="${locale}"]`)?.getAttribute("href")).toBe(`https://flashcast.com.my/${prefix}/furniture${search}`);
       }
-      const expected = catalog.products.slice((page - 1) * 18, page * 18).map(p => `/${language}/furniture/product/${encodeURIComponent(decodeURIComponent(p.slug))}`);
+      const expected = catalog.products.slice((page - 1) * 18, page * 18).map(p => `/${language}${furnitureProductPath(p)}`);
       expect(productHrefs(first.document)).toEqual(expected);
       expected.forEach(href => { expect(seen.has(href)).toBe(false); seen.add(href); });
       const links = [...first.document.querySelectorAll('[data-flashcast-readable-furniture-listing] nav a')].map(a => a.getAttribute("href"));
@@ -131,33 +150,56 @@ describe("furniture pagination in original Edge HTML", () => {
     const read = fixture();
     const { document } = await read(`/en/furniture?page=${value}`);
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe("https://flashcast.com.my/en/furniture");
-    expect(productHrefs(document)).toEqual(catalog.products.slice(0, 18).map(p => `/en/furniture/product/${encodeURIComponent(decodeURIComponent(p.slug))}`));
+    expect(productHrefs(document)).toEqual(catalog.products.slice(0, 18).map(p => `/en${furnitureProductPath(p)}`));
   });
 
-  it.each(["en", "zh"] as const)("retains the %s baseline detail and canonical metadata across equivalent slug representations", async (language) => {
+  it("returns one permanent redirect for every migrated English and Chinese address", async () => {
     const read = fixture();
-    for (const slug of [encodedProduct.slug, canonicalProductSlug, decodedProductSlug]) {
-      const { response, document } = await read(`/${language}/furniture/product/${slug}`);
-      expect(response.status).toBe(200);
-      expect(document.title).toContain(localizeFurnitureProduct(encodedProduct, language).name);
-      expect(document.querySelector('meta[name="robots"]')?.getAttribute("content") || "").not.toContain("noindex");
-      expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://flashcast.com.my/${language}/furniture/product/${canonicalProductSlug}`);
-      for (const [locale, prefix] of [["en", "en"], ["zh-CN", "zh"], ["x-default", "en"]]) {
-        expect(document.querySelector(`link[hreflang="${locale}"]`)?.getAttribute("href")).toBe(`https://flashcast.com.my/${prefix}/furniture/product/${canonicalProductSlug}`);
+    const aliases = Object.entries(furnitureAliases);
+    expect(aliases).toHaveLength(158);
+    for (const [source, alias] of aliases) {
+      for (const language of ["en", "zh"]) {
+        const canonical = `/${language}/furniture/product/${alias}`;
+        const legacy = `/${language}/furniture/product/${encodeURIComponent(source)}`;
+        const { response } = await read(`${legacy}?utm_source=existing-link`);
+        expect(response.status).toBe(301);
+        expect(response.headers.get("location")).toBe(`https://flashcast.com.my${canonical}?utm_source=existing-link`);
+        expect(getLegacyFurnitureProductRedirectPath(canonical)).toBeNull();
       }
-      const payload = JSON.parse(document.querySelector("#flashcast-public-data")!.textContent!);
-      expect(payload.furnitureCatalog.detailSlug).toBe(canonicalProductSlug);
-      expect(payload.furnitureCatalog.materials).toEqual([]);
-      const preloadRequests = vi.mocked(fetch).mock.calls.map(([input]) => new URL(input instanceof Request ? input.url : String(input)))
-        .filter((url) => url.pathname.endsWith("/materials") && url.searchParams.has("material_images.is_active"));
-      expect(preloadRequests.length).toBeGreaterThan(0);
-      for (const request of preloadRequests) expect(request.searchParams.get("slug")).toBe(`eq.${decodedProductSlug}`);
-      const summary = document.querySelector("[data-flashcast-geo-summary]");
-      expect(summary).not.toBeNull();
-      expect(summary!.querySelector("h1")?.textContent).toBe(localizeFurnitureProduct(encodedProduct, language).name);
-      expect(summary!.querySelectorAll("[data-flashcast-readable-body]")).toHaveLength(1);
-      expect(summary!.textContent).not.toContain("404");
     }
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it.each(["en", "zh"] as const)("redirects the %s original representations once before reading the same catalogue record", async (language) => {
+    const read = fixture();
+    const canonical = `/${language}/furniture/product/${canonicalProductSlug}`;
+    for (const slug of [encodedProduct.slug, encodeURIComponent(decodedProductSlug), decodedProductSlug]) {
+      const { response } = await read(`/${language}/furniture/product/${slug}/?source=test`);
+      expect(response.status).toBe(301);
+      expect(response.headers.get("location")).toBe(`https://flashcast.com.my${canonical}?source=test`);
+    }
+    expect(fetch).not.toHaveBeenCalled();
+    const { response, document } = await read(canonical);
+    expect(response.status).toBe(200);
+    expect(document.title).toContain(localizeFurnitureProduct(encodedProduct, language).name);
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute("content") || "").not.toContain("noindex");
+    expect(document.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://flashcast.com.my${canonical}`);
+    for (const [locale, prefix] of [["en", "en"], ["zh-CN", "zh"], ["x-default", "en"]]) {
+      expect(document.querySelector(`link[hreflang="${locale}"]`)?.getAttribute("href")).toBe(`https://flashcast.com.my/${prefix}/furniture/product/${canonicalProductSlug}`);
+    }
+    expect(document.querySelector('link[hreflang="ms-MY"]')).toBeNull();
+    const payload = JSON.parse(document.querySelector("#flashcast-public-data")!.textContent!);
+    expect(payload.furnitureCatalog.detailSlug).toBe(canonicalProductSlug);
+    expect(payload.furnitureCatalog.materials).toEqual([]);
+    const preloadRequests = vi.mocked(fetch).mock.calls.map(([input]) => new URL(input instanceof Request ? input.url : String(input)))
+      .filter((url) => url.pathname.endsWith("/materials") && url.searchParams.has("material_images.is_active"));
+    expect(preloadRequests.length).toBeGreaterThan(0);
+    for (const request of preloadRequests) expect(request.searchParams.get("slug")).toBe(`eq.${decodedProductSlug}`);
+    const summary = document.querySelector("[data-flashcast-geo-summary]");
+    expect(summary).not.toBeNull();
+    expect(summary!.querySelector("h1")?.textContent).toBe(localizeFurnitureProduct(encodedProduct, language).name);
+    expect(summary!.querySelectorAll("[data-flashcast-readable-body]")).toHaveLength(1);
+    expect(summary!.textContent).not.toContain("404");
   });
 
   it.each(["en", "zh"] as const)("uses the same %s encoded override for current metadata and explicit withdrawal", async (language) => {
@@ -169,13 +211,39 @@ describe("furniture pagination in original Edge HTML", () => {
     expect(enabled.document.querySelector("[data-flashcast-readable-body]")?.textContent)
       .toContain(language === "en" ? "Current saved detail" : "当前保存详情");
     const hidden = fixture({ overrides: [productOverride(false)] });
-    for (const slug of [encodedProduct.slug, canonicalProductSlug, decodedProductSlug]) {
-      const withdrawn = await hidden(`/${language}/furniture/product/${slug}`);
-      expect(withdrawn.response.status).toBe(404);
-      expect(withdrawn.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, nofollow");
-      expect(withdrawn.document.querySelector('link[rel="canonical"], link[rel="alternate"]')).toBeNull();
-      expect(withdrawn.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
-    }
+    const withdrawn = await hidden(`/${language}/furniture/product/${canonicalProductSlug}`);
+    expect(withdrawn.response.status).toBe(404);
+    expect(withdrawn.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, nofollow");
+    expect(withdrawn.document.querySelector('link[rel="canonical"], link[rel="alternate"]')).toBeNull();
+    expect(withdrawn.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
+  });
+
+  it("preserves the old Malay fallback and sends www and language redirects directly to the English alias", async () => {
+    const read = fixture();
+    const oldPath = `/furniture/product/${encodedProduct.slug}`;
+    const malay = await read(`/ms${oldPath}`);
+    expect(malay.response.status).toBe(200);
+    expect(malay.document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, follow");
+    expect(malay.document.querySelector("[data-flashcast-readable-body]")).toBeNull();
+    const www = await read(`https://www.flashcast.com.my/en${oldPath}`);
+    expect(www.response.status).toBe(301);
+    expect(www.response.headers.get("Location")).toBe(`https://flashcast.com.my/en/furniture/product/${canonicalProductSlug}`);
+    const unprefixed = await read(oldPath);
+    expect(unprefixed.response.status).toBe(302);
+    expect(unprefixed.response.headers.get("Location")).toBe(`https://flashcast.com.my/en/furniture/product/${canonicalProductSlug}`);
+  });
+
+  it("reuses the source record for hidden overrides when merging new aliases into discovery", async () => {
+    const paths = ["en", "zh"].flatMap(lang => [canonicalProductSlug, encodeURIComponent(decodedProductSlug)]
+      .map(slug => `https://flashcast.com.my/${lang}/furniture/product/${slug}`));
+    const asset = `<urlset>${paths.map(path => `<url><loc>${path}</loc></url>`).join("")}</urlset>`;
+    const visible = await fixture({ assets: asset })("/sitemap.xml");
+    expect(visible.response.status).toBe(200);
+    expect(visible.html).toContain(`/en/furniture/product/${canonicalProductSlug}</loc>`);
+    expect(visible.html).not.toContain(`/en/furniture/product/${encodeURIComponent(decodedProductSlug)}</loc>`);
+    const hidden = await fixture({ assets: asset, overrides: [productOverride(false)] })("/sitemap.xml");
+    expect(hidden.response.status).toBe(200);
+    expect(hidden.html).not.toContain(`/furniture/product/${canonicalProductSlug}`);
   });
 
   it.each(["en", "zh"] as const)("matches the %s client reader's last saved override across slug aliases", async (language) => {

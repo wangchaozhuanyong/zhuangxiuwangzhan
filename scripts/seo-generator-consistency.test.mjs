@@ -8,6 +8,7 @@ import {readCompleteSeoSources,qualifiesLocale,currentSourcePath} from './seo-ma
 import {buildQualifiedManifest} from './generate-seo-manifest.mjs';
 import {buildQualifiedSitemap} from './generate-sitemap.mjs';
 import {buildQualifiedLlms} from './generate-llms.mjs';
+import furnitureAliases from '../src/data/furnitureProductUrlAliases.json' with { type: 'json' };
 const tables=['projects','blog_posts','materials','service_areas','landing_pages','services','site_pages','cms_pages'];
 const prefix={projects:'/projects',blog_posts:'/blog',materials:'/materials',service_areas:'/locations',landing_pages:'/landing',services:'/services',site_pages:'',cms_pages:''};
 const evidenceRoot=process.env.FIXTURE_OUTPUT_ROOT;
@@ -52,6 +53,34 @@ const assertDocuments=manifest=>{
  for(const m of Object.values(manifest))for(const url of Object.values(m.hreflang))assert.ok(canonicalPages.has(url));
  return {xml,llms};
 };
+test('moves the 158 supplier products to exactly 316 qualified canonical paths', async()=>{
+ const manifest=await buildQualifiedManifest(await snapshot(records(0)));
+ const {xml,llms}=assertDocuments(manifest);
+ const furniturePaths=Object.keys(manifest).filter(path=>/^\/(en|zh)\/furniture\/product\//.test(path));
+ assert.equal(furniturePaths.length,616);
+ assert.equal(Object.keys(furnitureAliases).length,158);
+ for(const [source,alias] of Object.entries(furnitureAliases)){
+  const english=`https://flashcast.com.my/en/furniture/product/${alias}`;
+  const chinese=`https://flashcast.com.my/zh/furniture/product/${alias}`;
+  for(const lang of ['en','zh']){
+   const legacy=`/${lang}/furniture/product/${encodeURIComponent(source)}`;
+   const path=`/${lang}/furniture/product/${alias}`;
+   const meta=manifest[path];
+   assert.ok(!manifest[legacy] && !xml.includes(legacy) && !llms.includes(legacy));
+   assert.equal(meta.canonical,`https://flashcast.com.my${path}`);
+   assert.equal(meta.owned_static,true);
+   assert.deepEqual(meta.available_locales,['en','zh']);
+   assert.deepEqual(meta.hreflang,{en:english,zh:chinese,xDefault:english});
+  }
+  assert.ok(!manifest[`/ms/furniture/product/${alias}`]);
+ }
+ assert.ok(manifest['/en/furniture/product/ws-2102-wooden-bunk-bed-white']);
+});
+test('fails before discovery generation when a new supplier alias collides with a managed product', async()=>{
+ const rows=records(0);
+ rows.materials=[{...row('materials',1),category:'furniture',slug:'cloud-sofa'}];
+ await assert.rejects(buildQualifiedManifest(await snapshot(rows)),/Furniture URL alias already in use: cloud-sofa/);
+});
 test('keeps legal page metadata while omitting the four canonical paths from discovery documents',async()=>{
  const manifest=await buildQualifiedManifest(await snapshot(records(0)));
  const {xml,llms}=assertDocuments(manifest);
