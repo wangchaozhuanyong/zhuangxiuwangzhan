@@ -77,6 +77,7 @@ type SeoEntry = {
   imageAlt?: string;
   breadcrumbCategory?: string;
   owned_static?: boolean;
+  source_kind?: string;
 };
 
 type SiteSettingsHead = {
@@ -2009,7 +2010,10 @@ const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => 
 };
 
 const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: string[] = []) => {
-  const blocks = [...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
+  const blocks = [
+    ...Array.from(dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ([block]) => ({ block, built: false })),
+    ...Array.from(staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ([block]) => ({ block, built: true })),
+  ];
   if (!blocks.length) return staticXml || dynamicXml;
   const dynamicLocations = new Set(
     Array.from(dynamicXml.matchAll(/<loc>([^<]+)<\/loc>/gi), (match) => match[1].trim())
@@ -2024,16 +2028,21 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
     return normalized === undefined ? [] : [normalized];
   }));
   const byLocation = new Map<string, string>();
-  for (const match of blocks) {
-    const block = match[0].trim();
+  for (const { block: rawBlock, built } of blocks) {
+    const block = rawBlock.trim();
     const location = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     if (!location) continue;
+    let builtTaxonomy = false;
     try {
       const parsedLocation = new URL(location);
       if (parsedLocation.origin !== PUBLIC_SITE_URL) continue;
       const pathname = parsedLocation.pathname;
       if (isRedirectOnlySitemapPath(pathname) || isExcludedFromPublicSitemap(pathname)) continue;
-      if (liveSitemapAvailable && !(manifest as Record<string, SeoEntry>)[pathname]?.owned_static && !dynamicLocations.has(location)) continue;
+      const entry = (manifest as Record<string, SeoEntry>)[pathname];
+      // Taxonomy translations use the complete build snapshot. The live
+      // discovery source emits individual records, not their taxonomy paths.
+      builtTaxonomy = built && entry?.source_kind === "material_taxonomy";
+      if (liveSitemapAvailable && !entry?.owned_static && !builtTaxonomy && !dynamicLocations.has(location)) continue;
       const furnitureSlug = pathname.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
       if (furnitureSlug) {
         const normalized = resolveFurnitureSourceSlug(furnitureSlug);
@@ -2042,7 +2051,7 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
     } catch {
       continue;
     }
-    if (!byLocation.has(location)) byLocation.set(location, block);
+    if (!byLocation.has(location) || builtTaxonomy) byLocation.set(location, block);
   }
   const body = Array.from(byLocation.values()).sort((a, b) => {
     const left = a.match(/<loc>([^<]+)<\/loc>/i)?.[1] || "";

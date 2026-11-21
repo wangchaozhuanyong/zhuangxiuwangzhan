@@ -35,6 +35,7 @@ function BeforeAfterComparison({
         <div>
           <h2>{title}</h2>
           <p className="scheme-a-transformation__description">{reviewedCopy ? t.itemDescription : item.description?.trim() || t.itemDescription}</p>
+          {reviewedCopy && <p className="scheme-a-transformation__description">{reviewedCopy.description}</p>}
         </div>
       </header>
 
@@ -108,6 +109,7 @@ export default function BeforeAfter() {
         keywords={t.metaKeywords}
         canonicalPath="/before-after"
         ogImage={ogImage}
+        malayReady={false}
       />
       <JsonLdBreadcrumb
         items={[

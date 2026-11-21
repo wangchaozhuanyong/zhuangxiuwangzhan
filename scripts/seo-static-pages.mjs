@@ -2,6 +2,7 @@
 import { readFileSync } from "node:fs";
 const serviceAreaCopy = JSON.parse(readFileSync(new URL("../src/components/services/serviceAreaPageText.json", import.meta.url), "utf8"));
 const cabinetText = JSON.parse(readFileSync(new URL("../src/i18n/customCabinetsText.json", import.meta.url), "utf8"));
+const beforeAfterSeo = JSON.parse(readFileSync(new URL("../src/i18n/beforeAfterPageSeo.json", import.meta.url), "utf8"));
 export const SITE_URL = (process.env.VITE_SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 export const OG_IMAGE = `${SITE_URL}/og-image.webp`;
 // Title suffix only. The registered name stays in schema and llms.txt; using the
@@ -455,8 +456,8 @@ const staticDefs = [
   page("zh", "/locations", "吉隆坡与雪兰莪装修服务地区 | FLASH CAST", "查看 FLASH CAST 在吉隆坡、雪兰莪与巴生谷的装修服务覆盖地区。"),
   page("en", "/projects", "Renovation Projects Portfolio | Kuala Lumpur | FLASH CAST", "Browse FLASH CAST renovation project references and clearly labelled planning concepts for homes and commercial spaces in Kuala Lumpur and Selangor."),
   page("zh", "/projects", "装修案例 | 吉隆坡 | FLASH CAST", "浏览 FLASH CAST 在吉隆坡与雪兰莪发布的装修项目参考和清楚标注的效果图概念。"),
-  page("en", "/before-after", "Renovation Before and After Kuala Lumpur | FLASH CAST", "Explore renovation before-and-after comparisons by FLASH CAST across Kuala Lumpur and Klang Valley."),
-  page("zh", "/before-after", "吉隆坡装修前后对比案例 | FLASH CAST", "查看 FLASH CAST 在吉隆坡与 Klang Valley 的装修前后对比示例与空间改造效果。"),
+  page("en", "/before-after", beforeAfterSeo.en.metaTitle, beforeAfterSeo.en.metaDescription),
+  page("zh", "/before-after", beforeAfterSeo.zh.metaTitle, beforeAfterSeo.zh.metaDescription),
   page("en", "/process", "Our Renovation Process | FLASH CAST Kuala Lumpur", "Understand FLASH CAST's renovation process from consultation to handover."),
   page("zh", "/process", "装修流程 | FLASH CAST 吉隆坡", "了解 FLASH CAST 从咨询、设计、施工到交付的装修流程。"),
   page("en", "/faq", "Renovation FAQ | Kuala Lumpur | FLASH CAST", "Frequently asked questions about renovation services, pricing, and timelines."),
