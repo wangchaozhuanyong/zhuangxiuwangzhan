@@ -74,16 +74,31 @@ async function main() {
   };
   const oidcUrl = new URL(e.ACTIONS_ID_TOKEN_REQUEST_URL);
   oidcUrl.searchParams.set("audience", "api://flashcast-managed-cms-publish");
-  const tokenResponse = await fetch(oidcUrl, { headers: {Authorization: "Bearer " + e.ACTIONS_ID_TOKEN_REQUEST_TOKEN}, signal: AbortSignal.timeout(20000) });
-  assert(tokenResponse.ok, "OIDC token request failed");
-  const oidc = (await tokenResponse.json()).value;
-  const identity = await verifyGithubOidcToken(oidc);
-  assert.deepEqual(identity, { repositoryId: 1248188229, actorId: Number(e.GITHUB_ACTOR_ID), workflowRef: workflow,
-    workflowSha: e.GITHUB_SHA, runId: Number(e.GITHUB_RUN_ID), runAttempt: Number(e.GITHUB_RUN_ATTEMPT) });
+  const identity = { repositoryId: 1248188229, actorId: Number(e.GITHUB_ACTOR_ID), workflowRef: workflow,
+    workflowSha: e.GITHUB_SHA, runId: Number(e.GITHUB_RUN_ID), runAttempt: Number(e.GITHUB_RUN_ATTEMPT) };
+  let oidc;
+  let refreshAt = 0;
+  async function currentOidc() {
+    if (Date.now() >= refreshAt) {
+      const tokenResponse = await fetch(oidcUrl, {
+        headers: { Authorization: "Bearer " + e.ACTIONS_ID_TOKEN_REQUEST_TOKEN },
+        signal: AbortSignal.timeout(20000),
+      });
+      assert(tokenResponse.ok, "OIDC token request failed");
+      const token = (await tokenResponse.json()).value;
+      assert.deepEqual(await verifyGithubOidcToken(token), identity);
+      const { exp } = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8"));
+      refreshAt = exp * 1000 - 30000;
+      assert(refreshAt > Date.now(), "GitHub issued an OIDC token too close to its expiry");
+      oidc = token;
+    }
+    return oidc;
+  }
 
   async function post(body) {
     const response = await fetch(origin + "/functions/v1/content-publish", {
-      method: "POST", headers: { "content-type": "application/json", "x-cron-secret": e.CONTENT_PUBLISH_SECRET, "x-managed-github-oidc": oidc },
+      method: "POST", headers: { "content-type": "application/json", "x-cron-secret": e.CONTENT_PUBLISH_SECRET,
+        "x-managed-github-oidc": await currentOidc() },
       body: JSON.stringify(body), signal: AbortSignal.timeout(120000),
     });
     const result = await response.json();
