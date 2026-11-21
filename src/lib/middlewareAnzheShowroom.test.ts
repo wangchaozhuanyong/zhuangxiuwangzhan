@@ -105,7 +105,14 @@ describe("ANZHE showroom on the independent hostname", () => {
     const url = ANZHE_SHOWROOM_ORIGIN + "/public-section-spacing.css";
     for (const suffix of ["", "?v=000000000000", "?v=bad"]) {
       const response = await requestPage(new Request(url + suffix), asset);
-      expect(response.headers.get("cache-control")).toBe("public, max-age=0, must-revalidate");
+      expect(response.headers.get("cache-control")).toBe("no-cache, max-age=0, must-revalidate");
+      expect(response.headers.get("cdn-cache-control")).toBe("no-store");
+      expect(response.headers.get("cloudflare-cdn-cache-control")).toBe("no-store");
+      const conditional = await requestPage(new Request(url + suffix, {
+        headers: { "if-none-match": response.headers.get("etag")! },
+      }), asset);
+      expect(conditional.status).toBe(304);
+      expect(conditional.headers.get("cache-control")).toBe(response.headers.get("cache-control"));
     }
     const fresh = await requestPage(new Request(url + "?v=" + hash), asset);
     expect(fresh.headers.get("cache-control")).toBe("public, max-age=31536000, immutable");
