@@ -153,7 +153,23 @@ const servicesFaqs = {
 
 const klDigitalLockPath = "/locations/kuala-lumpur/digital-lock";
 
+const digitalLockAreaPaths = [
+  "/locations/petaling-jaya/digital-lock",
+  "/locations/cheras/digital-lock",
+  "/locations/subang-jaya/digital-lock",
+  "/locations/mont-kiara/digital-lock",
+  "/locations/bangsar/digital-lock",
+  "/locations/puchong/digital-lock",
+  "/locations/selangor/digital-lock",
+  "/locations/shah-alam/digital-lock",
+  "/locations/kajang/digital-lock",
+];
+
 const staticDefs = [
+  ...digitalLockAreaPaths.flatMap(path => ["en", "zh"].map(lang => {
+    const { title, description, keywords, entityName } = serviceAreaCopy[path][lang];
+    return page(lang, path, title, description, keywords, { schemaType: "Service", entityName });
+  })),
   // Batch 2: exact approved English and Chinese copy; Malay awaits translation.
   {
     "lang": "en",

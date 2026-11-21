@@ -6,7 +6,7 @@ import LandingQuoteForm from "@/components/landing/LandingQuoteForm";
 import PageMeta from "@/components/PageMeta";
 import { SchemeAFaqList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import pageText from "@/components/services/serviceAreaPageText.json";
-import { anzheShowroomModelUrl } from "@/config/anzheShowroom";
+import { ANZHE_SHOWROOM_ORIGIN, anzheShowroomModelUrl } from "@/config/anzheShowroom";
 import { usePublishedServiceAreaBySlug, usePublishedServiceBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isMalayContentReady } from "@/i18n/localizedContent";
@@ -130,6 +130,9 @@ export default function ServiceAreaPage() {
             <li aria-current="page">{page.service}</li>
           </ol>
           <Link to={servicePath}>{parentServiceName || copy.internalServices}</Link>
+          {"showroomLink" in page && typeof page.showroomLink === "string" && (
+            <a href={`${ANZHE_SHOWROOM_ORIGIN}/${language}/`}>{page.showroomLink}</a>
+          )}
         </nav>
       </SchemeASection>
     </main>
