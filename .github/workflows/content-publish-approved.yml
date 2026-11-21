@@ -18,10 +18,14 @@ on:
         default: all-20260906
         type: choice
         options:
+          - faq-start-timing-20261121-v2
           - location-cheras-final-20261119-v1
           - location-seven-body-20261119-v1
           - kl-location-body-first-20261119-v1
           - c4-four-service-seo-20261118-v1
+          - c2-cabinet-prices-3fa4ff63-20261121-v1
+          - c2-cabinet-prices-73142986-20261121-v1
+          - c2-cabinet-prices-bf690bf8-20261121-v1
           - current-stage-source-21a1a1ad2a3b66a30ac7b011
           - current-stage-source-621f604c3a2e460c60b61438
           - current-stage-source-0f31548d5b630ef286d45894
@@ -184,6 +188,24 @@ jobs:
           APPROVAL_ID: ${{ inputs.approval_id }}
         run: |
           test "$GITHUB_REF" = "refs/heads/main"
+          if [ "$PUBLISH_TARGET" = "c2-cabinet-prices-3fa4ff63-20261121-v1" ] ||
+             [ "$PUBLISH_TARGET" = "c2-cabinet-prices-73142986-20261121-v1" ] ||
+             [ "$PUBLISH_TARGET" = "c2-cabinet-prices-bf690bf8-20261121-v1" ]; then
+            test "$MANAGED_OPERATION" = "publish" && test -z "$PARENT_RUN_ID" && test -z "$MANAGED_PERMIT_ID" || exit 1
+            test "$APPROVAL_ID" = "owner-approved-c2-cabinet-market-prices-20261121" || exit 1
+            case "$PUBLISH_MODE" in
+              dry-run|publish) ;;
+              *) exit 1 ;;
+            esac
+          fi
+          if [ "$PUBLISH_TARGET" = "faq-start-timing-20261121-v2" ]; then
+            test "$MANAGED_OPERATION" = "publish" && test -z "$PARENT_RUN_ID" && test -z "$MANAGED_PERMIT_ID" || exit 1
+            case "$PUBLISH_MODE" in
+              dry-run) ;;
+              publish) test "$APPROVAL_ID" = "owner-approved-faq-start-timing-copy-20261121" || exit 1 ;;
+              *) exit 1 ;;
+            esac
+          fi
           if [ "$PUBLISH_TARGET" = "location-seven-body-20261119-v1" ] || [ "$PUBLISH_TARGET" = "location-cheras-final-20261119-v1" ]; then
             test "$APPROVAL_ID" = "owner-approved-location-seven-after-kl-20261119" || exit 1
             test "$MANAGED_OPERATION" = "publish" || exit 1
@@ -346,8 +368,30 @@ jobs:
         if: ${{ inputs.target == 'location-seven-body-20261119-v1' || inputs.target == 'location-cheras-final-20261119-v1' }}
         run: npx playwright install --with-deps chromium
 
+      - name: Preview or publish the exact FAQ and cabinet price updates
+        if: >-
+          ${{ inputs.target == 'faq-start-timing-20261121-v2' || inputs.target == 'c2-cabinet-prices-3fa4ff63-20261121-v1' || inputs.target == 'c2-cabinet-prices-73142986-20261121-v1' || inputs.target == 'c2-cabinet-prices-bf690bf8-20261121-v1' }}
+        env:
+          CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || '' }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL: https://flashcast.com.my
+          PUBLISH_MODE: ${{ inputs.mode }}
+          PUBLISH_TARGET: ${{ inputs.target }}
+          APPROVAL_ID: ${{ inputs.approval_id }}
+          MANAGED_PERMIT_ID: ${{ inputs.managed_permit_id }}
+          MANAGED_OPERATION: ${{ inputs.managed_operation }}
+          PARENT_RUN_ID: ${{ inputs.parent_run_id }}
+        run: |
+          if [ "$PUBLISH_TARGET" = "faq-start-timing-20261121-v2" ]; then
+            node --experimental-strip-types scripts/publish-faq-start-timing.mjs
+          else
+            node --experimental-strip-types scripts/publish-cabinet-market-prices.mjs
+          fi
+
       - name: Validate or publish approved updates
-        if: ${{ inputs.target != 'kl-location-body-first-20261119-v1' && inputs.target != 'c4-four-service-seo-20261118-v1' && inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' && inputs.target != 'content-link-repair-20261024' }}
+        if: ${{ inputs.target != 'kl-location-body-first-20261119-v1' && inputs.target != 'c4-four-service-seo-20261118-v1' && inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' && inputs.target != 'content-link-repair-20261024' && inputs.target != 'faq-start-timing-20261121-v2' && inputs.target != 'c2-cabinet-prices-3fa4ff63-20261121-v1' && inputs.target != 'c2-cabinet-prices-73142986-20261121-v1' && inputs.target != 'c2-cabinet-prices-bf690bf8-20261121-v1' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ (inputs.target == 'location-seven-body-20261119-v1' || inputs.target == 'location-cheras-final-20261119-v1') && inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || '' }}
