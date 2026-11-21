@@ -209,6 +209,8 @@
   function render() {
     root.lang = window.showroomPolicy?.languageTag(lang) || lang;
     document.title = text('title');
+    const mainService = document.querySelector('[data-main-service]');
+    if (mainService) mainService.href = 'https://flashcast.com.my/' + lang + '/services/digital-lock';
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
       const publicUrl = new URL('/' + lang + '/', canonical.href).href;

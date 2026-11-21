@@ -151,6 +151,8 @@ const servicesFaqs = {
   ],
 };
 
+const klDigitalLockPath = "/locations/kuala-lumpur/digital-lock";
+
 const staticDefs = [
   // Batch 2: exact approved English and Chinese copy; Malay awaits translation.
   {
@@ -225,24 +227,11 @@ const staticDefs = [
     "schemaType": "Service",
     "entityName": "梳邦再有地住宅装修"
   },
-  {
-    "lang": "en",
-    "path": "/locations/kuala-lumpur/digital-lock",
-    "title": "Digital Lock Installation Kuala Lumpur | FLASH CAST",
-    "description": "Digital lock installation in Kuala Lumpur condos and landed homes. Door compatibility and building approval checked first, then supply, installation, user enrolment and handover testing.",
-    "keywords": "digital lock installation kuala lumpur, smart lock kl, digital lock condo door",
-    "schemaType": "Service",
-    "entityName": "Digital Lock Installation Kuala Lumpur"
-  },
-  {
-    "lang": "zh",
-    "path": "/locations/kuala-lumpur/digital-lock",
-    "title": "吉隆坡公寓电子锁安装｜门体兼容核对｜FLASH CAST",
-    "description": "吉隆坡公寓与有地住宅电子锁安装。先核对门体兼容与大楼审批，再供应、安装、录入使用者并做交付测试。",
-    "keywords": "吉隆坡电子锁安装, 智能门锁, 公寓门锁更换",
-    "schemaType": "Service",
-    "entityName": "吉隆坡电子锁安装"
-  },
+  ...Object.entries(serviceAreaCopy[klDigitalLockPath]).map(([lang, copy]) =>
+    page(lang, klDigitalLockPath, copy.title, copy.description, copy.keywords, {
+      schemaType: "Service", entityName: copy.entityName,
+    }),
+  ),
   {
     "lang": "en",
     "path": "/locations/selangor/office-renovation",
@@ -488,7 +477,7 @@ export function buildStaticManifest() {
   const manifest = {};
   for (const def of staticDefs) {
     const areaCopy = serviceAreaCopy[def.path]?.[def.lang];
-    const faqs = areaCopy ? [{ question: areaCopy.question, answer: areaCopy.answer }] : def.faqs;
+    const faqs = areaCopy ? areaCopy.faqs ?? [{ question: areaCopy.question, answer: areaCopy.answer }] : def.faqs;
     const localizedPath = def.path === "/" ? `/${def.lang}` : `/${def.lang}${def.path}`;
     const canonicalPath = def.path === "/" ? `/${def.lang}` : `/${def.lang}${def.path}`;
     const enPath = def.path === "/" ? "/en" : `/en${def.path}`;
