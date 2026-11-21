@@ -6,13 +6,34 @@ export function createUnconditionalPublicShellRequest(request: Request) {
   return new Request(url.toString(), { method: "GET", headers });
 }
 
-/** Share only unconditional generated documents; every caller owns its response. */
-export function createPublicHtmlGenerationCoalescer<T extends { response: Response; cacheWrite: Promise<unknown> | null }>() {
-  const pending = new Map<string, Promise<T>>();
-  return async (key: string, generate: () => Promise<T>): Promise<T> => {
+/** A Workers response stream belongs to the request that opened it. Read it there before sharing. */
+export async function snapshotPublicResponse(response: Response) {
+  return {
+    status: response.status,
+    statusText: response.statusText,
+    headers: Array.from(response.headers.entries()),
+    body: response.body === null ? null : await response.arrayBuffer(),
+  };
+}
+
+export type PublicResponseSnapshot = Awaited<ReturnType<typeof snapshotPublicResponse>>;
+
+export function restorePublicResponse({ body, ...init }: PublicResponseSnapshot) {
+  return new Response(body, init);
+}
+
+type GenerationMetadata = { cacheWrite: Promise<void> | null; state?: "miss" | "bypass-admin" | "bypass-not-found" };
+type GeneratedDocument = GenerationMetadata & { response: Response };
+
+/** Share the unconditional document's bytes; each caller constructs its own response stream. */
+export function createPublicHtmlGenerationCoalescer() {
+  const pending = new Map<string, Promise<GenerationMetadata & { document: PublicResponseSnapshot }>>();
+  return async (key: string, generate: () => Promise<GeneratedDocument>): Promise<GeneratedDocument> => {
     let flight = pending.get(key);
     if (!flight) {
-      flight = generate();
+      flight = generate().then(async ({ response, ...metadata }) => ({
+        ...metadata, document: await snapshotPublicResponse(response),
+      }));
       pending.set(key, flight);
       const current = flight;
       const clear = () => { if (pending.get(key) === current) pending.delete(key); };
@@ -20,7 +41,7 @@ export function createPublicHtmlGenerationCoalescer<T extends { response: Respon
       // the first response wait for that background write.
       void flight.then(result => result.cacheWrite).then(clear, clear);
     }
-    const result = await flight;
-    return { ...result, response: result.response.clone() };
+    const { document, ...metadata } = await flight;
+    return { ...metadata, response: restorePublicResponse(document) };
   };
 }
