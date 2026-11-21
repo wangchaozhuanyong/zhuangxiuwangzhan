@@ -2,7 +2,6 @@
   const number = '601128853888';
   const phone = '+60 11-2885 3888';
   const email = 'support@flashcast.com.my';
-  const wechat = 'shanzhuzhuangshi999';
   const coordinates = '3.0830403%2C101.6708234';
   const copy = {
     zh: {
@@ -61,8 +60,7 @@
     document.querySelectorAll('[data-contact-href]').forEach(link => {link.href = routes[link.dataset.contactHref];});
     document.querySelectorAll('[data-contact-number]').forEach(el => {el.textContent = phone;});
     document.querySelector('[data-contact-email]').textContent = email;
-    document.querySelector('[data-contact-wechat]').textContent = wechat;
-    document.querySelector('[data-contact-status]').textContent = '';
+    document.querySelectorAll('[data-contact-status]').forEach(status => {status.textContent = '';});
     document.querySelectorAll('.mast-contact a').forEach(link => {link.title = link.getAttribute('aria-label');});
   }
   window.addEventListener('showroom:selection',()=>{
@@ -72,14 +70,16 @@
     });
   });
   document.addEventListener('click', async event => {
-    if (!event.target.closest('[data-copy-wechat]')) return;
-    const status = document.querySelector('[data-contact-status]');
+    const section = event.target.closest('[data-copy-wechat]')?.closest('.qc-wechat, .ct-other dd');
+    if (!section) return;
+    const wechatId = section.querySelector('[data-contact-wechat]');
+    const status = section.querySelector('[data-contact-status]');
     try {
-      await navigator.clipboard.writeText(wechat);
+      await navigator.clipboard.writeText(wechatId.textContent.trim());
       status.textContent = words().copiedWechat;
     } catch {
       const range = document.createRange();
-      range.selectNodeContents(document.querySelector('[data-contact-wechat]'));
+      range.selectNodeContents(wechatId);
       const selection = window.getSelection();
       selection.removeAllRanges();
       selection.addRange(range);

@@ -1,5 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import wechatContact from "../src/config/wechatContact.json" with { type: "json" };
 
 function pendingAsset() {
   let release!: () => void;
@@ -15,7 +18,7 @@ async function serveShowroom(page: Page, beforeAsset?: (path: string) => Promise
     const path = new URL(route.request().url()).pathname;
     await beforeAsset?.(path);
     const file = ["/public-section-spacing.css", "/public-contact-entry.css"].includes(path) ? resolve("public", "." + path)
-      : resolve(showroom, path === "/zh/" ? "zh/index.html" : "." + path);
+      : resolve(showroom, "." + path + (path.endsWith("/") ? "index.html" : ""));
     await route.fulfill({ path: file });
   });
 }
@@ -97,6 +100,90 @@ test("keeps the contact launcher in place while mobile visitors scroll past cata
   expect(samples).toHaveLength(21);
   expect(Math.max(...samples) - Math.min(...samples), JSON.stringify(samples)).toBeLessThan(1);
 });
+
+test("keeps contact available through the model index and footer, yielding to an open detail dialog", async ({ page }) => {
+  await serveShowroom(page);
+  await page.goto(origin + "/zh/");
+  await expect(page.locator("#root")).not.toHaveAttribute("inert", "");
+  const contact = page.locator("#quick-contact .fc-contact-entry");
+  await expect(contact).toBeVisible();
+  await page.evaluate(async () => { await document.fonts.ready; });
+  const corner = (await contact.boundingBox())!;
+
+  for (const section of ["#model-details", "#contact", "#model-details"]) {
+    await page.locator(section).evaluate(el => el.scrollIntoView({ block: "center", behavior: "instant" }));
+    const stayedAtCorner = await contact.evaluate(async (button, position) => {
+      // Include the frames after scrolling settles, when the old placement timer ran.
+      const end = performance.now() + 400;
+      do {
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+        const box = button.getBoundingClientRect();
+        if (getComputedStyle(button).visibility !== "visible" || box.width === 0 ||
+            Math.abs(box.x - position.x) >= 1 || Math.abs(box.y - position.y) >= 1) return false;
+      } while (performance.now() < end);
+      return true;
+    }, corner);
+    expect(stayedAtCorner, section).toBe(true);
+    if (section === "#contact") {
+      await contact.tap();
+      await expect(page.locator("#quick-contact [data-copy-wechat]")).toBeFocused();
+      await page.keyboard.press("Escape");
+      await expect(contact).toBeFocused();
+      await expect(contact).toHaveAttribute("aria-expanded", "false");
+    }
+  }
+
+  await page.locator('[data-dir-card="f8"]').tap();
+  const details = page.locator("#details");
+  await expect(details).toBeVisible();
+  await expect(contact).toBeHidden();
+  await details.locator("[data-dir-back]").tap();
+  await expect(details).toBeHidden();
+  await expect(contact).toBeVisible();
+});
+
+for (const lang of ["zh", "en", "ms"]) {
+  test(`opens the shared WeChat QR and copies the configured ID in the ${lang} showroom`, async ({ page }) => {
+    await serveShowroom(page);
+    await page.addInitScript(() => {
+      let copied = "";
+      Object.defineProperty(navigator, "clipboard", { value: {
+        writeText: async (value: string) => { copied = value; },
+        readText: async () => copied,
+      } });
+    });
+    await page.goto(origin + "/" + lang + "/#collection");
+    await page.locator("#quick-contact .fc-contact-entry").tap();
+    const qr = page.locator("#qc-options .qc-wechat");
+    await expect(qr).toBeVisible();
+    await expect(qr.locator("img")).toBeInViewport({ ratio: 1 });
+    await expect(qr.locator("[data-copy-wechat]")).toBeFocused();
+    await expect(qr.locator("[data-contact-wechat]")).toHaveText(wechatContact.wechatId);
+    await expect(page).toHaveURL(origin + "/" + lang + "/#collection");
+    const digest = await qr.locator("img").evaluate(async node => {
+      const image = node as HTMLImageElement;
+      await image.decode();
+      const response = await fetch(image.currentSrc);
+      const hash = await crypto.subtle.digest("SHA-256", await response.arrayBuffer());
+      return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, "0")).join("");
+    });
+    const sharedQr = readFileSync(resolve("public", "." + wechatContact.wechatQrUrl));
+    expect(digest).toBe(createHash("sha256").update(sharedQr).digest("hex"));
+    const copy = qr.locator("[data-copy-wechat]");
+    await copy.tap();
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(wechatContact.wechatId);
+
+    if (lang === "zh") {
+      await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error("Denied"); }; });
+      await copy.tap();
+      await expect.poll(() => page.evaluate(() => window.getSelection()?.toString())).toBe(wechatContact.wechatId);
+    }
+    await expect(qr).toBeVisible();
+    await page.goBack();
+    await expect(qr).toBeHidden();
+    await expect(page).toHaveURL(origin + "/" + lang + "/#collection");
+  });
+}
 
 for (const section of ["hero", "specifications", "installation"]) {
   test(`recovers from delayed scripts while reading ${section}`, async ({ page }) => {

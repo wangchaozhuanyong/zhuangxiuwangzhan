@@ -27,7 +27,7 @@ export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus, 
   const [copyStatus, setCopyStatus] = useState<"idle" | "copying" | "copied" | "failed">("idle");
   const copying = useRef(false);
   const copyButtonRef = useRef<HTMLButtonElement>(null);
-  const [qrOpen, setQrOpen] = useState(initialContact === "wechat");
+  const [qrOpen, setQrOpen] = useState(true);
   const [shareFile, setShareFile] = useState<File | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "sharing" | "failed">("idle");
   const saving = useRef(false);

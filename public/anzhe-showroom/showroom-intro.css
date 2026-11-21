@@ -1,0 +1,81 @@
+.showroom-intro {
+  background: linear-gradient(110deg, var(--paper) 28%, #f0f0e5 74%, #e8ebdc);
+}
+.showroom-intro__inner {
+  display: grid;
+  grid-template: "heading product" auto "summary product" auto / minmax(0, 1.5fr) minmax(200px, 1fr);
+  align-content: center;
+  gap: 14px clamp(24px, 5vw, 72px);
+  padding-block: clamp(22px, 2.5vw, 36px);
+}
+.showroom-intro__heading {grid-area: heading; align-self: end; min-width: 0}
+.showroom-intro__region {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 9px;
+  color: var(--olive);
+  font-size: 13px;
+  font-weight: 600;
+}
+.showroom-intro__region::before {content: ""; width: 21px; height: 2px; background: var(--brick)}
+.showroom-intro h1 {
+  margin: 0;
+  font-size: clamp(32px, 4vw, 60px);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.showroom-intro__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 9px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.showroom-intro__price strong {color: var(--brick); font-size: clamp(20px, 1.8vw, 27px); font-weight: 630; line-height: 1.2}
+.showroom-intro__summary {
+  grid-area: summary;
+  align-self: start;
+  max-width: 66ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.showroom-intro__product {
+  grid-area: product;
+  place-self: center;
+  display: grid;
+  justify-items: center;
+  margin: 0;
+}
+.showroom-intro__product img {
+  display: block;
+  width: clamp(145px, 15vw, 210px);
+  max-width: 100%;
+  height: auto;
+}
+.showroom-intro__product figcaption {
+  margin-top: 4px;
+  color: var(--muted);
+  font: 600 11px/1.25 var(--mono);
+  letter-spacing: .06em;
+}
+@media (max-width: 700px) {
+  .showroom-intro__inner {
+    grid-template: "heading product" auto "summary summary" auto / minmax(0, 1fr) clamp(82px, 27vw, 155px);
+    gap: 13px clamp(10px, 3vw, 16px);
+    padding-block: 21px 18px;
+  }
+  .showroom-intro__heading {align-self: center}
+  .showroom-intro__region {margin-bottom: 7px; font-size: 12px}
+  .showroom-intro h1 {font-size: clamp(26px, 6.5vw, 38px)}
+  .showroom-intro__price {margin-top: 9px; font-size: 13px}
+  .showroom-intro__product {width: 100%}
+  .showroom-intro__summary {border-top: 1px solid #c9cebd; padding-top: 10px; font-size: 14px}
+}

@@ -8,7 +8,7 @@ import {
 export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
-const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|showroom-boot\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
+const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|updates|films)\.js|showroom-(?:intro|fit|films|catalog)\.css|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
 const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
 const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
 const pagePath = new RegExp(`^/(zh|en|ms)(?:/lock/(${LOCK_SLUGS}))?(?:/(?:index\\.html)?)?$`);
@@ -103,12 +103,49 @@ async function serveDocument(request: Request, binding: AssetBinding, pathname: 
   return createPublicHtmlBrowserResponse(response, request, "miss");
 }
 
+// A Pages binding can return either a native range or the complete small showroom clip.
+async function serveFilm(request: Request, binding: AssetBinding, target: URL) {
+  const forwarded = new Headers();
+  for (const name of ["range", "if-range", "if-none-match", "if-modified-since"]) {
+    const value = request.headers.get(name);
+    if (value && (name !== "range" || request.method === "GET")) forwarded.set(name, value);
+  }
+  const asset = await binding.fetch(new Request(target, { method: request.method, headers: forwarded }));
+  if (asset.status !== 304 && asset.status !== 416 &&
+    (!asset.ok || !asset.headers.get("content-type")?.includes("video/mp4"))) return null;
+  const headers = new Headers(asset.headers);
+  for (const [name, value] of Object.entries(securityHeaders)) headers.set(name, value);
+  headers.set("cache-control", "public, no-cache");
+  headers.set("accept-ranges", "bytes");
+  const range = /^bytes=(\d*)-(\d*)$/i.exec(forwarded.get("range") || "");
+  const ifRange = forwarded.get("if-range");
+  const matches = !ifRange || (!ifRange.startsWith("W/") &&
+    (ifRange === headers.get("etag") || ifRange === headers.get("last-modified")));
+  if (asset.status === 200 && request.method === "GET" && matches && range && (range[1] || range[2])) {
+    const bytes = await asset.arrayBuffer();
+    const size = bytes.byteLength;
+    const start = range[1] ? Number(range[1]) : Math.max(0, size - Number(range[2]));
+    const end = range[1] && range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
+    headers.delete("content-encoding");
+    if (start >= size || start > end) {
+      headers.set("content-range", `bytes */${size}`);
+      headers.set("content-length", "0");
+      return new Response(null, { status: 416, headers });
+    }
+    headers.set("content-range", `bytes ${start}-${end}/${size}`);
+    headers.set("content-length", String(end - start + 1));
+    return new Response(new Uint8Array(bytes, start, end - start + 1), { status: 206, headers });
+  }
+  return new Response(request.method === "HEAD" ? null : asset.body, { status: asset.status, headers });
+}
+
 async function serveStaticFile(request: Request, binding: AssetBinding, target: URL) {
   const path = target.pathname;
   // Shared stylesheets are served from the root asset directory on both hosts.
   if (!sharedStylesheets.has(path)) target.pathname = ANZHE_ASSET_PREFIX + path;
   const requestedVersion = target.searchParams.get("v");
   target.search = "";
+  if (path.endsWith(".mp4")) return serveFilm(request, binding, target);
   const asset = await binding.fetch(new Request(target));
   if (!asset.ok || !asset.headers.get("content-type")?.includes(expectedContentType(path))) return null;
   const headers = new Headers(asset.headers);
