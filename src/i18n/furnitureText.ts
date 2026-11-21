@@ -28,6 +28,8 @@ export const furnitureText = {
     enquire: "WhatsApp 咨询",
     buyNow: "立即购买",
     priceOnRequest: "价格请咨询",
+    detailPriceOnRequest: "价格请咨询",
+    relatedProducts: "同类商品",
     description: "商品描述与规格",
     gallery: "商品图片",
     specifications: "商品资料",
@@ -62,6 +64,8 @@ export const furnitureText = {
     enquire: "Ask on WhatsApp",
     buyNow: "Buy now",
     priceOnRequest: "Ask for price",
+    detailPriceOnRequest: "Price on request",
+    relatedProducts: "Related products",
     description: "Description & specifications",
     gallery: "Product images",
     specifications: "Product information",
@@ -97,6 +101,8 @@ export const furnitureText = {
     enquire: "Tanya pada WhatsApp",
     buyNow: "Beli sekarang",
     priceOnRequest: "Tanya harga",
+    detailPriceOnRequest: "Tanya harga",
+    relatedProducts: "Produk berkaitan",
     description: "Penerangan & spesifikasi",
     gallery: "Imej produk",
     specifications: "Maklumat produk",
@@ -121,10 +127,15 @@ export const furnitureText = {
   },
 } as const;
 
-export function formatFurnitureEnquiryMessage(name: string, sku: string, language: Language) {
+export function getFurnitureDisplaySku(sku: string, language: Language) {
   const displaySku = language === "en" && /[\u3400-\u9fff]/.test(sku)
     ? sku.match(/^[A-Za-z0-9-]+/)?.[0] || ""
     : sku;
+  return displaySku === "N/A" ? "" : displaySku;
+}
+
+export function formatFurnitureEnquiryMessage(name: string, sku: string, language: Language) {
+  const displaySku = getFurnitureDisplaySku(sku, language);
   return furnitureText[language].enquiryMessage.replace("{name}", name)
-    + (displaySku && displaySku !== "N/A" ? ` (${displaySku})` : "");
+    + (displaySku ? ` (${displaySku})` : "");
 }
