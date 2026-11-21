@@ -52,7 +52,7 @@ export function HomeJournal() {
                         width={900}
                         height={650}
                         candidateWidths={[360, 560, 720, 900, 1200]}
-                        sizes="(max-width: 767px) 90vw, (max-width: 1023px) 44vw, 29vw"
+                        sizes={posts.length === 3 ? "(max-width: 767px) 94vw, 32vw" : "(max-width: 767px) 94vw, 48vw"}
                         rootMargin="1200px 0px"
                       />
                       {disclosure ? <span className="home-journal__disclosure">{disclosure}</span> : null}

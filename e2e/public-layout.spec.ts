@@ -376,9 +376,11 @@ test.describe("public responsive layout", () => {
     expect(mobileColumns).toBe(1);
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/zh/materials", { waitUntil: "domcontentloaded" });
-    const desktopColumns = await page.locator(".fc-route-grid").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
-    expect(desktopColumns).toBe(3);
+    const firstRowCount = await grid.locator(":scope > a").evaluateAll(cards => {
+      const firstRowTop = cards[0].getBoundingClientRect().top;
+      return cards.filter(card => Math.abs(card.getBoundingClientRect().top - firstRowTop) < 1).length;
+    });
+    expect(firstRowCount).toBe(3);
   });
 
   test("route heroes keep a loaded cover image inside a stable frame", async ({ page }) => {

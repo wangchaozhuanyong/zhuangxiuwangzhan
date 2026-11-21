@@ -19,7 +19,7 @@ const Process = () => {
       num: String(row.step_number || index + 1).padStart(2, "0"),
       title: row.title,
       desc: row.description,
-      details: t.steps[index]?.details?.length ? t.steps[index].details : row.description ? [row.description] : [],
+      details: t.steps[index]?.details ?? [],
     }));
   }, [publishedSteps, t.steps]);
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.process);
@@ -31,7 +31,7 @@ const Process = () => {
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[pageContent?.subtitle || t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.title} description={pageContent?.description || t.description} />
 
       <SchemeASection title={t.sectionTitle} description={pageContent?.content || t.sectionDescription}>
-        <SchemeANumberList items={steps.map((step) => ({ title: step.title, description: [step.desc, ...step.details].filter(Boolean).join(" · ") }))} />
+        <SchemeANumberList items={steps.map((step) => ({ title: step.title, description: step.desc, details: step.details }))} />
       </SchemeASection>
     </main>
   );

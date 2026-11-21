@@ -556,66 +556,131 @@ test.describe("Scheme A approved-design fidelity", () => {
     expect(styles).toEqual({ opacity: "1", visibility: "visible" });
   });
 
-  test("shared route layout keeps the editorial rail aligned with the image seam", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
+  test("old-house lists fill each row and preserve reading order on small screens", async ({ page }) => {
+    await page.goto("/zh/services/old-house");
+    const lists = page.locator(".fc-route-number-list");
+    await expect(lists).toHaveCount(2);
 
+    for (const [width, expectedRows] of [
+      [390, [[1, 1, 1, 1], [1, 1, 1, 1, 1]]],
+      [900, [[2, 2], [2, 2, 1]]],
+      [1440, [[4], [3, 2]]],
+    ] as const) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const [index, counts] of expectedRows.entries()) {
+        const layout = await lists.nth(index).evaluate((list) => {
+          const bounds = list.getBoundingClientRect();
+          const groups: { top: number; left: number; right: number; count: number }[] = [];
+          for (const item of list.children) {
+            const box = item.getBoundingClientRect();
+            const last = groups.at(-1);
+            if (last && Math.abs(last.top - box.top) < 1) {
+              last.right = box.right;
+              last.count++;
+            } else {
+              groups.push({ top: box.top, left: box.left, right: box.right, count: 1 });
+            }
+          }
+          const header = list.parentElement!.querySelector("header")!;
+          const title = header.querySelector("h2")!.getBoundingClientRect();
+          const subtitle = header.querySelector("p")!;
+          const copy = subtitle.getBoundingClientRect();
+          return {
+            rowCounts: groups.map(row => row.count),
+            fillsWidth: groups.every(row => Math.abs(row.left - bounds.left) + Math.abs(bounds.right - row.right) <= 2),
+            subtitleOnRight: copy.left >= title.right && copy.top < title.bottom,
+            subtitleBelow: copy.top >= title.bottom && Math.abs(copy.left - title.left) <= 1,
+            copyAlign: getComputedStyle(subtitle).textAlign,
+          };
+        });
+        expect(layout.rowCounts).toEqual(counts);
+        expect(layout.fillsWidth).toBe(true);
+        if (width >= 768) {
+          expect(layout.subtitleOnRight).toBe(true);
+          expect(["end", "right"]).toContain(layout.copyAlign);
+        } else {
+          expect(layout.subtitleBelow).toBe(true);
+        }
+      }
+    }
+  });
+
+  for (const language of ["zh", "en", "ms"]) {
+    test(`public section titles and descriptions follow their content edges in ${language}`, async ({ page }) => {
+      const sections = [
+        { path: "", selector: ".home-section-heading" },
+        { path: "/services/old-house", selector: ".fc-route-section-head" },
+        { path: "/about", selector: ".fc-route-section-head" },
+        { path: "/contact", selector: ".forest-map-heading header" },
+        { path: "/projects", selector: ".fc-route-section-head" },
+      ];
+      for (const { path, selector } of sections) {
+        await page.goto(`/${language}${path}`, { waitUntil: "domcontentloaded" });
+        const heads = page.locator(selector).filter({ has: page.locator("h2 + p") });
+        await expect(heads.first()).toBeVisible();
+        await page.evaluate(() => document.fonts.ready);
+        for (const width of [390, 900, 1440]) {
+          await page.setViewportSize({ width, height: 900 });
+          const issues = await heads.evaluateAll((headers) => headers.flatMap(header => {
+            const title = header.querySelector("h2")!;
+            const description = header.querySelector("h2 + p")!;
+            const titleBox = title.getBoundingClientRect();
+            const copy = description.getBoundingClientRect();
+            const bounds = header.getBoundingClientRect();
+            const startAligned = (el: Element) => ["start", "left"].includes(getComputedStyle(el).textAlign);
+            const prose = header.classList.contains("scheme-a-heading--reading");
+            const sameRow = innerWidth >= (prose ? 1024 : 768);
+            const aligned = sameRow
+              ? copy.left >= titleBox.right && copy.top < titleBox.bottom
+                && Math.abs(copy.right - bounds.right) <= 1
+                && (prose ? startAligned(description) : ["end", "right"].includes(getComputedStyle(description).textAlign))
+              : copy.top >= titleBox.bottom - 1 && Math.abs(copy.left - titleBox.left) <= 1 && startAligned(description);
+            return aligned && startAligned(title) && Math.abs(titleBox.left - bounds.left) <= 1
+              ? [] : [title.textContent];
+          }));
+          expect(issues, `${language}${path} at ${width}px`).toEqual([]);
+          expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+        }
+      }
+    });
+  }
+
+  test("shared route hero text and artwork align to the framed content edges", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     for (const route of [...portraitHeroRoutes, "/zh/privacy", "/zh/terms"]) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
-      await page.locator(".fc-route-hero-copy").waitFor();
-
-      const metrics = await page.evaluate(() => {
-        const main = document.querySelector<HTMLElement>("main.fc-route-page");
-        const hero = document.querySelector<HTMLElement>(".fc-route-hero");
-        const heroCopy = document.querySelector<HTMLElement>(".fc-route-hero-copy");
-        const heroMedia = document.querySelector<HTMLElement>(".fc-route-hero-media");
-        const heroTitle = heroCopy?.querySelector<HTMLElement>("h1");
-        const sectionHeads = Array.from(document.querySelectorAll<HTMLElement>(".fc-route-section-head"));
+      const frame = page.locator(".fc-route-hero-frame");
+      await expect(frame.locator("h1")).toBeVisible();
+      const metrics = await frame.evaluate(element => {
+        const style = getComputedStyle(element);
+        const frameBox = element.getBoundingClientRect();
+        const main = element.closest("main")!.getBoundingClientRect();
+        const copy = element.querySelector(".fc-route-hero-copy")!;
+        const copyBox = copy.getBoundingClientRect();
+        const media = element.querySelector(".fc-route-hero-media")!.getBoundingClientRect();
+        const title = copy.querySelector("h1")!.getBoundingClientRect();
+        const description = copy.querySelector("p")!.getBoundingClientRect();
+        const frameLeft = frameBox.left + parseFloat(style.paddingLeft);
+        const frameRight = frameBox.right - parseFloat(style.paddingRight);
         return {
-          horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-          mainRightGap: main ? Math.round(document.documentElement.clientWidth - main.getBoundingClientRect().right) : 0,
-          mainLeft: main ? Math.round(main.getBoundingClientRect().left) : 0,
-          heroCopyLeft: heroCopy ? Math.round(heroCopy.getBoundingClientRect().left) : null,
-          copyToMediaSeam: heroCopy && heroMedia
-            ? Math.abs(heroCopy.getBoundingClientRect().right - heroMedia.getBoundingClientRect().left)
-            : null,
-          mediaRightGap: heroMedia && hero
-            ? Math.abs(hero.getBoundingClientRect().right - heroMedia.getBoundingClientRect().right)
-            : null,
-          copyShare: heroCopy && hero
-            ? heroCopy.getBoundingClientRect().width / hero.getBoundingClientRect().width
-            : null,
-          heroTitleLeft: heroTitle ? Math.round(heroTitle.getBoundingClientRect().left) : null,
-          headings: sectionHeads.map((head) => {
-            const title = head.querySelector<HTMLElement>("h2");
-            const copy = head.querySelector<HTMLElement>("p");
-            if (!title || !copy) return null;
-            const titleRect = title.getBoundingClientRect();
-            const copyRect = copy.getBoundingClientRect();
-            return {
-              titleBottom: titleRect.bottom,
-              copyTop: copyRect.top,
-              leftDelta: Math.abs(titleRect.left - copyRect.left),
-              display: getComputedStyle(head).display,
-            };
-          }).filter(Boolean),
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          mainInset: Math.abs(main.left) + Math.abs(document.documentElement.clientWidth - main.right),
+          copyInsetError: Math.abs(copyBox.left - frameLeft),
+          seam: Math.abs(copyBox.right - media.left),
+          mediaInsetError: Math.abs(media.right - frameRight),
+          copyShare: copyBox.width / (frameRight - frameLeft),
+          titleInsetError: Math.abs(title.left - (copyBox.left + parseFloat(getComputedStyle(copy).paddingLeft))),
+          subtitleInsetError: Math.abs(title.left - description.left),
         };
       });
-
-      expect(metrics.horizontalOverflow, route).toBeLessThanOrEqual(1);
-      expect(metrics.mainLeft, route).toBe(0);
-      expect(metrics.mainRightGap, route).toBe(0);
-      expect(metrics.heroCopyLeft, route).toBe(0);
-      expect(metrics.copyToMediaSeam, route).toBeLessThanOrEqual(1);
-      expect(metrics.mediaRightGap, route).toBeLessThanOrEqual(1);
-      expect(metrics.copyShare, route).toBeGreaterThanOrEqual(0.329);
-      expect(metrics.copyShare, route).toBeLessThanOrEqual(0.42);
-      expect(metrics.heroTitleLeft, route).toBeLessThanOrEqual(80);
-      for (const heading of metrics.headings) {
-        if (!heading) continue;
-        expect(heading.display, route).toBe("block");
-        expect(heading.copyTop, route).toBeGreaterThanOrEqual(heading.titleBottom);
-        expect(heading.leftDelta, route).toBeLessThanOrEqual(1);
-      }
+      expect(metrics.overflow, route).toBeLessThanOrEqual(1);
+      expect(metrics.mainInset, route).toBeLessThanOrEqual(1);
+      expect(metrics.copyInsetError, route).toBeLessThanOrEqual(1);
+      expect(metrics.seam, route).toBeLessThanOrEqual(1);
+      expect(metrics.mediaInsetError, route).toBeLessThanOrEqual(1);
+      expect(metrics.copyShare, route).toBeCloseTo(0.42, 2);
+      expect(metrics.titleInsetError, route).toBeLessThanOrEqual(1);
+      expect(metrics.subtitleInsetError, route).toBeLessThanOrEqual(1);
     }
   });
 
@@ -644,11 +709,13 @@ test.describe("Scheme A approved-design fidelity", () => {
             horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
             horizontalOverlap: Math.max(0, Math.min(copyRect.right, mediaRect.right) - Math.max(copyRect.left, mediaRect.left)),
             verticalOverlap: Math.max(0, Math.min(copyRect.bottom, mediaRect.bottom) - Math.max(copyRect.top, mediaRect.top)),
+            titleToCopyInset: Math.abs(copy.querySelector("h1")!.getBoundingClientRect().left - copy.querySelector("p")!.getBoundingClientRect().left),
             mediaAboveCopy: mediaRect.bottom <= copyRect.top + 1,
           };
         });
 
         expect(metrics.horizontalOverflow, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(1);
+        expect(metrics.titleToCopyInset, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(1);
         if (viewport.width >= 1024) {
           expect(metrics.horizontalOverlap, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(1);
           expect(metrics.verticalOverlap, `${route} at ${viewport.width}px`).toBeGreaterThan(0);

@@ -109,7 +109,9 @@ export default function FurnitureProductDetail() {
         </div>
         <section className="fc-furniture-description">
           <h2>{copy.description}</h2>
-          {description ? description.split("\n").map((line, index) => <p key={`${index}-${line.slice(0, 12)}`}>{line}</p>) : <p>{copy.descriptionUnavailable}</p>}
+          <div className="fc-furniture-description__copy">
+            {description ? description.split("\n").map((line, index) => <p key={`${index}-${line.slice(0, 12)}`}>{line}</p>) : <p>{copy.descriptionUnavailable}</p>}
+          </div>
         </section>
       </div>
     </main>

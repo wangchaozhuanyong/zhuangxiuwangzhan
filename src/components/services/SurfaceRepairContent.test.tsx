@@ -90,9 +90,13 @@ describe("Repair service interactions", () => {
     });
   }
   it("requires a location, pre-fills a selected damage and keeps manually edited damage", async () => {
-    await render(); await generate();
+    await render();
+    expect(query<HTMLDetailsElement>(".tool").open).toBe(true);
+    await generate();
     expect(query("#repair-region")).toHaveAttribute("aria-invalid", "true");
     expect(container.querySelector("#repair-message")).toBeNull();
+    await click(".tool > summary");
+    expect(query<HTMLDetailsElement>(".tool").open).toBe(false);
     await click(".damage-card .text-link");
     expect(query<HTMLDetailsElement>(".tool").open).toBe(true);
     expect(query<HTMLTextAreaElement>("#repair-description").value).toBe(surfaceRepairPageText.zh.damageExamples[0].title);

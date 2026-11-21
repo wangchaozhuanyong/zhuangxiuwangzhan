@@ -44,6 +44,13 @@ describe("CMS campaign parent retains the form during language reads", () => {
     state.failed = false; await render();
     expect(container.querySelector("#landing-quote-name")).toBe(input); expect(input.value).toBe("Keep this draft");
   });
+  it("shows the available overview without empty sections or a duplicate consultation title", async () => {
+    await render();
+    expect(container.querySelector(".fc-c-overview h2")).toHaveTextContent(landingPageText.en.overview);
+    expect(container.querySelector(".fc-c-overview ol, .fc-c-projects, .fc-c-faq")).toBeNull();
+    expect(container.querySelector(".fc-c-final h2")).toHaveTextContent(landingPageText.en.ctaTitle);
+    expect(container.querySelector(".fc-c-final a")).toHaveAttribute("href", "#landing-quote");
+  });
   it("uses the existing missing-page state after a successful missing record", async () => {
     await render(); state.pending = true; await render();
     state.pending = false; state.missing = true; await render();

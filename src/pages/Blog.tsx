@@ -78,10 +78,10 @@ export default function Blog() {
                   <strong>{topic.label}</strong>
                   <span>{topic.description}</span>
                 </button>
-                <div>
+                {topicPosts.length > 0 && <div>
                   <b>{topicCopy.articlesLabel}</b>
                   {topicPosts.map((post) => <Link key={post.slug} to={`/blog/${post.slug}`}>{translateDisplayText(post.title, language)}</Link>)}
-                </div>
+                </div>}
                 <Link className="fc-blog-topic-card__service" to={BLOG_TOPIC_SERVICE_PATHS[topicKey]}>{topicCopy.serviceLabel}</Link>
               </article>
             );

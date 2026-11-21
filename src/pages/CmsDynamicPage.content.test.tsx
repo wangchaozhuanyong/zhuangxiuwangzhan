@@ -152,6 +152,16 @@ describe("dynamic CMS content within existing slots", () => {
     expect(container.textContent).toContain("Visible body");
     expect(container.textContent).not.toMatch(/\[object Object\]|Item 1/);
   });
+  it("keeps the authored heading with its body when the mapper also exposes it as the introduction", async () => {
+    state.content = "<p>Visit with your measurements.</p>";
+    state.sections = [section("rich_text", { title: "Visit our office", content: state.content })];
+    await render();
+    const intro = container.querySelector(".fc-route-cms-copy");
+    expect(container.querySelectorAll(".fc-route-cms-copy")).toHaveLength(1);
+    expect(intro?.closest("section")?.querySelector("h2")).toHaveTextContent("Visit our office");
+    expect(intro?.closest("section")?.querySelector(".fc-route-action-panel")).toBeTruthy();
+  });
+
   it("preserves the existing section slots for heading/body and strips unsafe rich links", async () => {
     state.sections = [section("rich_text", { heading: "Heading fixture", body: '<p>Body fixture <a href="java&#10;script:alert(1)">Unsafe</a></p>' })];
     await render();

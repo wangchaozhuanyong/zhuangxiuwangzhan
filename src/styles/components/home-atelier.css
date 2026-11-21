@@ -780,8 +780,7 @@
       padding-bottom: 32px;
     }
 
-    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout,
-    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout {
       grid-template-columns: minmax(0, 1fr);
       gap: 32px;
     }
@@ -1271,8 +1270,7 @@
       gap: 0.55rem;
     }
 
-    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout,
-    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout {
       grid-template-columns: 1fr;
       gap: 2.5rem;
     }

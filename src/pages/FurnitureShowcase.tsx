@@ -66,7 +66,6 @@ export default function FurnitureShowcase() {
         description={categoryCopy?.intro || copy.intro}
       />
       <div className="scheme-a-frame fc-furniture-body">
-        <p className="fc-furniture-detail__note">{categoryCopy?.intro || copy.intro}</p>
         <nav className="fc-furniture-primary" aria-label={copy.title}>
           {furnitureCatalog.taxonomy.map((item) => (
             <LocalizedLink key={item.key} to={item.key === "new" ? "/furniture" : `/furniture/${item.key}`} viewTransition={false} onClick={keepFurnitureScrollPosition} aria-current={category?.key === item.key ? "page" : undefined}>
