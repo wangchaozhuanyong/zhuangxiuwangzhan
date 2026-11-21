@@ -4,7 +4,7 @@
 > 首条（免费报价）你已经发了，这 7 条是剩下的。
 > 每条都带 CTA 按钮，链到对应页面。
 
-**发布前必读**：第 2 条涉及 CIDB 资质、第 6 条涉及工期承诺。这两个是事实性声明，**发布前必须你自己确认为真**，我不能替你担保。
+**状态**：四条占位符已由业主确认并填入（CIDB 号、厨房工期、保修期限）。第 2、5、6 条的事实性声明来源见文末对照表。七条均可直接发布。
 
 ---
 
@@ -35,7 +35,7 @@ J: Kami beroperasi di seluruh Kuala Lumpur dan Selangor, termasuk Petaling Jaya,
 
 ---
 
-## 第 2 条：承包商资质 ⚠️ 发前先确认
+## 第 2 条：承包商资质
 
 **EN**
 ```
@@ -118,7 +118,7 @@ J: Untuk pengubahsuaian separa, biasanya boleh — kami bekerja bilik demi bilik
 
 ---
 
-## 第 5 条：厨房工期 ⚠️ 数字要你确认
+## 第 5 条：厨房工期
 
 **EN**
 ```
@@ -147,7 +147,7 @@ J: Dapur kondominium biasa mengambil masa kira-kira 4 hingga 8 minggu dari perob
 
 ---
 
-## 第 6 条：售后与保修 ⚠️ 条款要你确认
+## 第 6 条：售后与保修
 
 **EN**
 ```
@@ -220,10 +220,12 @@ J: Ya. Kami semak ketebalan pintu, badan kunci sedia ada dan sama ada lubang kun
 
 ---
 
-## 需要你先确认的三处
+## 四个占位符已全部填好（可直接发布）
 
-| 条目 | 要确认什么 |
+| 条目 | 已填入的值 |
 |---|---|
-| 第 2 条 | 有没有 CIDB 注册号。有就加，没有就只用 SSM |
-| 第 5 条 | 厨房装修的真实工期区间（{X}–{Y} 周） |
-| 第 6 条 | 保修的真实范围与期限，或确认继续用"以报价单为准"的写法 |
+| 第 2 条 | CIDB `0120260929-WP177947`，G3 级，有效至 28/09/2028 |
+| 第 5 条 | 厨房工期 4–8 周（你确认的 1–2 个月） |
+| 第 6 条 | 自交付起保修一年，限施工与自有材料 |
+
+**七条均可发布，无阻塞。**
