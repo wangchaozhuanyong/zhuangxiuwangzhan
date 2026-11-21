@@ -34,19 +34,21 @@ describe("showroom entry and return", () => {
     const dom = open(entry);
     try {
       const { window } = dom;
-      const link = window.document.querySelector<HTMLAnchorElement>(".brand")!;
+      const link = window.document.querySelector<HTMLAnchorElement>("[data-main-return]")!;
       expect(link.href).toBe(expected);
+      expect(link.hidden).toBe(false);
+      expect(window.document.querySelector(".brand")?.getAttribute("href")).toBe("#top");
       expect(window.location.hash).toBe("");
       window.document.querySelector<HTMLButtonElement>('[data-lang="ms"]')!.click();
-      expect(link.getAttribute("aria-label")).toBe("ANZHE 安哲 · Kembali ke FLASH CAST");
-      expect(link.querySelector("img")?.alt).toBe("ANZHE 安哲");
-      expect(link.querySelector(".brand-return")?.textContent).toBe("← Laman utama");
+      expect(link.getAttribute("aria-label")).toBe("Kembali ke FLASH CAST");
+      expect(window.document.querySelector<HTMLImageElement>(".brand img")?.alt).toBe("ANZHE 安哲");
+      expect(link.querySelector("span")?.textContent).toBe("Laman utama");
       expect(link.href).toBe(expected);
       window.history.pushState(null, "", "#contact");
       window.dispatchEvent(new window.HashChangeEvent("hashchange"));
       const reloaded = open(window.location.href, window.history.state);
       try {
-        expect(reloaded.window.document.querySelector<HTMLAnchorElement>(".brand")!.href).toBe(expected);
+        expect(reloaded.window.document.querySelector<HTMLAnchorElement>("[data-main-return]")!.href).toBe(expected);
       } finally { reloaded.window.close(); }
     } finally { dom.window.close(); }
   });
@@ -58,10 +60,11 @@ describe("showroom entry and return", () => {
       const dom = open(entry.href);
       try {
         const link = dom.window.document.querySelector<HTMLAnchorElement>(".brand")!;
-        expect(link.hasAttribute("data-main-return")).toBe(false);
         expect(link.getAttribute("href")).toBe("#top");
         expect(link.querySelector("img")?.alt).toBe("ANZHE 安哲");
-        expect(link.querySelector(".brand-return")?.hasAttribute("hidden")).toBe(true);
+        const back = dom.window.document.querySelector<HTMLAnchorElement>("[data-main-return]")!;
+        expect(back.hidden).toBe(true);
+        expect(back.hasAttribute("href")).toBe(false);
         expect(dom.window.location.hash).toBe("");
       } finally { dom.window.close(); }
     },

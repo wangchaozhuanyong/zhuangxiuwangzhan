@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ComponentType } from "react";
-import { MessageCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
@@ -80,7 +79,7 @@ export default function FurnitureFloatingLink() {
           opening.current = false;
         });
       }}>
-      <span className="fc-contact-entry__icon" aria-hidden="true"><MessageCircle /></span>
+      <span className="fc-contact-entry__icon" aria-hidden="true" />
       <span className="fc-contact-entry__label" aria-live="polite">{loading ? text.loading : loadError ? text.loadError : text.trigger}</span>
     </button>
     </div>

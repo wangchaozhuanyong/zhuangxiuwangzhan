@@ -9,6 +9,7 @@ export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
 const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|showroom-boot\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml)$/;
+const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
 const pagePath = /^\/(zh|en|ms)(?:\/(index\.html)?)?$/;
 const securityHeaders = {
   "Content-Security-Policy": [
@@ -103,8 +104,8 @@ async function serveDocument(request: Request, binding: AssetBinding, locale: La
 
 async function serveStaticFile(request: Request, binding: AssetBinding, target: URL) {
   const path = target.pathname;
-  // The shared spacing stylesheet belongs to both hosts. Showroom files live in their private asset directory.
-  if (path !== "/public-section-spacing.css") target.pathname = ANZHE_ASSET_PREFIX + path;
+  // Shared stylesheets are served from the root asset directory on both hosts.
+  if (!sharedStylesheets.has(path)) target.pathname = ANZHE_ASSET_PREFIX + path;
   const requestedVersion = target.searchParams.get("v");
   target.search = "";
   const asset = await binding.fetch(new Request(target));
@@ -165,7 +166,7 @@ export async function serveAnzheShowroom(
     const document = await serveDocument(request, assetBinding, locale, deploymentVersion, waitUntil);
     if (document) return document;
   }
-  if (assetBinding && (staticFiles.test(url.pathname) || url.pathname === "/public-section-spacing.css")) {
+  if (assetBinding && (staticFiles.test(url.pathname) || sharedStylesheets.has(url.pathname))) {
     const file = await serveStaticFile(request, assetBinding, url);
     if (file) return file;
   }

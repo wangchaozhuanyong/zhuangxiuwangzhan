@@ -14,13 +14,27 @@ async function serveShowroom(page: Page, beforeAsset?: (path: string) => Promise
   await page.route(origin + "/**", async route => {
     const path = new URL(route.request().url()).pathname;
     await beforeAsset?.(path);
-    const file = path === "/public-section-spacing.css" ? resolve("public/public-section-spacing.css")
+    const file = ["/public-section-spacing.css", "/public-contact-entry.css"].includes(path) ? resolve("public", "." + path)
       : resolve(showroom, path === "/zh/" ? "zh/index.html" : "." + path);
     await route.fulfill({ path: file });
   });
 }
 
 test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, reducedMotion: "reduce" });
+
+test("shows all four navigation entries with a separate text-only return on a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  await serveShowroom(page);
+  await page.goto(origin + "/zh/#fc-return=%2Fzh%2Ffurniture");
+  await expect(page.locator("#root")).not.toHaveAttribute("inert", "");
+  const back = page.locator(".mast-return");
+  await expect(back).toHaveText("返回主站");
+  await expect(back).toHaveAttribute("href", "https://flashcast.com.my/zh/furniture");
+  await expect(back.locator("svg")).toHaveCount(0);
+  const nav = page.locator(".site-nav");
+  await expect(nav.locator(":scope > :is(a,button)")).toHaveText(["选购门锁", "型号对比", "安装服务", "联系我们"]);
+  await expect.poll(() => nav.evaluate(el => el.scrollWidth - el.clientWidth)).toBe(0);
+});
 
 test("a delayed showroom stylesheet and visible lock photo keep their place in the initial mobile handoff", async ({ page }) => {
   const style = pendingAsset();
@@ -42,10 +56,38 @@ test("a delayed showroom stylesheet and visible lock photo keep their place in t
     photo.release();
     await expect(root).not.toHaveAttribute("inert", "");
     expect(await image.evaluate(node => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    const contact = page.locator("#quick-contact .fc-contact-entry");
+    await expect(contact).toBeVisible();
+    await expect(contact).toHaveAccessibleName("联系我们");
   } finally {
     style.release();
     photo.release();
   }
+});
+
+test("keeps the contact launcher in place while mobile visitors scroll past catalogue controls", async ({ page }) => {
+  await serveShowroom(page);
+  await page.goto(origin + "/zh/");
+  await expect(page.locator("#root")).not.toHaveAttribute("inert", "");
+  const contact = page.locator("#quick-contact .fc-contact-entry");
+  await expect(contact).toBeVisible();
+  const samples = await contact.evaluate(async button => {
+    const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
+    await document.fonts.ready;
+    await frame();
+    await frame();
+    const positions = [button.getBoundingClientRect().top];
+    for (let y = 32; y <= 640; y += 32) {
+      window.scrollTo({ top: y, behavior: "instant" });
+      await frame();
+      await frame();
+      if (getComputedStyle(button).visibility !== "visible") return [];
+      positions.push(button.getBoundingClientRect().top);
+    }
+    return positions;
+  });
+  expect(samples).toHaveLength(21);
+  expect(Math.max(...samples) - Math.min(...samples), JSON.stringify(samples)).toBeLessThan(1);
 });
 
 for (const section of ["hero", "specifications", "installation"]) {
