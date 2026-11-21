@@ -1,6 +1,7 @@
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { resolveFurnitureDisplay } from "../src/lib/furnitureDisplaySafety.mjs";
+import { furnitureProductPathForSlug, getLegacyFurnitureProductRedirectPath, validateFurnitureProductUrlAliases } from "../src/lib/furnitureProductUrls.mjs";
 import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/publicSeoTitle.mjs";
 import { pickPublicSourceOwners, qualifiesMalayLocale } from "../src/lib/publicContentQualification.mjs";
 import { readFileSync } from "node:fs";
@@ -85,6 +86,7 @@ const redirectOnlyLandingSlugs = new Set([
 const isRedirectSource = localized => {
   const path = localized.replace(/^\/(en|zh|ms)(?=\/|$)/, "") || "/";
   return legacyRedirectPaths.has(localized) || redirectOnlyPaths.has(path)
+    || Boolean(getLegacyFurnitureProductRedirectPath(localized))
     || (path.startsWith("/landing/") && redirectOnlyLandingSlugs.has(path.slice("/landing/".length)));
 };
 
@@ -191,6 +193,8 @@ const addSitePage = (lang, row) => {
 const {projects,blog_posts:posts,materials,service_areas:areas,landing_pages:landings,services,site_pages:sitePages,cms_pages:cmsPages}=snapshot.rows;
 const sourceOwners=pickPublicSourceOwners(snapshot.rows);
 const regularMaterials = materials.filter(row=>row.category!=="furniture");
+const managedFurniture = materials.filter(row => row.category === "furniture");
+validateFurnitureProductUrlAliases(furnitureCatalog.products.map(product => product.slug), managedFurniture.map(row => row.slug));
 const bind=(row,kind,lang,ownedStatic=false)=>({...snapshotProvenance(snapshot,kind,row.id||row.path||row.slug||"static-provider",lang,ownedStatic),available_locales:ownedStatic?["en","zh"]:["en","zh"].filter(l=>qualifiesLocale(row,kind,l))});
 for(const [route,meta] of Object.entries(manifest)) manifest[route]={...meta,...snapshotProvenance(snapshot,"static_page",route,meta.lang,true),available_locales:["en","zh"]};
 for (const lang of ["en", "zh"]) {
@@ -214,7 +218,7 @@ for (const lang of ["en", "zh"]) {
     addDynamic(
       lang,
       "/furniture/product",
-      encodeURIComponent(decodeURIComponent(product.slug)),
+      furnitureProductPathForSlug(product.slug, lang).split("/").at(-1),
       localized.name,
       (localized.shortDescription || localized.description || furnitureMeta.description).replace(/\s+/g, " ").trim(),
       {
@@ -227,7 +231,7 @@ for (const lang of ["en", "zh"]) {
       },
     );
   }
-  for (const row of materials.filter(row => row.category === "furniture")) {
+  for (const row of managedFurniture) {
     const path = currentSourcePath(row, "material");
     if (!path || !qualifiesLocale(row, "material", lang) || manifest[`/${lang}${path}`]?.owned_static) continue;
     provenance = bind(row, "material", lang);

@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import FurnitureShowcase from "./FurnitureShowcase";
-import { furnitureCatalog, mapFurnitureCatalogSeed, type FurnitureProduct, type FurnitureMaterialRow } from "@/lib/furnitureCatalogPresentation";
+import { furnitureCatalog, furnitureProductPath, mapFurnitureCatalogSeed, type FurnitureProduct, type FurnitureMaterialRow } from "@/lib/furnitureCatalogPresentation";
 import furnitureTaxonomyLabels from "@/i18n/furnitureTaxonomyLabels.json";
 
 const source = vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); return { language: "en" as "en" | "zh", products: undefined as FurnitureProduct[] | undefined }; });
@@ -98,7 +98,8 @@ describe("furniture displayed pagination metadata", () => {
       const search = page === 1 ? "" : `?page=${page}`;
       await renderPage(`/${language}/furniture${search}`, language);
       await expectCanonical(`/${language}/furniture${search}`);
-      expect(cardHrefs()).toEqual(furnitureCatalog.products.slice((page - 1) * 18, page * 18).map(p => `/${language}/furniture/product/${encodeURIComponent(decodeURIComponent(p.slug))}`));
+      expect(cardHrefs()).toEqual(furnitureCatalog.products.slice((page - 1) * 18, page * 18).map(p => `/${language}${furnitureProductPath(p)}`));
+      expect(cardHrefs().every(href => !href?.includes("%"))).toBe(true);
       for (const [locale, prefix] of [["en", "en"], ["zh-CN", "zh"], ["x-default", "en"]]) {
         expect(document.querySelector(`link[hreflang="${locale}"]`)?.getAttribute("href")).toBe(`https://flashcast.com.my/${prefix}/furniture${search}`);
       }

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState, type RefObject } from "react";
 import { QUOTE_FORM_ID } from "@/lib/quoteFormTarget";
+import { findFloatingContactLift, type FloatingBounds as Bounds } from "@/lib/floatingContactPlacement";
 
 const modalContent = '[role="dialog"][aria-modal="true"],[role="alertdialog"][aria-modal="true"],dialog[open]';
 const fixedRecoveryContent = '[data-interaction-feedback],.public-route-feedback__recovery,.public-update-notice';
@@ -20,7 +21,6 @@ const primaryActions = '.scheme-a-public-shell :is(button,[role="button"],[data-
   + 'a[href^="tel:"],a[href*="/quote"],a[href="#landing-quote"]),'
   + ':is(.scheme-a-actions,.actions,[class*="__actions"],[class*="-actions"],.fc-route-action-panel,.fc-furniture-pagination) a[href]';
 
-type Bounds = Pick<DOMRect, "left" | "right" | "top" | "bottom" | "width" | "height">;
 const unshifted = (box: Bounds, lift: number): Bounds => ({
   left: box.left, right: box.right, top: box.top + lift, bottom: box.bottom + lift,
   width: box.width, height: box.height,
@@ -28,19 +28,6 @@ const unshifted = (box: Bounds, lift: number): Bounds => ({
 const intersects = (left: Bounds, right: Bounds) => left.width > 0 && left.height > 0
   && right.width > 0 && right.height > 0 && left.left < right.right && left.right > right.left
   && left.top < right.bottom && left.bottom > right.top;
-
-/** Find the nearest free position above the corner, with extra room before returning. */
-const findLift = (box: Bounds, actions: Bounds[], current: number, top: number) => {
-  const clear = (lift: number, gap = 8) => actions.every((action) =>
-    box.right + gap <= action.left || box.left - gap >= action.right
-    || box.bottom - lift + gap <= action.top || box.top - lift - gap >= action.bottom);
-  const maximum = Math.max(0, box.top - top);
-  if (clear(0, current ? 16 : 8)) return 0;
-  if (current > 0 && current <= maximum && clear(current)) return current;
-  return [0, ...actions.map((action) => box.bottom - action.top + 8)]
-    .filter((lift) => lift >= 0 && lift <= maximum).sort((a, b) => a - b)
-    .find((lift) => clear(lift));
-};
 
 const isVisibleElement = (element: HTMLElement, cache: WeakMap<HTMLElement, boolean>) => {
   if (!element.isConnected || element.closest(`[aria-hidden="true"],[hidden],[inert],${closedPanel},dialog:not([open])`)) return false;
@@ -96,14 +83,14 @@ export function useFloatingOcclusion(ref: RefObject<HTMLElement>, routeKey: stri
       const header = document.querySelector<HTMLElement>(".scheme-a-chrome");
       const top = Math.max(16, (header?.getBoundingClientRect().bottom ?? 0) + 12);
       let baseline = unshifted(box, lift);
-      let nextLift = reposition ? findLift(baseline, actions, lift, top) : 0;
+      let nextLift = reposition ? findFloatingContactLift(baseline, actions, lift, top) : 0;
       // Very short viewports use the same compact row as mobile, for this route.
       if (reposition && nextLift === undefined && !entry.hasAttribute("data-compact")) {
         needsCompact = true;
         entry.setAttribute("data-compact", "");
         box = entry.getBoundingClientRect();
         baseline = unshifted(box, lift);
-        nextLift = findLift(baseline, actions, lift, top);
+        nextLift = findFloatingContactLift(baseline, actions, lift, top);
       }
       const next = nextLift ?? Math.max(0, box.top + lift - top);
       if (next !== lift) {

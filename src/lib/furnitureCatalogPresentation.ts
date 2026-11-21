@@ -2,11 +2,13 @@ import { localizeMalayContent } from "@/i18n/malayContentRuntime";
 import catalogJson from "../data/furnitureCatalog.json";
 import catalogZhJson from "../data/furnitureCatalogZh.json";
 import catalogEnJson from "../data/furnitureCatalogEn.json";
-import { applyFurnitureCatalogOverrides, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
+import furnitureEditorialDetails from "../data/furnitureEditorialDetails.json";
+import { applyFurnitureCatalogOverrides, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
 import type { Language } from "../i18n/routes";
 import type { Database } from "./database.types";
 import { formatMaterialPrice } from "./materialPrice";
 import { resolveFurnitureDisplay } from "./furnitureDisplaySafety.mjs";
+import { furnitureProductPathForSlug, resolveFurnitureSourceSlug } from "./furnitureProductUrls.mjs";
 
 type MaterialRow = Database["public"]["Tables"]["materials"]["Row"];
 export type FurnitureMaterialRow = MaterialRow & { material_images?: { image_url: string; sort_order: number }[] };
@@ -59,18 +61,36 @@ const localizedProducts = catalogZhJson as Record<string, Pick<FurnitureProduct,
 const localizedEnglishProducts = catalogEnJson as Record<string, Pick<FurnitureProduct, "name" | "shortDescription" | "description">>;
 export { furnitureShopUrl } from "./furnitureCatalogConfig";
 
-export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct =>
-  language === "ms" && !product.localized ? localizeMalayContent(resolveFurnitureDisplay({ ...product, ...localizedEnglishProducts[product.slug] }, "en")) :
-  product.localized ? product : resolveFurnitureDisplay(language === "zh"
-    ? { ...product, ...localizedProducts[product.slug] }
-    : { ...product, ...localizedEnglishProducts[product.slug] }, language);
+type FurnitureEditorialDetails = Partial<Pick<FurnitureProduct, "shortDescription" | "description">> & { note?: string };
+const editorialDetails: Record<string, { sourceUrl: string; en?: FurnitureEditorialDetails; zh?: FurnitureEditorialDetails }> = furnitureEditorialDetails;
+
+export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct => {
+  if (product.localized) return product;
+
+  const copy = (language === "zh" ? localizedProducts : localizedEnglishProducts)[product.slug];
+  const translated = { ...product, ...copy };
+  const editorial = editorialDetails[product.slug];
+  // Hand-checked copy follows the supplier identity and remains separate from regenerated translations.
+  const details = language !== "ms" && editorial?.sourceUrl === product.sourceUrl ? editorial[language] : undefined;
+  const note = details?.note;
+  const display = resolveFurnitureDisplay({
+    ...translated,
+    shortDescription: details?.shortDescription ?? translated.shortDescription,
+    description: details?.description ?? translated.description,
+  }, language === "ms" ? "en" : language);
+  if (language === "ms") return localizeMalayContent(display);
+  if (!note || display.description.endsWith(note)) return display;
+
+  const description = display.description || display.shortDescription;
+  return { ...display, description: [description, note].filter(Boolean).join("\n") };
+};
 
 const productsByUrl = new Map(furnitureCatalog.products.map((product) => [product.sourceUrl, product]));
 const productsBySlug = new Map(furnitureCatalog.products.map((product) => [decodeURIComponent(product.slug), product]));
 
-/** Preserve the exact baseline-slug lookup used by managed catalog readers. */
+/** The baseline owns both its supplier identity and its public alias. */
 export const hasBaselineFurnitureSlug = (slug: string) => {
-  const normalized = normalizeFurnitureSlug(slug);
+  const normalized = resolveFurnitureSourceSlug(slug);
   return normalized !== undefined && productsBySlug.has(normalized);
 };
 
@@ -84,7 +104,7 @@ export const getFurnitureProducts = (urls: string[]) =>
   urls.map((url) => productsByUrl.get(url)).filter((product): product is FurnitureProduct => Boolean(product));
 
 export const getFurnitureProduct = (slug?: string) => {
-  const normalized = normalizeFurnitureSlug(slug);
+  const normalized = resolveFurnitureSourceSlug(slug);
   return normalized === undefined ? undefined : productsBySlug.get(normalized);
 };
 
@@ -182,8 +202,8 @@ export const getFurnitureListingPage = (
   };
 };
 
-export const furnitureProductPath = (product: FurnitureProduct) =>
-  `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`;
+export const furnitureProductPath = (product: Pick<FurnitureProduct, "slug">, language?: Language) =>
+  furnitureProductPathForSlug(product.slug, language);
 
 export const getFurnitureProductCategory = (product: FurnitureProduct) =>
   furnitureCatalog.taxonomy.find((category) => category.key === product.managedCategoryKey)

@@ -892,7 +892,42 @@ const lockedServiceCandidates = Object.freeze({
   }
 });
 
+const digitalLockServiceTitles = {
+  "seo_title_en": "Digital Lock Supply & Installation | FLASH CAST",
+  "seo_title_zh": "电子锁销售与安装｜门型适配与交付｜FLASH CAST"
+};
+const priorDigitalLockServiceTitles = {
+  "seo_title_en": "Digital Lock Installation KL | Supply & Install | FLASH CAST",
+  "seo_title_zh": "吉隆坡电子锁安装｜智能门锁｜FLASH CAST"
+};
+
 const targetConfigs = {
+  "digital-lock-service-titles-20261121-v1": {
+    contentType: "service", table: "services", keyField: "slug", key: "digital-lock", fields: serviceFields,
+    expectedSupabaseOrigin: "https://rbsnyexjifounogswrjp.supabase.co",
+    buildRecord(current) {
+      if (current.id !== "01c632e5-4057-479e-93e3-303c17d6ad31" || current.slug !== "digital-lock"
+          || current.status !== "published" || !current.updated_at
+          || Object.entries(priorDigitalLockServiceTitles).some(([field, value]) => current[field] !== value)) {
+        fail("The digital-lock title baseline changed. Read back the service before attempting any write.");
+      }
+      return { ...current, ...digitalLockServiceTitles };
+    },
+    validatePublishPreview(current, desired, result) {
+      if (result.ok !== true || result.dry_run !== true || result.existing_id !== current.id || result.slug !== current.slug || result.saved_id) {
+        fail("The protected preview did not verify the exact digital-lock service.");
+      }
+      const expected = Object.fromEntries(Object.entries(desired).filter(([field]) => !["id", "updated_at"].includes(field)));
+      if (!valuesMatch(result.payload_preview, expected)) {
+        fail("The protected preview would change fields beyond the two approved digital-lock titles.");
+      }
+    },
+    readbackAttempts: 10, readbackDelayMs: 4000,
+    publicPaths: [
+      { path: "/en/services/digital-lock", expected: digitalLockServiceTitles.seo_title_en, strictMetadataTitle: true },
+      { path: "/zh/services/digital-lock", expected: digitalLockServiceTitles.seo_title_zh, strictMetadataTitle: true },
+    ],
+  },
   "office-renovation": {
     contentType: "service",
     table: "services",
@@ -1179,6 +1214,9 @@ const main = async () => {
   if (!supabaseUrl || !anonKey || !publishSecret) {
     fail("SUPABASE_URL/VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY and CONTENT_PUBLISH_SECRET are required.");
   }
+  if (config.expectedSupabaseOrigin && new URL(supabaseUrl).origin !== config.expectedSupabaseOrigin) {
+    fail("The selected content target requires its configured Supabase project.");
+  }
   if (config.lockedCandidate && new URL(supabaseUrl).host !== "rbsnyexjifounogswrjp.supabase.co") {
     fail("Locked CMS target must use the approved FLASH CAST Supabase project.");
   }
@@ -1297,6 +1335,7 @@ const main = async () => {
     });
   }
   writeJson(path.join(outputDir, "dry-run.json"), dryRun);
+  config.validatePublishPreview?.(current, desired, dryRun);
   if (config.lockedCandidate) {
     writeJson(path.join(outputDir, "managed-payload-digest.json"), {
       task_id: config.lockedCandidate.taskId,
@@ -1402,12 +1441,12 @@ const main = async () => {
   const publicPaths = resolveLockedPublicPaths(config, desired, Boolean(rollbackFrom));
   for (const page of publicPaths) {
     let last = { path: page.path, status: 0, expected: page.expected, found: false, forbiddenFound: [], missingRequired: [] };
-    for (let attempt = 0; attempt < 3; attempt += 1) {
+    for (let attempt = 0; attempt < (config.readbackAttempts ?? 3); attempt += 1) {
       const response = await fetch(`${publicSiteUrl}${page.path}?content_audit=${Date.now()}`, { headers: { "cache-control": "no-cache" } });
       const html = await response.text();
       last = inspectPublicReadback(page, response.status, html);
       if (last.status === 200 && last.found && last.forbiddenFound.length === 0 && last.missingRequired.length === 0) break;
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      await new Promise((resolve) => setTimeout(resolve, config.readbackDelayMs ?? 1200));
     }
     if (page.renderedRequiredPhrases?.length) {
       try {
@@ -1428,6 +1467,9 @@ const main = async () => {
   writeJson(path.join(outputDir, "postcheck.json"), postcheck);
 
   if (!postcheck.ok && operation !== "rollback" && !config.lockedCandidate) {
+    if (config.validatePublishPreview && postRecord.updated_at !== published.saved_updated_at) {
+      fail("The service changed after the publish receipt. Review the latest row before restoring the prior titles.");
+    }
     const rollbackResult = await postContentPublish({
       contentType: config.contentType,
       mode: "publish",

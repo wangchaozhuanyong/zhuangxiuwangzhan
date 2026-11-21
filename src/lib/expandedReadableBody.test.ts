@@ -15,6 +15,16 @@ const row = { slug: "current", status: "published", title_en: "Current title", t
   content_en: '<h2>Full section</h2><p>Full body <a href="/en/quote">Enquire</a></p>', content_zh: '<h2>完整章节</h2><p>完整正文 <a href="/zh/quote">咨询</a></p>',
   category: "flooring", subcategory: "vinyl", scope: ["Published scope"], materials: [], highlights_en: [], highlights_zh: [],
 };
+it.each(["en", "zh", "ms"] as const)("links the %s digital-lock service to the existing KL guide", async lang => {
+  if (lang === "ms") await loadMalayContent();
+  const key = `/${lang}/services/digital-lock`;
+  const body = buildExpandedReadableBody(key, {
+    row: { status: "published", slug: "digital-lock", [`title_${lang}`]: "Digital Lock", [`content_${lang}`]: "<p>Door fit.</p>" },
+  });
+  expect(body).toContain(`href="/${lang}/locations/kuala-lumpur/digital-lock"`);
+  expect(body).not.toContain("/locations/cheras/digital-lock");
+});
+
 describe.each(["en", "zh"] as const)("expanded %s raw HTML", lang => {
   it.each(["services", "blog", "projects", "materials"])("outputs the current published %s body, safely and without another language", kind => {
     const html = buildExpandedReadableBody(`/${lang}/${kind}/current`, { row });

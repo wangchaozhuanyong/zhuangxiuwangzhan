@@ -1,4 +1,5 @@
 import serviceAreaPageText from "../src/components/services/serviceAreaPageText.json";
+import { anzheShowroomModelUrl } from "../src/config/anzheShowroom";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
 import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
 import { getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
@@ -15,6 +16,7 @@ import { quotePageText } from "../src/i18n/quotePageText";
 import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText, getFurnitureDisplaySku } from "../src/i18n/furnitureText";
 import { furnitureListingPagePath, furnitureProductPath, getFurnitureCatalogProductsForCategory, getFurnitureProductCategory, localizeFurnitureProduct, mapFurnitureCatalogSeed, type FurnitureMaterialRow, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
 import { normalizeFurnitureSlug } from "../src/lib/furnitureCatalogOverrides";
+import { resolveFurnitureSourceSlug } from "../src/lib/furnitureProductUrls.mjs";
 import { isSafeContentUrl } from "../src/lib/safeContentUrl";
 import { resolveSmartImageSource } from "../src/lib/smartImageSource";
 import { findSelangorWarehouseIntroLink } from "../src/lib/selangorWarehouseIntroLink";
@@ -72,7 +74,7 @@ export function buildReadableFurnitureListingBody(key: string, listing: ReturnTy
   const cards = listing.visibleProducts.map((source) => {
     const product = localizeFurnitureProduct(source, lang);
     const description = (product.shortDescription || product.description || copy.listingDescriptionUnavailable).replace(/\s+/g, " ");
-    return `<li><h2><a href="${escape(`/${lang}${furnitureProductPath(product)}`)}">${escape(product.name)}</a></h2><p>${escape(description)}</p><p>${escape(product.price || copy.priceOnRequest)}</p></li>`;
+    return `<li><h2><a href="${escape(`/${lang}${furnitureProductPath(product, lang)}`)}">${escape(product.name)}</a></h2><p>${escape(description)}</p><p>${escape(product.price || copy.priceOnRequest)}</p></li>`;
   }).join("");
   const label = copy.page.replace("{page}", String(listing.page)).replace("{total}", String(listing.totalPages));
   const navigation = listing.totalPages > 1
@@ -85,7 +87,7 @@ export function buildReadableFurnitureProductBody(
 ) {
   const match = key.match(/^\/(en|zh)\/furniture\/product\/([^/]+)$/);
   if (!match) return "";
-  const slug = normalizeFurnitureSlug(match[2]);
+  const slug = resolveFurnitureSourceSlug(match[2]);
   if (!slug) return "";
   const lang = match[1] as "en" | "zh";
   const copy = furnitureText[lang];
@@ -125,7 +127,7 @@ export function buildReadableFurnitureProductBody(
     if (related.length) {
       const links = related.map(candidate => {
         const preview = lines(candidate.shortDescription || candidate.description).slice(0, 2).join(" ");
-        return `<li><a href="${escape(`/${lang}${furnitureProductPath(candidate)}`)}">${escape(candidate.name)}</a>${preview ? paragraph(preview) : ""}</li>`;
+        return `<li><a href="${escape(`/${lang}${furnitureProductPath(candidate, lang)}`)}">${escape(candidate.name)}</a>${preview ? paragraph(preview) : ""}</li>`;
       }).join("");
       body += `<section><h2>${escape(copy.relatedProducts)}</h2><ul>${links}</ul></section>`;
     }
@@ -200,6 +202,26 @@ function buildReviewedCta(path: string, lang: "en" | "zh" | "ms", identity?: Rea
   return `<section data-flashcast-reviewed-cta aria-label="${heading}"><h2>${heading}</h2><p><a href="/${lang}/quote#quote-form">${quote}</a> · <a href="/${lang}/contact">${contact}</a></p>${links.length ? `<p>${links.join(" · ")}</p>` : ""}</section>`;
 }
 
+type ServiceAreaGuide = (typeof serviceAreaPageText)["/locations/kuala-lumpur/digital-lock"][Language];
+
+function buildServiceAreaGuide(guide: ServiceAreaGuide, lang: Language) {
+  const sections = guide.sections.map(section => {
+    const checks = section.checks.length
+      ? `<ul>${section.checks.map(item => `<li>${escape(item)}</li>`).join("")}</ul>`
+      : "";
+    const topics = section.topics.map(topic =>
+      `<h3>${escape(topic.heading)}</h3>${topic.paragraphs.map(paragraph).join("")}`
+    ).join("");
+    return `<section><h2>${escape(section.heading)}</h2>${section.paragraphs.map(paragraph).join("")}${checks}${topics}</section>`;
+  }).join("");
+  const models = guide.models.map(model =>
+    `<li><a href="${escape(anzheShowroomModelUrl(lang, model.slug))}">${escape(model.name)}</a> ${escape(model.description)}</li>`
+  ).join("");
+  return sections
+    + `<section><h2>${escape(guide.modelHeading)}</h2>${paragraph(guide.modelIntro)}<ul>${models}</ul></section>`
+    + `<section><h2>${escape(guide.areasHeading)}</h2>${paragraph(guide.areasDescription)}<p><a href="/${lang}/locations">${escape(guide.areasLink)}</a></p></section>`;
+}
+
 export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined, identity?: ReadableContactIdentity | null) {
   const match = key.match(/^\/(en|zh|ms)(\/.*)$/);
   if (!match) return "";
@@ -211,8 +233,13 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
     const localizedCopy = serviceAreaPageText[serviceArea.path];
     const page = lang === "ms" ? ("ms" in localizedCopy ? localizedCopy.ms : null) : localizedCopy[lang];
     if (!page) return "";
-    const overview = `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(value => paragraph(plain(value))).join("")}</section>`;
-    const faq = `<section><h2>${escape(locationPageText[lang].faqTitle(page.area))}</h2><h3>${escape(page.question)}</h3>${paragraph(page.answer)}</section>`;
+    const faqs = "faqs" in page ? page.faqs : [{ question: page.question, answer: page.answer }];
+    const overview = "sections" in page
+      ? buildServiceAreaGuide(page, lang)
+      : `<section><h2>${escape(page.bodyHeading)}</h2>${page.body.map(value => paragraph(plain(value))).join("")}</section>`;
+    const faq = `<section><h2>${escape(locationPageText[lang].faqTitle(page.area))}</h2>${faqs.map(item =>
+      `<h3>${escape(item.question)}</h3>${paragraph(item.answer)}`
+    ).join("")}</section>`;
     return wrapBody(`<h1>${escape(page.heading)}</h1>${paragraph(page.description)}${overview}${faq}`, lang);
   }
   const reviewedOffice = key === "/en/services/office-renovation";

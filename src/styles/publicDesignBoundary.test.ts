@@ -135,9 +135,16 @@ describe("public design boundary", () => {
     expect(globalStyles).toContain('@import "./components/buttons.css"');
     expect(buttons).toContain("--public-floating-bottom: calc(68px + 1rem)");
     const contact = readFileSync(resolve(componentDirectory, "contact-entry.css"), "utf8");
-    const stack = postcss.parse(contact).nodes.find((node) => node.type === "rule" && node.selector === ".fc-contact-stack");
+    expect(contact).toContain('@import "../../../public/public-contact-entry.css"');
+    const sharedContact = readFileSync(resolve(process.cwd(), "public/public-contact-entry.css"), "utf8");
+    const stack = postcss.parse(sharedContact).nodes.find((node) => node.type === "rule" && node.selector === ".fc-contact-stack");
     expect(stack?.toString()).toContain("position: fixed");
     expect(stack?.toString()).toContain("gap: 12px");
+    for (const language of ["en", "zh", "ms"]) {
+      const showroom = readFileSync(resolve(process.cwd(), "public/anzhe-showroom", language, "index.html"), "utf8");
+      expect(showroom).toContain('href="/public-contact-entry.css?v=');
+      expect(showroom).toContain('id="quick-contact" class="fc-contact-stack"');
+    }
     expect(buttons).not.toContain('.scheme-a-mobile-switcher[data-mode="hidden"]) .fc-furniture-floating');
   });
 

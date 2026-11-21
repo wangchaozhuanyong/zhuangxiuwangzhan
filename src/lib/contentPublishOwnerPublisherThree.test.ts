@@ -24,7 +24,7 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
     expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
-    expect(historicalTargets).toHaveLength(106); // Includes seven additional owner-approved regional bodies; historical bindings are preserved.
+    expect(historicalTargets).toHaveLength(110); // Includes the FAQ timing and three cabinet market-price bindings.
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

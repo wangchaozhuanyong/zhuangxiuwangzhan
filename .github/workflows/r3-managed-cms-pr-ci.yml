@@ -234,6 +234,7 @@ jobs:
             src/lib/contentPublishShopOfficeSixFields.test.ts \
             src/lib/contentPublishBuiltinWardrobe.test.ts \
             src/lib/contentPublishOrg020V7.test.ts \
+            src/lib/contentPublishFaqStartTiming.test.ts \
             src/lib/contentPublishNativeBody.test.ts \
             src/lib/malayCmsPublisher.test.ts \
             src/lib/malayTranslation.test.ts \
@@ -268,6 +269,7 @@ jobs:
         run: |
           node --experimental-strip-types --test scripts/paid-three-page-native-batch.test.mjs scripts/paid-three-page-publisher-adapter.test.mjs scripts/paid-three-page-exact-targets.test.mjs
           node --test scripts/lib/publisher-public-readback.test.mjs
+          node --experimental-strip-types --test scripts/publish-cabinet-market-prices.test.mjs
 
       - name: Check repair UI and protected publish guards
         run: |

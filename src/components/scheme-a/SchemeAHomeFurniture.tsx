@@ -8,6 +8,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { furnitureCategoryName, furnitureText } from "@/i18n/furnitureText";
 import { homeFurnitureText } from "@/i18n/homeFurnitureText";
 import { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
+import { furnitureProductPathForSlug } from "@/lib/furnitureProductUrls.mjs";
 
 export default function SchemeAHomeFurniture() {
   const { language } = useLanguage();
@@ -47,7 +48,7 @@ export default function SchemeAHomeFurniture() {
               <div className="home-furniture__products" tabIndex={0} role="region" aria-label={copy.allFurniture}>
                 {products.map((product) => (
                   <article className="home-furniture__product" key={product.slug}>
-                    <LocalizedLink className="home-furniture__product-link" to={`/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`} aria-label={`${furnitureCopy.viewDetails}: ${product.name}`}>
+                    <LocalizedLink className="home-furniture__product-link" to={furnitureProductPathForSlug(product.slug, language)} aria-label={`${furnitureCopy.viewDetails}: ${product.name}`}>
                       <div className="home-furniture__product-image">
                         <DeferredSmartImage
                           src={product.image}
