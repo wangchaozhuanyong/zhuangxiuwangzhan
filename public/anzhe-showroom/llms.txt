@@ -1,0 +1,42 @@
+# ANZHE Digital Lock Showroom — FLASH CAST
+
+> ANZHE electronic locks sold and installed in Kuala Lumpur and Selangor, Malaysia. 17 models, all prices in MYR and inclusive of installation.
+
+## Key facts
+
+- Business: FLASH CAST SDN. BHD.
+- Address: 94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur
+- Phone / WhatsApp: +601128853888
+- Hours: 10:00–19:00 daily (Malaysia time)
+- Service area: Kuala Lumpur and Selangor
+- Price range: RM635.20 - RM2,960 including installation
+- Models: 17 (entrance door 14, interior door 2, narrow-frame aluminium door 1)
+
+## Pages
+
+- [Chinese catalogue](https://locks.flashcast.com.my/zh/)
+- [English catalogue](https://locks.flashcast.com.my/en/)
+- [Malay catalogue](https://locks.flashcast.com.my/ms/)
+- [Installation service page](https://flashcast.com.my/en/services/digital-lock)
+
+## Models
+
+| Model | Door type | Price (MYR, incl. installation) | Unlock methods |
+| --- | --- | ---: | --- |
+| [F8](https://locks.flashcast.com.my/en/lock/f8/) | Entrance door | 1220 | Fingerprint, PIN, dynamic code, card and mechanical key. App or remote control depends on the configuration. |
+| [G5](https://locks.flashcast.com.my/en/lock/g5/) | Interior door | 1070 | Fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [G13](https://locks.flashcast.com.my/en/lock/g13/) | Interior door | 635.20 | Fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [G86F-Pro](https://locks.flashcast.com.my/en/lock/g86f-pro/) | Entrance door | 712 | Fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [GP08](https://locks.flashcast.com.my/en/lock/gp08/) | Entrance door | 1250 | Fingerprint, PIN, dynamic code, card and mechanical key. App or remote control depends on the configuration. |
+| [G53 PRO](https://locks.flashcast.com.my/en/lock/g53-pro/) | Entrance door | 1040 | Fingerprint, PIN, dynamic code, key fob, mechanical key and app |
+| [D10B](https://locks.flashcast.com.my/en/lock/d10b/) | Narrow-frame aluminium door | 1220 | Fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [R10J-22](https://locks.flashcast.com.my/en/lock/r10j-22/) | Entrance door | 1970 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [A88-Face ID](https://locks.flashcast.com.my/en/lock/a88-face-id/) | Entrance door | 1610 | Face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [Q8J](https://locks.flashcast.com.my/en/lock/q8j/) | Entrance door | 2060 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [T06J](https://locks.flashcast.com.my/en/lock/t06j/) | Entrance door | 1730 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [K19J](https://locks.flashcast.com.my/en/lock/k19j/) | Entrance door | 2120 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [K26J Pro](https://locks.flashcast.com.my/en/lock/k26j-pro/) | Entrance door | 1790 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [K16J-K19](https://locks.flashcast.com.my/en/lock/k16j-k19/) | Entrance door | 2270 | Palm vein, 3D face recognition, fingerprint, PIN, dynamic code, card and mechanical key. App or remote control depends on the configuration. |
+| [Q58J-K19](https://locks.flashcast.com.my/en/lock/q58j-k19/) | Entrance door | 2270 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [V37J-P16](https://locks.flashcast.com.my/en/lock/v37j-p16/) | Entrance door | 2360 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |
+| [P59J PRO](https://locks.flashcast.com.my/en/lock/p59j-pro/) | Entrance door | 2960 | Palm vein, face recognition, fingerprint, PIN, dynamic code, card, mechanical key and app |

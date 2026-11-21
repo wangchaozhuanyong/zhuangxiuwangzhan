@@ -8,7 +8,7 @@ import {
 export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
-const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|showroom-boot\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|[a-fA-F0-9]{32}\.txt)$/;
+const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|showroom-boot\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
 const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
 const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
 const pagePath = new RegExp(`^/(zh|en|ms)(?:/lock/(${LOCK_SLUGS}))?(?:/(?:index\\.html)?)?$`);
