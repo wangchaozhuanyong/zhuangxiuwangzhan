@@ -287,7 +287,7 @@ describe("furniture pagination in original Edge HTML", () => {
     const body = bodies[0];
     expect(body.querySelector("h1")?.textContent).toBe(reviewed.name);
     expect(body.textContent).toContain(reviewed.price);
-    expect(body.textContent).toContain(reviewed.description);
+    for (const line of reviewed.description.split("\n").filter(Boolean)) expect(body.textContent).toContain(line);
     expect(body.querySelector("dd")?.textContent).toBe(reviewed.sku);
     expect(body.querySelector("img")?.getAttribute("alt")).toBe(`${reviewed.name} 1`);
     expect(body.querySelector('a[href$="/furniture/bedroom/bed-frame"]')).not.toBeNull();

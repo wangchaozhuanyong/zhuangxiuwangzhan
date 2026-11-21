@@ -2,6 +2,7 @@ import { localizeMalayContent } from "@/i18n/malayContentRuntime";
 import catalogJson from "../data/furnitureCatalog.json";
 import catalogZhJson from "../data/furnitureCatalogZh.json";
 import catalogEnJson from "../data/furnitureCatalogEn.json";
+import furnitureEditorialDetails from "../data/furnitureEditorialDetails.json";
 import { applyFurnitureCatalogOverrides, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
 import type { Language } from "../i18n/routes";
 import type { Database } from "./database.types";
@@ -60,11 +61,29 @@ const localizedProducts = catalogZhJson as Record<string, Pick<FurnitureProduct,
 const localizedEnglishProducts = catalogEnJson as Record<string, Pick<FurnitureProduct, "name" | "shortDescription" | "description">>;
 export { furnitureShopUrl } from "./furnitureCatalogConfig";
 
-export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct =>
-  language === "ms" && !product.localized ? localizeMalayContent(resolveFurnitureDisplay({ ...product, ...localizedEnglishProducts[product.slug] }, "en")) :
-  product.localized ? product : resolveFurnitureDisplay(language === "zh"
-    ? { ...product, ...localizedProducts[product.slug] }
-    : { ...product, ...localizedEnglishProducts[product.slug] }, language);
+type FurnitureEditorialDetails = Partial<Pick<FurnitureProduct, "shortDescription" | "description">> & { note?: string };
+const editorialDetails: Record<string, { sourceUrl: string; en?: FurnitureEditorialDetails; zh?: FurnitureEditorialDetails }> = furnitureEditorialDetails;
+
+export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct => {
+  if (product.localized) return product;
+
+  const copy = (language === "zh" ? localizedProducts : localizedEnglishProducts)[product.slug];
+  const translated = { ...product, ...copy };
+  const editorial = editorialDetails[product.slug];
+  // Hand-checked copy follows the supplier identity and remains separate from regenerated translations.
+  const details = language !== "ms" && editorial?.sourceUrl === product.sourceUrl ? editorial[language] : undefined;
+  const note = details?.note;
+  const display = resolveFurnitureDisplay({
+    ...translated,
+    shortDescription: details?.shortDescription ?? translated.shortDescription,
+    description: details?.description ?? translated.description,
+  }, language === "ms" ? "en" : language);
+  if (language === "ms") return localizeMalayContent(display);
+  if (!note || display.description.endsWith(note)) return display;
+
+  const description = display.description || display.shortDescription;
+  return { ...display, description: [description, note].filter(Boolean).join("\n") };
+};
 
 const productsByUrl = new Map(furnitureCatalog.products.map((product) => [product.sourceUrl, product]));
 const productsBySlug = new Map(furnitureCatalog.products.map((product) => [decodeURIComponent(product.slug), product]));
