@@ -4,13 +4,14 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { fetchPublicVersion } from "@/lib/publicVersion";
 import PublicUpdateNotice from "./PublicUpdateNotice";
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: "zh" }) }));
-vi.mock("@/lib/publicVersion", () => ({
+vi.mock("@/lib/publicVersion", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/publicVersion")>(),
   isPublicVersionEndpointAvailable: () => true,
-  createCurrentPublicVersion: () => ({ deploymentVersion: "old", contentVersion: "" }),
+  createCurrentPublicVersion: () => ({ deploymentVersion: "old", contentVersion: "content-before" }),
   fetchPublicVersion: vi.fn(async () => ({ deploymentVersion: "new", contentVersion: "" })),
-  hasNewPublicVersion: () => true,
 }));
 const queryClient = new QueryClient();
 let root: Root;
@@ -31,6 +32,22 @@ describe("public update layer coordination", () => {
     await render(); expect(container.querySelector(".public-update-notice")).not.toBeNull();
     await act(async () => setMenuOpen(true)); expect(container.querySelector(".public-update-notice")).toBeNull();
     await act(async () => setMenuOpen(false)); expect(container.querySelector(".public-update-notice")).not.toBeNull();
+  });
+  it("invalidates published content and settings silently until a deployment changes", async () => {
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    try {
+      vi.mocked(fetchPublicVersion).mockResolvedValueOnce({ deploymentVersion: "old", contentVersion: "content-after" });
+      await render();
+      expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey)).toEqual([["published"], ["site-settings"]]);
+      expect(container.querySelector(".public-update-notice")).toBeNull();
+
+      vi.mocked(fetchPublicVersion).mockResolvedValueOnce({ deploymentVersion: "new", contentVersion: "content-after" });
+      await act(async () => { window.dispatchEvent(new Event("focus")); });
+      expect(container.querySelector(".public-update-notice")).not.toBeNull();
+      expect(invalidate).toHaveBeenCalledTimes(2);
+    } finally {
+      invalidate.mockRestore();
+    }
   });
   it("waits until every shared dialog has closed", async () => {
     await render(true, true); expect(container.querySelector(".public-update-notice")).toBeNull();

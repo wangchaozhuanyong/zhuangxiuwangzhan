@@ -1,3 +1,5 @@
+import wechatContact from "./wechatContact.json";
+
 const env = import.meta.env;
 const siteUrl = env.VITE_SITE_URL || "https://flashcast.com.my";
 
@@ -17,9 +19,7 @@ export const siteConfig = {
   phoneHref: env.VITE_SITE_PHONE_HREF || normalizePhoneHref(phoneE164),
   phoneE164,
   whatsappNumber,
-  wechatId: "flashcast898",
-  wechatQrUrl: "/images/contact/wechat-qr-203df7594c5b.webp",
-  wechatQrDownloadUrl: "/downloads/wechat-qr.png?v=20261121",
+  ...wechatContact,
   address: env.VITE_SITE_ADDRESS || "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia",
   shortAddress: env.VITE_SITE_SHORT_ADDRESS || "94, Jalan Mega Mendung, 58200",
   /** 办公室坐标（用于地图嵌入，避免每次按地址 geocode） */

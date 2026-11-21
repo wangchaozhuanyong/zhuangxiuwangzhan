@@ -3,10 +3,9 @@ import styles from "./styles/components/public-boot.css?raw";
 import { getDefaultLanguage, getLanguageFromPath, rememberLanguage } from "./i18n/routes";
 import { languageTag } from "./i18n/languageDetection";
 import { contactEntryTriggerText } from "./i18n/contactEntryText";
-import { findFloatingContactLift } from "./lib/floatingContactPlacement";
+import { observeFixedFloatingEntry } from "./lib/floatingOcclusion";
 import { reloadDocumentSafely } from "./lib/navigationProtection";
 import { initializePublicBoot } from "./lib/publicBoot";
-import { initializeShowroomUpdates } from "./lib/anzheShowroomUpdates";
 
 declare global {
   interface Window {
@@ -15,13 +14,13 @@ declare global {
       rememberLanguage: typeof rememberLanguage;
       languageTag: typeof languageTag;
       contactEntryTriggerText: typeof contactEntryTriggerText;
-      findFloatingContactLift: typeof findFloatingContactLift;
+      observeFixedFloatingEntry: typeof observeFixedFloatingEntry;
     };
     showroomInteractive?: boolean;
   }
 }
 
-window.showroomPolicy = { getDefaultLanguage, rememberLanguage, languageTag, contactEntryTriggerText, findFloatingContactLift };
+window.showroomPolicy = { getDefaultLanguage, rememberLanguage, languageTag, contactEntryTriggerText, observeFixedFloatingEntry };
 
 function startDocumentBoot() {
   // A delayed script may arrive after the static document has already become interactive.
@@ -115,11 +114,6 @@ async function handOff() {
 
 const pageLanguage = getLanguageFromPath();
 if (pageLanguage) rememberLanguage(pageLanguage);
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeShowroomUpdates, { once: true });
-} else {
-  initializeShowroomUpdates();
-}
 window.addEventListener("showroom:ready", handOff);
 window.addEventListener("public-assets-change", handOff);
 void handOff();

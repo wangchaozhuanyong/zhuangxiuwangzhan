@@ -66,6 +66,9 @@ describe("all automatic public contact components share one opening", () => {
       expect(writeText).toHaveBeenCalledOnce();
       expect(trackCtaClick).toHaveBeenCalledWith("wechat_copy", "contact_panel", { destination: "wechat" });
       const qr = document.querySelector<HTMLDetailsElement>("details.fc-contact-panel__qr")!;
+      expect(qr.open).toBe(true);
+      expect(trackCtaClick).not.toHaveBeenCalledWith("wechat_qr_open", "contact_panel", { destination: "wechat" });
+      await act(async () => { qr.open = false; qr.dispatchEvent(new Event("toggle")); });
       await act(async () => { qr.open = true; qr.dispatchEvent(new Event("toggle")); });
       expect(trackCtaClick).toHaveBeenCalledWith("wechat_qr_open", "contact_panel", { destination: "wechat" });
     } finally {
