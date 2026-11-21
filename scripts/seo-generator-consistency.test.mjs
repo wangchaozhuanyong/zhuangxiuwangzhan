@@ -9,6 +9,8 @@ import {buildQualifiedManifest} from './generate-seo-manifest.mjs';
 import {buildQualifiedSitemap} from './generate-sitemap.mjs';
 import {buildQualifiedLlms} from './generate-llms.mjs';
 import furnitureAliases from '../src/data/furnitureProductUrlAliases.json' with { type: 'json' };
+import furnitureEditorialDetails from '../src/data/furnitureEditorialDetails.json' with { type: 'json' };
+import furnitureDisplaySafety from '../src/data/furnitureDisplaySafety.json' with { type: 'json' };
 const tables=['projects','blog_posts','materials','service_areas','landing_pages','services','site_pages','cms_pages'];
 const prefix={projects:'/projects',blog_posts:'/blog',materials:'/materials',service_areas:'/locations',landing_pages:'/landing',services:'/services',site_pages:'',cms_pages:''};
 const evidenceRoot=process.env.FIXTURE_OUTPUT_ROOT;
@@ -80,6 +82,17 @@ test('fails before discovery generation when a new supplier alias collides with 
  const rows=records(0);
  rows.materials=[{...row('materials',1),category:'furniture',slug:'cloud-sofa'}];
  await assert.rejects(buildQualifiedManifest(await snapshot(rows)),/Furniture URL alias already in use: cloud-sofa/);
+});
+test('uses verified furniture summaries without bypassing reviewed display copy', async () => {
+ const manifest = await buildQualifiedManifest(await snapshot(records(0)));
+ const checkedSlugs = ['hd-616-single-divan-bed-frame-beige', 'ribbon-fleece-fabric-dressing-chair-white', 'bodil-6-seater-dining-set-3-colors'];
+ const protectedSlug = 'ws-2102-wooden-bunk-bed-white';
+ for (const lang of ['en', 'zh']) {
+  for (const slug of checkedSlugs) {
+   assert.equal(manifest[`/${lang}/furniture/product/${slug}`].description, furnitureEditorialDetails[slug][lang].shortDescription);
+  }
+  assert.equal(manifest[`/${lang}/furniture/product/${protectedSlug}`].description, furnitureDisplaySafety[protectedSlug][lang].shortDescription);
+ }
 });
 test('keeps legal page metadata while omitting the four canonical paths from discovery documents',async()=>{
  const manifest=await buildQualifiedManifest(await snapshot(records(0)));
