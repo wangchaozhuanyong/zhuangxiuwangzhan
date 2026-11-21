@@ -94,7 +94,7 @@ const slugify = (value) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-const buildCategorySeoEntry = (category) => {
+const buildCategorySeoEntry = (category, quartzCountertopsSeoTitle) => {
   const nameEn = category.name || slugToTitle(category.slug);
   const nameZh = zhLabel(categoryZhLabels, nameEn);
   return {
@@ -111,7 +111,7 @@ const buildCategorySeoEntry = (category) => {
       return {
         slug: subcategory.slug,
         title_en: category.slug === "countertops-stone-surfaces" && subcategory.slug === "quartz-countertops"
-          ? "Quartz Countertops | Stone Surfaces"
+          ? quartzCountertopsSeoTitle
           : `${subNameEn} | ${nameEn}`,
         title_zh: `${subNameZh} | ${nameZh}`,
         description_en:
@@ -132,7 +132,7 @@ const loadMaterialsData = async () => {
           'export { translateDisplayText } from "./src/i18n/displayLabels.ts";',
           'export { materialCatalogText } from "./src/i18n/materialCatalogText.ts";',
           'export { materialCategoryPageText } from "./src/i18n/materialCategoryPageText.ts";',
-          'export { materialSubcategoryPageText } from "./src/i18n/materialSubcategoryPageText.ts";',
+          'export { materialSubcategoryPageText, quartzCountertopsSeoTitle } from "./src/i18n/materialSubcategoryPageText.ts";',
         ].join("\n"),
         resolveDir: process.cwd(),
       },
@@ -152,9 +152,9 @@ const loadMaterialsData = async () => {
 };
 
 export const loadMaterialSeoCategories = async (publishedMaterialRows = []) => {
-  const { materialsData: categories, translateDisplayText, materialSubcategoryPageText } = await loadMaterialsData();
+  const { materialsData: categories, translateDisplayText, materialSubcategoryPageText, quartzCountertopsSeoTitle } = await loadMaterialsData();
   const merged = new Map(categories.map((category) => {
-    const entry = buildCategorySeoEntry(category);
+    const entry = buildCategorySeoEntry(category, quartzCountertopsSeoTitle);
     return [entry.slug, entry];
   }));
 
@@ -171,7 +171,7 @@ export const loadMaterialSeoCategories = async (publishedMaterialRows = []) => {
         name: categoryName,
         slug: categorySlug,
         subcategories: [],
-      });
+      }, quartzCountertopsSeoTitle);
       merged.set(categorySlug, category);
     }
 

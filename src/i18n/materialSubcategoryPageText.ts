@@ -1,3 +1,5 @@
+export const quartzCountertopsSeoTitle = "Quartz Countertops | Stone Surfaces";
+
 export const materialSubcategoryPageText = {
   en: {
     notFound: "Subcategory Not Found",
@@ -6,7 +8,9 @@ export const materialSubcategoryPageText = {
     viewAll: "View All Materials",
     breadcrumbHome: "Home",
     breadcrumbMaterials: "Materials",
-    metaTitle: (name: string, category: string) => `${name} | ${category} | FLASH CAST`,
+    metaTitle: (name: string, category: string) => name === "Quartz Countertops" && category === "Countertops & Stone Surfaces"
+      ? `${quartzCountertopsSeoTitle} | FLASH CAST`
+      : `${name} | ${category} | FLASH CAST`,
     metaDescription: (description: string, name: string) => `${description} Browse ${name.toLowerCase()} for your renovation project in Kuala Lumpur.`,
     metaKeywords: (name: string, category: string) => `${name} KL, ${name.toLowerCase()} Malaysia, ${category.toLowerCase()} renovation`,
     color: "Color:",
