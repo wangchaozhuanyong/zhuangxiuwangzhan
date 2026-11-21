@@ -67,7 +67,7 @@ test.beforeAll(async ({ baseURL }) => {
         res.end("/* Intentional local recovery fixture */"); return;
       }
       if (/\/assets\/ContactEntryPanel-[^/]+\.js$/.test(path)) { servedPanelRequests++; if (moduleGate) await moduleGate; }
-      if (path === "/images/contact/wechat-qr.webp") servedQrRequests++;
+      if (/^\/images\/contact\/wechat-qr-[a-f0-9]{12}\.webp$/.test(path)) servedQrRequests++;
       const requested = new URL(req.url!, "http://fixture");
       const upstream = await fetch(new URL(requested.pathname + requested.search, fixtureFrontendOrigin));
       const headers: Record<string, string> = {

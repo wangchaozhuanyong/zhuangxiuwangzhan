@@ -18,7 +18,7 @@ export const siteConfig = {
   phoneE164,
   whatsappNumber,
   wechatId: "flashcast898",
-  wechatQrUrl: "/images/contact/wechat-qr.webp?v=20261121",
+  wechatQrUrl: "/images/contact/wechat-qr-203df7594c5b.webp",
   wechatQrDownloadUrl: "/downloads/wechat-qr.png?v=20261121",
   address: env.VITE_SITE_ADDRESS || "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia",
   shortAddress: env.VITE_SITE_SHORT_ADDRESS || "94, Jalan Mega Mendung, 58200",
