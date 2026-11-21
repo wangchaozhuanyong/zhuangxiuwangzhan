@@ -31,6 +31,14 @@ test("shows all four navigation entries with a separate text-only return on a na
   await expect(back).toHaveText("返回主站");
   await expect(back).toHaveAttribute("href", "https://flashcast.com.my/zh/furniture");
   await expect(back.locator("svg")).toHaveCount(0);
+  await expect(page.locator(".mast-contact")).toBeHidden();
+  const toolbarCenters = await page.locator(".mast-return, .mast .brand, .mast .lang-switch").evaluateAll(controls =>
+    controls.map(control => {
+      const bounds = control.getBoundingClientRect();
+      return bounds.top + bounds.height / 2;
+    }),
+  );
+  expect(Math.max(...toolbarCenters) - Math.min(...toolbarCenters)).toBeLessThan(1);
   const nav = page.locator(".site-nav");
   await expect(nav.locator(":scope > :is(a,button)")).toHaveText(["选购门锁", "型号对比", "安装服务", "联系我们"]);
   await expect.poll(() => nav.evaluate(el => el.scrollWidth - el.clientWidth)).toBe(0);

@@ -2,11 +2,12 @@ import { localizeMalayContent } from "@/i18n/malayContentRuntime";
 import catalogJson from "../data/furnitureCatalog.json";
 import catalogZhJson from "../data/furnitureCatalogZh.json";
 import catalogEnJson from "../data/furnitureCatalogEn.json";
-import { applyFurnitureCatalogOverrides, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
+import { applyFurnitureCatalogOverrides, readFurnitureCatalogOverrides } from "./furnitureCatalogOverrides";
 import type { Language } from "../i18n/routes";
 import type { Database } from "./database.types";
 import { formatMaterialPrice } from "./materialPrice";
 import { resolveFurnitureDisplay } from "./furnitureDisplaySafety.mjs";
+import { furnitureProductPathForSlug, resolveFurnitureSourceSlug } from "./furnitureProductUrls.mjs";
 
 type MaterialRow = Database["public"]["Tables"]["materials"]["Row"];
 export type FurnitureMaterialRow = MaterialRow & { material_images?: { image_url: string; sort_order: number }[] };
@@ -68,9 +69,9 @@ export const localizeFurnitureProduct = (product: FurnitureProduct, language: La
 const productsByUrl = new Map(furnitureCatalog.products.map((product) => [product.sourceUrl, product]));
 const productsBySlug = new Map(furnitureCatalog.products.map((product) => [decodeURIComponent(product.slug), product]));
 
-/** Preserve the exact baseline-slug lookup used by managed catalog readers. */
+/** The baseline owns both its supplier identity and its public alias. */
 export const hasBaselineFurnitureSlug = (slug: string) => {
-  const normalized = normalizeFurnitureSlug(slug);
+  const normalized = resolveFurnitureSourceSlug(slug);
   return normalized !== undefined && productsBySlug.has(normalized);
 };
 
@@ -84,7 +85,7 @@ export const getFurnitureProducts = (urls: string[]) =>
   urls.map((url) => productsByUrl.get(url)).filter((product): product is FurnitureProduct => Boolean(product));
 
 export const getFurnitureProduct = (slug?: string) => {
-  const normalized = normalizeFurnitureSlug(slug);
+  const normalized = resolveFurnitureSourceSlug(slug);
   return normalized === undefined ? undefined : productsBySlug.get(normalized);
 };
 
@@ -182,8 +183,8 @@ export const getFurnitureListingPage = (
   };
 };
 
-export const furnitureProductPath = (product: FurnitureProduct) =>
-  `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`;
+export const furnitureProductPath = (product: Pick<FurnitureProduct, "slug">, language?: Language) =>
+  furnitureProductPathForSlug(product.slug, language);
 
 export const getFurnitureProductCategory = (product: FurnitureProduct) =>
   furnitureCatalog.taxonomy.find((category) => category.key === product.managedCategoryKey)
