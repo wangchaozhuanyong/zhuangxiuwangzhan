@@ -1,10 +1,5 @@
-.fc-contact-stack {
-  position: fixed; z-index: 38; right: 24px; bottom: 28px;
-  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
-  max-width: calc(100vw - 32px); pointer-events: none;
-  transform: translateY(calc(-1 * var(--fc-contact-lift, 0px)));
-}
-.fc-contact-stack > * { flex: none; pointer-events: auto; }
+@import "../../../public/public-contact-entry.css";
+
 .fc-contact-stack .fc-furniture-floating--fallback {
   display: flex; flex-direction: column; justify-content: center; gap: 4px;
   width: 170px; padding: 12px; white-space: normal; font-size: 13px;
@@ -32,47 +27,6 @@
 .fc-contact-stack[data-compact] .fc-furniture-floating[lang="ms"] .fc-furniture-floating__hint { display: block; font-size: 10px; }
 .fc-contact-stack[data-compact] .fc-contact-entry { justify-content: center; min-height: 48px; padding: 6px; gap: 8px; font-size: 13px; }
 .fc-contact-stack[data-compact] .fc-contact-entry__icon { width: 30px; height: 30px; }
-/* Keep its measured footprint while yielding, so collision checks stay stable. */
-.fc-contact-stack[data-obstructed="true"], .fc-contact-stack[data-obstructed="true"] > * {
-  visibility: hidden; pointer-events: none;
-}
-.fc-contact-entry {
-  --radius: 999px;
-  display: inline-flex; align-items: center; gap: 10px; min-height: 54px;
-  max-width: calc(100vw - 32px); padding: 7px 18px 7px 7px; border-radius: var(--radius);
-  border: 1px solid rgba(217, 167, 106, 0.45);
-  background: linear-gradient(135deg, #FFFDF9 0%, #FAF4EA 50%, #F3E7D3 100%);
-  color: #3E2B1A;
-  box-shadow: 0 8px 22px rgba(180, 130, 70, 0.16), inset 0 1px 1.5px rgba(255, 255, 255, 0.9);
-  font-size: 14px; line-height: 1.4; font-weight: 600;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-.fc-contact-entry[hidden] { display: none; }
-.fc-contact-entry__icon {
-  display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 50%;
-  background: linear-gradient(135deg, #1FAF72 0%, #0E7A4C 100%);
-  color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow: 0 2px 6px rgba(14, 122, 76, 0.25);
-}
-.fc-contact-entry__icon svg { width: 19px; height: 19px; stroke-width: 2.2; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15)); }
-.fc-contact-entry__label { min-width: 0; text-align: left; overflow-wrap: anywhere; }
-.fc-contact-entry:focus-visible { outline: 3px solid #D9A76A; outline-offset: 4px; }
-.fc-contact-entry:disabled { cursor: progress; }
-@media (hover: hover) {
-  .fc-contact-entry:hover:not(:disabled) {
-    transform: translateY(-2px);
-    border-color: #D9A76A;
-    box-shadow: 0 10px 26px rgba(180, 130, 70, 0.24), inset 0 1px 1.5px rgba(255, 255, 255, 1);
-  }
-}
-.fc-contact-entry:active:not(:disabled) { transform: translateY(0); box-shadow: 0 3px 10px rgba(180, 130, 70, 0.2); }
-@media (prefers-reduced-motion: reduce) {
-  .fc-contact-entry { transition: none; }
-  .fc-contact-entry:hover:not(:disabled) { transform: none; }
-}
 .fc-contact-panel[role="dialog"] { display: flex; flex-direction: column; padding: 0; gap: 0; overflow: hidden; box-shadow: var(--luxury-shadow); }
 .fc-contact-panel__header { flex: none; padding: 26px 24px 20px; }
 .fc-contact-panel__title { padding-right: 40px; font-size: 22px; line-height: 1.35; letter-spacing: -.02em; }
@@ -163,10 +117,7 @@
   .fc-contact-panel[role="dialog"] { left: auto; top: auto; right: 24px; bottom: 24px; transform: none; width: min(440px, calc(100vw - 48px)); }
 }
 @media (max-width: 767px) {
-  .fc-contact-stack { right: 16px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
-  .fc-contact-entry { min-height: 48px; padding: 6px 16px 6px 6px; gap: 9px; font-size: 13px; }
-  .fc-contact-entry__icon { width: 34px; height: 34px; }
-  .fc-contact-entry__icon svg { width: 18px; height: 18px; }
+  .fc-contact-stack { --fc-contact-dock-height: 68px; }
   .fc-furniture-floating[lang="ms"] { width: 170px; grid-template-columns: 24px minmax(0, 1fr); grid-template-rows: auto; gap: 10px; text-align: left; padding: 9px 12px; }
   .fc-furniture-floating[lang="ms"] .fc-furniture-floating__copy { display: grid; gap: 3px; }
   .fc-furniture-floating[lang="ms"] .fc-furniture-floating__hint { display: block; white-space: normal; }

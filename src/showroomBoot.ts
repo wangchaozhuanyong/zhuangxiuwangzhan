@@ -2,6 +2,8 @@ import markup from "./components/publicBootTemplate.html?raw";
 import styles from "./styles/components/public-boot.css?raw";
 import { getDefaultLanguage, getLanguageFromPath, rememberLanguage } from "./i18n/routes";
 import { languageTag } from "./i18n/languageDetection";
+import { contactEntryTriggerText } from "./i18n/contactEntryText";
+import { findFloatingContactLift } from "./lib/floatingContactPlacement";
 import { reloadDocumentSafely } from "./lib/navigationProtection";
 import { initializePublicBoot } from "./lib/publicBoot";
 import { initializeShowroomUpdates } from "./lib/anzheShowroomUpdates";
@@ -12,12 +14,14 @@ declare global {
       getDefaultLanguage: typeof getDefaultLanguage;
       rememberLanguage: typeof rememberLanguage;
       languageTag: typeof languageTag;
+      contactEntryTriggerText: typeof contactEntryTriggerText;
+      findFloatingContactLift: typeof findFloatingContactLift;
     };
     showroomInteractive?: boolean;
   }
 }
 
-window.showroomPolicy = { getDefaultLanguage, rememberLanguage, languageTag };
+window.showroomPolicy = { getDefaultLanguage, rememberLanguage, languageTag, contactEntryTriggerText, findFloatingContactLift };
 
 function startDocumentBoot() {
   // A delayed script may arrive after the static document has already become interactive.
