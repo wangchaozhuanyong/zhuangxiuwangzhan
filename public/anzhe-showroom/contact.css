@@ -57,19 +57,17 @@
   .mast-inner .lang-switch{grid-row:1;grid-column:2}.mast-contact{grid-row:1;grid-column:3}.mast-inner .brand{min-height:51px}
 }
 @media (max-width:700px){
-  .mast-inner{grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto;column-gap:8px;padding-top:5px}
-  .mast-inner .site-nav{grid-row:2;gap:4px;margin-top:5px}.mast-inner .lang-switch{grid-column:2;grid-row:1}
-  .mast-contact{grid-column:3;grid-row:1;gap:3px}.mast-contact a,.mast-contact .ct-call{width:44px;height:44px;padding:0}.mast-contact a>span{display:none}
+  .mast-contact{display:none}
+  .mast-inner .lang-switch{border:0}
+  .mast-inner .lang-switch button{min-width:32px;height:44px;padding:0 5px;color:var(--muted)}
+  .mast-inner .lang-switch button[aria-pressed=true]{background:none;color:var(--olive);text-decoration:underline;text-underline-offset:4px}
+  .mast-inner .site-nav{gap:4px}
   .mast-inner .site-nav :is(a,button){padding-inline:1px;text-align:center;line-height:1.16}
-  .mast-inner .brand{height:auto;min-height:52px}
   .ct-layout{grid-template-columns:1fr;gap:22px}
   .ct-company{font-size:11px;margin-bottom:9px}.ct-advisor h2{font-size:clamp(29px,7.8vw,42px);max-width:23ch}
   .ct-intro{margin:11px 0 16px}.ct-actions a{min-height:46px;flex:1 1 auto;padding:10px 12px}
   .ct-other{margin-top:17px;padding-top:8px}.ct-other a,.ct-wechat summary{min-height:44px}.ct-office{padding:17px}
   .ct-hours{margin:14px 0 8px;padding-block:12px}.ct-qr img{width:130px}
-}
-@media (max-width:510px){
-  .mast-inner .lang-switch button{min-width:32px;padding:0 5px}
 }
 @media (max-width:350px){.mast-inner{column-gap:4px}}
 @media (max-width:380px){.ct-actions a{font-size:13px;padding:9px 10px;gap:5px}.ct-other>div{gap:9px}.ct-wechat{display:block;margin-left:0}.ct-directions>div{column-gap:12px}.ct-office{padding:14px}}
