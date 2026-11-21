@@ -14,7 +14,7 @@ import {
 import { applyHtmlNoStoreHeaders, applyPublicHtmlEdgeCacheHeaders, createHtmlEtag, createPublicHtmlBrowserResponse, withHtmlCacheDebugHeader, getEdgeCache, getPublicHtmlDeploymentVersion, getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest, getPublicRevisionCacheRequest, createPublicHtmlFreshnessResponse, PUBLIC_HTML_CACHE_TAG } from "./publicHtmlCache";
 import { createPublicSettingsReader } from "./publicSettingsSnapshot";
 import { createPublicServerTiming } from "./publicServerTiming";
-import { createPublicHtmlGenerationCoalescer, createUnconditionalPublicShellRequest } from "./publicHtmlGeneration";
+import { createPublicHtmlGenerationCoalescer, createUnconditionalPublicShellRequest, restorePublicResponse, snapshotPublicResponse, type PublicResponseSnapshot } from "./publicHtmlGeneration";
 import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreloads";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
@@ -240,11 +240,10 @@ let homeContentBundleCache:
 
 const publicRowsCache = new Map<string, { value: PublicDataRow[] | null; expiresAt: number }>();
 const publicHtmlRefreshes = new Map<string, Promise<void>>();
-type PublicHtmlGeneration = { response: Response; cacheWrite: Promise<void> | null; state?: "miss" | "bypass-admin" | "bypass-not-found" };
-const coalescePublicHtmlGeneration = createPublicHtmlGenerationCoalescer<PublicHtmlGeneration>();
+const coalescePublicHtmlGeneration = createPublicHtmlGenerationCoalescer();
 type PublicHtmlPreparation = {
   settings: Promise<SiteSettingsHead | null>;
-  route: Promise<[DynamicRouteState | null, Response]>;
+  route: Promise<[DynamicRouteState | null, PublicResponseSnapshot]>;
   pageBundle: Promise<Awaited<ReturnType<typeof fetchPublicSitePageBundle>>> | null;
   furniture: Promise<Awaited<ReturnType<typeof fetchHomeFurniture>>> | null;
   journal: Promise<Awaited<ReturnType<typeof fetchHomeDiscoveryRows>>> | null;
@@ -2297,7 +2296,7 @@ export const onRequest: PagesFunction = async (context) => {
     const footerCta = staticMeta && shouldPreloadFooterCtaBlock(key) ? fetchPublicCtaBlock(stringEnv, footerCtaBlockKey) : null;
     const route = timing.measure("route", () => Promise.all([
       fetchDynamicRouteState(stringEnv, key, staticMeta, () => { unpublishedBlog.value = true; }, earlyFurnitureSetting),
-      env.ASSETS ? env.ASSETS.fetch(shellRequest) : next(shellRequest),
+      (env.ASSETS ? env.ASSETS.fetch(shellRequest) : next(shellRequest)).then(snapshotPublicResponse),
     ]));
     // A speculative cold preparation may finish before its generation owns it.
     void route.catch(() => undefined);
@@ -2335,7 +2334,7 @@ export const onRequest: PagesFunction = async (context) => {
     const earlyHomeJournal = prepared.journal;
     const earlyHomeAreas = prepared.areas;
     const [dynamicRouteState, shellResponse] = await prepared.route;
-    const response = shellResponse.clone();
+    const response = restorePublicResponse(shellResponse);
     const resolvedMeta = prepared.unpublishedBlog.value || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
     const earlyFooterCtaBlock = prepared.footerCta;
     const earlyFurnitureSetting = prepared.furnitureSetting;
