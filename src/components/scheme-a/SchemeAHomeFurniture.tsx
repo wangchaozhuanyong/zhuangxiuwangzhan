@@ -44,7 +44,7 @@ export default function SchemeAHomeFurniture() {
           </figure>
           <div className="home-furniture__catalog">
             <PublicResultsBoundary query={query} loading={copy.loading} error={copy.loadFailed} empty={copy.empty} isEmpty={!products.length}>
-              <p className="home-furniture__swipe-hint">{copy.swipeHint}</p>
+              {products.length > 2 && <p className="home-furniture__swipe-hint">{copy.swipeHint}</p>}
               <div className="home-furniture__products" tabIndex={0} role="region" aria-label={copy.allFurniture}>
                 {products.map((product) => (
                   <article className="home-furniture__product" key={product.slug}>
@@ -55,7 +55,7 @@ export default function SchemeAHomeFurniture() {
                           alt={product.name}
                           width={540}
                           height={540}
-                          sizes="(max-width: 767px) 45vw, 22vw"
+                          sizes={`(max-width: 767px) 45vw, ${Math.ceil(94 / Math.max(2, products.length))}vw`}
                           rootMargin="1200px 0px"
                           loading="lazy"
                           fetchPriority="auto"

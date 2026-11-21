@@ -1,3 +1,4 @@
+import { SchemeASection } from "@/components/scheme-a/SchemeASection";
 import PublicReadError from "@/components/PublicReadError";
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
@@ -106,24 +107,67 @@ const LandingPage = () => {
       <section className="fc-c-trust" aria-label={t.whyChoose}>{t.trustItems.slice(0, 3).map((item) => <p key={item}><CheckCircle aria-hidden="true" /><strong>{item}</strong></p>)}</section>
 
       <section className="fc-c-form-section">
-        <LandingQuoteForm landingTitle={landingPage.title} />
-        <a className="fc-c-whatsapp-band" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "landing_form", { destination: "whatsapp" })}><WhatsAppIcon /><span><strong>{t.whatsapp}</strong><small>{t.formSubtitle}</small></span><ArrowRight /></a>
+        <LandingQuoteForm
+          landingTitle={landingPage.title}
+          secondaryAction={
+            <a className="scheme-a-button scheme-a-button--glass" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "landing_form", { destination: "whatsapp" })}>
+              <WhatsAppIcon />{t.whatsapp}
+            </a>
+          }
+        />
       </section>
 
-      <section className="fc-c-section fc-c-overview">
-        <header><span>{t.overview}</span><h2>{t.whyChoose}</h2></header>
-        <div className="fc-c-overview__grid">
-          <div className="fc-c-overview__copy">{isHtmlText(landingPage.description) ? <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(landingPage.description) }} /> : <p>{landingPage.description}</p>}</div>
-          <ol>{benefits.map((benefit, index) => <li key={benefit}><span>{String(index + 1).padStart(2, "0")}</span><strong>{benefit}</strong></li>)}</ol>
+      {(landingPage.description || benefits.length > 0) && (
+        <SchemeASection className="fc-c-overview" title={benefits.length ? t.whyChoose : t.overview}>
+          <div className="fc-c-overview__grid">
+            {landingPage.description && (
+              <div className="fc-c-overview__copy">
+                {isHtmlText(landingPage.description)
+                  ? <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(landingPage.description) }} />
+                  : <p>{landingPage.description}</p>}
+              </div>
+            )}
+            {benefits.length > 0 && (
+              <ol>{benefits.map((benefit, index) => (
+                <li key={benefit}><span>{String(index + 1).padStart(2, "0")}</span><strong>{benefit}</strong></li>
+              ))}</ol>
+            )}
+          </div>
+        </SchemeASection>
+      )}
+
+      <SchemeASection className="fc-c-process" title={t.processTitle} description={t.processIntro}>
+        <SchemeANumberList items={t.processSteps} />
+      </SchemeASection>
+
+      {projects.length > 0 && (
+        <SchemeASection
+          className="fc-c-projects"
+          title={projectPrivacyCopy?.title || t.relatedProjects}
+          description={projectPrivacyCopy?.note}
+        >
+          <div className="fc-c-project-grid">
+            {projects.map((project) => (
+              <article key={`${project.title}-${project.image}`}>
+                <SmartImage src={project.image} alt={project.title} width={900} height={620} quality={84} revealOnLoad />
+                <div><strong>{project.title}</strong>{project.location && <span>{project.location}</span>}</div>
+              </article>
+            ))}
+          </div>
+        </SchemeASection>
+      )}
+
+      {faqs.length > 0 && (
+        <SchemeASection className="fc-c-faq" title={t.faqTitle}>
+          <SchemeAFaqList items={faqs} />
+        </SchemeASection>
+      )}
+      <section className="fc-c-final">
+        <div className="scheme-a-frame fc-c-final__inner">
+          <div><h2>{t.ctaTitle}</h2><p>{t.ctaDescription}</p></div>
+          <a className="scheme-a-button scheme-a-button--paper" href="#landing-quote">{t.quote}<ArrowRight aria-hidden="true" /></a>
         </div>
       </section>
-
-      <section className="fc-c-section fc-c-process"><header><span>{t.processIntro}</span><h2>{t.processTitle}</h2></header><SchemeANumberList items={t.processSteps} /></section>
-
-      {projects.length ? <section className="fc-c-section fc-c-projects"><header><span>{projectPrivacyCopy?.eyebrow || t.relatedProjects}</span><h2>{projectPrivacyCopy?.title || projects[0].title}</h2></header>{projectPrivacyCopy ? <p className="fc-c-projects__privacy-note">{projectPrivacyCopy.note}</p> : null}<div className="fc-c-project-grid">{projects.map((project) => <article key={`${project.title}-${project.image}`}><SmartImage src={project.image} alt={project.title} width={900} height={620} quality={84} revealOnLoad /><div><strong>{project.title}</strong><span>{project.location}</span></div></article>)}</div></section> : null}
-
-      <section className="fc-c-section fc-c-faq"><header><span>{t.faqTitle}</span><h2>{t.ctaTitle}</h2></header><SchemeAFaqList items={faqs} /></section>
-      <section className="fc-c-final"><span>{t.ctaDescription}</span><h2>{t.ctaTitle}</h2><a href="#landing-quote">{t.quote}<ArrowRight /></a></section>
     </main>
   );
 };

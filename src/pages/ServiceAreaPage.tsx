@@ -82,8 +82,8 @@ export default function ServiceAreaPage() {
         {page.sections.map(section => (
           <SchemeASection key={section.heading} title={section.heading} description={section.paragraphs}>
             {section.checks.length > 0 || section.topics.length > 0 ? (
-              <div className="fc-route-service-overview-copy">
-                {section.checks.length > 0 && <ul className="list-disc space-y-2 pl-5">
+              <div className="fc-route-service-overview-copy fc-service-area-guide">
+                {section.checks.length > 0 && <ul className="fc-service-area-checks">
                   {section.checks.map(check => <li key={check}>{check}</li>)}
                 </ul>}
                 {section.topics.map(topic => (
@@ -97,8 +97,8 @@ export default function ServiceAreaPage() {
           </SchemeASection>
         ))}
         <SchemeASection title={page.modelHeading} description={page.modelIntro}>
-          <div className="fc-route-service-overview-copy">
-            <ul className="list-disc space-y-2 pl-5">
+          <div className="fc-route-service-overview-copy fc-service-area-guide">
+            <ul className="fc-service-area-checks">
               {page.models.map(model => (
                 <li key={model.slug}>
                   <a href={anzheShowroomModelUrl(language, model.slug)}>{model.name}</a>

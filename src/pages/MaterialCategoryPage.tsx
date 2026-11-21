@@ -4,7 +4,7 @@ import { isReviewedMaterialConceptImage } from "@/lib/reviewedContentMedia.mjs";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
-import { Button } from "@/components/ui/button";
+import { ArrowUpRight } from "lucide-react";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeAContentState, SchemeAListingGrid, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
@@ -33,9 +33,12 @@ export default function MaterialCategoryPage() {
   return <main className="fc-route-page">
     <PageMeta title={copy.metaTitle(name, copy.breadcrumbMaterials)} description={copy.metaDescription(description, name)} keywords={copy.metaKeywords(name)} canonicalPath={`/materials/category/${category.slug}`} />
     <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name, url: `/materials/category/${category.slug}` }]} />
-    <SchemeARouteHero kind="listing" image={category.image} mediaDisclosure={isReviewedMaterialConceptImage(category.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={category.alt || name} label={copy.breadcrumbMaterials} title={name} description={description} />
-    {category.slug === "whole-house-custom" && <SchemeASection><Button asChild size="lg"><Link to="/custom-cabinets">{customCabinetsHomeText[language].design}</Link></Button></SchemeASection>}
-    {subcategoryItems.length ? <SchemeASection title={copy.browseSubcategories} description={description}><SchemeAListingGrid items={subcategoryItems} actionLabel={copy.view} /></SchemeASection> : null}
+    <SchemeARouteHero kind="listing" image={category.image} mediaDisclosure={isReviewedMaterialConceptImage(category.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={category.alt || name} label={copy.breadcrumbMaterials} title={name} description={description}
+      actions={category.slug === "whole-house-custom" ? (
+        <Link to="/custom-cabinets">{customCabinetsHomeText[language].design}<ArrowUpRight aria-hidden="true" /></Link>
+      ) : undefined}
+    />
+    {subcategoryItems.length ? <SchemeASection title={copy.browseSubcategories}><SchemeAListingGrid items={subcategoryItems} actionLabel={copy.view} /></SchemeASection> : null}
     {productItems.length ? <SchemeASection title={copy.allProducts(name)}><SchemeAListingGrid items={productItems} actionLabel={copy.view} /></SchemeASection> : null}
     {guidance ? <SchemeASection title={guidance.title} description={guidance.paragraphs}>{null}</SchemeASection> : null}
   </main>;

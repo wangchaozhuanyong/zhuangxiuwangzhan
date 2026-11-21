@@ -51,7 +51,10 @@ describe("CMS page shared layout", () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
     client.setQueryData(["published", "cms_path", "en", "/layout-preview"], {
       title: "Space planning", path: "/layout-preview", description: "Overview", content: "Page introduction",
-      sections: [{ id: "details", section_type: "content", title: "Details", content: { text: "Unique section details" } }],
+      sections: [
+        { id: "details", section_type: "content", title: "Details", content: { text: "Unique section details" } },
+        { id: "services", section_type: "service_grid", title: "Services", content: { description: "Choose a service", items: ["Cabinetry"] } },
+      ],
     });
     const container = document.createElement("div");
     document.body.appendChild(container);
@@ -69,6 +72,8 @@ describe("CMS page shared layout", () => {
     ));
     expect(container.querySelectorAll(".fc-route-section-frame .fc-route-cms-copy")).toHaveLength(2);
     expect(Array.from(container.querySelectorAll(".fc-route-section-frame h2")).some((heading) => heading.textContent === "Details")).toBe(true);
+    expect(container.querySelector(".scheme-a-heading--row")).toHaveTextContent("ServicesChoose a service");
+    expect(container.querySelector(".fc-route-cms-list")).toHaveTextContent("Cabinetry");
     act(() => root.unmount());
     client.clear();
     container.remove();

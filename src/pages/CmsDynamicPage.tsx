@@ -1,6 +1,7 @@
 import { cmsDynamicPageText as copy } from "@/i18n/publicUtilityText";
 import { isMalayContentReady } from "@/i18n/localizedContent";
 import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import type { ReactNode } from "react";
 import { useParams } from "react-router-dom";
 
 import { AlertCircle, RefreshCw } from "lucide-react";
@@ -108,9 +109,11 @@ const renderList = (items: unknown[], type: string) => {
                 />
               </div>
             )}
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {title && <h3>{href ? <Link to={href} style={{ font: "inherit", color: "inherit", textDecoration: "inherit" }}>{title}</Link> : title}</h3>}
-            {description && <p>{description}</p>}
+            <div className="fc-route-cms-entry-copy">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              {title && <h3>{href ? <Link to={href} style={{ font: "inherit", color: "inherit", textDecoration: "inherit" }}>{title}</Link> : title}</h3>}
+              {description && <p>{description}</p>}
+            </div>
           </div>
         );
       })}
@@ -118,26 +121,31 @@ const renderList = (items: unknown[], type: string) => {
   );
 };
 
-const CmsSection = ({ section, pageBody }: { section: PublishedCmsSection; pageBody: string }) => {
-  const type = section.section_type.trim().toLowerCase().replace(/-/g, "_");
+const sectionType = (section: PublishedCmsSection) => section.section_type.trim().toLowerCase().replace(/-/g, "_");
+
+const CmsSection = ({ section, duplicateBody, children }: { section: PublishedCmsSection; duplicateBody: string; children?: ReactNode }) => {
+  const type = sectionType(section);
   if (type.includes("hero")) return null;
 
   const content = toRecord(section.content);
   const title = section.title || firstText(content.title, content.heading);
   const body = getSectionBody(section);
-  // The CMS mapper exposes its first rich-text section as page.content too.
-  // Keep the section's title and list, but show identical body text only once.
   const sectionHtml = body ? renderCmsBody(body) : "";
-  const visibleBody = pageBody && sectionHtml === renderCmsBody(pageBody) ? "" : sectionHtml;
+  const visibleBody = sectionHtml === duplicateBody ? "" : sectionHtml;
   const items = Array.isArray(content.items) ? content.items : [];
   const isCta = type === "cta";
+  const headingDescription = !isCta && title && visibleBody && body === content.description && !body.includes("<") ? body : undefined;
   const hasActions = isCta && Boolean(firstText(content.primary_label, content.secondary_label));
 
   if (!title && !visibleBody && !items.length && !hasActions) return null;
 
   return (
-    <SchemeASection title={!isCta && title ? title : undefined}>
-        {visibleBody && (
+    <SchemeASection
+      title={!isCta && title ? title : undefined}
+      description={headingDescription}
+      className={!isCta && title && visibleBody && !headingDescription ? "fc-route-cms-reading" : undefined}
+    >
+        {visibleBody && !headingDescription && (
           <div
             className="fc-route-cms-copy prose prose-neutral"
             dangerouslySetInnerHTML={{ __html: visibleBody }}
@@ -145,6 +153,7 @@ const CmsSection = ({ section, pageBody }: { section: PublishedCmsSection; pageB
         )}
         {isCta && <CmsActionPanel title={title} content={content} />}
         {renderList(items, type)}
+        {children}
     </SchemeASection>
   );
 };
@@ -198,7 +207,22 @@ export default function CmsDynamicPage() {
   const heroImage = page.image_url || toText(sectionHeroImage);
   const heroAlt = page.alt || page.title;
   const sections = page.sections || [];
-  const hasCtaSection = sections.some((section) => section.section_type.trim().toLowerCase() === "cta");
+  const pageHtml = page.content ? renderCmsBody(page.content) : "";
+  // The first authored rich-text block can also be exposed as the page introduction.
+  const introSection = pageHtml ? sections.find((section) =>
+    ["rich_text", "text", "content"].includes(sectionType(section)) && renderCmsBody(getSectionBody(section)) === pageHtml
+  ) : undefined;
+  const fallbackAction = pageHtml && !sections.some((section) => sectionType(section) === "cta") ? (
+    <CmsActionPanel
+      title={firstText(page.cta_title, t.quote)}
+      content={{
+        primary_label: firstText(page.cta_title, t.quote),
+        primary_url: "/quote#quote-form",
+        secondary_label: t.fallbackDescription,
+        secondary_url: "/contact",
+      }}
+    />
+  ) : null;
 
   return (
     <main className="fc-route-page">
@@ -212,17 +236,21 @@ export default function CmsDynamicPage() {
 
       <SchemeARouteHero kind="content" image={heroImage || pageHeroImages.about.desktop} imageAlt={heroAlt} label="FLASH CAST SDN. BHD." title={page.title} description={page.description || t.fallbackDescription} />
 
-      {page.content && (
+      {pageHtml && !introSection && (
         <SchemeASection>
             <div
               className="fc-route-cms-copy prose prose-neutral"
-              dangerouslySetInnerHTML={{ __html: renderCmsBody(page.content) }}
+              dangerouslySetInnerHTML={{ __html: pageHtml }}
             />
-            {!hasCtaSection && <CmsActionPanel title={firstText(page.cta_title, t.quote)} content={{ primary_label: firstText(page.cta_title, t.quote), primary_url: "/quote#quote-form", secondary_label: t.fallbackDescription, secondary_url: "/contact" }} />}
+            {fallbackAction}
         </SchemeASection>
       )}
 
-      {sections.map((section) => <CmsSection key={section.id} section={section} pageBody={page.content} />)}
+      {sections.map((section) => (
+        <CmsSection key={section.id} section={section} duplicateBody={section === introSection ? "" : pageHtml}>
+          {section === introSection && fallbackAction}
+        </CmsSection>
+      ))}
     </main>
   );
 }

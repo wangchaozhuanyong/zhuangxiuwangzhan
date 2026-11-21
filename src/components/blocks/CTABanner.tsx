@@ -32,17 +32,16 @@ const CTABanner = ({
   const settings = useSiteSettings();
 
   return (
-    <section className={cn("subpage-cta scheme-a-page-cta", className)} data-cinematic-section>
+    <section className={cn("subpage-cta scheme-a-page-cta scheme-a-page-cta--compact", className)} data-cinematic-section>
       <div className="scheme-a-frame scheme-a-page-cta__layout">
         <div className="scheme-a-page-cta__copy">
-          <p>FLASH CAST</p>
           <h2>{title}</h2>
           <span>{description}</span>
         </div>
         <div className="scheme-a-page-cta__actions">
           <Link
             to={quotePath}
-            className="scheme-a-page-cta__button scheme-a-page-cta__button--primary"
+            className="scheme-a-page-cta__button scheme-a-page-cta__button--primary scheme-a-button--paper"
             onClick={() => trackCtaClick("quote", whatsappSource, { destination: quotePath })}
           >
             <span>{quoteLabel}</span>
@@ -52,7 +51,7 @@ const CTABanner = ({
             href={settings.whatsapp_url(whatsappMessage)}
             target="_blank"
             rel="noopener noreferrer"
-            className="scheme-a-page-cta__button scheme-a-page-cta__button--secondary"
+            className="scheme-a-page-cta__button scheme-a-page-cta__button--secondary scheme-a-button--glass"
             onClick={() => trackCtaClick("whatsapp", whatsappSource, { destination: "whatsapp" })}
           >
             <WhatsAppIcon aria-hidden="true" />

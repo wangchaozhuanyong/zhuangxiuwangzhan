@@ -56,11 +56,32 @@ export default function CabinetStudio() {
   return <div className="cabinet-studio cabinet-studio--simple" id="cabinet-studio-tabs">
     <p className="studio-live" role="status">{state.storageError ? t.saveFailed : notice || (emptyPlan ? p.emptyPlan : state.recovered ? t.recovered : '')}</p>
     <section aria-label={t.inspire} id="cabinet-packages">
-      <div className="studio-catalog-tools"><div className="studio-filter studio-filter--simple">
-        <label><span className="sr-only">{t.space}</span><select aria-label={t.space} value={scene} onChange={e => state.filter('room', e.target.value)}>{paletteScenes.map(room => <option value={room} key={room}>{l.scenes[room]}</option>)}</select></label>
-        <label><span className="sr-only">{t.style}</span><select aria-label={t.style} value={style} onChange={e => state.filter('style', e.target.value)}><option value="">{t.allStyles}</option>{studioStyles.map(s => <option key={s.id} value={s.id}>{l.styles[s.id]}</option>)}</select></label>
-        <Button className="studio-collection-entry" variant="outline" size="icon" aria-label={p.saved} title={p.saved} onClick={() => { rememberTrigger(); state.setView('saved'); }}><Heart size={18} />{state.saved.length > 0 && <span>{state.saved.length}</span>}</Button>
-      </div><div className="studio-results"><p>{schemes.length} {t.count}</p>{style && <button onClick={() => state.filter('style','')}>{t.clear}</button>}</div></div>
+      <div className="studio-catalog-tools">
+        <div className="studio-filter">
+          <label>
+            <span>{t.space}</span>
+            <select value={scene} onChange={e => state.filter('room', e.target.value)}>
+              {paletteScenes.map(room => <option value={room} key={room}>{l.scenes[room]}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>{t.style}</span>
+            <select value={style} onChange={e => state.filter('style', e.target.value)}>
+              <option value="">{t.allStyles}</option>
+              {studioStyles.map(s => <option key={s.id} value={s.id}>{l.styles[s.id]}</option>)}
+            </select>
+          </label>
+        </div>
+        <div className="studio-results">
+          <p role="status">{schemes.length} {t.count}</p>
+          {style && <button onClick={() => state.filter('style', '')}>{t.clear}</button>}
+        </div>
+        <Button className="studio-collection-entry" variant="ghost" onClick={() => { rememberTrigger(); state.setView('saved'); }}>
+          <Heart size={18} aria-hidden="true" />
+          {p.saved}
+          {state.saved.length > 0 && <span>{state.saved.length}</span>}
+        </Button>
+      </div>
       <div className="studio-gallery">{schemes.slice(0, limit).map((scheme, index) => {
         const design = { ...designForScheme(scheme.id), scene }, liked = state.saved.some(s => s.id === `inspiration-${scheme.id}`);
         const quote = paletteQuotePath(design, language, window.location.hostname);

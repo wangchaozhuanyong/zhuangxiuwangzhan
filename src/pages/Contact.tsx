@@ -1,3 +1,4 @@
+import { SchemeASectionHeading } from "@/components/scheme-a/SchemeASection";
 import { contactEntryText } from "@/i18n/contactEntryText";
 import { malayFormat } from "@/i18n/malayText";
 import { interactionText } from "@/i18n/interactionText";
@@ -447,11 +448,8 @@ const Contact = () => {
       <section className="forest-map-section section-padding section-padding--continued bg-background">
         <div className="container-narrow">
           <Reveal>
-            <div className="forest-map-heading mb-6 flex flex-col items-center gap-5">
-              <header className="scheme-a-heading">
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.mapTitle}</h2>
-                <p className="text-muted-foreground text-sm">{mapDescription}</p>
-              </header>
+            <div className="forest-map-heading">
+              <SchemeASectionHeading title={t.mapTitle} description={mapDescription} />
               <Dialog>
                 <DialogTrigger asChild>
                   <Button type="button" className="btn-brand-secondary min-h-11 shrink-0 rounded-sm">

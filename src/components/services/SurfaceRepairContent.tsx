@@ -1,8 +1,9 @@
 import { useRef, useState, type FormEvent } from "react";
-import { ArrowDown, ArrowUpRight, Camera, Focus, Ruler } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Camera, ChevronDown, Focus, Ruler } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import SmartImage from "@/components/SmartImage";
+import { SchemeASectionHeading } from "@/components/scheme-a/SchemeASection";
 import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
@@ -121,28 +122,86 @@ export default function SurfaceRepairContent({ service, pending = false }: { ser
           </article>)}</div>
           <section className="all-scope" aria-labelledby="all-scope-title"><div className="all-scope-heading"><strong id="all-scope-title">{copy.allScopeTitle}</strong><small>{copy.allScopeHint}</small></div><div className="service-grid">{copy.services.map((item, i) => <details className="service" key={item.id}><summary><span className="index">{String(i + 1).padStart(2, "0")}</span><span><span className="name">{item.title}</span><span className="desc">{item.summary}</span></span><span className="toggle" aria-hidden="true">+</span></summary><div className="service-body"><dl>{(["problems", "direction", "boundary"] as const).map((key, n) => <div key={key}><dt>{copy.detailLabels[n]}</dt><dd>{item[key]}</dd></div>)}</dl><button type="button" className="text-link" onClick={() => chooseCategory(item.id)}>{copy.categoryAction}<ArrowUpRight size={16} aria-hidden="true" /></button></div></details>)}</div></section>
         </section>
-        <section className="section assessment" id="repair-assessment" tabIndex={-1}>
-          <div className="frame">
-            <SectionHeading title={copy.assessmentTitle} description={copy.assessmentDescription} />
-            <div className="assessment-grid">
-              {copy.assessment.map(item => <article className="assessment-item" key={item.title}>
-                <header className="assessment-heading">
-                  <h3>{item.title}</h3>
-                  <span className="assessment-status">{item.label}</span>
-                </header>
-                <p>{item.description}</p>
-                <details className="assessment-detail">
-                  <summary>{copy.exampleDetails}<span className="toggle" aria-hidden="true">+</span></summary>
+        <div className="section frame repair-guide">
+          <section id="repair-assessment" aria-labelledby="repair-assessment-title" tabIndex={-1}>
+            <header className="guide-heading">
+              <h2 id="repair-assessment-title">{copy.assessmentTitle}</h2>
+              <p>{copy.assessmentDescription}</p>
+            </header>
+            <div className="assessment-list">
+              {copy.assessment.map(item => (
+                <details className="assessment-detail" key={item.title}>
+                  <summary>
+                    <span className="assessment-condition">
+                      <strong>{item.title}</strong>
+                      <span>{item.description}</span>
+                    </span>
+                    <span className="assessment-status">{item.label}</span>
+                    <ChevronDown size={16} aria-hidden="true" />
+                    <span className="sr-only">{copy.exampleDetails}</span>
+                  </summary>
                   <p>{item.details}</p>
                 </details>
-              </article>)}
+              ))}
             </div>
-          </div>
-        </section>
-        <section className="section frame" id="repair-process" tabIndex={-1}><SectionHeading title={copy.processTitle} description={copy.processDescription} /><ol className="process-grid">{steps.map((item, i) => <li key={i}><span className="step-index">{String(i + 1).padStart(2, "0")}</span><h3>{item.title}</h3><p>{item.desc}</p></li>)}</ol><p className="situations">{copy.situations}</p><section className="price"><SectionHeading title={copy.priceTitle} /><div className="triple">{copy.priceFactors.map(item => <article key={item.title}><h3>{item.title}</h3><p>{item.description}</p></article>)}</div></section></section>
-        {faqs.length > 0 && <section className="section faq-section frame"><SectionHeading title={copy.faqTitle} />{faqs.map(item => <details className="faq" key={item.question}><summary>{item.question}<span className="toggle" aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</section>}
-        <section className="section consult" id="repair-consult" tabIndex={-1}><div className="frame consult-layout"><div><SectionHeading title={copy.consultTitle} description={copy.consultDescription} /><ol className="photo-list">{copy.photoGuide.map((item, i) => { const Icon = photoIcons[i]; return <li key={item.title}><div className="photo-visual"><span className="photo-index">{String(i + 1).padStart(2, "0")}</span><Icon aria-hidden="true" /></div><strong>{item.title}</strong><p>{item.description}</p></li>; })}</ol></div>
-          <div className="consult-panel">{directEnquiry}<details className="tool" ref={tool}><summary>{copy.toolTitle}</summary><p>{copy.toolNote}</p>
+          </section>
+          <section id="repair-process" aria-labelledby="repair-process-title" tabIndex={-1}>
+            <header className="guide-heading">
+              <h2 id="repair-process-title">{copy.processTitle}</h2>
+              <p>{copy.processDescription}</p>
+            </header>
+            <ol className="process-list">
+              {steps.map((step, index) => (
+                <li key={index}>
+                  <span className="step-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p className="situations">{copy.situations}</p>
+          </section>
+          <section className="price" aria-labelledby="repair-price-title">
+            <h2 id="repair-price-title">{copy.priceTitle}</h2>
+            <dl>
+              {copy.priceFactors.map(item => (
+                <div key={item.title}>
+                  <dt>{item.title}</dt>
+                  <dd>{item.description}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        </div>
+        {faqs.length > 0 && (
+          <section className="section faq-section frame">
+            <SchemeASectionHeading title={copy.faqTitle} />
+            <div className="repair-faq-list">
+              {faqs.map(item => (
+                <details className="faq" key={item.question}>
+                  <summary>{item.question}<span className="toggle" aria-hidden="true">+</span></summary>
+                  <p>{item.answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+        <section className="section consult" id="repair-consult" tabIndex={-1}><div className="frame consult-layout">
+          <SchemeASectionHeading title={copy.consultTitle} description={copy.consultDescription} />
+          <ol className="photo-list">
+            {copy.photoGuide.map((item, i) => {
+              const Icon = photoIcons[i];
+              return (
+                <li key={item.title}>
+                  <div className="photo-visual"><Icon aria-hidden="true" /></div>
+                  <div><strong>{item.title}</strong><p>{item.description}</p></div>
+                </li>
+              );
+            })}
+          </ol>
+          <div className="consult-panel">{directEnquiry}<details className="tool" ref={tool} open><summary>{copy.toolTitle}</summary><p>{copy.toolNote}</p>
             <form onSubmit={submit} noValidate>
               <label htmlFor="repair-category">{copy.categoryLabel}</label><select data-ui="select" id="repair-category" ref={categoryInput} value={category} onChange={event => { setCategory(event.target.value); if (description === suggestedDamage.current) setDescription(""); suggestedDamage.current = ""; markChanged(); }}><option value="">{copy.unknownCategory}</option>{copy.services.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select>
               <label htmlFor="repair-region">{copy.regionLabel}</label><Input id="repair-region" ref={regionInput} value={region} required maxLength={100} placeholder={copy.regionPlaceholder} aria-invalid={regionError || undefined} aria-describedby={regionError ? "repair-region-error" : undefined} onChange={event => { setRegion(event.target.value); setRegionError(false); markChanged(); }} />{regionError && <p id="repair-region-error" className="error" role="alert">{copy.regionError}</p>}

@@ -2079,6 +2079,9 @@ html[data-public-theme] #root :is(.scheme-a-hero__lead, .fc-route-hero-copy > p,
   font-size: 17px !important;
   line-height: 1.8 !important;
   letter-spacing: 0 !important;
+}
+/* Section headings own their line breaks at each viewport width. */
+html[data-public-theme] #root :is(.scheme-a-hero__lead, .fc-route-hero-copy > p, .scheme-a-home-summary__description) {
   text-wrap: wrap !important;
 }
 

@@ -102,6 +102,18 @@ describe("source-bound topic additions and unchanged archive controls", () => {
     expect(container.querySelector("#blog-articles")).toHaveAttribute("tabindex", "-1");
   });
 
+  it("shows an article heading only in topics with published guides", () => {
+    fixture.language = "en";
+    fixture.posts = [makePost("kitchen-renovation-quotation-checklist-malaysia", "/cover.webp")];
+    render();
+    const topics = Array.from(container.querySelectorAll(".fc-blog-topic-card"));
+    expect(topics).toHaveLength(BLOG_TOPIC_KEYS.length);
+    for (const topic of topics) {
+      expect(Boolean(topic.querySelector("b"))).toBe(Boolean(topic.querySelector("div > a")));
+      expect(topic.querySelector(".fc-blog-topic-card__service")).toBeTruthy();
+    }
+  });
+
   it("uses a changed CMS title rather than a static pinned title", () => {
     fixture.language = "en";
     fixture.posts = makeArchive("en").map((post) => post.slug === "built-in-cabinet-cost-malaysia" ? { ...post, title: "Revised CMS cabinet comparison" } : post);

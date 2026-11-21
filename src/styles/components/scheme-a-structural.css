@@ -839,16 +839,24 @@
     gap: clamp(2rem, 5vw, 4rem);
   }
 
+  @media (min-width: 1024px) {
+    html[data-public-theme="warm-stone"] .scheme-a-transformation {
+      grid-template-columns: minmax(0, 0.55fr) minmax(0, 1fr);
+      align-items: center;
+      column-gap: clamp(32px, 4vw, 64px);
+    }
+  }
+
   html[data-public-theme="warm-stone"] .scheme-a-transformation__copy {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
   }
 
-  html[data-public-theme="warm-stone"] .scheme-a-transformation__copy h2 {
+  html[data-public-theme="warm-stone"] .scheme-a-transformation__copy h3 {
     max-width: 20ch;
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(2.1rem, 4vw, 4.2rem);
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
     font-weight: 400;
     line-height: 1.22;
     letter-spacing: -0.025em;
@@ -1387,6 +1395,51 @@
     background: rgb(253 252 250 / 0.085);
   }
 
+  html[data-public-theme="warm-stone"] .scheme-a-page-cta--compact {
+    padding-block: var(--public-section-space-start) var(--public-section-space-end);
+  }
+
+  html[data-public-theme="warm-stone"] .scheme-a-page-cta--compact .scheme-a-page-cta__layout {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 20px;
+    text-align: center;
+  }
+
+  html[data-public-theme="warm-stone"] .scheme-a-page-cta--compact .scheme-a-page-cta__copy h2 {
+    max-width: none;
+    padding: 0;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.25;
+    text-align: inherit;
+  }
+
+  html[data-public-theme="warm-stone"] .scheme-a-page-cta--compact .scheme-a-page-cta__copy > span {
+    max-width: 42rem;
+    padding-top: 8px;
+    color: var(--public-text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: balance;
+  }
+
+  html[data-public-theme="warm-stone"] .scheme-a-page-cta--compact .scheme-a-page-cta__actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 100%;
+    gap: 10px;
+  }
+
+  html[data-public-theme="warm-stone"] .scheme-a-page-cta--compact .scheme-a-page-cta__button {
+    min-height: 46px;
+    padding: 8px 16px;
+    border: 1px solid;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  .scheme-a-page-cta--compact .scheme-a-page-cta__button svg { flex-shrink: 0; }
+
   @media (hover: hover) {
     html[data-public-theme="warm-stone"] .scheme-a-button:hover {
       transform: translateY(-1px);
@@ -1534,8 +1587,8 @@
       line-height: 1.28;
     }
 
-    html[data-public-theme="warm-stone"] .scheme-a-transformation__copy h2 {
-      font-size: clamp(1.6rem, 5.8vw, 1.95rem);
+    html[data-public-theme="warm-stone"] .scheme-a-transformation__copy h3 {
+      font-size: 1.375rem;
       line-height: 1.25;
     }
 

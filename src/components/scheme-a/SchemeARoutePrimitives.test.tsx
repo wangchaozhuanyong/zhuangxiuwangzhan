@@ -53,17 +53,38 @@ describe("SchemeASection", () => {
       "Second detail.",
       "Third <script>alert(1)</script> detail.",
     ]);
+    expect(container.querySelector("header")).toHaveClass("scheme-a-heading--reading");
     expect(container.querySelector("script")).toBeNull();
     expect(container).toHaveTextContent("Existing service links");
 
     act(() => root.render(<SchemeASection title="Other section" description="Single description"><span>Existing content</span></SchemeASection>));
     expect(Array.from(container.querySelectorAll(".fc-route-section-head p"), (paragraph) => paragraph.textContent)).toEqual(["Single description"]);
+    expect(container.querySelector("header")).toHaveClass("scheme-a-heading--row");
+
+    act(() => root.render(<SchemeASection title="Planning notes" description="A standalone answer.">{null}</SchemeASection>));
+    expect(container.querySelector("header")).toHaveClass("scheme-a-heading--reading");
+
     act(() => root.unmount());
     container.remove();
   });
 });
 
 describe("SchemeAListingGrid", () => {
+  it("redistributes incomplete desktop rows when the number of published cards changes", () => {
+    const items = Array.from({ length: 8 }, (_, i) => ({
+      id: String(i), title: `Item ${i}`, image: "", href: `/projects/${i}`,
+    }));
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    for (const [count, trailingPairs] of [[1, 1], [2, 2], [3, 0], [4, 4], [5, 2], [6, 0], [7, 4], [8, 2]]) {
+      act(() => root.render(<MemoryRouter><SchemeAListingGrid items={items.slice(0, count)} actionLabel="View" /></MemoryRouter>));
+      const cards = [...container.querySelectorAll(".fc-route-card")];
+      expect(cards).toHaveLength(count);
+      expect(cards.map(card => card.hasAttribute("data-paired"))).toEqual(cards.map((_, index) => index >= count - trailingPairs));
+    }
+    act(() => root.unmount());
+  });
+
   it("shows the AI concept disclosure as visible text separate from image alt", () => {
     const container = document.createElement("div");
     document.body.appendChild(container);

@@ -1,6 +1,6 @@
 import { landingProjectTypes as projectTypes } from "@/i18n/publicUtilityText";
 import { malayFormat } from "@/i18n/malayText";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFormGuard } from "@/hooks/useFormGuard";
@@ -20,6 +20,7 @@ import { parseQuoteContext } from "@/lib/quoteContext";
 type LandingQuoteFormProps = {
   landingTitle: string;
   serviceEnquiry?: boolean;
+  secondaryAction?: ReactNode;
 };
 
 type FieldErrors = Partial<Record<"name" | "phone" | "projectType" | "location", "formRequired" | "formPhoneInvalid">>;
@@ -31,7 +32,7 @@ const fieldIds = {
   location: "landing-quote-location",
 } as const;
 
-const LandingQuoteForm = ({ landingTitle, serviceEnquiry }: LandingQuoteFormProps) => {
+const LandingQuoteForm = ({ landingTitle, serviceEnquiry, secondaryAction }: LandingQuoteFormProps) => {
   const { language } = useLanguage();
   const t = landingPageText[language];
   const formGuard = useFormGuard();
@@ -116,6 +117,7 @@ const LandingQuoteForm = ({ landingTitle, serviceEnquiry }: LandingQuoteFormProp
         <CheckCircle2 aria-hidden="true" />
         <h2>{t.formSuccessTitle}</h2>
         <p>{t.formSuccessText}</p>
+        {secondaryAction}
       </section>
     );
   }
@@ -164,10 +166,13 @@ const LandingQuoteForm = ({ landingTitle, serviceEnquiry }: LandingQuoteFormProp
           <input data-ui="input" id="landing-quote-website" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(event) => setHoneypot(event.target.value)} />
         </div>
 
-        <button data-ui="button" data-variant="default" type="submit" className="landing-quote-card__submit" disabled={status === "submitting"} aria-busy={status === "submitting"}>
-          {status === "submitting" ? <Loader2 className="animate-spin" aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
-          <span>{status === "submitting" ? t.formSubmitting : t.formSubmit}</span>
-        </button>
+        <div className="landing-quote-card__actions">
+          <button data-ui="button" data-variant="default" type="submit" className="landing-quote-card__submit" disabled={status === "submitting"} aria-busy={status === "submitting"}>
+            {status === "submitting" ? <Loader2 className="animate-spin" aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
+            <span>{status === "submitting" ? t.formSubmitting : t.formSubmit}</span>
+          </button>
+          {secondaryAction}
+        </div>
         <p className="landing-quote-card__privacy">{t.formPrivacy}</p>
       </form>
     </section>
