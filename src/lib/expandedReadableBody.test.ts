@@ -19,7 +19,7 @@ const row = { slug: "current", status: "published", title_en: "Current title", t
 };
 it.each(["en", "zh", "ms"] as const)("exposes the %s planning comparisons in the initial HTML", lang => {
   const dom = new JSDOM(buildExpandedReadableBody(`/${lang}/before-after`, {}));
-  const main = dom.window.document.querySelector("main[data-flashcast-readable-body]")!;
+  const main: HTMLElement = dom.window.document.querySelector("main[data-flashcast-readable-body]");
   const copy = beforeAfterPageText[lang];
   expect(main.querySelector("h1")?.textContent).toBe(copy.heroTitle);
   expect(main.textContent).toContain(mediaLabels[lang].renderingConcept);
