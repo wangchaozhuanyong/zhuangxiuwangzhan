@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
 import { PAID_FOUR_CURRENT_TARGETS } from "../../supabase/functions/_shared/paid-four-current-targets.ts";
 import { MANAGED_TARGETS, findManagedTarget, managedAction } from "../../supabase/functions/_shared/managed-targets.ts";
+import { CMS_SEO_TITLE_TARGETS } from "../../supabase/functions/_shared/cms-seo-title-targets.ts";
 import { readManagedPermitHistory } from "../../supabase/functions/content-publish/permit-issuer.ts";
 import { targetConfigs, buildLockedDryRunRequest } from "../../scripts/publish-content-trust-fixes.mjs";
 import { lockedPaidFourCurrentCandidates, readPaidFourCurrentCandidates, buildPaidFourPermitLookup } from "../../scripts/managed-cms-targets-paid-four-current-v1.mjs";
@@ -64,7 +65,8 @@ describe("original Google four-row protected current channel", () => {
   it("loads four unique real tuples without granting an inverse or changing other target objects", () => {
     expect(PAID_FOUR_CURRENT_TARGETS).toHaveLength(4);
     expect(new Set(PAID_FOUR_CURRENT_TARGETS.map(t => t.actionId)).size).toBe(4);
-    const prior = MANAGED_TARGETS.filter(t => !PAID_FOUR_CURRENT_TARGETS.includes(t) && t.contentType !== "translation_patch");
+    const prior = MANAGED_TARGETS.filter(target => !PAID_FOUR_CURRENT_TARGETS.includes(target)
+      && target.contentType !== "translation_patch" && !CMS_SEO_TITLE_TARGETS.includes(target));
     // Includes NEXT8 KW-05971, two original materials, four C4 SEO candidates and one KL body candidate.
     expect(prior).toHaveLength(106); // Includes the FAQ timing and three cabinet market-price bindings.
     expect(() => readPaidFourCurrentCandidates(Buffer.concat([bytes, Buffer.from("\n")]))).toThrow("source bytes differ");

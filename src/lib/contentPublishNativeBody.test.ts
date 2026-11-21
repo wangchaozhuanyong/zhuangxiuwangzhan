@@ -6,6 +6,7 @@ import { publishContent } from "../../supabase/functions/content-publish/service
 import { issueManagedPermit } from "../../supabase/functions/content-publish/permit-issuer.ts";
 import { NATIVE_BODY_TARGETS } from "../../supabase/functions/content-publish/native-body-targets.ts";
 import { MANAGED_TARGETS, findManagedTarget, managedAction } from "../../supabase/functions/content-publish/managed-targets.ts";
+import { CMS_SEO_TITLE_TARGETS } from "../../supabase/functions/_shared/cms-seo-title-targets.ts";
 import type { ContentPublishClient, ContentPublishRequest } from "../../supabase/functions/content-publish/types.ts";
 import { lockedNativeBodyCandidates } from "../../scripts/managed-cms-targets-native-body-v1.mjs";
 import { stableDigest, targetConfigs, assertLockedServiceCandidate, assertLockedRollbackCurrent, assertLockedPublishGate } from "../../scripts/publish-content-trust-fixes.mjs";
@@ -59,7 +60,8 @@ describe("19 exact original-identity multilingual body targets", () => {
   it("locks 8 services and 11 blogs without changing old identities", () => {
     expect(names).toHaveLength(19); expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     expect(NATIVE_BODY_TARGETS.filter((t) => t.contentType === "service")).toHaveLength(8);
-    const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
+    const historicalTargets = MANAGED_TARGETS.filter(target => target.contentType !== "translation_patch"
+      && !CMS_SEO_TITLE_TARGETS.includes(target));
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
     expect(historicalTargets).toHaveLength(110); // Includes the FAQ timing and three cabinet market-price bindings.
     const workflow = readFileSync(".github/workflows/content-publish-approved.yml", "utf8");
