@@ -2,14 +2,12 @@ import type { FurnitureProduct } from "@/lib/furnitureCatalog";
 import type { Language } from "@/i18n/routes";
 import { toRecord } from "./recordUtils";
 import { resolveFurnitureDisplay } from "./furnitureDisplaySafety.mjs";
+import { decodeFurnitureSlug as normalizeFurnitureSlug } from "./furnitureProductUrls.mjs";
 
 export const FURNITURE_CATALOG_SECTION_KEY = "furniture_catalog";
 
 /** Match one URL-encoded representation without changing the stored slug or ASCII case. */
-export const normalizeFurnitureSlug = (slug: string | undefined): string | undefined => {
-  if (!slug) return undefined;
-  try { return decodeURIComponent(slug); } catch { return undefined; }
-};
+export { normalizeFurnitureSlug };
 
 export type FurnitureCatalogOverride = {
   slug: string; enabled: boolean;

@@ -97,9 +97,9 @@ export default function FurnitureShowcase() {
                 <article className={`fc-furniture-card${product.availabilityNote ? " fc-furniture-card--reviewed-display" : ""}`} key={product.sourceUrl}>
                   <div className="fc-furniture-card__image">
                     {image ? <SmartImage src={image} alt={product.name} pictureSources={furnitureListingPictureSources(image)} sizes={furnitureListingImageSizes} width={480} height={480} loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} showFailureFallback retryOnError /> : <span>{product.name}</span>}
-                    <LocalizedLink className="fc-furniture-card__image-link" to={furnitureProductPath(product)} onClick={(event) => openProduct(event, furnitureProductPath(product))} aria-label={`${copy.viewDetails}: ${product.name}`} tabIndex={-1} />
+                    <LocalizedLink className="fc-furniture-card__image-link" to={furnitureProductPath(product, language)} onClick={(event) => openProduct(event, furnitureProductPath(product, language))} aria-label={`${copy.viewDetails}: ${product.name}`} tabIndex={-1} />
                   </div>
-                  <LocalizedLink className="fc-furniture-card__main" to={furnitureProductPath(product)} onClick={(event) => openProduct(event, furnitureProductPath(product))} aria-label={`${copy.viewDetails}: ${product.name}`}>
+                  <LocalizedLink className="fc-furniture-card__main" to={furnitureProductPath(product, language)} onClick={(event) => openProduct(event, furnitureProductPath(product, language))} aria-label={`${copy.viewDetails}: ${product.name}`}>
                     <div className="fc-furniture-card__body">
                       <h3>{product.name}</h3>
                       <p className="fc-furniture-card__description">{(product.shortDescription || product.description || copy.listingDescriptionUnavailable).replace(/\s+/g, " ")}</p>

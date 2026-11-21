@@ -115,26 +115,29 @@ it("retains an actual HTML furniture seed when the offline refresh is paused", a
   expect(node.querySelector('[data-route-pending="true"]')).toBeNull();
 });
 
-it.each(localizedCases.flatMap((value) => (["decoded", "encoded"] as const).map((representation) => ({ ...value, representation }))))(
+it.each(localizedCases.flatMap((value) => (["decoded", "encoded", "public"] as const).map((representation) => ({ ...value, representation }))))(
   "renders $language $product.slug from a fresh $representation detail seed without repository or network reads",
   async ({ product, language, representation }) => {
     seed.language = language;
     const slug = decodeURIComponent(product.slug);
+    const canonicalSlug = slug === "云团沙发" ? "cloud-sofa" : slug === "1803齐边床" ? "1803-flush-bed" : encodeURIComponent(slug);
+    const publicSlug = representation === "public" ? canonicalSlug : slug;
     const expected = localizeFurnitureProduct(product, language);
-    seed.payload = { furnitureCatalog: { materials: [], setting: null, detailSlug: representation === "decoded" ? slug : product.slug } };
+    seed.payload = { furnitureCatalog: { materials: [], setting: null, detailSlug: representation === "encoded" ? product.slug : publicSlug } };
     const reads = readSpies();
     const fetch = vi.fn(() => Promise.reject(new Error("A fresh detail seed must not fetch")));
     vi.stubGlobal("fetch", fetch);
-    await render(slug);
+    await render(publicSlug);
     expect(node.querySelector("h1")).toHaveTextContent(expected.name);
     expect(node.querySelector("a.is-shop")?.getAttribute("href")).toBe(`https://shop.flashcast.com.my/${language}/`);
     expect(node.textContent).not.toContain(furnitureText[language].notFound);
     expect(node.querySelector('[data-route-pending="true"]')).toBeNull();
-    expect(client.getQueryState(publicContentQueries.furnitureProduct(encodeURIComponent(slug), language).queryKey)?.status).toBe("success");
+    expect(client.getQueryState(publicContentQueries.furnitureProduct(encodeURIComponent(publicSlug), language).queryKey)?.status).toBe("success");
     expect(seed.pageMeta).toHaveBeenLastCalledWith(expect.objectContaining({
       title: expected.name,
       description: expect.stringContaining(expected.name),
-      canonicalPath: `/furniture/product/${encodeURIComponent(slug)}`,
+      canonicalPath: `/furniture/product/${canonicalSlug}`,
+      malayReady: false,
     }));
     expect(seed.pageMeta.mock.lastCall?.[0]?.noIndex).not.toBe(true);
     for (const read of reads) expect(read).not.toHaveBeenCalled();

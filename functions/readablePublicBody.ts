@@ -15,6 +15,7 @@ import { quotePageText } from "../src/i18n/quotePageText";
 import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText, getFurnitureDisplaySku } from "../src/i18n/furnitureText";
 import { furnitureListingPagePath, furnitureProductPath, getFurnitureCatalogProductsForCategory, getFurnitureProductCategory, localizeFurnitureProduct, mapFurnitureCatalogSeed, type FurnitureMaterialRow, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
 import { normalizeFurnitureSlug } from "../src/lib/furnitureCatalogOverrides";
+import { resolveFurnitureSourceSlug } from "../src/lib/furnitureProductUrls.mjs";
 import { isSafeContentUrl } from "../src/lib/safeContentUrl";
 import { resolveSmartImageSource } from "../src/lib/smartImageSource";
 import { findSelangorWarehouseIntroLink } from "../src/lib/selangorWarehouseIntroLink";
@@ -72,7 +73,7 @@ export function buildReadableFurnitureListingBody(key: string, listing: ReturnTy
   const cards = listing.visibleProducts.map((source) => {
     const product = localizeFurnitureProduct(source, lang);
     const description = (product.shortDescription || product.description || copy.listingDescriptionUnavailable).replace(/\s+/g, " ");
-    return `<li><h2><a href="${escape(`/${lang}${furnitureProductPath(product)}`)}">${escape(product.name)}</a></h2><p>${escape(description)}</p><p>${escape(product.price || copy.priceOnRequest)}</p></li>`;
+    return `<li><h2><a href="${escape(`/${lang}${furnitureProductPath(product, lang)}`)}">${escape(product.name)}</a></h2><p>${escape(description)}</p><p>${escape(product.price || copy.priceOnRequest)}</p></li>`;
   }).join("");
   const label = copy.page.replace("{page}", String(listing.page)).replace("{total}", String(listing.totalPages));
   const navigation = listing.totalPages > 1
@@ -85,7 +86,7 @@ export function buildReadableFurnitureProductBody(
 ) {
   const match = key.match(/^\/(en|zh)\/furniture\/product\/([^/]+)$/);
   if (!match) return "";
-  const slug = normalizeFurnitureSlug(match[2]);
+  const slug = resolveFurnitureSourceSlug(match[2]);
   if (!slug) return "";
   const lang = match[1] as "en" | "zh";
   const copy = furnitureText[lang];
@@ -125,7 +126,7 @@ export function buildReadableFurnitureProductBody(
     if (related.length) {
       const links = related.map(candidate => {
         const preview = lines(candidate.shortDescription || candidate.description).slice(0, 2).join(" ");
-        return `<li><a href="${escape(`/${lang}${furnitureProductPath(candidate)}`)}">${escape(candidate.name)}</a>${preview ? paragraph(preview) : ""}</li>`;
+        return `<li><a href="${escape(`/${lang}${furnitureProductPath(candidate, lang)}`)}">${escape(candidate.name)}</a>${preview ? paragraph(preview) : ""}</li>`;
       }).join("");
       body += `<section><h2>${escape(copy.relatedProducts)}</h2><ul>${links}</ul></section>`;
     }

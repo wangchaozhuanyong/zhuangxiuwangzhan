@@ -38,12 +38,12 @@ export function withPublicDetailReuse<T>(client: QueryClient, definition: Defini
       if (allowed() && parameters?.resource === "furniture_catalog" && typeof slug === "string") {
         const catalog = freshPublicData<FurnitureProduct[]>(client, keys.furnitureCatalog.key(language))?.data;
         if (catalog) {
-          const { hasBaselineFurnitureSlug } = await import("./furnitureCatalogPresentation");
+          const { getFurnitureProduct } = await import("./furnitureCatalogPresentation");
           // Managed listing rows may omit their gallery; only the complete
           // baseline catalog plus its already-read overrides can seed a detail.
-          if (hasBaselineFurnitureSlug(slug)) {
-            const { normalizeFurnitureSlug } = await import("./furnitureCatalogOverrides");
-            const product = catalog.find(item => normalizeFurnitureSlug(item.slug) === normalizeFurnitureSlug(slug));
+          const source = getFurnitureProduct(slug);
+          if (source) {
+            const product = catalog.find(item => item.slug === source.slug);
             if (product) return product as T;
           }
         }
