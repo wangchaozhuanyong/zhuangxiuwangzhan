@@ -8,9 +8,10 @@ import {
 export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
-const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|showroom-boot\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml)$/;
+const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|showroom-boot\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|[a-fA-F0-9]{32}\.txt)$/;
 const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
-const pagePath = /^\/(zh|en|ms)(?:\/(index\.html)?)?$/;
+const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
+const pagePath = new RegExp(`^/(zh|en|ms)(?:/lock/(${LOCK_SLUGS}))?(?:/(?:index\\.html)?)?$`);
 const securityHeaders = {
   "Content-Security-Policy": [
     "default-src 'self'",
@@ -72,10 +73,10 @@ async function inlineDocumentBoot(html: string, binding: AssetBinding) {
   return { html: html.replace(tag[0], () => `<script data-showroom-boot>${source}</script>`), hash };
 }
 
-async function serveDocument(request: Request, binding: AssetBinding, locale: Language, version: string, waitUntil?: (write: Promise<unknown>) => void) {
+async function serveDocument(request: Request, binding: AssetBinding, pathname: string, version: string, waitUntil?: (write: Promise<unknown>) => void) {
   const cache = getEdgeCache();
   const origin = new URL(ANZHE_SHOWROOM_ORIGIN);
-  origin.pathname = `/${locale}/`;
+  origin.pathname = pathname;
   const key = getPublicHtmlCacheRequest(new Request(origin), { CF_PAGES_COMMIT_SHA: version });
   const cached = cache && await cache.match(key).catch(() => undefined);
   if (cached) return createPublicHtmlBrowserResponse(cached, request, "hit");
@@ -160,11 +161,15 @@ export async function serveAnzheShowroom(
     const language = url.searchParams.get("lang");
     return redirect(url, `/${isSupportedLanguage(language) ? language : preferredLanguage}/`, 302);
   }
-  const locale = pagePath.exec(url.pathname)?.[1];
-  if (locale && url.pathname !== `/${locale}/`) return redirect(url, `/${locale}/`, 301);
-  if (assetBinding && isSupportedLanguage(locale)) {
-    const document = await serveDocument(request, assetBinding, locale, deploymentVersion, waitUntil);
-    if (document) return document;
+  const page = pagePath.exec(url.pathname);
+  if (page) {
+    const [, locale, slug] = page;
+    const canonicalPath = slug ? `/${locale}/lock/${slug}/` : `/${locale}/`;
+    if (url.pathname !== canonicalPath) return redirect(url, canonicalPath, 301);
+    if (assetBinding) {
+      const document = await serveDocument(request, assetBinding, canonicalPath, deploymentVersion, waitUntil);
+      if (document) return document;
+    }
   }
   if (assetBinding && (staticFiles.test(url.pathname) || sharedStylesheets.has(url.pathname))) {
     const file = await serveStaticFile(request, assetBinding, url);

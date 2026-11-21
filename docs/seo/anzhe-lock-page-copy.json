@@ -1,0 +1,1119 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "generated": "2026-11-21",
+    "source": "public/anzhe-showroom/catalog.js",
+    "consumer": "docs/seo/codex-tasks/L1-电子锁型号详情页.md",
+    "rules": [
+      "价格必须与 catalog.js 完全一致，不得四舍五入",
+      "禁止编写保修年限、工期承诺、未经验证的认证",
+      "ms 文案为初稿，上线前需母语译者校；未校前 ms 页保持 noindex",
+      "doorFit 只写需要现场核对的事实，不做安装保证"
+    ]
+  },
+  "f8": {
+    "zh": {
+      "title": "F8 电子锁｜含安装 RM1,220｜吉隆坡 雪兰莪",
+      "description": "F8 是 ANZHE 的铝合金入户把手锁，含安装价 RM1,220。指纹开锁后下压把手，也可给访客发一次性动态密码。吉隆坡与雪兰莪上门，安装前先核对门厚与锁体。",
+      "h1": "F8 电子锁｜含安装 RM1,220",
+      "answer": "F8 是入门价位的铝合金入户锁，含安装 RM1,220，指纹加动态密码即可应付日常进出与临时访客。保留了下压把手的手感，适合预算有限但不想换开门习惯的公寓大门。",
+      "doorFit": "防火木门配标准 mortise 锁体基本可直接替换。铁门、玻璃门与推拉门需要另外确认固定方式与走线，必须现场量门厚后才能定。",
+      "faqs": [
+        {
+          "q": "F8 含安装多少钱？",
+          "a": "RM1,220，已含安装，不另收安装费。"
+        },
+        {
+          "q": "访客临时来怎么进门？",
+          "a": "可以用动态密码给访客一个临时进门方式，用完即失效，不必把固定密码告诉对方。"
+        },
+        {
+          "q": "电池没电了怎么办？",
+          "a": "F8 用 4 节 AA 碱性电池，低电量会提醒；电量耗尽时可用门外 USB 接口临时供电开门，另配机械钥匙。"
+        }
+      ]
+    },
+    "en": {
+      "title": "F8 Digital Lock｜RM1,220 with Installation｜KL & Selangor",
+      "description": "F8 is an ANZHE aluminium lever lock at RM1,220 including installation. Fingerprint entry, dynamic codes for visitors, and door thickness checked before fitting.",
+      "h1": "F8 Digital Lock — RM1,220 with Installation",
+      "answer": "F8 is the entry-level aluminium entrance lock at RM1,220 including installation. Fingerprint plus dynamic codes cover daily entry and one-off visitors, and the lever keeps the familiar push-down motion.",
+      "doorFit": "A fire-rated timber door with a standard mortise lock is usually a direct swap. Steel doors, glass doors and sliding doors need the fixing method and cable route confirmed, and the door thickness measured on site.",
+      "faqs": [
+        {
+          "q": "How much is the F8 including installation?",
+          "a": "RM1,220, installation included. There is no separate installation charge."
+        },
+        {
+          "q": "How does a visitor get in?",
+          "a": "Issue a dynamic code instead of sharing the permanent PIN. It expires once used."
+        },
+        {
+          "q": "What happens when the battery runs out?",
+          "a": "F8 runs on four AA alkaline batteries with a low-battery alert. A USB port on the outside provides temporary power, and a mechanical key is included."
+        }
+      ]
+    },
+    "ms": {
+      "title": "F8 Kunci Digital｜RM1,220 Termasuk Pemasangan｜KL & Selangor",
+      "description": "F8 ialah kunci berpemegang aluminium ANZHE pada RM1,220 termasuk pemasangan. Masuk dengan cap jari dan berikan kod dinamik kepada tetamu.",
+      "h1": "F8 Kunci Digital — RM1,220 Termasuk Pemasangan",
+      "answer": "F8 ialah kunci pintu utama aluminium pada harga permulaan, RM1,220 termasuk pemasangan. Cap jari dan kod dinamik mencukupi untuk kegunaan harian serta tetamu sekali-sekala.",
+      "doorFit": "Pintu kayu berkadar api dengan badan kunci mortise standard biasanya boleh diganti terus. Pintu besi, pintu kaca dan pintu gelangsar memerlukan kaedah pemasangan disahkan di lokasi.",
+      "faqs": [
+        {
+          "q": "Berapa harga F8 termasuk pemasangan?",
+          "a": "RM1,220, termasuk pemasangan. Tiada caj pemasangan berasingan."
+        },
+        {
+          "q": "Bagaimana tetamu boleh masuk?",
+          "a": "Gunakan kod dinamik dan bukan PIN kekal. Kod itu tamat selepas digunakan."
+        },
+        {
+          "q": "Apa berlaku jika bateri habis?",
+          "a": "F8 menggunakan empat bateri alkali AA dengan amaran bateri lemah. Port USB di luar menyediakan kuasa sementara dan kunci mekanikal disertakan."
+        }
+      ]
+    }
+  },
+  "g5": {
+    "zh": {
+      "title": "G5 室内门锁｜含安装 RM1,070｜吉隆坡 雪兰莪",
+      "description": "G5 是哑光黑室内把手配钢化玻璃面板，含安装价 RM1,070。关门后可按内侧电子反锁键，适合客房与出租房间。吉隆坡与雪兰莪上门安装。",
+      "h1": "G5 室内门锁｜含安装 RM1,070",
+      "answer": "G5 面向卧室、客房与出租单位的内门，含安装 RM1,070。哑光黑把手配钢化玻璃面板，关门后从内侧按电子反锁键，房客能自己控制隐私。",
+      "doorFit": "室内木门与复合门一般可用，但内门常见门厚偏薄，需要先量门边可用宽度与现有限位。门框过窄或有装饰线条挡住面板时不建议安装。",
+      "faqs": [
+        {
+          "q": "G5 和入户锁有什么区别？",
+          "a": "G5 是室内门锁，重点在房内反锁与出入管理，不做户外可视对讲这类功能。"
+        },
+        {
+          "q": "出租单位换租客怎么办？",
+          "a": "删除旧使用者的指纹与密码，重新录入新使用者即可，不需要换锁体。"
+        },
+        {
+          "q": "内门比较薄能装吗？",
+          "a": "要量门厚与门边宽度才能判断，部分薄内门需要调整锁体做法。"
+        }
+      ]
+    },
+    "en": {
+      "title": "G5 Interior Door Lock｜RM1,070 with Installation",
+      "description": "G5 pairs a matte-black lever with a tempered-glass panel at RM1,070 including installation. Inside privacy button for guest rooms and rental units.",
+      "h1": "G5 Interior Door Lock — RM1,070 with Installation",
+      "answer": "G5 is an interior door lock for bedrooms, guest rooms and rental units at RM1,070 including installation. The inside privacy button lets the occupant lock the room from within.",
+      "doorFit": "Interior timber and composite doors usually accept it, but interior leaves are often thinner, so the door edge width and existing stop are measured first. Very narrow frames with decorative mouldings may not fit.",
+      "faqs": [
+        {
+          "q": "How is G5 different from an entrance lock?",
+          "a": "G5 focuses on in-room privacy and access for interior doors. It does not provide outdoor video intercom."
+        },
+        {
+          "q": "How do I hand over to a new tenant?",
+          "a": "Delete the previous fingerprints and PINs, then enrol the new user. The lock body does not need replacing."
+        },
+        {
+          "q": "Will it fit a thin interior door?",
+          "a": "Door thickness and edge width decide that. Some thin interior leaves need the lock body approach adjusted."
+        }
+      ]
+    },
+    "ms": {
+      "title": "G5 Kunci Pintu Dalaman｜RM1,070 Termasuk Pemasangan",
+      "description": "G5 menggabungkan pemegang hitam kusam dengan panel kaca terbaja pada RM1,070 termasuk pemasangan. Butang privasi dalam untuk bilik tetamu dan sewa.",
+      "h1": "G5 Kunci Pintu Dalaman — RM1,070 Termasuk Pemasangan",
+      "answer": "G5 ialah kunci pintu dalaman untuk bilik tidur, bilik tetamu dan unit sewa pada RM1,070 termasuk pemasangan. Butang privasi di bahagian dalam membolehkan penghuni mengunci bilik dari dalam.",
+      "doorFit": "Pintu kayu dan komposit dalaman biasanya boleh menerimanya, tetapi daun pintu dalaman selalunya lebih nipis, jadi lebar tepi pintu dan hentian sedia ada diukur dahulu.",
+      "faqs": [
+        {
+          "q": "Apakah beza G5 dengan kunci pintu utama?",
+          "a": "G5 memberi tumpuan kepada privasi dalam bilik dan akses untuk pintu dalaman. Ia tidak menyediakan interkom video luar."
+        },
+        {
+          "q": "Bagaimana menyerah kepada penyewa baharu?",
+          "a": "Padam cap jari dan PIN penyewa lama, kemudian daftarkan pengguna baharu. Badan kunci tidak perlu diganti."
+        },
+        {
+          "q": "Bolehkah ia dipasang pada pintu dalaman nipis?",
+          "a": "Ketebalan pintu dan lebar tepi menentukan. Sesetengah daun pintu nipis memerlukan pelarasan badan kunci."
+        }
+      ]
+    }
+  },
+  "g13": {
+    "zh": {
+      "title": "G13 室内门锁｜含安装 RM635.20｜全系列最低价",
+      "description": "G13 是 ANZHE 全系列价格最低的一款，含安装 RM635.20。哑光黑室内锁，面板厚 22 毫米，房客用密码进门，入住后可从房内按键反锁。",
+      "h1": "G13 室内门锁｜含安装 RM635.20",
+      "answer": "G13 是 ANZHE 17 款里含安装价最低的一款，RM635.20。面向室内门，面板厚 22 毫米，房客用密码进出，入住后从房内按键反锁，适合分租单位逐间配置。",
+      "doorFit": "室内木门一般是主要适用场景。面板 22 毫米厚，门边留位不足或门框有装饰线条时需要先量再定。",
+      "faqs": [
+        {
+          "q": "为什么 G13 比别的款便宜这么多？",
+          "a": "G13 是室内门定位，功能集中在密码进出与房内反锁，没有摄像、可视对讲与生物识别这些部件。"
+        },
+        {
+          "q": "分租单位每间都装可以吗？",
+          "a": "可以，每间单独设置密码，退租时单独删除该房间的使用者即可。"
+        },
+        {
+          "q": "635.20 是含安装的最终价吗？",
+          "a": "含安装。若需要开孔或改动门体，我们会在施工前书面确认额外工序。"
+        }
+      ]
+    },
+    "en": {
+      "title": "G13 Interior Door Lock｜RM635.20 with Installation",
+      "description": "G13 is the lowest-priced ANZHE model at RM635.20 including installation. A matte-black interior lock with a 22 mm panel; tenants enter by PIN.",
+      "h1": "G13 Interior Door Lock — RM635.20 with Installation",
+      "answer": "G13 is the lowest-priced model of the 17 at RM635.20 including installation. It is an interior lock with a 22 mm panel depth: tenants enter by PIN and use the privacy button from inside.",
+      "doorFit": "Interior timber doors are the main use case. The panel is 22 mm deep, so doors with limited edge clearance or decorative mouldings are measured before the model is confirmed.",
+      "faqs": [
+        {
+          "q": "Why is G13 so much cheaper?",
+          "a": "G13 targets interior doors. It covers PIN entry and in-room privacy only, without cameras, video intercom or biometrics."
+        },
+        {
+          "q": "Can I fit one in every sublet room?",
+          "a": "Yes. Each room gets its own PIN, and that room's users are removed individually at handover."
+        },
+        {
+          "q": "Is RM635.20 the final price?",
+          "a": "It includes installation. If the door needs new drilling or modification, the extra work is confirmed in writing before starting."
+        }
+      ]
+    },
+    "ms": {
+      "title": "G13 Kunci Pintu Dalaman｜RM635.20 Termasuk Pemasangan",
+      "description": "G13 ialah model ANZHE paling murah pada RM635.20 termasuk pemasangan. Kunci dalaman hitam kusam dengan panel 22 mm; penyewa masuk dengan PIN.",
+      "h1": "G13 Kunci Pintu Dalaman — RM635.20 Termasuk Pemasangan",
+      "answer": "G13 ialah model paling murah antara 17 model pada RM635.20 termasuk pemasangan. Ia kunci pintu dalaman dengan panel sedalam 22 mm: penyewa masuk dengan PIN dan menggunakan butang privasi dari dalam.",
+      "doorFit": "Pintu kayu dalaman ialah kegunaan utama. Panel sedalam 22 mm, jadi pintu dengan ruang tepi terhad atau acuan hiasan diukur sebelum model disahkan.",
+      "faqs": [
+        {
+          "q": "Mengapa G13 jauh lebih murah?",
+          "a": "G13 untuk pintu dalaman. Ia meliputi kemasukan PIN dan privasi dalam bilik sahaja, tanpa kamera, interkom video atau biometrik."
+        },
+        {
+          "q": "Boleh pasang di setiap bilik sewa?",
+          "a": "Boleh. Setiap bilik mempunyai PIN sendiri dan pengguna bilik itu dipadam secara berasingan semasa serahan."
+        },
+        {
+          "q": "Adakah RM635.20 harga akhir?",
+          "a": "Ia termasuk pemasangan. Jika pintu perlu penggerudian baharu atau pengubahsuaian, kerja tambahan disahkan secara bertulis sebelum bermula."
+        }
+      ]
+    }
+  },
+  "g86f-pro": {
+    "zh": {
+      "title": "G86F-Pro 电子锁｜含安装 RM712｜钢化玻璃面板",
+      "description": "G86F-Pro 是带钢化玻璃面板的半自动入户锁，含安装价 RM712，是入户门里价格最低的一款。电池耗尽时可用门外 USB-C 接口临时供电开门。",
+      "h1": "G86F-Pro 电子锁｜含安装 RM712",
+      "answer": "G86F-Pro 是入户门里最便宜的型号，含安装 RM712，钢化玻璃面板，指纹密码门卡都能用。电池耗尽时用门外 USB-C 临时供电，不必拆面板。",
+      "doorFit": "标准 mortise 防火木门基本可直接替换。门厚偏薄的老楼门扇或附加式锁体需要现场核对，可能要调整锁孔。",
+      "faqs": [
+        {
+          "q": "RM712 这么便宜，功能会少吗？",
+          "a": "它保留指纹、密码、动态密码、门卡、机械钥匙与手机应用，缺的是摄像、屏幕与生物识别这类高价部件。"
+        },
+        {
+          "q": "适合出租单位吗？",
+          "a": "适合，租客换人时删除旧指纹与密码即可，不需要换锁。"
+        },
+        {
+          "q": "断电了怎么进门？",
+          "a": "门外 USB-C 接口接充电宝即可临时供电开门，另配机械钥匙。"
+        }
+      ]
+    },
+    "en": {
+      "title": "G86F-Pro Digital Lock｜RM712 with Installation",
+      "description": "G86F-Pro is a semi-automatic entrance lock with a tempered-glass panel at RM712 including installation. Outdoor USB-C provides emergency power.",
+      "h1": "G86F-Pro Digital Lock — RM712 with Installation",
+      "answer": "G86F-Pro is the cheapest entrance model at RM712 including installation, with a tempered-glass panel and fingerprint, PIN, card and app access. A USB-C port outside takes emergency power without removing the panel.",
+      "doorFit": "A standard mortise fire-rated timber door is usually a direct swap. Thin door leaves in older blocks and rim locks need checking on site, and the lock cut-out may need adjusting.",
+      "faqs": [
+        {
+          "q": "Is anything missing at RM712?",
+          "a": "It keeps fingerprint, PIN, dynamic code, card, mechanical key and app access. What it drops is the camera, screen and biometric hardware."
+        },
+        {
+          "q": "Is it suitable for a rental unit?",
+          "a": "Yes. Remove the old fingerprints and PINs at handover instead of replacing the lock."
+        },
+        {
+          "q": "How do I get in during a power failure?",
+          "a": "The outdoor USB-C port takes a power bank for temporary supply, and a mechanical key is included."
+        }
+      ]
+    },
+    "ms": {
+      "title": "G86F-Pro Kunci Digital｜RM712 Termasuk Pemasangan",
+      "description": "G86F-Pro ialah kunci pintu utama separa automatik dengan panel kaca terbaja pada RM712 termasuk pemasangan, harga pintu utama paling rendah dalam julat ini.",
+      "h1": "G86F-Pro Kunci Digital — RM712 Termasuk Pemasangan",
+      "answer": "G86F-Pro ialah model pintu utama paling murah pada RM712 termasuk pemasangan, dengan panel kaca terbaja serta akses cap jari, PIN, kad dan aplikasi.",
+      "doorFit": "Pintu kayu berkadar api dengan badan kunci mortise standard biasanya boleh diganti terus. Daun pintu nipis di blok lama dan kunci rim perlu disemak di lokasi.",
+      "faqs": [
+        {
+          "q": "Adakah sesuatu ditinggalkan pada harga RM712?",
+          "a": "Ia mengekalkan akses cap jari, PIN, kod dinamik, kad, kunci mekanikal dan aplikasi. Yang tiada ialah kamera, skrin dan perkakasan biometrik."
+        },
+        {
+          "q": "Sesuai untuk unit sewa?",
+          "a": "Ya. Padam cap jari dan PIN lama semasa serahan dan bukan mengganti kunci."
+        },
+        {
+          "q": "Bagaimana masuk semasa bekalan elektrik terputus?",
+          "a": "Port USB-C di luar menerima bank kuasa untuk bekalan sementara, dan kunci mekanikal disertakan."
+        }
+      ]
+    }
+  },
+  "gp08": {
+    "zh": {
+      "title": "GP08 电子锁｜含安装 RM1,250｜防猫眼开启",
+      "description": "GP08 是铝合金配钢化玻璃的入户把手锁，含安装价 RM1,250，带防猫眼开启设计。键盘、指纹与备用钥匙都能用于进门，吉隆坡与雪兰莪上门安装。",
+      "h1": "GP08 电子锁｜含安装 RM1,250",
+      "answer": "GP08 的重点是防猫眼开启，含安装 RM1,250。铝合金加钢化玻璃面板，键盘、指纹、备用钥匙三路进门，适合担心门镜位置被人动手脚的旧楼单位。",
+      "doorFit": "标准防火木门可直接替换。若门上猫眼位置较低或已被改过，需要先看门内结构，防猫眼设计要靠内侧的固定方式才能起作用。",
+      "faqs": [
+        {
+          "q": "防猫眼开启是什么意思？",
+          "a": "指别人无法从门外透过猫眼孔伸入工具、从内侧下压把手开门。这道防护依赖内侧面板的固定方式，安装时必须装到位。"
+        },
+        {
+          "q": "旧门没有猫眼能装吗？",
+          "a": "可以，防猫眼结构不影响正常使用，只是少了这道对应的防护场景。"
+        },
+        {
+          "q": "键盘和指纹都要用吗？",
+          "a": "不用，可以只用其中一种，也可以给指纹失灵时留一组密码备用。"
+        }
+      ]
+    },
+    "en": {
+      "title": "GP08 Digital Lock｜RM1,250 with Installation｜Anti-Peephole",
+      "description": "GP08 is an aluminium and tempered-glass lever lock at RM1,250 including installation, with protection against unlocking through the peephole.",
+      "h1": "GP08 Digital Lock — RM1,250 with Installation",
+      "answer": "GP08 is built around anti-peephole protection at RM1,250 including installation. Aluminium with a tempered-glass panel, and three ways in: keypad, fingerprint or backup key.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. If the peephole sits low or has been modified, the inside structure is checked first, because the protection depends on how the inner panel is fixed.",
+      "faqs": [
+        {
+          "q": "What does anti-peephole mean?",
+          "a": "It stops someone outside from reaching through the peephole and pressing the inside handle. The protection depends on the inner panel being fixed correctly."
+        },
+        {
+          "q": "Will it work on a door with no peephole?",
+          "a": "Yes. The lock still works normally; that specific attack path simply does not apply."
+        },
+        {
+          "q": "Do I need both keypad and fingerprint?",
+          "a": "No. Use either one, or keep a PIN as backup for when a fingerprint does not read."
+        }
+      ]
+    },
+    "ms": {
+      "title": "GP08 Kunci Digital｜RM1,250 Termasuk Pemasangan｜Anti Lubang Intai",
+      "description": "GP08 ialah kunci berpemegang aluminium dan kaca terbaja pada RM1,250 termasuk pemasangan, dengan perlindungan daripada pembukaan melalui lubang intai.",
+      "h1": "GP08 Kunci Digital — RM1,250 Termasuk Pemasangan",
+      "answer": "GP08 dibina sekitar perlindungan anti lubang intai pada RM1,250 termasuk pemasangan. Aluminium dengan panel kaca terbaja, dan tiga cara masuk: pad kekunci, cap jari atau kunci sandaran.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Jika lubang intai rendah atau telah diubah, struktur dalaman disemak dahulu.",
+      "faqs": [
+        {
+          "q": "Apakah maksud anti lubang intai?",
+          "a": "Ia menghalang seseorang di luar daripada mencapai melalui lubang intai dan menekan pemegang dalam."
+        },
+        {
+          "q": "Boleh dipasang pada pintu tanpa lubang intai?",
+          "a": "Boleh. Kunci tetap berfungsi seperti biasa."
+        },
+        {
+          "q": "Perlukah guna pad kekunci dan cap jari kedua-duanya?",
+          "a": "Tidak. Guna salah satu, atau simpan PIN sebagai sandaran."
+        }
+      ]
+    }
+  },
+  "g53-pro": {
+    "zh": {
+      "title": "G53 PRO 电子锁｜含安装 RM1,040｜钥匙扣感应开门",
+      "description": "G53 PRO 是钢化玻璃面板配感应钥匙扣的入户把手锁，含安装价 RM1,040。除指纹与密码外，也可用随身钥匙扣感应开门，吉隆坡与雪兰莪上门安装。",
+      "h1": "G53 PRO 电子锁｜含安装 RM1,040",
+      "answer": "G53 PRO 是千元价位里多一种开门方式的一款，含安装 RM1,040。钢化玻璃面板，指纹、密码之外还能用感应钥匙扣，适合家里有长辈或小孩不便按指纹的情况。",
+      "doorFit": "标准防火木门可直接替换。门边留位不足会影响面板安装，需要先量门边宽度再定。",
+      "faqs": [
+        {
+          "q": "钥匙扣和门卡有什么区别？",
+          "a": "感应钥匙扣是挂在钥匙串上的小件，靠近感应区即可开门；门卡是另一套介质，两者不需要同时使用。"
+        },
+        {
+          "q": "钥匙扣丢了怎么办？",
+          "a": "在锁上删除该钥匙扣权限即可，不影响其他使用者的指纹与密码。"
+        },
+        {
+          "q": "适合老人用吗？",
+          "a": "适合，钥匙扣不用记密码也不用按指纹，靠近即可。但需要提醒长辈随身携带。"
+        }
+      ]
+    },
+    "en": {
+      "title": "G53 PRO Digital Lock｜RM1,040 with Installation",
+      "description": "G53 PRO is a tempered-glass lever lock with key-fob access at RM1,040 including installation. Tap the fob instead of a fingerprint or PIN.",
+      "h1": "G53 PRO Digital Lock — RM1,040 with Installation",
+      "answer": "G53 PRO adds a third way in at the thousand-ringgit level, at RM1,040 including installation. Tempered glass panel, plus a key fob for anyone who finds fingerprint reading awkward.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. Limited clearance on the door edge affects the panel, so edge width is measured first.",
+      "faqs": [
+        {
+          "q": "How is a fob different from a card?",
+          "a": "The fob hangs on a keyring and opens the lock when held near the reader. A card is a separate credential; you do not need both."
+        },
+        {
+          "q": "What if the fob is lost?",
+          "a": "Delete that fob from the lock. Other users' fingerprints and PINs stay unchanged."
+        },
+        {
+          "q": "Is it good for elderly users?",
+          "a": "Yes. A fob needs no PIN and no fingerprint. Just remember to have them carry it."
+        }
+      ]
+    },
+    "ms": {
+      "title": "G53 PRO Kunci Digital｜RM1,040 Termasuk Pemasangan",
+      "description": "G53 PRO ialah kunci berpemegang dengan panel kaca terbaja dan akses tag kunci pada RM1,040 termasuk pemasangan.",
+      "h1": "G53 PRO Kunci Digital — RM1,040 Termasuk Pemasangan",
+      "answer": "G53 PRO menambah cara ketiga untuk masuk pada paras seribu ringgit, iaitu RM1,040 termasuk pemasangan. Panel kaca terbaja dan tag kunci untuk mereka yang sukar menggunakan cap jari.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Ruang tepi pintu yang terhad menjejaskan panel, jadi lebar tepi diukur dahulu.",
+      "faqs": [
+        {
+          "q": "Apakah beza tag kunci dengan kad?",
+          "a": "Tag kunci digantung pada rantai kunci dan membuka kunci apabila didekatkan. Kad ialah medium berasingan."
+        },
+        {
+          "q": "Bagaimana jika tag hilang?",
+          "a": "Padam tag itu dari kunci. Cap jari dan PIN pengguna lain tidak berubah."
+        },
+        {
+          "q": "Sesuai untuk warga emas?",
+          "a": "Ya. Tag tidak memerlukan PIN atau cap jari. Pastikan mereka membawanya."
+        }
+      ]
+    }
+  },
+  "d10b": {
+    "zh": {
+      "title": "D10B 窄框铝门电子锁｜含安装 RM1,220",
+      "description": "D10B 是 ANZHE 唯一的窄框铝门专用款，面板宽 38.6 毫米，含安装价 RM1,220。为铝门留出把手位置，选购前请量门框可用宽度并核对现有锁孔。",
+      "h1": "D10B 窄框铝门电子锁｜含安装 RM1,220",
+      "answer": "D10B 是 17 款里唯一为铝门做的窄面板款，宽 38.6 毫米，含安装 RM1,220。铝门框边空间窄，普通电子锁装不下，这一款留出了把手位，但装之前必须量门框可用宽度。",
+      "doorFit": "适用窄框铝门与部分玻璃铝框门。必须量门框可用宽度（面板需 38.6 毫米）、核对现有锁孔与门扇开启方向。宽度不足时无法安装，不接受只看照片确认。",
+      "faqs": [
+        {
+          "q": "普通电子锁为什么装不上铝门？",
+          "a": "铝门框边宽度通常比木门窄，常规面板会超出框边或挡住把手位，D10B 就是为这个限制做的窄面板。"
+        },
+        {
+          "q": "怎么确认我家铝门能装？",
+          "a": "拍三张照片：整扇门连两侧框、门边锁舌位置、门框内侧宽度。宽度不足 38.6 毫米就不适用。"
+        },
+        {
+          "q": "D10B 支持哪些开门方式？",
+          "a": "指纹、密码、动态密码、门卡、机械钥匙与手机应用，配 4 节 AAA 电池，USB-C 应急供电。"
+        }
+      ]
+    },
+    "en": {
+      "title": "D10B Narrow Frame Digital Lock｜RM1,220 with Installation",
+      "description": "D10B is the only ANZHE model for narrow-frame aluminium doors. A 38.6 mm slim panel at RM1,220 including installation, after measuring frame width.",
+      "h1": "D10B Narrow Frame Digital Lock — RM1,220",
+      "answer": "D10B is the only one of the 17 built for aluminium doors, with a 38.6 mm slim panel at RM1,220 including installation. Standard panels overrun an aluminium frame and block the handle position.",
+      "doorFit": "Narrow-frame aluminium doors and some glazed aluminium frames. The available frame width must be measured (the panel needs 38.6 mm), along with the existing cut-out and the leaf swing. A photo alone is not enough.",
+      "faqs": [
+        {
+          "q": "Why do normal digital locks not fit aluminium doors?",
+          "a": "Aluminium stiles are narrower than timber ones, so a standard panel either overhangs the stile or covers the handle. D10B is the slim-panel answer."
+        },
+        {
+          "q": "How do I check whether my aluminium door fits?",
+          "a": "Send three photos: the whole door with both frame legs, the lock area on the door edge, and the inside frame width. Below 38.6 mm it will not fit."
+        },
+        {
+          "q": "What access methods does D10B support?",
+          "a": "Fingerprint, PIN, dynamic code, card, mechanical key and app, on four AAA batteries with USB-C emergency power."
+        }
+      ]
+    },
+    "ms": {
+      "title": "D10B Kunci Digital Bingkai Sempit｜RM1,220 Termasuk Pemasangan",
+      "description": "D10B ialah satu-satunya model ANZHE untuk pintu aluminium bingkai sempit. Panel langsing 38.6 mm pada RM1,220 termasuk pemasangan. Ukur lebar bingkai dahulu.",
+      "h1": "D10B Kunci Digital Bingkai Sempit — RM1,220",
+      "answer": "D10B ialah satu-satunya antara 17 model yang dibina untuk pintu aluminium, dengan panel langsing 38.6 mm pada RM1,220 termasuk pemasangan.",
+      "doorFit": "Pintu aluminium bingkai sempit dan sesetengah bingkai aluminium berkaca. Lebar bingkai mesti diukur (panel memerlukan 38.6 mm), bersama bukaan sedia ada dan arah bukaan daun pintu.",
+      "faqs": [
+        {
+          "q": "Mengapa kunci digital biasa tidak sesuai untuk pintu aluminium?",
+          "a": "Bingkai aluminium lebih sempit daripada kayu, jadi panel standard terlebih atau menutup pemegang."
+        },
+        {
+          "q": "Bagaimana menyemak sama ada pintu saya sesuai?",
+          "a": "Hantar tiga gambar: seluruh pintu dengan kedua-dua tiang bingkai, kawasan kunci pada tepi pintu, dan lebar bingkai dalam."
+        },
+        {
+          "q": "Apakah kaedah akses D10B?",
+          "a": "Cap jari, PIN, kod dinamik, kad, kunci mekanikal dan aplikasi, dengan empat bateri AAA dan kuasa kecemasan USB-C."
+        }
+      ]
+    }
+  },
+  "a88-face-id": {
+    "zh": {
+      "title": "A88-Face ID 人脸识别锁｜含安装 RM1,610",
+      "description": "A88-Face ID 是带 3.5 英寸屏幕与人脸识别的半自动入户锁，含安装价 RM1,610。识别后下压把手开门，电量低会有提醒，吉隆坡与雪兰莪上门安装。",
+      "h1": "A88-Face ID 人脸识别锁｜含安装 RM1,610",
+      "answer": "A88-Face ID 是带人脸识别与 3.5 英寸室内屏的入门款，含安装 RM1,610。识别后下压把手进门，保留原有开门动作，适合想加人脸但不想改手感的老门。",
+      "doorFit": "标准防火木门可直接替换。人脸识别需要门外有合适的站立距离与光线条件，门口紧贴铁闸或走廊极窄时识别率会下降，需要现场确认。",
+      "faqs": [
+        {
+          "q": "人脸识别在暗处能用吗？",
+          "a": "A88-Face ID 在低光环境下仍可识别，但门口完全没有照明时效果会受影响，可同时用指纹或密码。"
+        },
+        {
+          "q": "3.5 英寸屏幕能看什么？",
+          "a": "室内屏用于查看门外访客画面，不做远程视频对讲。"
+        },
+        {
+          "q": "戴眼镜或口罩能识别吗？",
+          "a": "戴眼镜一般可以。口罩会遮挡识别区，建议同时保留指纹或密码作为备用方式。"
+        }
+      ]
+    },
+    "en": {
+      "title": "A88-Face ID Digital Lock｜RM1,610 with Installation",
+      "description": "A88-Face ID is a semi-automatic entrance lock with face recognition and a 3.5-inch display at RM1,610 including installation.",
+      "h1": "A88-Face ID Digital Lock — RM1,610 with Installation",
+      "answer": "A88-Face ID brings face recognition and a 3.5-inch indoor display in at RM1,610 including installation. You press the lever after recognition, so the door still opens the way it always did.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. Face recognition needs a sensible standing distance and some light outside, so doors set tight behind a steel gate or on a very narrow corridor are checked on site.",
+      "faqs": [
+        {
+          "q": "Does face recognition work in the dark?",
+          "a": "A88-Face ID reads faces in low light, but a completely unlit doorway degrades it. Fingerprint or PIN stays available."
+        },
+        {
+          "q": "What does the 3.5-inch screen show?",
+          "a": "It shows the visitor camera outside the door. It does not provide remote video intercom."
+        },
+        {
+          "q": "Does it read faces with glasses or a mask?",
+          "a": "Glasses are generally fine. A mask covers the recognition area, so keep fingerprint or PIN as backup."
+        }
+      ]
+    },
+    "ms": {
+      "title": "A88-Face ID Kunci Digital｜RM1,610 Termasuk Pemasangan",
+      "description": "A88-Face ID ialah kunci separa automatik dengan pengecaman wajah dan skrin 3.5 inci pada RM1,610 termasuk pemasangan.",
+      "h1": "A88-Face ID Kunci Digital — RM1,610 Termasuk Pemasangan",
+      "answer": "A88-Face ID membawa pengecaman wajah dan skrin dalaman 3.5 inci pada RM1,610 termasuk pemasangan. Anda menekan pemegang selepas wajah dikenal pasti.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Pengecaman wajah memerlukan jarak berdiri yang sesuai dan sedikit cahaya di luar.",
+      "faqs": [
+        {
+          "q": "Adakah pengecaman wajah berfungsi dalam gelap?",
+          "a": "A88-Face ID membaca wajah dalam cahaya rendah, tetapi pintu tanpa pencahayaan langsung mengurangkan ketepatan."
+        },
+        {
+          "q": "Apa yang ditunjukkan skrin 3.5 inci?",
+          "a": "Ia menunjukkan kamera pelawat di luar pintu. Ia tidak menyediakan interkom video jauh."
+        },
+        {
+          "q": "Boleh kenal pasti dengan cermin mata atau pelitup?",
+          "a": "Cermin mata biasanya tidak menjadi masalah. Pelitup menutup kawasan pengecaman, jadi simpan cap jari atau PIN sebagai sandaran."
+        }
+      ]
+    }
+  },
+  "k26j-pro": {
+    "zh": {
+      "title": "K26J Pro 掌静脉电子锁｜含安装 RM1,790",
+      "description": "K26J Pro 支持掌静脉与人脸开锁，门内配 4.5 英寸屏幕，含安装价 RM1,790。全自动推拉设计省去下压把手，吉隆坡与雪兰莪上门安装。",
+      "h1": "K26J Pro 掌静脉电子锁｜含安装 RM1,790",
+      "answer": "K26J Pro 是掌静脉入门的性价比款，含安装 RM1,790。全自动推拉，门内 4.5 英寸屏看访客，手掌贴近即可开门，手湿或指尖磨损时比指纹更稳。",
+      "doorFit": "标准防火木门可直接替换。全自动推拉锁体对门扇的方正度要求比把手锁高，门扇关不严或有下垂时，需要先调整门扇再装。",
+      "faqs": [
+        {
+          "q": "掌静脉和指纹哪个更准？",
+          "a": "掌静脉读取的是皮下血管分布，不受手指干湿、脱皮与磨损影响，在手湿或做家务后比指纹稳。"
+        },
+        {
+          "q": "全自动推拉是什么意思？",
+          "a": "验证通过后锁舌自动收回，直接推门即可，不需要下压把手。关门时锁舌自动伸出上锁。"
+        },
+        {
+          "q": "4.5 英寸屏需要一直亮着吗？",
+          "a": "不需要，屏幕在有人按门铃或触发时点亮，平时熄灭。"
+        }
+      ]
+    },
+    "en": {
+      "title": "K26J Pro Palm Vein Digital Lock｜RM1,790 with Installation",
+      "description": "K26J Pro opens by palm vein or face with a 4.5-inch indoor display, at RM1,790 including installation. Automatic push-pull, no lever.",
+      "h1": "K26J Pro Palm Vein Digital Lock — RM1,790",
+      "answer": "K26J Pro is the value entry into palm-vein access at RM1,790 including installation. Automatic push-pull, a 4.5-inch indoor display, and a palm read that holds up when hands are wet or fingertips worn.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. The automatic push-pull body is stricter about the leaf being square, so a door that does not close flush or has dropped is adjusted first.",
+      "faqs": [
+        {
+          "q": "Is palm vein better than fingerprint?",
+          "a": "Palm vein reads the vein pattern under the skin, so wet hands, peeling skin and worn fingertips do not interfere the way they do with fingerprints."
+        },
+        {
+          "q": "What does automatic push-pull mean?",
+          "a": "The bolt retracts after verification, so you push the door instead of pressing a lever. It re-locks itself on closing."
+        },
+        {
+          "q": "Does the 4.5-inch screen stay on?",
+          "a": "No. It lights up when the doorbell is pressed or the sensor is triggered, and stays off otherwise."
+        }
+      ]
+    },
+    "ms": {
+      "title": "K26J Pro Kunci Vena Tapak Tangan｜RM1,790 Termasuk Pemasangan",
+      "description": "K26J Pro dibuka dengan vena tapak tangan atau wajah dan memaparkan pelawat pada skrin dalaman 4.5 inci. RM1,790 termasuk pemasangan.",
+      "h1": "K26J Pro Kunci Vena Tapak Tangan — RM1,790",
+      "answer": "K26J Pro ialah pilihan nilai untuk akses vena tapak tangan pada RM1,790 termasuk pemasangan. Tolak-tarik automatik dan skrin dalaman 4.5 inci.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Badan tolak-tarik automatik lebih ketat terhadap kerataan daun pintu.",
+      "faqs": [
+        {
+          "q": "Adakah vena tapak tangan lebih baik daripada cap jari?",
+          "a": "Vena tapak tangan membaca corak vena di bawah kulit, jadi tangan basah atau hujung jari haus tidak mengganggu."
+        },
+        {
+          "q": "Apakah maksud tolak-tarik automatik?",
+          "a": "Selak masuk selepas pengesahan, jadi anda menolak pintu tanpa menekan pemegang."
+        },
+        {
+          "q": "Adakah skrin 4.5 inci sentiasa menyala?",
+          "a": "Tidak. Ia menyala apabila loceng ditekan atau penderia dicetuskan."
+        }
+      ]
+    }
+  },
+  "t06j": {
+    "zh": {
+      "title": "T06J 掌静脉可视门锁｜含安装 RM1,730",
+      "description": "T06J 是哑光黑全自动推拉锁，配 3.5 英寸室内屏与可视门铃，含安装价 RM1,730。出门在外也能与来访者对讲，吉隆坡与雪兰莪上门安装。",
+      "h1": "T06J 掌静脉可视门锁｜含安装 RM1,730",
+      "answer": "T06J 把可视门铃压到两千以下，含安装 RM1,730。哑光黑全自动推拉，3.5 英寸室内屏，人在外面也能通过门铃与来访者说话，适合常有包裹与访客的单位。",
+      "doorFit": "标准防火木门可直接替换。可视门铃需要门外有可用的 Wi-Fi 信号覆盖，走廊深处或混凝土厚墙会削弱信号，需要现场测。",
+      "faqs": [
+        {
+          "q": "远程对讲需要一直连着 Wi-Fi 吗？",
+          "a": "需要门外有稳定的 Wi-Fi 覆盖才能用远程对讲，本地指纹密码开门不受影响。"
+        },
+        {
+          "q": "3.5 英寸屏够用吗？",
+          "a": "看门口访客足够。如果希望更大的画面，可以看 4.5 英寸的 K19J 或 K26J Pro。"
+        },
+        {
+          "q": "陌生人逗留会记录吗？",
+          "a": "T06J 支持门铃触发查看；门前长时间逗留的抓拍记录以型号实际配置为准，安装时会给您演示当前固件下的表现。"
+        }
+      ]
+    },
+    "en": {
+      "title": "T06J Palm Vein Video Lock｜RM1,730 with Installation",
+      "description": "T06J is a matte-black automatic push-pull lock with a 3.5-inch display and video doorbell at RM1,730 including installation.",
+      "h1": "T06J Palm Vein Video Lock — RM1,730",
+      "answer": "T06J brings a video doorbell under two thousand, at RM1,730 including installation. Matte-black automatic push-pull, a 3.5-inch indoor display, and two-way talk with visitors when you are away.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. Remote talk needs usable Wi-Fi at the door, so deep corridors and thick concrete walls are tested on site.",
+      "faqs": [
+        {
+          "q": "Does remote talk need constant Wi-Fi?",
+          "a": "Yes for remote talk, the door needs stable Wi-Fi coverage. Local fingerprint and PIN entry work regardless."
+        },
+        {
+          "q": "Is a 3.5-inch screen enough?",
+          "a": "Enough for seeing a visitor at the door. For a larger picture, look at the 4.5-inch K19J or K26J Pro."
+        },
+        {
+          "q": "Does it record people lingering?",
+          "a": "T06J supports doorbell-triggered viewing. Whether lingering snapshots are captured depends on the shipped configuration, which is demonstrated at handover."
+        }
+      ]
+    },
+    "ms": {
+      "title": "T06J Kunci Video Vena Tapak Tangan｜RM1,730 Termasuk Pemasangan",
+      "description": "T06J ialah kunci tolak-tarik automatik hitam kusam dengan skrin dalaman 3.5 inci dan loceng pintu video pada RM1,730 termasuk pemasangan.",
+      "h1": "T06J Kunci Video Vena Tapak Tangan — RM1,730",
+      "answer": "T06J membawa loceng pintu video di bawah dua ribu, iaitu RM1,730 termasuk pemasangan. Tolak-tarik automatik hitam kusam dengan skrin dalaman 3.5 inci.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Perbualan jauh memerlukan Wi-Fi yang stabil di pintu, jadi koridor dalam dan dinding konkrit tebal diuji di lokasi.",
+      "faqs": [
+        {
+          "q": "Adakah perbualan jauh memerlukan Wi-Fi berterusan?",
+          "a": "Ya, pintu memerlukan liputan Wi-Fi yang stabil. Kemasukan cap jari dan PIN tetap berfungsi."
+        },
+        {
+          "q": "Cukupkah skrin 3.5 inci?",
+          "a": "Cukup untuk melihat pelawat. Untuk paparan lebih besar, lihat K19J atau K26J Pro dengan skrin 4.5 inci."
+        },
+        {
+          "q": "Adakah ia merakam orang yang lama di pintu?",
+          "a": "T06J menyokong paparan apabila loceng ditekan. Rakaman bergantung pada konfigurasi yang dihantar."
+        }
+      ]
+    }
+  },
+  "r10j-22": {
+    "zh": {
+      "title": "R10J-22 掌静脉人脸锁｜含安装 RM1,970",
+      "description": "R10J-22 保留下压把手，同时支持掌静脉与 3D 人脸识别，门内有 4 英寸屏查看访客，含安装价 RM1,970。吉隆坡与雪兰莪上门安装。",
+      "h1": "R10J-22 掌静脉人脸锁｜含安装 RM1,970",
+      "answer": "R10J-22 是给不习惯推拉门的人准备的，含安装 RM1,970。保留下压把手的开门动作，同时具备掌静脉与 3D 人脸，门内 4 英寸屏可看来访者。",
+      "doorFit": "标准防火木门可直接替换。3D 人脸需要门外有合适的站立距离，门口紧贴铁闸时要先量距离。",
+      "faqs": [
+        {
+          "q": "为什么不直接用全自动推拉？",
+          "a": "下压把手对很多人更直觉，也不依赖电机驱动锁舌。R10J-22 保留了这套动作，同时加了生物识别。"
+        },
+        {
+          "q": "掌静脉和人脸哪个更快？",
+          "a": "手掌贴近通常比站定对准人脸更快，人脸适合手里拿着东西时使用。"
+        },
+        {
+          "q": "停电时会怎样？",
+          "a": "停电不影响电池供电的锁体，可用指纹、密码、掌静脉或机械钥匙开门。"
+        }
+      ]
+    },
+    "en": {
+      "title": "R10J-22 Palm Vein & Face Lock｜RM1,970 with Installation",
+      "description": "R10J-22 keeps the push-down lever and adds palm vein and 3D face, with a 4-inch indoor display. RM1,970 including installation.",
+      "h1": "R10J-22 Palm Vein & Face Lock — RM1,970",
+      "answer": "R10J-22 is for households that do not want a push-pull door, at RM1,970 including installation. It keeps the lever action and adds palm vein and 3D face, plus a 4-inch indoor display.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. 3D face needs a sensible standing distance outside, so doors set close behind a steel gate are measured first.",
+      "faqs": [
+        {
+          "q": "Why not use a fully automatic push-pull?",
+          "a": "A lever is more intuitive for many people and does not rely on a motor driving the bolt. R10J-22 keeps that motion and adds biometrics."
+        },
+        {
+          "q": "Which is faster, palm or face?",
+          "a": "Holding up a palm is usually quicker than lining up for face. Face is useful when both hands are full."
+        },
+        {
+          "q": "What happens in a power cut?",
+          "a": "The lock runs on its own battery. Fingerprint, PIN, palm vein or the mechanical key all still work."
+        }
+      ]
+    },
+    "ms": {
+      "title": "R10J-22 Kunci Vena Tapak Tangan & Wajah｜RM1,970 Termasuk Pemasangan",
+      "description": "R10J-22 mengekalkan pemegang tuil sambil menambah vena tapak tangan dan pengecaman wajah 3D, dengan skrin dalaman 4 inci. RM1,970 termasuk pemasangan.",
+      "h1": "R10J-22 Kunci Vena Tapak Tangan & Wajah — RM1,970",
+      "answer": "R10J-22 untuk isi rumah yang tidak mahu pintu tolak-tarik, pada RM1,970 termasuk pemasangan. Ia mengekalkan gerakan pemegang tuil dan menambah biometrik.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Wajah 3D memerlukan jarak berdiri yang sesuai di luar.",
+      "faqs": [
+        {
+          "q": "Mengapa tidak guna tolak-tarik automatik sepenuhnya?",
+          "a": "Pemegang tuil lebih intuitif bagi ramai orang dan tidak bergantung pada motor selak."
+        },
+        {
+          "q": "Mana lebih pantas, tapak tangan atau wajah?",
+          "a": "Mengangkat tapak tangan biasanya lebih cepat daripada menjajarkan wajah."
+        },
+        {
+          "q": "Apa berlaku semasa bekalan elektrik terputus?",
+          "a": "Kunci berjalan pada baterinya sendiri. Cap jari, PIN, vena tapak tangan atau kunci mekanikal tetap berfungsi."
+        }
+      ]
+    }
+  },
+  "q8j": {
+    "zh": {
+      "title": "Q8J 3D 人脸掌静脉锁｜含安装 RM2,060",
+      "description": "Q8J 是全自动推拉锁，支持 3D 人脸与掌静脉识别，配 4 英寸室内屏与远程对讲，含安装价 RM2,060。吉隆坡与雪兰莪上门安装。",
+      "h1": "Q8J 3D 人脸掌静脉锁｜含安装 RM2,060",
+      "answer": "Q8J 是双生物识别加远程对讲的组合，含安装 RM2,060。全自动推拉，3D 人脸与掌静脉都在，门铃响起可在 4 英寸屏看人，也能在手机上远程对讲。",
+      "doorFit": "标准防火木门可直接替换。全自动锁体对门扇方正度要求较高，门扇下垂或关不严需要先调整。",
+      "faqs": [
+        {
+          "q": "Q8J 和 K26J Pro 差在哪？",
+          "a": "Q8J 用 4 英寸屏并支持远程对讲，K26J Pro 是 4.5 英寸屏。两者都支持掌静脉与人脸，价差 RM270。"
+        },
+        {
+          "q": "远程对讲需要额外设备吗？",
+          "a": "需要门外有稳定 Wi-Fi。手机端通过配套 App 接听门铃。"
+        },
+        {
+          "q": "3D 人脸和普通摄像头人脸有什么区别？",
+          "a": "3D 结构光能判断面部深度，照片与屏幕翻拍难以通过，安全性高于 2D 摄像头方案。"
+        }
+      ]
+    },
+    "en": {
+      "title": "Q8J 3D Face & Palm Vein Lock｜RM2,060 with Installation",
+      "description": "Q8J is a fully automatic push-pull lock with 3D face and palm-vein recognition, a 4-inch indoor display and remote intercom. RM2,060 including installation.",
+      "h1": "Q8J 3D Face & Palm Vein Lock — RM2,060",
+      "answer": "Q8J combines two biometrics with remote intercom at RM2,060 including installation. Automatic push-pull, 3D face and palm vein, a 4-inch display for visitors, and talk from your phone.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. The automatic body is strict about the leaf being square, so a dropped or poorly closing door is adjusted first.",
+      "faqs": [
+        {
+          "q": "How is Q8J different from K26J Pro?",
+          "a": "Q8J has a 4-inch screen and supports remote intercom. K26J Pro has a 4.5-inch screen. Both do palm vein and face; the gap is RM270."
+        },
+        {
+          "q": "Does remote intercom need extra hardware?",
+          "a": "It needs stable Wi-Fi at the door. You answer the doorbell through the paired app on your phone."
+        },
+        {
+          "q": "How is 3D face different from a normal camera?",
+          "a": "Structured-light 3D judges facial depth, so photos and screen replays are far harder to pass than with 2D camera systems."
+        }
+      ]
+    },
+    "ms": {
+      "title": "Q8J Kunci Wajah 3D & Vena Tapak Tangan｜RM2,060 Termasuk Pemasangan",
+      "description": "Q8J ialah kunci tolak-tarik automatik dengan pengecaman wajah 3D dan vena tapak tangan, skrin 4 inci dan interkom jauh. RM2,060 termasuk pemasangan.",
+      "h1": "Q8J Kunci Wajah 3D & Vena Tapak Tangan — RM2,060",
+      "answer": "Q8J menggabungkan dua biometrik dengan interkom jauh pada RM2,060 termasuk pemasangan. Tolak-tarik automatik, wajah 3D, vena tapak tangan dan skrin 4 inci.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Badan automatik ketat terhadap kerataan daun pintu.",
+      "faqs": [
+        {
+          "q": "Apakah beza Q8J dengan K26J Pro?",
+          "a": "Q8J mempunyai skrin 4 inci dan interkom jauh. K26J Pro mempunyai skrin 4.5 inci. Beza harga RM270."
+        },
+        {
+          "q": "Adakah interkom jauh memerlukan perkakasan tambahan?",
+          "a": "Ia memerlukan Wi-Fi stabil di pintu. Anda menjawab melalui aplikasi yang dipasangkan."
+        },
+        {
+          "q": "Apakah beza wajah 3D dengan kamera biasa?",
+          "a": "3D cahaya berstruktur menilai kedalaman wajah, jadi gambar dan main balik skrin lebih sukar melepasi."
+        }
+      ]
+    }
+  },
+  "k19j": {
+    "zh": {
+      "title": "K19J 可视对讲门锁｜含安装 RM2,120",
+      "description": "K19J 是带 4.5 英寸室内屏的哑光黑推拉锁，含安装价 RM2,120。访客按门铃可查看画面，广角摄像头支持门前逗留抓拍。吉隆坡与雪兰莪上门安装。",
+      "h1": "K19J 可视对讲门锁｜含安装 RM2,120",
+      "answer": "K19J 的 4.5 英寸屏是这一档里最大的，含安装 RM2,120。哑光黑全自动推拉，访客按铃即可查看，广角摄像头也会记录有人在门前停留的画面。",
+      "doorFit": "标准防火木门可直接替换。广角摄像头视野会被铁闸与走廊墙角限制，装前要确认镜头不被遮挡。",
+      "faqs": [
+        {
+          "q": "逗留抓拍需要一直开吗？",
+          "a": "抓拍由门前有人停留触发，不需要手动开启。实际灵敏度与存储方式在交付时演示。"
+        },
+        {
+          "q": "4.5 英寸屏和 3.5 英寸差多少？",
+          "a": "4.5 英寸比 3.5 英寸大约宽一倍以上，看人脸与包裹单明显更清楚。"
+        },
+        {
+          "q": "K19J 和 Q58J-K19 怎么选？",
+          "a": "两者同价位档，K19J 屏幕 4.5 英寸，Q58J-K19 是 4 英寸屏配铝合金推拉结构。看您更在意屏幕还是面板材质。"
+        }
+      ]
+    },
+    "en": {
+      "title": "K19J Video Intercom Lock｜RM2,120 with Installation",
+      "description": "K19J is a matte-black push-pull lock with a 4.5-inch indoor screen at RM2,120 including installation, plus lingering capture at the door.",
+      "h1": "K19J Video Intercom Lock — RM2,120",
+      "answer": "K19J carries the largest screen in this tier at 4.5 inches, for RM2,120 including installation. Matte-black automatic push-pull, doorbell viewing, and a wide-angle camera that logs people lingering.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. A steel gate and corridor corners cut into the wide-angle view, so the camera position is checked before installation.",
+      "faqs": [
+        {
+          "q": "Does lingering capture need to be switched on?",
+          "a": "It triggers when someone stays in front of the door. Sensitivity and storage behaviour are demonstrated at handover."
+        },
+        {
+          "q": "How much bigger is 4.5 inches than 3.5?",
+          "a": "Noticeably larger in area, so faces and parcel labels are much easier to read."
+        },
+        {
+          "q": "K19J or Q58J-K19?",
+          "a": "Same price band. K19J has the 4.5-inch screen; Q58J-K19 has a 4-inch screen with an aluminium push-pull body. Choose by screen or by panel material."
+        }
+      ]
+    },
+    "ms": {
+      "title": "K19J Kunci Interkom Video｜RM2,120 Termasuk Pemasangan",
+      "description": "K19J ialah kunci tolak-tarik hitam kusam dengan skrin dalaman 4.5 inci pada RM2,120 termasuk pemasangan. Lihat pelawat ketika loceng berbunyi.",
+      "h1": "K19J Kunci Interkom Video — RM2,120",
+      "answer": "K19J membawa skrin terbesar dalam lingkungan ini pada 4.5 inci, untuk RM2,120 termasuk pemasangan. Tolak-tarik automatik hitam kusam dengan kamera sudut lebar.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Pagar besi dan sudut koridor mengecilkan pandangan sudut lebar.",
+      "faqs": [
+        {
+          "q": "Perlukah rakaman dinyalakan?",
+          "a": "Ia dicetuskan apabila seseorang berada lama di depan pintu. Kepekaan dan storan ditunjukkan semasa serahan."
+        },
+        {
+          "q": "Berapa besar beza 4.5 inci dengan 3.5 inci?",
+          "a": "Jelas lebih besar dari segi keluasan, jadi wajah dan label bungkusan lebih mudah dibaca."
+        },
+        {
+          "q": "K19J atau Q58J-K19?",
+          "a": "Sama lingkungan harga. K19J mempunyai skrin 4.5 inci; Q58J-K19 mempunyai skrin 4 inci dengan badan aluminium."
+        }
+      ]
+    }
+  },
+  "k16j-k19": {
+    "zh": {
+      "title": "K16J-K19 人脸掌静脉锁｜含安装 RM2,270",
+      "description": "K16J-K19 是铝合金全自动推拉锁，配 3D 人脸、掌静脉与 4.5 英寸室内屏，含安装价 RM2,270。门内可看访客，外出也能远程对讲。",
+      "h1": "K16J-K19 人脸掌静脉锁｜含安装 RM2,270",
+      "answer": "K16J-K19 是铝合金机身配双生物识别的顶配之一，含安装 RM2,270。3D 人脸加掌静脉，4.5 英寸室内屏，门内看人、门外远程对讲都在一把锁上。",
+      "doorFit": "标准防火木门可直接替换。铝合金机身较重，门扇过薄或芯材疏松时固定强度不足，需要现场判断是否加装加强板。",
+      "faqs": [
+        {
+          "q": "K16J-K19 和 K26J Pro 差 RM480 差在哪？",
+          "a": "K16J-K19 是铝合金机身并同时具备 3D 人脸与掌静脉；K26J Pro 是 4.5 英寸屏的掌静脉配置。"
+        },
+        {
+          "q": "手机 App 是标配吗？",
+          "a": "这一款的手机应用或遥控器依配置选配，下单前会确认具体版本。"
+        },
+        {
+          "q": "门比较薄能装吗？",
+          "a": "需要量门厚与门芯材质。铝合金机身较重，薄门可能需要加强固定。"
+        }
+      ]
+    },
+    "en": {
+      "title": "K16J-K19 Face & Palm Vein Lock｜RM2,270 with Installation",
+      "description": "K16J-K19 is an aluminium automatic push-pull lock with 3D face, palm vein and a 4.5-inch display. RM2,270 including installation.",
+      "h1": "K16J-K19 Face & Palm Vein Lock — RM2,270",
+      "answer": "K16J-K19 is one of the top configurations, with an aluminium body and two biometrics at RM2,270 including installation. 3D face, palm vein, a 4.5-inch indoor display and remote intercom on one lock.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. The aluminium body is heavier, so very thin or hollow-core leaves may need a reinforcement plate, judged on site.",
+      "faqs": [
+        {
+          "q": "What does the extra RM480 over K26J Pro buy?",
+          "a": "K16J-K19 has an aluminium body with both 3D face and palm vein. K26J Pro is the palm-vein configuration with a 4.5-inch screen."
+        },
+        {
+          "q": "Is the app included?",
+          "a": "On this model the app or remote control depends on the configuration. The exact version is confirmed before ordering."
+        },
+        {
+          "q": "Will it fit a thin door?",
+          "a": "Door thickness and core material are measured. The heavier aluminium body may need reinforced fixing on thin leaves."
+        }
+      ]
+    },
+    "ms": {
+      "title": "K16J-K19 Kunci Wajah & Vena Tapak Tangan｜RM2,270 Termasuk Pemasangan",
+      "description": "K16J-K19 ialah kunci tolak-tarik automatik aluminium dengan wajah 3D, vena tapak tangan dan skrin dalaman 4.5 inci. RM2,270 termasuk pemasangan.",
+      "h1": "K16J-K19 Kunci Wajah & Vena Tapak Tangan — RM2,270",
+      "answer": "K16J-K19 ialah salah satu konfigurasi teratas, dengan badan aluminium dan dua biometrik pada RM2,270 termasuk pemasangan.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Badan aluminium lebih berat, jadi daun pintu nipis mungkin memerlukan plat pengukuhan.",
+      "faqs": [
+        {
+          "q": "Apakah yang dibeli dengan tambahan RM480 berbanding K26J Pro?",
+          "a": "K16J-K19 mempunyai badan aluminium dengan wajah 3D dan vena tapak tangan."
+        },
+        {
+          "q": "Adakah aplikasi disertakan?",
+          "a": "Pada model ini aplikasi atau alat kawalan jauh bergantung pada konfigurasi."
+        },
+        {
+          "q": "Boleh dipasang pada pintu nipis?",
+          "a": "Ketebalan pintu dan bahan teras diukur. Badan aluminium yang lebih berat mungkin memerlukan pengukuhan."
+        }
+      ]
+    }
+  },
+  "q58j-k19": {
+    "zh": {
+      "title": "Q58J-K19 可视门铃推拉锁｜含安装 RM2,270",
+      "description": "Q58J-K19 是铝合金推拉锁，配 4 英寸室内屏与广角摄像头，含安装价 RM2,270。门铃、视频对讲与门前逗留抓拍集中在同一把锁上。",
+      "h1": "Q58J-K19 可视门铃推拉锁｜含安装 RM2,270",
+      "answer": "Q58J-K19 把门铃、视频对讲与逗留抓拍放在一把锁上，含安装 RM2,270。铝合金推拉机身配 4 英寸屏，广角镜头覆盖门口，适合常收包裹的家庭。",
+      "doorFit": "标准防火木门可直接替换。广角镜头需要正对走道，铁闸贴得太近会挡住视野，装前先看门口布局。",
+      "faqs": [
+        {
+          "q": "Q58J-K19 和 K19J 怎么选？",
+          "a": "Q58J-K19 是铝合金推拉机身配 4 英寸屏；K19J 是 4.5 英寸屏。两款的屏幕与面板材质不同，价格相同区间。"
+        },
+        {
+          "q": "抓拍记录存在哪里？",
+          "a": "存储方式以型号实际配置为准，安装交付时会说明当前固件下的存储与查看方式。"
+        },
+        {
+          "q": "门外没有 Wi-Fi 能用吗？",
+          "a": "本地开门功能不受影响，但视频对讲与远程查看需要门外有可用 Wi-Fi。"
+        }
+      ]
+    },
+    "en": {
+      "title": "Q58J-K19 Video Doorbell Lock｜RM2,270 with Installation",
+      "description": "Q58J-K19 is an aluminium push-pull lock with a 4-inch screen and wide-angle camera at RM2,270 including installation.",
+      "h1": "Q58J-K19 Video Doorbell Lock — RM2,270",
+      "answer": "Q58J-K19 puts the doorbell, video intercom and lingering capture on one lock at RM2,270 including installation. Aluminium push-pull body, 4-inch screen, wide-angle lens over the doorway.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. The wide-angle lens needs to face the corridor; a steel gate set too close blocks the view, so the doorway is assessed first.",
+      "faqs": [
+        {
+          "q": "Q58J-K19 or K19J?",
+          "a": "Q58J-K19 has an aluminium push-pull body with a 4-inch screen. K19J has a 4.5-inch screen. Both sit in the same price band."
+        },
+        {
+          "q": "Where are the captured images stored?",
+          "a": "Storage depends on the shipped configuration. The current firmware's storage and viewing method is explained at handover."
+        },
+        {
+          "q": "Does it work without Wi-Fi outside?",
+          "a": "Local entry still works. Video intercom and remote viewing need usable Wi-Fi at the door."
+        }
+      ]
+    },
+    "ms": {
+      "title": "Q58J-K19 Kunci Loceng Video｜RM2,270 Termasuk Pemasangan",
+      "description": "Q58J-K19 ialah kunci tolak-tarik aluminium dengan skrin dalaman 4 inci dan kamera sudut lebar pada RM2,270 termasuk pemasangan.",
+      "h1": "Q58J-K19 Kunci Loceng Video — RM2,270",
+      "answer": "Q58J-K19 meletakkan loceng pintu, interkom video dan rakaman orang yang lama di pintu pada satu kunci, RM2,270 termasuk pemasangan.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Lensa sudut lebar perlu menghala ke koridor; pagar besi yang terlalu dekat menghalang pandangan.",
+      "faqs": [
+        {
+          "q": "Q58J-K19 atau K19J?",
+          "a": "Q58J-K19 mempunyai badan aluminium tolak-tarik dengan skrin 4 inci. K19J mempunyai skrin 4.5 inci."
+        },
+        {
+          "q": "Di mana gambar disimpan?",
+          "a": "Storan bergantung pada konfigurasi yang dihantar. Kaedah storan dijelaskan semasa serahan."
+        },
+        {
+          "q": "Boleh berfungsi tanpa Wi-Fi di luar?",
+          "a": "Kemasukan setempat masih berfungsi. Interkom video memerlukan Wi-Fi di pintu."
+        }
+      ]
+    }
+  },
+  "v37j-p16": {
+    "zh": {
+      "title": "V37J-P16 掌静脉电子锁｜含安装 RM2,360｜CNC 精雕",
+      "description": "V37J-P16 是 CNC 精雕铝合金锁身配钢化玻璃与隐藏式指纹头，含 C 级锁芯、4.5 英寸屏与掌静脉开锁，含安装价 RM2,360。",
+      "h1": "V37J-P16 掌静脉电子锁｜含安装 RM2,360",
+      "answer": "V37J-P16 是这一代的主推款，含安装 RM2,360。CNC 精雕铝合金锁身、钢化玻璃面板、隐藏式指纹头，C 级锁芯配 4.5 英寸屏，掌静脉也能开门。",
+      "doorFit": "标准防火木门可直接替换。锁身较厚重，门厚偏薄的旧木门需要先量可用厚度，可能要调整锁孔深度。",
+      "faqs": [
+        {
+          "q": "C 级锁芯是什么意思？",
+          "a": "C 级是机械锁芯的防护等级划分，抗技术开启时间长于普通锁芯。它是断电时的机械备份路径，不是电子部分的安全承诺。"
+        },
+        {
+          "q": "隐藏式指纹头有什么好处？",
+          "a": "指纹头不外露，减少被刮花与灰尘堵塞的机会，也不容易被外人看出识别位置。"
+        },
+        {
+          "q": "V37J-P16 和 K16J-K19 怎么选？",
+          "a": "V37J-P16 是 CNC 精雕机身配 C 级锁芯，价格 RM2,360；K16J-K19 是铝合金机身，价格 RM2,270。差价 RM90，看您更在意机身做工还是价格。"
+        }
+      ]
+    },
+    "en": {
+      "title": "V37J-P16 Palm Vein Digital Lock｜RM2,360 with Installation",
+      "description": "V37J-P16 has a CNC-machined aluminium body, concealed fingerprint reader, Grade C cylinder and 4.5-inch screen. RM2,360 installed.",
+      "h1": "V37J-P16 Palm Vein Digital Lock — RM2,360",
+      "answer": "V37J-P16 is the flagship of this generation at RM2,360 including installation. CNC-machined aluminium, tempered glass, a concealed fingerprint reader, a Grade C mechanical cylinder and palm-vein access.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. The body is substantial, so thin older timber leaves are measured first and the lock pocket depth may need adjusting.",
+      "faqs": [
+        {
+          "q": "What does a Grade C cylinder mean?",
+          "a": "It grades the mechanical cylinder's resistance to picking and drilling. It is the backup path for a dead battery, not a claim about the electronic side."
+        },
+        {
+          "q": "Why hide the fingerprint reader?",
+          "a": "A concealed reader avoids scratches and dust build-up and does not advertise where the sensor sits."
+        },
+        {
+          "q": "V37J-P16 or K16J-K19?",
+          "a": "V37J-P16 has the CNC-machined body and Grade C cylinder at RM2,360. K16J-K19 is aluminium at RM2,270. A RM90 gap, so choose on build or on price."
+        }
+      ]
+    },
+    "ms": {
+      "title": "V37J-P16 Kunci Vena Tapak Tangan｜RM2,360 Termasuk Pemasangan",
+      "description": "V37J-P16 mempunyai badan aluminium dimesin CNC, pengimbas cap jari tersembunyi dan silinder gred C pada RM2,360 termasuk pemasangan.",
+      "h1": "V37J-P16 Kunci Vena Tapak Tangan — RM2,360",
+      "answer": "V37J-P16 ialah model utama generasi ini pada RM2,360 termasuk pemasangan. Badan aluminium dimesin CNC, kaca terbaja, pengimbas cap jari tersembunyi dan silinder gred C.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Badan kunci agak besar, jadi daun pintu lama yang nipis diukur dahulu.",
+      "faqs": [
+        {
+          "q": "Apakah maksud silinder gred C?",
+          "a": "Ia menggredkan ketahanan silinder mekanikal terhadap penggolekan dan penggerudian."
+        },
+        {
+          "q": "Mengapa pengimbas cap jari disembunyikan?",
+          "a": "Pengimbas tersembunyi mengelak calar dan habuk terkumpul."
+        },
+        {
+          "q": "V37J-P16 atau K16J-K19?",
+          "a": "V37J-P16 mempunyai badan CNC dan silinder gred C pada RM2,360. K16J-K19 aluminium pada RM2,270."
+        }
+      ]
+    }
+  },
+  "p59j-pro": {
+    "zh": {
+      "title": "P59J PRO 广角可视门锁｜含安装 RM2,960",
+      "description": "P59J PRO 是铝合金配钢化玻璃面板的广角可视门铃锁，含安装价 RM2,960。可从 4.5 英寸屏幕看访客，在外也能视频对讲并远程开锁。",
+      "h1": "P59J PRO 广角可视门锁｜含安装 RM2,960",
+      "answer": "P59J PRO 是全系列功能最满的一款，含安装 RM2,960。广角可视门铃配 4.5 英寸屏，人在外面可以直接视频对讲并远程开锁，适合经常不在家的住户。",
+      "doorFit": "标准防火木门可直接替换。远程开锁依赖门外稳定 Wi-Fi，走廊深处或厚墙环境需要先测信号；铁闸贴得太近也会挡住广角视野。",
+      "faqs": [
+        {
+          "q": "远程开锁安全吗？",
+          "a": "远程开锁通过配套 App 授权，需要账号与网络双重条件。建议同时启用 App 的登录保护，并把访客密码与远程权限分开管理。"
+        },
+        {
+          "q": "P59J PRO 比 V37J-P16 贵 RM600，贵在哪？",
+          "a": "P59J PRO 多了广角可视门铃与远程开锁能力，屏幕同为 4.5 英寸。差价来自摄像与联网模块。"
+        },
+        {
+          "q": "我家 Wi-Fi 在门口信号弱怎么办？",
+          "a": "可以先测信号强度，必要时加装 Wi-Fi 延伸设备。信号不足时本地开门不受影响，只影响远程功能。"
+        }
+      ]
+    },
+    "en": {
+      "title": "P59J PRO Wide-Angle Video Lock｜RM2,960 with Installation",
+      "description": "P59J PRO pairs a wide-angle video doorbell with a 4.5-inch screen at RM2,960 including installation, with remote talk and unlock.",
+      "h1": "P59J PRO Wide-Angle Video Lock — RM2,960",
+      "answer": "P59J PRO is the most fully equipped model at RM2,960 including installation. A wide-angle video doorbell with a 4.5-inch display, two-way talk and remote unlock for when nobody is home.",
+      "doorFit": "A standard fire-rated timber door is a direct swap. Remote unlock depends on stable Wi-Fi at the door, so deep corridors and thick walls are signal-tested, and a steel gate set too close blocks the wide-angle view.",
+      "faqs": [
+        {
+          "q": "Is remote unlock safe?",
+          "a": "It runs through the paired app, so it needs both the account and the network. Enable the app's login protection and keep visitor codes separate from remote permissions."
+        },
+        {
+          "q": "What does the extra RM600 over V37J-P16 buy?",
+          "a": "P59J PRO adds the wide-angle video doorbell and remote unlock. Both have a 4.5-inch screen; the difference is the camera and network module."
+        },
+        {
+          "q": "What if the Wi-Fi signal at my door is weak?",
+          "a": "The signal is tested first and an extender added if needed. Local entry still works; only the remote features suffer."
+        }
+      ]
+    },
+    "ms": {
+      "title": "P59J PRO Kunci Video Sudut Lebar｜RM2,960 Termasuk Pemasangan",
+      "description": "P59J PRO menggabungkan loceng pintu video sudut lebar dengan skrin 4.5 inci pada RM2,960 termasuk pemasangan.",
+      "h1": "P59J PRO Kunci Video Sudut Lebar — RM2,960",
+      "answer": "P59J PRO ialah model paling lengkap pada RM2,960 termasuk pemasangan. Loceng pintu video sudut lebar dengan paparan 4.5 inci, perbualan dua hala dan buka kunci dari jauh.",
+      "doorFit": "Pintu kayu berkadar api standard boleh diganti terus. Buka kunci jauh bergantung pada Wi-Fi stabil di pintu.",
+      "faqs": [
+        {
+          "q": "Adakah buka kunci jauh selamat?",
+          "a": "Ia melalui aplikasi yang dipasangkan, jadi memerlukan akaun dan rangkaian. Aktifkan perlindungan log masuk aplikasi."
+        },
+        {
+          "q": "Apakah yang dibeli dengan tambahan RM600 berbanding V37J-P16?",
+          "a": "P59J PRO menambah loceng video sudut lebar dan buka kunci jauh."
+        },
+        {
+          "q": "Bagaimana jika isyarat Wi-Fi lemah?",
+          "a": "Isyarat diuji dahulu dan penguat ditambah jika perlu. Kemasukan setempat tetap berfungsi."
+        }
+      ]
+    }
+  }
+}
