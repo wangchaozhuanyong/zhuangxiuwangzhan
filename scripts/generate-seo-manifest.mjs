@@ -9,6 +9,7 @@ import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-p
 import { loadMaterialSeoCategories, qualifiesLocale, currentSourcePath, serializeSourcePath, snapshotProvenance, isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
 
 const furnitureCatalog = JSON.parse(readFileSync(new URL("../src/data/furnitureCatalog.json", import.meta.url), "utf8"));
+const furnitureEditorialDetails = JSON.parse(readFileSync(new URL("../src/data/furnitureEditorialDetails.json", import.meta.url), "utf8"));
 const furnitureLabels = JSON.parse(readFileSync(new URL("../src/i18n/furnitureTaxonomyLabels.json", import.meta.url), "utf8"));
 const furnitureLocales = Object.fromEntries(["en", "zh"].map((lang) => [
   lang,
@@ -214,7 +215,14 @@ for (const lang of ["en", "zh"]) {
     }
   }
   for (const product of furnitureCatalog.products) {
-    const localized = resolveFurnitureDisplay({ ...product, ...furnitureLocales[lang][product.slug] }, lang);
+    const translated = { ...product, ...furnitureLocales[lang][product.slug] };
+    const editorial = furnitureEditorialDetails[product.slug];
+    const details = editorial?.sourceUrl === product.sourceUrl ? editorial[lang] : undefined;
+    const localized = resolveFurnitureDisplay({
+      ...translated,
+      shortDescription: details?.shortDescription ?? translated.shortDescription,
+      description: details?.description ?? translated.description,
+    }, lang);
     addDynamic(
       lang,
       "/furniture/product",
