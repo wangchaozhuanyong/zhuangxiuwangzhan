@@ -12,8 +12,11 @@ import { locationPageText } from "../src/i18n/locationPageText";
 import { isServiceConceptImage } from "../src/lib/serviceMedia";
 import { findServiceAreaRoute } from "../src/lib/serviceAreaRoutes";
 import { quotePageText } from "../src/i18n/quotePageText";
-import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText } from "../src/i18n/furnitureText";
-import { furnitureListingPagePath, furnitureProductPath, localizeFurnitureProduct, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
+import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText, getFurnitureDisplaySku } from "../src/i18n/furnitureText";
+import { furnitureListingPagePath, furnitureProductPath, getFurnitureCatalogProductsForCategory, getFurnitureProductCategory, localizeFurnitureProduct, mapFurnitureCatalogSeed, type FurnitureMaterialRow, type getFurnitureListingPage } from "../src/lib/furnitureCatalogPresentation";
+import { normalizeFurnitureSlug } from "../src/lib/furnitureCatalogOverrides";
+import { isSafeContentUrl } from "../src/lib/safeContentUrl";
+import { resolveSmartImageSource } from "../src/lib/smartImageSource";
 import { findSelangorWarehouseIntroLink } from "../src/lib/selangorWarehouseIntroLink";
 import { plainTextParagraphs } from "../src/lib/text";
 import { faqPageText } from "../src/i18n/faqPageText";
@@ -75,6 +78,59 @@ export function buildReadableFurnitureListingBody(key: string, listing: ReturnTy
   const navigation = listing.totalPages > 1
     ? `<nav aria-label="${escape(label)}"><a href="${escape(pageHref(1))}">${escape(copy.allProducts)}</a>${listing.page > 1 ? `<a href="${escape(pageHref(listing.page - 1))}">${escape(copy.previous)}</a>` : ""}<span>${escape(label)}</span>${listing.page < listing.totalPages ? `<a href="${escape(pageHref(listing.page + 1))}">${escape(copy.next)}</a>` : ""}</nav>` : "";
   return `<section data-flashcast-readable-furniture-listing lang="${lang === "zh" ? "zh-CN" : lang === "ms" ? "ms-MY" : "en"}"><h1>${escape(title)}</h1><p>${escape(categoryCopy?.intro || copy.intro)}</p>${cards ? `<ul>${cards}</ul>` : `<p>${escape(copy.noProducts)}</p>`}${navigation}</section>`;
+}
+
+export function buildReadableFurnitureProductBody(
+  key: string, rows: FurnitureMaterialRow[], setting: { items_zh?: unknown } | null,
+) {
+  const match = key.match(/^\/(en|zh)\/furniture\/product\/([^/]+)$/);
+  if (!match) return "";
+  const slug = normalizeFurnitureSlug(match[2]);
+  if (!slug) return "";
+  const lang = match[1] as "en" | "zh";
+  const copy = furnitureText[lang];
+  const products = mapFurnitureCatalogSeed(rows, setting, lang);
+  const product = products.find((candidate) => normalizeFurnitureSlug(candidate.slug) === slug);
+  if (!product) return "";
+
+  const sku = getFurnitureDisplaySku(product.sku, lang);
+  const reference = sku ? `<dl><dt>${escape(product.skuLabel || copy.sku)}</dt><dd>${escape(sku)}</dd></dl>` : "";
+  const lines = (value: string) => value.split("\n").map(line => line.trim()).filter(Boolean);
+  const details = lines(product.description || product.shortDescription);
+  const summary = lines(product.shortDescription).filter(line => !details.includes(line));
+  const note = product.availabilityNote || copy.note;
+  const availability = [...summary, ...details].some(line => line.includes(note)) ? "" : paragraph(note);
+  let body = `<h1>${escape(product.name)}</h1>${paragraph(product.price || copy.detailPriceOnRequest)}${reference}`;
+  body += summary.map(paragraph).join("") + availability;
+  const image = product.images[0] || product.sourceImages[0];
+  if (image && isSafeContentUrl(image, true)) {
+    const { resolvedSrc } = resolveSmartImageSource({ src: image, width: 1000, height: 1000 });
+    body += `<img src="${escape(resolvedSrc)}" alt="${escape(`${product.name} 1`)}" width="1000" height="1000" loading="lazy" style="max-width:100%;height:auto">`;
+  }
+  body += `<section><h2>${escape(copy.description)}</h2>${(details.length ? details : [copy.descriptionUnavailable]).map(paragraph).join("")}</section>`;
+
+  const category = getFurnitureProductCategory(product);
+  if (category) {
+    const subcategory = category.subcategories.find(item => product.managedCategoryKey
+      ? item.key === product.managedSubcategoryKey : item.productUrls.includes(product.sourceUrl));
+    const categoryPath = category.key === "new" ? "/furniture" : `/furniture/${category.key}`;
+    const listingPath = subcategory ? `${categoryPath}/${subcategory.key}` : categoryPath;
+    const listingName = subcategory ? furnitureSubcategoryName(subcategory.key, lang, subcategory.name)
+      : furnitureCategoryName(category.key, lang);
+    body += `<p><a href="${escape(`/${lang}${listingPath}`)}">${escape(listingName)}</a></p>`;
+    const closest = subcategory ? getFurnitureCatalogProductsForCategory(products, category.key, subcategory.key) : [];
+    const inCategory = getFurnitureCatalogProductsForCategory(products, category.key);
+    const related = [...new Set([...closest, ...inCategory])]
+      .filter(candidate => candidate !== product).slice(0, 5);
+    if (related.length) {
+      const links = related.map(candidate => {
+        const preview = lines(candidate.shortDescription || candidate.description).slice(0, 2).join(" ");
+        return `<li><a href="${escape(`/${lang}${furnitureProductPath(candidate)}`)}">${escape(candidate.name)}</a>${preview ? paragraph(preview) : ""}</li>`;
+      }).join("");
+      body += `<section><h2>${escape(copy.relatedProducts)}</h2><ul>${links}</ul></section>`;
+    }
+  }
+  return wrapBody(body, lang);
 }
 
 function publicHref(raw: string, lang: "en" | "zh" | "ms") {
