@@ -119,7 +119,7 @@ export default function ContactEntryPanel({ message, onClose, onCloseAutoFocus, 
           }}>
             <summary>{text.showWechatQr}<ChevronDown aria-hidden="true" /></summary>
             <figure>
-              <SmartImage src={siteConfig.wechatQrUrl} alt={text.wechatQrAlt} width={668} height={668}
+              <SmartImage src={siteConfig.wechatQrUrl} alt={text.wechatQrAlt} width={440} height={440}
                 className="fc-contact-panel__qr-image" loading="eager" decoding="async" showFailureFallback />
               <figcaption>{text.wechatQrHint}</figcaption>
             </figure>
