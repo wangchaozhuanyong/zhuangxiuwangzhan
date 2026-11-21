@@ -37,30 +37,38 @@ J: Kami beroperasi di seluruh Kuala Lumpur dan Selangor, termasuk Petaling Jaya,
 
 ## 第 2 条：承包商资质
 
+> **重写原因**：2026-11-21 原版被 Google 拒绝。原版在正文里写了 SSM 号 `202501027419 / 1628831-M` 和 CIDB 号 `0120260929-WP177947`，这类注册标识串在自动审核里容易被判为不可核实的信息。
+> **改法**：删掉号码串，保留声明本身，把「可查证」的落点放在网站上。号码改用图片或页面承载。
+
 **EN**
 ```
 Q: Are you a registered contractor?
 
-A: Yes. FLASH CAST is a registered Malaysian company (SSM 202501027419 / 1628831-M) and a CIDB registered contractor (0120260929-WP177947, Grade G3, registered until September 2028). We provide itemised quotations that separate confirmed work, exclusions and owner-supplied items, so you know exactly what is included before work starts.
+A: Yes. FLASH CAST is a registered Malaysian company and a CIDB registered contractor, graded G3. We provide itemised quotations that separate confirmed work, exclusions and owner-supplied items, so you know what is included before work starts. Full registration details are on our website.
 ```
 
 **ZH**
 ```
 问：你们是注册承包商吗？
 
-答：是。FLASH CAST 是马来西亚注册公司（SSM 202501027419 / 1628831-M），也是 CIDB 注册承包商（0120260929-WP177947，G3 级，注册至 2028 年 9 月）。我们提供分项报价，把确认工程、排除项目与业主自购物品分开列清，开工前你就知道哪些包含、哪些不包含。
+答：是。FLASH CAST 是马来西亚注册公司，也是 CIDB 注册承包商，G3 等级。我们提供逐项报价，把已确认工序、不包含项目和业主自备项目分开列明，开工前你就知道哪些包含、哪些不包含。完整注册资料公布在我们网站上。
 ```
 
 **MS**
 ```
 S: Adakah anda kontraktor berdaftar?
 
-J: Ya. FLASH CAST ialah syarikat Malaysia yang berdaftar (SSM 202501027419 / 1628831-M) dan kontraktor berdaftar CIDB (0120260929-WP177947, Gred G3, berdaftar hingga September 2028). Kami menyediakan sebut harga terperinci yang mengasingkan kerja yang disahkan, pengecualian dan item daripada pemilik, supaya anda tahu apa yang termasuk sebelum kerja bermula.
+J: Ya. FLASH CAST ialah syarikat Malaysia yang berdaftar dan kontraktor berdaftar CIDB, gred G3. Kami menyediakan sebut harga terperinci yang mengasingkan kerja yang disahkan, pengecualian dan item daripada pemilik, supaya anda tahu apa yang termasuk sebelum kerja bermula. Butiran pendaftaran penuh dipaparkan di laman web kami.
 ```
 
-**注意**：已填入 CIDB 号 `0120260929-WP177947`（G3 级，有效期至 28/09/2028）。证书到期前 60 天内需续期，续期后记得同步更新这里的日期。
+**注意**
 
-**CTA**：链到 `/about`
+- 正文不含任何号码，降低被自动审核拒绝的概率
+- 结尾的「注册资料在网站上」当前**还不成立**——关于页只有 SSM 没有 CIDB，需要先补上（见 `docs/seo/remaining-work-division.md`）
+- **顺序**：先把关于页的 CIDB 补上，再发这条帖文，否则这句话是空的
+- 若仍然被拒，改为纯服务导向（不提交投资质声明），资质信息只放在 GBP 商家描述里
+
+**CTA**：`/about`
 
 ---
 
