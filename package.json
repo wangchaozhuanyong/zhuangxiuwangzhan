@@ -42,6 +42,7 @@
     "deploy:cloudflare:pages": "node scripts/deploy-cloudflare-pages.mjs",
     "restore:backup:dry-run": "node scripts/restore-supabase-backup.mjs --dry-run",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "generate:anzhe-lock-pages": "node scripts/generate-anzhe-lock-pages.mjs",
     "generate:llms": "node scripts/generate-llms.mjs",
     "images:webp": "node scripts/convert-images-to-webp.mjs",
     "images:prune": "node scripts/prune-duplicate-images.mjs",
