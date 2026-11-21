@@ -12,6 +12,7 @@ const contentTypes: Record<string, string> = {
   ".js": "text/javascript",
   ".webp": "image/webp",
   ".woff2": "font/woff2",
+  ".txt": "text/plain; charset=utf-8",
 };
 let serveAnzheShowroom: typeof import("../functions/anzheShowroom").serveAnzheShowroom;
 
@@ -84,6 +85,10 @@ test("renders one model heading and switches language on the same model", async 
   expect(response?.status()).toBe(200);
   expect(response?.headers()["content-type"]).toContain("text/html");
   const heading = page.locator("h1");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "V37J-P16 是 CNC 精雕铝合金锁身配钢化玻璃与隐藏式指纹头，含 C 级锁芯、4.5 英寸屏与掌静脉开锁，含安装价 RM2,360。",
+  );
   await expect(heading).toHaveCount(1);
   await expect(heading).toContainText("V37J-P16");
   await expect(heading).toBeInViewport();
@@ -94,7 +99,7 @@ test("renders one model heading and switches language on the same model", async 
 
   await page.getByRole("link", { name: "English", exact: true }).click();
   await expect(page).toHaveURL(origin + "/en/lock/v37j-p16/");
-  await expect(heading).toContainText("V37J-P16 Palm Vein Digital Lock");
+  await expect(heading).toHaveText("V37J-P16 Palm Vein Digital Lock — RM2,360");
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", page.url());
   await page.getByRole("link", { name: "Bahasa Melayu", exact: true }).click();
   await expect(page).toHaveURL(origin + "/ms/lock/v37j-p16/");
@@ -124,4 +129,14 @@ test("returns 404 for a model outside the allowlist", async ({ page }) => {
   const response = await page.goto(origin + "/zh/lock/not-a-model/");
   expect(response?.status()).toBe(404);
   await expect(page.locator("h1")).toHaveCount(0);
+});
+
+test("serves the exact IndexNow key only at the allowlisted root path", async ({ page }) => {
+  const key = "89a0d82405fcdd4e83a37a2c1608813e";
+  const response = await page.goto(`${origin}/${key}.txt`);
+  expect(response?.status()).toBe(200);
+  expect(response?.headers()["content-type"]).toContain("text/plain");
+  expect(await response?.text()).toBe(key);
+  expect((await page.goto(`${origin}/en/${key}.txt`))?.status()).toBe(404);
+  expect((await page.goto(`${origin}/${key.slice(1)}.txt`))?.status()).toBe(404);
 });
