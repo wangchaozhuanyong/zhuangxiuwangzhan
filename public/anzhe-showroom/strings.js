@@ -1,5 +1,7 @@
 window.showroomWords = {
   zh: {
+    description:"查看 17 款 ANZHE 电子锁，按门型选款并对比功能与含安装价。吉隆坡及雪兰莪可联系 FLASH CAST 顾问确认适配。",
+    returnToMain:'返回装修网站', returnToMainShort:'返回主站',
     title:'ANZHE 安哲电子锁展厅｜FLASH CAST', skip:'跳至内容', catalog:'选购门锁', compare:'型号对比', install:'安装服务', language:'页面语言',
     heroKind:'全自动推拉入户锁', hiddenPrint:'隐藏式指纹', indoorScreen:'4.5 英寸室内屏', included:'含安装',
     browse:'浏览 17 款', thisLock:'查看这款', side:'切换首图角度', outside:'门外', inside:'门内',
@@ -11,6 +13,8 @@ window.showroomWords = {
     frontGuide:'拍整扇门，连两侧门框一起入镜。', edgeGuide:'打开门，近拍门边的锁舌和面板。', back:'回到顶部 ↑', close:'关闭',
   },
   en: {
+    description:"Explore 17 ANZHE smart locks. Compare features and installed prices by door type. Ask FLASH CAST about installation in Kuala Lumpur and Selangor.",
+    returnToMain:'Back to FLASH CAST', returnToMainShort:'Main site',
     title:'ANZHE Smart Locks | FLASH CAST', skip:'Skip to content', catalog:'Explore locks', compare:'Compare models', install:'Installation', language:'Page language',
     heroKind:'Fully automatic push-pull entrance lock', hiddenPrint:'Concealed fingerprint reader', indoorScreen:'4.5-inch indoor display', included:'Installation included',
     browse:'Explore all 17 locks', thisLock:'View this lock', side:'Choose a product angle', outside:'Outside', inside:'Inside',
@@ -22,6 +26,8 @@ window.showroomWords = {
     frontGuide:'Photograph the full door and both sides of the frame.', edgeGuide:'Open the door and take a close-up of the latch and faceplate.', back:'Back to top ↑', close:'Close',
   },
   ms: {
+    description:"Lihat 17 kunci pintar ANZHE. Bandingkan ciri dan harga termasuk pemasangan mengikut jenis pintu. Semak kesesuaian dengan FLASH CAST di Kuala Lumpur dan Selangor.",
+    returnToMain:'Kembali ke FLASH CAST', returnToMainShort:'Laman utama',
     title:'Kunci Pintar ANZHE | FLASH CAST', skip:'Langkau ke kandungan', catalog:'Lihat kunci', compare:'Bandingkan model', install:'Pemasangan', language:'Bahasa halaman',
     heroKind:'Kunci pintu utama tolak-tarik automatik sepenuhnya', hiddenPrint:'Pengimbas cap jari tersembunyi', indoorScreen:'Skrin dalaman 4.5 inci', included:'Termasuk pemasangan',
     browse:'Lihat semua 17 model', thisLock:'Lihat model ini', side:'Pilih sudut paparan', outside:'Bahagian luar', inside:'Bahagian dalam',
@@ -35,6 +41,7 @@ window.showroomWords = {
 };
 
 Object.assign(window.showroomWords.zh, {
+  retryExterior:'重试门外图片', retryInterior:'重试门内图片',
   title:'ANZHE 安哲电子锁｜FLASH CAST', navigation:'页内导航', galleryTitle:'按门型选锁',
   allInstalled:'每款电子锁都包安装', noExtra:'无需额外费用', compareTitle:'两款差在哪？', compareIntro:'两款都支持掌静脉开门，室内屏的尺寸不同。', installedGap:'含安装价差', serviceArea:'安装地区',
   heroLine:'抬手开门，来客可视。', heroSummary:'掌静脉、人脸或隐藏式指纹开锁。门铃响起，可在室内屏查看来客，也可用手机远程视频对讲。',
@@ -43,6 +50,7 @@ Object.assign(window.showroomWords.zh, {
   grille:'如果门外还有铁闸，请补拍铁闸和大门之间的距离。',fullDoor:'整扇门与门框',doorEdge:'门边锁舌与面板',
 });
 Object.assign(window.showroomWords.en, {
+  retryExterior:'Retry exterior photo', retryInterior:'Retry interior photo',
   title:'ANZHE Smart Locks | FLASH CAST', navigation:'Page navigation', galleryTitle:'Shop by door type',
   allInstalled:'Installation with every lock', noExtra:'No extra charge', compareTitle:'What changes?', compareIntro:'Both locks offer palm-vein entry. The indoor screens come in two sizes.', installedGap:'Price difference', serviceArea:'Installation area',
   heroLine:'Unlock with your palm. See who’s there.',heroSummary:'Use palm vein, face or concealed fingerprint recognition. See visitors on the indoor screen or speak to them by video on your phone.',
@@ -51,6 +59,7 @@ Object.assign(window.showroomWords.en, {
   grille:'If you have a security grille, also photograph the gap between the grille and the door.',fullDoor:'Door and frame',doorEdge:'Latch and faceplate',
 });
 Object.assign(window.showroomWords.ms, {
+  retryExterior:'Cuba semula foto luar', retryInterior:'Cuba semula foto dalam',
   title:'Kunci Pintar ANZHE | FLASH CAST',navigation:'Navigasi halaman', galleryTitle:'Pilih ikut jenis pintu',
   allInstalled:'Pemasangan bagi setiap kunci', noExtra:'Tiada caj tambahan', compareTitle:'Apa bezanya?', compareIntro:'Kedua-duanya boleh dibuka dengan imbasan vena tapak tangan. Saiz skrin dalaman berbeza.', installedGap:'Beza harga', serviceArea:'Kawasan pemasangan',
   heroLine:'Buka dengan tapak tangan. Lihat siapa di luar.',heroSummary:'Buka pintu dengan imbasan vena tapak tangan, wajah atau cap jari. Lihat pelawat pada skrin dalaman atau berbual melalui panggilan video di telefon.',

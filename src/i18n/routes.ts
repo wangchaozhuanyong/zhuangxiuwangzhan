@@ -2,7 +2,7 @@ import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPref
 import {
   detectLanguageFromTags,
   isSupportedLanguage,
-  PUBLIC_LANGUAGE_COOKIE,
+  PUBLIC_LANGUAGE_COOKIE, PUBLIC_LANGUAGE_DOMAIN, SHARED_LANGUAGE_COOKIE, sharesPublicLanguage,
   type Language,
 } from "@/i18n/languageDetection";
 
@@ -24,6 +24,10 @@ export const getLanguageFromPath = (pathname = window.location.pathname): Langua
 export const getDefaultLanguage = (): Language => {
   if (isLanguage(inMemoryLanguage)) return inMemoryLanguage;
 
+  if (sharesPublicLanguage(location.hostname)) {
+    const shared = readBrowserPreference(SHARED_LANGUAGE_COOKIE, SHARED_LANGUAGE_COOKIE);
+    if (isLanguage(shared)) return shared;
+  }
   const saved = readBrowserPreference(PUBLIC_LANG_KEY, PUBLIC_LANGUAGE_COOKIE);
   if (isLanguage(saved)) return saved;
 
@@ -36,6 +40,11 @@ export const getDefaultLanguage = (): Language => {
 export const rememberLanguage = (language: Language) => {
   inMemoryLanguage = language;
   writeBrowserPreference(PUBLIC_LANG_KEY, language, PUBLIC_LANGUAGE_COOKIE);
+  if (sharesPublicLanguage(location.hostname) && location.protocol === "https:") {
+    try {
+      document.cookie = `${SHARED_LANGUAGE_COOKIE}=${language}; Domain=${PUBLIC_LANGUAGE_DOMAIN}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`;
+    } catch { /* The host preference and in-memory choice still work when cookies are blocked. */ }
+  }
 };
 
 export const stripLanguagePrefix = (pathname: string) => {

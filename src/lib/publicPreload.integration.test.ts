@@ -5,6 +5,7 @@ import {
   projectMaterialsForPreload,
   projectProjectSummariesForPreload,
   projectServiceAreaSummariesForPreload,
+  projectServiceDirectoryForPreload,
   projectServiceSummariesForPreload,
 } from "../../functions/publicDataProjection";
 
@@ -32,6 +33,30 @@ afterEach(() => {
 });
 
 describe("public preload data", () => {
+  it("restores compact service cards and older partial rows before seeding all three languages", async () => {
+    const card = {
+      id: "card", slug: "office", image_url: "/office.webp",
+      title_en: "Office", title_zh: "办公室", title_ms: "Pejabat",
+      excerpt_en: "Plan", excerpt_zh: "方案", excerpt_ms: "Pelan",
+      alt_en: "Desk", alt_zh: "办公桌", alt_ms: "Meja",
+    };
+    const fallback = { id: "legacy", slug: "legacy", title_zh: "旧款", content_zh: "正文回退" };
+    const wire = projectServiceDirectoryForPreload([card, fallback]);
+    expect(Array.isArray(wire.services[0])).toBe(true);
+    expect(wire.services[1]).toEqual(fallback);
+    setPreloadedPublicData(wire);
+    const { readPreloadedPublicData } = await import("./publicPreload");
+    expect(readPreloadedPublicData()?.services).toEqual([card, fallback]);
+    const { getPublicQuerySeed } = await import("./publicQuerySeed");
+    for (const language of ["en", "zh", "ms"] as const) {
+      const services = getPublicQuerySeed(["published", "services", language]);
+      expect(services).toMatchObject([{
+        id: card.id, slug: card.slug, image: card.image_url,
+        title: card[`title_${language}`], imageAlt: card[`alt_${language}`], summary: card[`excerpt_${language}`],
+      }, { slug: fallback.slug }]);
+    }
+  });
+
   it("seeds confirmed absent optional sections but leaves unknown visibility recoverable", async () => {
     setPreloadedPublicData({ homeContentBundle: { home_sections: [], preload_optional_visibility: { brand_partners: false } } });
     const { getPublicQuerySeed } = await import("./publicQuerySeed");

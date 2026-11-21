@@ -39,7 +39,13 @@ export const readPreloadedPublicData = (): PublicDataPayload | null => {
   }
 
   try {
-    const parsed = JSON.parse(node.textContent) as PublicDataPayload;
+    const parsed = JSON.parse(node.textContent) as PublicDataPayload & { serviceColumns?: string[] };
+    const columns = parsed?.serviceColumns;
+    if (Array.isArray(columns) && Array.isArray(parsed.services)) {
+      parsed.services = parsed.services.map(row => Array.isArray(row)
+        ? Object.fromEntries(columns.map((name, index) => [name, row[index]]))
+        : row);
+    }
     preloadedPublicData = parsed && typeof parsed === "object" ? parsed : null;
     return preloadedPublicData;
   } catch {

@@ -4,30 +4,30 @@
   const texts = {
     zh: {
       close:'关闭', pick:'选择比较型号', pickTwo:'选两款比较', pickNext:'选第二款', selected:'已选型号', remove:'移除', compare:'比较型号',
-      add:'加入对比', added:'已选', change:'更换型号', same:'查看相同功能', differences:'主要差异', noDiff:'已确认的项目中没有其他差异。',
+      add:'加入对比', added:'已选', change:'更换型号', same:'共同功能与规格', differences:'主要差异', noDiff:'已确认的项目中没有其他差异。',
       example:'T06J 与 K26J Pro', gap:'含安装价相差 {price}', samePrice:'两款含安装价相同', included:'含安装',
       price:'含安装价', screen:'室内屏幕', type:'门锁类型', unlock:'怎么开门', visitor:'怎么看访客', security:'安全提醒', emergency:'没电怎么办',
-      power:'日常供电', connection:'连接方式', material:'材质', extra:'其他规格', sharedExtra:'其他相同规格', pending:'待确认的项目', missing:'待确认', inch:' 英寸',
+      power:'日常供电', connection:'连接方式', material:'材质', extra:'其他规格', sharedExtra:'其他相同规格', pending:'待确认的细节', unlisted:'未列明的规格', missing:'资料未列明', yes:'支持', no:'不支持', na:'不适用', inch:' 英寸',
       replace:'替换哪一款？', replacement:'已选满两款。选择要用 {model} 替换的型号。', replaceThis:'替换这款', cancel:'保留原选择',
       enquiry:'咨询选中的门锁', enquiryModel:'咨询型号', message:'你好，我想咨询 ANZHE {model}，网页含安装价为 {price}。我可以提供门的正面照和门边锁体照，请帮我确认是否适合安装。',
       preview:'你可以在 WhatsApp 里修改这段话，再点发送。', selection:'已选 {count} / 2', pickInfo:'可选两个型号，查看含安装价和功能差异。', pairLabel:'比较中的两款门锁'
     },
     en: {
       close:'Close', pick:'Choose models to compare', pickTwo:'Choose two locks', pickNext:'Choose a second lock', selected:'Selected models', remove:'Remove', compare:'Compare locks',
-      add:'Add', added:'Selected', change:'Change models', same:'Show shared features', differences:'Key differences', noDiff:'No further differences among the confirmed specifications.',
+      add:'Add', added:'Selected', change:'Change models', same:'Shared features and specifications', differences:'Key differences', noDiff:'No further differences among the confirmed specifications.',
       example:'T06J and K26J Pro', gap:'{price} difference with installation', samePrice:'Both have the same installed price', included:'Installation included',
       price:'Price with installation', screen:'Indoor display', type:'Lock type', unlock:'Ways to unlock', visitor:'Visitor features', security:'Security features', emergency:'If the battery runs flat',
-      power:'Everyday power supply', connection:'Connectivity', material:'Materials', extra:'Other specifications', sharedExtra:'Other shared specifications', pending:'Items to confirm', missing:'To be confirmed', inch:' inches',
+      power:'Everyday power supply', connection:'Connectivity', material:'Materials', extra:'Other specifications', sharedExtra:'Other shared specifications', pending:'Details to confirm', unlisted:'Unlisted specifications', missing:'Not specified', yes:'Supported', no:'Not supported', na:'Not applicable', inch:' inches',
       replace:'Which lock should be replaced?', replacement:'Two locks are already selected. Choose the one to replace with {model}.', replaceThis:'Replace this model', cancel:'Keep the current pair',
       enquiry:'Enquire about your lock', enquiryModel:'Enquiry model', message:'Hi, I’m interested in the ANZHE {model}, listed at {price} including installation. I can share photos of the front and edge of my door. Could you check whether this model will fit?',
       preview:'You can edit this message in WhatsApp before sending it.', selection:'Selected {count} / 2', pickInfo:'Choose two models to compare their installed prices and features.', pairLabel:'The two locks being compared'
     },
     ms: {
       close:'Tutup', pick:'Pilih model untuk dibandingkan', pickTwo:'Pilih dua kunci', pickNext:'Pilih kunci kedua', selected:'Model dipilih', remove:'Keluarkan', compare:'Bandingkan model',
-      add:'Tambah', added:'Dipilih', change:'Tukar model', same:'Lihat ciri yang sama', differences:'Perbezaan utama', noDiff:'Tiada perbezaan lain dalam spesifikasi yang disahkan.',
+      add:'Tambah', added:'Dipilih', change:'Tukar model', same:'Ciri dan spesifikasi yang sama', differences:'Perbezaan utama', noDiff:'Tiada perbezaan lain dalam spesifikasi yang disahkan.',
       example:'T06J dan K26J Pro', gap:'Beza harga termasuk pemasangan ialah {price}', samePrice:'Harga kedua-duanya sama termasuk pemasangan', included:'Termasuk pemasangan',
       price:'Harga termasuk pemasangan', screen:'Skrin dalaman', type:'Jenis kunci', unlock:'Cara membuka kunci', visitor:'Ciri untuk pelawat', security:'Ciri keselamatan', emergency:'Jika bateri habis',
-      power:'Bekalan kuasa harian', connection:'Sambungan', material:'Bahan', extra:'Spesifikasi lain', sharedExtra:'Spesifikasi lain yang sama', pending:'Butiran untuk disahkan', missing:'Perlu disahkan', inch:' inci',
+      power:'Bekalan kuasa harian', connection:'Sambungan', material:'Bahan', extra:'Spesifikasi lain', sharedExtra:'Spesifikasi lain yang sama', pending:'Butiran untuk disahkan', unlisted:'Spesifikasi yang tidak dinyatakan', missing:'Tidak dinyatakan', yes:'Disokong', no:'Tidak disokong', na:'Tidak berkenaan', inch:' inci',
       replace:'Model mana hendak digantikan?', replacement:'Dua model sudah dipilih. Pilih model yang hendak digantikan dengan {model}.', replaceThis:'Ganti model ini', cancel:'Kekalkan pilihan asal',
       enquiry:'Tanya tentang kunci pilihan anda', enquiryModel:'Model untuk pertanyaan', message:'Hai, saya berminat dengan ANZHE {model} pada harga {price} termasuk pemasangan. Saya boleh berkongsi gambar bahagian depan dan tepi pintu saya. Boleh semak sama ada model ini sesuai?',
       preview:'Anda boleh menyunting mesej ini dalam WhatsApp sebelum menghantarnya.', selection:'Dipilih {count} / 2', pickInfo:'Pilih dua model untuk membandingkan harga termasuk pemasangan dan cirinya.', pairLabel:'Dua kunci yang dibandingkan'
@@ -35,37 +35,37 @@
   };
   const flowText = {
     zh: {
-      first:'第一款', second:'第二款', empty:'待选择', start:'选择第一款', next:'选择第二款', view:'查看对比',
+      attribute:'对比项目', both:'两款均为', first:'第一款', second:'第二款', empty:'待选择', start:'选择第一款', next:'选择第二款', view:'查看对比',
       ask:'咨询 {model}', fit:'确认门型与安装', fitChoice:'想咨询哪一款门锁？', fitChoiceHint:'请选择其中一款，查看该型号的含安装价和咨询内容。', general:'先确认我的门型', genericMessage:'你好，我想安装电子锁。我可以提供门内外的正面照，以及门边锁体的照片。请帮我确认门型和适合安装的型号。', backStep:'返回上一步',
       firstHint:'选好第一款后，可继续挑另一款。', secondHint:'第一款已保留。点选另一款，立即查看两款差异。',
       swap:'更换 {model}', swapTitle:'为 {model} 选择替代型号', swapTarget:'要更换', kept:'保留',
       swapHint:'选择候选型号后，仅替换标出的这一栏。', back:'取消更换', replaceBy:'用 {new} 替换 {old}',
       demo:'示例对比', myCompare:'我的对比', chooseOwn:'自己选两款', selectedFirst:'选择第一款门锁', selectedSecond:'选择第二款门锁',
-      technology:'屏幕面板类型', reference:'只列出一方支持、规格详略不同，或配置仍需核实的项目归在这里。「待确认」表示现有资料不足以判断。',
+      technology:'屏幕面板类型', reference:'以下细节在产品资料中有歧义，订购时可按型号核实。',
       sameSpecsGap:'两款已列出的规格相同。顾问可以帮你核对实物配置及价差原因。', askPair:'用 WhatsApp 咨询这两款',
       access:'开锁方式', card:'门卡开锁', fingerprint:'指纹开锁', pin:'密码开锁', key:'机械钥匙开锁', dynamic:'动态密码开锁',
       app:'手机应用开锁', palm:'掌静脉开锁', face:'人脸开锁', fob:'感应钥匙扣开锁'
     },
     en: {
-      first:'First lock', second:'Second lock', empty:'Choose a model', start:'Choose the first lock', next:'Choose the second lock', view:'View comparison',
+      attribute:'Specification', both:'Both locks', first:'First lock', second:'Second lock', empty:'Choose a model', start:'Choose the first lock', next:'Choose the second lock', view:'View comparison',
       ask:'Ask about {model}', fit:'Check my door for installation', fitChoice:'Which lock would you like to ask about?', fitChoiceHint:'Choose one to see its installed price and preview your enquiry.', general:'Check my door first', genericMessage:'Hi, I’d like to fit a smart lock. I can share photos of both sides of my door and the lock on its edge. Could you help identify my door type and suggest a compatible model?', backStep:'Go back',
       firstHint:'Choose the first lock, then select a second one.', secondHint:'Your first lock is saved. Select another to see the differences.',
       swap:'Change {model}', swapTitle:'Choose a replacement for {model}', swapTarget:'To replace', kept:'Stays in place',
       swapHint:'Your choice will replace only the marked lock.', back:'Cancel change', replaceBy:'Replace {old} with {new}',
       demo:'Example comparison', myCompare:'My comparison', chooseOwn:'Choose my own pair', selectedFirst:'Choose your first lock', selectedSecond:'Choose your second lock',
-      technology:'Display panel type', reference:'These details are documented for only one lock, described at different levels of detail, or still require a configuration check. “To be confirmed” means the available information is inconclusive.',
+      technology:'Display panel type', reference:'The product sheets are unclear on these details. Check them for your chosen model when ordering.',
       sameSpecsGap:'The listed specifications match. Ask our adviser to check the two models and explain the price difference.', askPair:'Ask about both locks on WhatsApp',
       access:'Ways to unlock', card:'Card access', fingerprint:'Fingerprint access', pin:'PIN access', key:'Mechanical key access', dynamic:'Dynamic code access',
       app:'App access', palm:'Palm-vein access', face:'Face recognition access', fob:'Key fob access'
     },
     ms: {
-      first:'Kunci pertama', second:'Kunci kedua', empty:'Pilih model', start:'Pilih kunci pertama', next:'Pilih kunci kedua', view:'Lihat perbandingan',
+      attribute:'Spesifikasi', both:'Kedua-dua model', first:'Kunci pertama', second:'Kunci kedua', empty:'Pilih model', start:'Pilih kunci pertama', next:'Pilih kunci kedua', view:'Lihat perbandingan',
       ask:'Tanya tentang {model}', fit:'Semak kesesuaian pintu saya', fitChoice:'Model mana yang ingin anda tanyakan?', fitChoiceHint:'Pilih satu model untuk melihat harga termasuk pemasangan dan pratonton pertanyaan anda.', general:'Semak pintu saya dahulu', genericMessage:'Hai, saya ingin memasang kunci pintar. Saya boleh berkongsi gambar kedua-dua sisi pintu dan bahagian kunci di tepi pintu. Boleh bantu kenal pasti jenis pintu dan cadangkan model yang sesuai?', backStep:'Kembali',
       firstHint:'Pilih kunci pertama, kemudian pilih kunci kedua.', secondHint:'Kunci pertama sudah dipilih. Pilih satu lagi untuk melihat perbezaannya.',
       swap:'Tukar {model}', swapTitle:'Pilih pengganti untuk {model}', swapTarget:'Untuk diganti', kept:'Dikekalkan',
       swapHint:'Pilihan anda hanya menggantikan kunci yang ditanda.', back:'Batalkan pertukaran', replaceBy:'Ganti {old} dengan {new}',
       demo:'Contoh perbandingan', myCompare:'Perbandingan saya', chooseOwn:'Pilih dua model sendiri', selectedFirst:'Pilih kunci pertama', selectedSecond:'Pilih kunci kedua',
-      technology:'Jenis panel skrin', reference:'Butiran di sini hanya dinyatakan untuk satu model, diterangkan dengan tahap perincian berbeza, atau memerlukan semakan konfigurasi. “Perlu disahkan” bermaksud maklumat yang ada belum mencukupi.',
+      technology:'Jenis panel skrin', reference:'Maklumat produk kurang jelas tentang butiran ini. Semak butiran untuk model pilihan semasa membuat pesanan.',
       sameSpecsGap:'Spesifikasi yang disenaraikan adalah sama. Penasihat kami boleh menyemak kelengkapan kedua-dua model dan menjelaskan perbezaan harga.', askPair:'Tanya tentang kedua-dua kunci di WhatsApp',
       access:'Cara membuka kunci', card:'Akses kad', fingerprint:'Akses cap jari', pin:'Akses PIN', key:'Akses kunci mekanikal', dynamic:'Akses kod dinamik',
       app:'Akses aplikasi', palm:'Akses vena tapak tangan', face:'Akses pengecaman wajah', fob:'Akses tag kunci'
@@ -155,69 +155,91 @@
   function askButton(p) {
     return '<button type="button" class="pn-ask" data-ask-model="'+p.id+'">'+esc(withModel('ask',p.name))+'</button>';
   }
+  // A missing function is unsupported. Missing measurements and materials stay unspecified.
+  const booleanFeatures = new Set(['face3d','hiddenPrint','video','bellUnlock','oneTouch','lingering','monitoring',
+    'alarm','privacy','peephole','voice','lowBattery','phoneBackup']);
+  const valuedFeatures = new Set(['screen','camera','remote']);
+
   function rowsFor(a,b) {
     const left=window.lockFeatures[a.id], right=window.lockFeatures[b.id];
-    const same=[], diff=[], pending=[];
-    function record(caption,av,bv,needsCheck=false) {
-      if(!av && !bv) return;
-      const group=!av || !bv || needsCheck ? pending : av===bv ? same : diff;
-      group.push([caption,av,bv]);
+    const same=[], diff=[], pending=[], unlisted=[];
+    function record(caption, av, bv, group) {
+      (group || (av===bv ? same : diff)).push([caption,av,bv]);
     }
     const commonMethods=[];
-    const differentAppOptions=left.comparison.optionalApp!==right.comparison.optionalApp;
-    for (const method of new Set([...left.accessMethods,...right.accessMethods])) {
-      // A listed option belongs in the visible configuration row for this pair.
-      if(method==='app' && differentAppOptions)continue;
-      const av=data(left.accessOptions[method]), bv=data(right.accessOptions[method]);
-      if (av && bv) {
-        commonMethods.push(av===bv ? av : u(method));
-        // A stated variant (e.g. 3D face recognition) refines a shared access method.
-        // A generic listing on the other side does not establish a different variant.
-        if(av!==bv) record(u(method),av,bv,true);
-      } else record(u(method),av,bv);
+    for (const [method,name] of Object.entries(window.lockAccessLabels)) {
+      if (method==='app') continue; // The app row also distinguishes optional from included access.
+      const av=left.accessMethods.includes(method), bv=right.accessMethods.includes(method);
+      if (av && bv) commonMethods.push(data(name));
+      else if (av!==bv) record(u(method),t(av?'yes':'no'),t(bv?'yes':'no'));
     }
     if (commonMethods.length) {
       const value=commonMethods.join(' · ');
       record(u('access'),value,value);
     }
-    const keys=Object.keys(window.lockSpecLabels);
-    for (const key of ['screen','type',...keys.filter(k=>!['screen','type','access'].includes(k))]) {
-      const caption=data(window.lockSpecLabels[key]);
-      if(key==='screen' && a.screen && b.screen) {
-        record(t('screen'),a.screen+t('inch'),b.screen+t('inch'));
-        record(u('technology'),left.comparison.displayTechnology,right.comparison.displayTechnology);
-        continue;
-      }
+    for (const [key,label] of Object.entries(window.lockSpecLabels)) {
+      if (key==='access') continue;
       const av=data(left.specs[key]), bv=data(right.specs[key]);
-      if(key==='app' && differentAppOptions){
-        record(caption,av,bv);continue;
+      if (!av && !bv) continue;
+      const caption=data(label);
+      if (booleanFeatures.has(key)) {
+        record(caption,t(av?'yes':'no'),t(bv?'yes':'no'));
+      } else if (key==='screen' && a.screen && b.screen) {
+        record(t('screen'),a.screen+t('inch'),b.screen+t('inch'));
+        const at=left.comparison.displayTechnology, bt=right.comparison.displayTechnology;
+        if (at || bt) record(u('technology'),at||t('missing'),bt||t('missing'),!at||!bt?unlisted:null);
+      } else if (valuedFeatures.has(key)) {
+        record(caption,av||t('no'),bv||t('no'));
+      } else {
+        // A format, lens or capacity cannot apply to hardware the model does not have.
+        const applicable = f => !((key==='cardType' && !f.comparison.cardAccess) ||
+          (key==='capacity' && !f.comparison.lithiumBattery) || (key==='lens' && !f.specs.camera));
+        if (key==='lens' && (!applicable(left) || !applicable(right))) continue;
+        const incomplete=(!av && applicable(left)) || (!bv && applicable(right)) ||
+          (key==='type' && (left.comparison.unspecifiedMechanism || right.comparison.unspecifiedMechanism));
+        const ambiguous=left.comparison.needsConfirmation.has(key) || right.comparison.needsConfirmation.has(key);
+        const group=ambiguous ? pending : incomplete ? unlisted : null;
+        record(caption,av||t(applicable(left)?'missing':'na'),bv||t(applicable(right)?'missing':'na'),group);
       }
-      // A camera's angle, optional app configuration or extra machining is only
-      // documented on some models. A shorter description cannot establish its absence.
-      const partialDetail=av!==bv && ['camera','finish','app'].includes(key);
-      record(caption,av,bv,partialDetail || left.comparison.unverified.has(key) || right.comparison.unverified.has(key));
     }
-    return {diff,same,pending};
+    return {diff,same,pending,unlisted};
   }
-  function compareRows(rows,a,b) {
-    return '<table class="pn-spec-table"><thead class="pn-blind"><tr><td></td><th scope="col">' + esc(a.name) + '</th><th scope="col">' + esc(b.name) + '</th></tr></thead><tbody>' +
-      rows.map(([caption,v,w])=>'<tr><th scope="row">' + esc(caption) + '</th><td>' + esc(v || t('missing')) +
-      '</td><td>' + esc(w || t('missing')) + '</td></tr>').join('') + '</tbody></table>';
+  function compareRows(rows,a,b,headingId) {
+    const entries=rows.map(([caption,left,right])=>
+      '<tr role="row"><th role="rowheader" scope="row">' + esc(caption) + '</th>' +
+      (left===right ? '<td role="cell" colspan="2"><span class="pn-both">' + esc(u('both')) + '</span> ' + esc(left) + '</td>' :
+        '<td role="cell">' + esc(left) + '</td><td role="cell">' + esc(right) + '</td>') + '</tr>'
+    ).join('');
+    return '<table class="pn-spec-table" role="table" aria-labelledby="' + headingId + '">' +
+      '<thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">' + esc(u('attribute')) + '</th>' +
+      '<th role="columnheader" scope="col">' + esc(a.name) + '</th><th role="columnheader" scope="col">' + esc(b.name) + '</th></tr></thead>' +
+      '<tbody role="rowgroup">' + entries + '</tbody></table>';
   }
   function compareView() {
     const pair=personalOrDemo(mode).map(id=>byId.get(id));
     const [a,b]=pair;
-    const {diff,same,pending}=rowsFor(a,b);
+    const {diff,same,pending,unlisted}=rowsFor(a,b);
     const gap=Math.abs(a.price-b.price);
-    const summary=gap && !pending.length ? u('sameSpecsGap') : t('noDiff');
+    const summary=gap && !pending.length && !unlisted.length ? u('sameSpecsGap') : t('noDiff');
     const pairHref=window.lockContact.whatsappForPair([a.id,b.id]);
-    const askPair='<p class="pn-end"><a class="pn-ask" data-ask-pair href="'+esc(pairHref)+'" target="_blank" rel="noopener noreferrer">'+esc(u('askPair'))+'</a></p>';
-    return title(mode==='example'?u('demo'):t('compare')) + pairedImages(pair) +
-      '<p class="pn-gap">' + esc(gap ? t('gap').replace('{price}',price(gap)) : t('samePrice')) + '</p>' +
-      '<div class="pn-measurements"><div class="pn-sticky-models" aria-hidden="true"><b>' + esc(a.name) + '</b><b>' + esc(b.name) + '</b></div><h3 class="pn-sub">' + t('differences') + '</h3>' + (diff.length ? compareRows(diff,a,b) : '<p class="pn-no-diff">' + esc(summary) + '</p>') + askPair +
-      (same.length ? '<details class="pn-shared"><summary>' + t('same') + ' <span>' + same.length + '</span></summary>' + compareRows(same,a,b) + '</details>' : '') +
-      (pending.length ? '<details class="pn-shared pn-pending"><summary>' + t('pending') + ' <span>' + pending.length + '</span></summary><p class="pn-note">' + esc(u('reference')) + '</p>' + compareRows(pending,a,b) + '</details>' : '') +
-      '</div>' + (mode==='example'?'<div class="pn-end">' + action('resume',count()?u('myCompare'):u('chooseOwn')) + '</div>':'');
+    const sameList=same.map(([caption,value])=>
+      '<div><dt>' + esc(caption) + '</dt><dd>' + esc(value) + '</dd></div>'
+    ).join('');
+    function specGroup(key,rows,note='') {
+      if (!rows.length) return '';
+      const headingId='pn-'+key+'-title';
+      return '<details class="pn-shared pn-'+key+'"><summary id="'+headingId+'">' + t(key) + ' <span>' + rows.length + '</span></summary>' +
+        (note ? '<p class="pn-note">' + esc(note) + '</p>' : '') + compareRows(rows,a,b,headingId) + '</details>';
+    }
+    const priceGap = gap ? esc(t('gap')).replace('{price}', '<strong>' + esc(price(gap)) + '</strong>') : esc(t('samePrice'));
+    return '<div class="pn-overview"><div class="pn-overview-summary">' + title(mode==='example'?u('demo'):t('compare')) +
+      '<p class="pn-gap">' + priceGap + '</p></div>' + pairedImages(pair) + '</div>' +
+      '<div class="pn-measurements"><h3 class="pn-sub" id="pn-differences">' + t('differences') + '</h3>' +
+      (diff.length ? compareRows(diff,a,b,'pn-differences') : '<p class="pn-no-diff">' + esc(summary) + '</p>') +
+      (same.length ? '<details class="pn-shared"><summary>' + t('same') + ' <span>' + same.length + '</span></summary><dl class="pn-common-list">' + sameList + '</dl></details>' : '') +
+      specGroup('unlisted',unlisted) + specGroup('pending',pending,u('reference')) +
+      '<div class="pn-end pn-comparison-actions"><a class="pn-ask" data-ask-pair href="'+esc(pairHref)+'" target="_blank" rel="noopener noreferrer">'+esc(u('askPair'))+'</a>' +
+      (mode==='example'?action('resume',count()?u('myCompare'):u('chooseOwn')):'') + '</div></div>';
   }
   function replaceView() {
     const p=byId.get(candidate);

@@ -4,11 +4,7 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const markup = `<div id="flashcast-public-boot" class="scheme-a-page-loader scheme-a-page-loader--overlay" role="status" aria-live="polite" aria-busy="true" data-route-loader="initial">
-  <div class="scheme-a-page-loader__brand"><p data-boot-copy="loaderBrand"></p><strong><span>FLASH</span><em>CAST</em></strong><span data-boot-copy="loaderPending"></span><i aria-hidden="true"></i>
-    <div data-boot-recovery hidden><p data-boot-copy="loaderTimeout"></p><div class="scheme-a-page-loader__actions"><button type="button" data-boot-action="retry" data-boot-copy="loaderRetry"></button><button type="button" data-boot-action="continue" data-boot-copy="loaderContinue" hidden></button></div></div>
-  </div>
-</div>`;
+const markup = readFileSync(path.join(root, "src/components/publicBootTemplate.html"), "utf8").trim();
 
 /** Critical HTML uses the existing CSP hash handling in Pages middleware.
  * Local dev/preview already permits inline scripts. No CSP relaxation is needed. */
