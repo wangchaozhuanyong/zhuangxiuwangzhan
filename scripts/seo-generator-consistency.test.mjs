@@ -105,6 +105,47 @@ test('keeps legal page metadata while omitting the four canonical paths from dis
   assert.ok(!llms.includes(meta.canonical));
  }
 });
+test('publishes reviewed Malay material taxonomy and requires complete matching CMS content for new paths', async () => {
+ const rows = records(0);
+ const usableMaterial = (id, subcategory) => ({
+  ...row('materials', id), category: 'Bathroom', subcategory, cms_sections: undefined,
+  title_ms: 'Pilihan bahan bilik mandi', content_ms: 'Isi kandungan tersedia.',
+  excerpt_ms: 'Petikan bahan yang diterbitkan.', seo_title_ms: 'Bahan Bilik Mandi',
+  seo_description_ms: 'Bahan untuk bilik mandi.',
+ });
+ rows.materials = [
+  usableMaterial(1, 'Shower Screen'),
+  { ...usableMaterial(2, 'Anti-Slip Tile'), excerpt_ms: '<p>&nbsp;</p>' },
+  { ...usableMaterial(3, 'Floor Tile'), title_zh: '', content_zh: '', excerpt_zh: '' },
+  usableMaterial(4, 'Unreviewed taxonomy label'),
+ ];
+ const manifest = await buildQualifiedManifest(await snapshot(rows));
+ const { xml, llms } = assertDocuments(manifest);
+ const taxonomy = '/materials/category/';
+ const flooring = manifest['/ms' + taxonomy + 'flooring'];
+ assert.equal(flooring.description, 'Lantai vinil SPC, lamina, kayu kejuruteraan dan papan vinil untuk pelbagai ruang. Semak imbas pilihan lantai untuk projek pengubahsuaian anda di Kuala Lumpur dan Selangor.');
+ assert.equal(flooring.owned_static, true);
+ assert.equal(manifest['/en' + taxonomy + 'countertops-stone-surfaces/quartz-countertops'].title, 'Quartz Countertops | Stone Surfaces | FLASH CAST');
+ const cmsPath = taxonomy + 'bathroom/shower-screen';
+ assert.equal(manifest['/ms' + cmsPath].owned_static, false);
+ assert.equal(manifest['/ms' + cmsPath].source_complete, true);
+ assert.match(manifest['/ms' + cmsPath].title, /^Sekatan Kaca Pancuran/);
+ assert.match(manifest['/ms' + cmsPath].description, /^Petikan bahan yang diterbitkan\./);
+ for (const lang of ['en', 'zh', 'ms']) {
+  assert.deepEqual(manifest['/' + lang + cmsPath].available_locales, ['en', 'zh', 'ms']);
+  assert.equal(manifest['/' + lang + cmsPath].hreflang.ms, 'https://flashcast.com.my/ms' + cmsPath);
+ }
+ assert.ok(xml.includes('<loc>https://flashcast.com.my/ms' + cmsPath + '</loc>'));
+ assert.ok(llms.includes('https://flashcast.com.my/ms' + cmsPath));
+ for (const subcategory of ['anti-slip-tile', 'floor-tile', 'unreviewed-taxonomy-label']) {
+  const path = taxonomy + 'bathroom/' + subcategory;
+  assert.ok(manifest['/en' + path]);
+  assert.ok(!manifest['/ms' + path]);
+  assert.ok(!manifest['/en' + path].hreflang.ms);
+  assert.ok(!xml.includes('https://flashcast.com.my/ms' + path));
+ }
+ assert.equal(Object.keys(manifest).filter(path => path.startsWith('/ms' + taxonomy)).length, 53);
+});
 for(const cap of [100,1000])test(`8 tables x 551 complete exact URLs at server cap ${cap}`,async()=>{
  const rows=records(551);const source=await snapshot(rows,cap);const empty=await snapshot(records(0));
  const base=await buildQualifiedManifest(empty);const manifest=await buildQualifiedManifest(source);

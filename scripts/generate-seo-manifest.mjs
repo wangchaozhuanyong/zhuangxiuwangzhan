@@ -6,7 +6,7 @@ import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/public
 import { pickPublicSourceOwners, qualifiesMalayLocale } from "../src/lib/publicContentQualification.mjs";
 import { readFileSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
-import { loadMaterialSeoCategories, qualifiesLocale, currentSourcePath, serializeSourcePath, snapshotProvenance, isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
+import { loadMalayMaterialSeoEntries, loadMaterialSeoCategories, qualifiesLocale, currentSourcePath, serializeSourcePath, snapshotProvenance, isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
 
 const furnitureCatalog = JSON.parse(readFileSync(new URL("../src/data/furnitureCatalog.json", import.meta.url), "utf8"));
 const furnitureEditorialDetails = JSON.parse(readFileSync(new URL("../src/data/furnitureEditorialDetails.json", import.meta.url), "utf8"));
@@ -378,7 +378,15 @@ for (const lang of ["en", "zh"]) {
   }
 }
 
-// Malay routes are emitted only from complete published translations. Missing
+for (const entry of await loadMalayMaterialSeoEntries(regularMaterials)) {
+  const path = `/materials/category/${entry.key}`;
+  if (!manifest[`/en${path}`] || !manifest[`/zh${path}`]) continue;
+  provenance = { ...snapshotProvenance(snapshot, "material_taxonomy", entry.key, "ms", entry.ownedStatic), available_locales: ["en", "zh", "ms"] };
+  const [category, subcategory] = entry.key.split("/");
+  addDynamic("ms", subcategory ? `/materials/category/${category}` : "/materials/category", subcategory || category, entry.title, entry.description);
+}
+
+// Malay CMS routes are emitted only from complete published translations. Missing
 // translations remain readable through the runtime fallback, outside discovery.
 for (const [path, { row, kind }] of sourceOwners) {
   if (!qualifiesMalayLocale(row, kind)) continue;

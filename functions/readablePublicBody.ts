@@ -7,7 +7,7 @@ import { projectDetailPageText } from "../src/i18n/projectDetailPageText";
 import { mediaLabels } from "../src/i18n/mediaLabels";
 import { getMaterialSubcategoryGuidance } from "../src/i18n/materialSubcategoryGuidance";
 import { servicesPageText } from "../src/i18n/servicesPageText";
-import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
+import { getMaterialCategoryGuidance, materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { locationPageText } from "../src/i18n/locationPageText";
 import { isServiceConceptImage } from "../src/lib/serviceMedia";
@@ -348,6 +348,13 @@ function buildContextLinks(links: readonly { href: string; title: string; descri
   }).join("")}</section>`;
 }
 
+export function buildMaterialCategoryGuidanceBody(categorySlug: string, lang: Language) {
+  const guidance = getMaterialCategoryGuidance(categorySlug, lang);
+  return guidance
+    ? `<section><h2>${escape(guidance.title)}</h2>${guidance.paragraphs.map(paragraph).join("")}</section>`
+    : "";
+}
+
 export function buildReadableCollectionBody(key: string, sources: ReadableCollectionSources) {
   if (key === "/en/services") {
     const rows = sources.services?.filter(row => row.status === "published" && slug(row.slug) && localizedPlain(row, "title", "en")) || [];
@@ -390,6 +397,8 @@ export function buildReadableCollectionBody(key: string, sources: ReadableCollec
   if (match[2]) {
     const guidance = getMaterialSubcategoryGuidance("whole-house-custom", categoryName, name, lang);
     body += `<h2>${escape(guidance.relatedTitle)}</h2>${paragraph(guidance.relatedDescription)}${buildContextLinks(guidance.relatedLinks, lang)}`;
+  } else {
+    body += buildMaterialCategoryGuidanceBody("whole-house-custom", lang);
   }
   return wrapBody(body, lang);
 }

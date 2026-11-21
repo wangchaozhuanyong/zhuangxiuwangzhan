@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import MaterialCategoryPage from "./MaterialCategoryPage";
 import MaterialSubcategoryPage from "./MaterialSubcategoryPage";
 import { materialsData } from "@/data/materials";
+import { getMaterialCategoryGuidance } from "@/i18n/materialCategoryPageText";
 import type { MaterialCatalogCategory } from "@/lib/materialCatalog";
 import type { SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 
@@ -46,10 +47,19 @@ describe("material taxonomy fallback rendering", () => {
     await render(false);
     expect(container.querySelectorAll("article")).toHaveLength(7);
     expect(container.textContent).toContain(expected);
+    const chineseGuide = getMaterialCategoryGuidance("countertops-stone-surfaces", "zh")!;
+    if (language === "zh") {
+      expect(container.textContent).toContain(chineseGuide.title);
+      expect(container.textContent).toContain(chineseGuide.paragraphs[0]);
+      expect(container.querySelector("[data-meta-description]")?.getAttribute("data-meta-description")).not.toContain(chineseGuide.paragraphs[0]);
+    } else {
+      expect(container.textContent).not.toContain(chineseGuide.title);
+    }
     act(() => root!.unmount()); container.remove();
     await render(true);
     expect(container.querySelector("header p")).toHaveTextContent(expected);
     expect(container.querySelector("[data-meta-description]")?.getAttribute("data-meta-description")).toContain(expected);
+    expect(container.textContent).not.toContain(chineseGuide.title);
     expect(container.textContent).not.toContain("表面材料s");
   });
 

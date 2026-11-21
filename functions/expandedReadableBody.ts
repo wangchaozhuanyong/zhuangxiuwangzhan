@@ -1,5 +1,6 @@
-import { readableBodyPaths, sanitizeReadableContent } from "./readablePublicBody";
+import { buildMaterialCategoryGuidanceBody, readableBodyPaths, sanitizeReadableContent } from "./readablePublicBody";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
+import { beforeAfterPageText } from "../src/i18n/beforeAfterPageText";
 import customCabinetsText from "../src/i18n/customCabinetsText.json";
 import { processPageText } from "../src/i18n/processPageText";
 import { designServicePageText } from "../src/i18n/designServicePageText";
@@ -138,6 +139,7 @@ function materialTaxonomyFallbackBody(
   } else if (subcategory) {
     body += heading(subcategoryCopy.products(name)) + paragraph(subcategoryCopy.comingSoon);
   }
+  if (!subcategory) body += buildMaterialCategoryGuidanceBody(category.slug, lang);
   return wrap(body, lang);
 }
 
@@ -150,6 +152,13 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
   if (path === "/custom-cabinets") {
     const copy = customCabinetsText[lang];
     return wrap(`<h1>${escape(copy.landingTitle)}</h1>${paragraph(copy.landingIntro)}`, lang);
+  }
+  if (path === "/before-after") {
+    const copy = beforeAfterPageText[lang];
+    const topics = copy.fallbackItems.map(item => `<h3>${escape(item.title)}</h3>${paragraph(item.description)}`).join("");
+    return wrap(`<h1>${escape(copy.heroTitle)}</h1>${paragraph(mediaLabels[lang].renderingConcept)}${paragraph(copy.heroDescription)}`
+      + heading(copy.sectionTitle) + paragraph(copy.sectionDescription) + topics
+      + heading(copy.ctaTitle) + paragraph(copy.ctaDescription) + link("/quote#quote-form", copy.ctaPrimary, lang), lang);
   }
   if (path === "/services/old-house") return oldHouseBody(sources.row, lang);
   if (path === "/process") return processBody(sources, lang);
@@ -256,5 +265,6 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
   body += `<ul>${rows.map(item =>
     `<li><h2>${link(`/${category ? "materials" : kind}/${safeSlug(item.slug)}`, plain(item[`title_${lang}`], lang), lang)}</h2>${paragraph(plain(item[`excerpt_${lang}`], lang))}</li>`
   ).join("")}</ul>`;
+  if (category && !category[2]) body += buildMaterialCategoryGuidanceBody(category[1], lang);
   return wrap(body, lang);
 }
