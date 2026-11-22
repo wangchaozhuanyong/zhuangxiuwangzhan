@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
 import {
+  FAQ_START_TIMING_15_DAY_APPROVAL_ID,
+  FAQ_START_TIMING_15_DAY_TARGET as dayTarget,
+  FAQ_START_TIMING_15_DAY_TARGET_ID,
   FAQ_START_TIMING_APPROVAL_ID,
   FAQ_START_TIMING_TARGET as target,
   FAQ_START_TIMING_TARGET_ID,
@@ -83,6 +86,31 @@ function database(row: Row = { ...sample }) {
 afterEach(() => vi.restoreAllMocks());
 
 describe("FAQ 130 reviewed publication", () => {
+  it("binds the 15-day wording to the three answers and preserves the live questions", async () => {
+    const current = { ...sample, ...copy, created_at: "2026-11-20T07:00:43.823275+00:00", updated_at: dayTarget.expectedUpdatedAt };
+    const db = database({ ...current });
+    const answers = readFaqStartTimingCopy(FAQ_START_TIMING_15_DAY_TARGET_ID);
+    expect(Object.keys(answers)).toEqual(["answer_en", "answer_ms", "answer_zh"]);
+    expect(answers.answer_en).toContain("within 15 days");
+    expect(answers.answer_ms).toContain("15 hari");
+    expect(answers.answer_zh).toContain("15 天内");
+    const candidate = { taskId: dayTarget.taskId, actionId: dayTarget.actionId, scope: dayTarget.scope,
+      candidateVersion: dayTarget.candidateVersion, operation: "publish" as const };
+    const dryRun = { ...preview, expectedUpdatedAt: dayTarget.expectedUpdatedAt,
+      record: { id: dayTarget.id, ...answers }, managedCandidate: candidate };
+    expect((await publishContent(dryRun, db.client, context)).body)
+      .toMatchObject({ ok: true, performed_write: false, payload_preview: answers });
+    expect((await publishContent({ ...dryRun, record: { ...dryRun.record, question_zh: "不同的问题？" } }, db.client, context)).status).toBe(403);
+    const write = { ...publish, ...dryRun, mode: "publish", approvalId: FAQ_START_TIMING_15_DAY_APPROVAL_ID,
+      managedPermit: { ...candidate, permitId: publish.managedPermit.permitId } } satisfies ContentPublishRequest;
+    expect((await publishContent({ ...write, approvalId: FAQ_START_TIMING_APPROVAL_ID }, db.client, context)).status).toBe(403);
+    expect(db.writes).toHaveLength(0);
+    expect(db.rpc).not.toHaveBeenCalled();
+    expect((await publishContent(write, db.client, context)).body).toMatchObject({ ok: true, performed_write: true });
+    expect(db.writes).toEqual([{ table: "faqs", fields: answers, filters: [["id", dayTarget.id], ["updated_at", dayTarget.expectedUpdatedAt]] }]);
+    expect(db.row).toEqual({ ...current, ...answers, updated_at: "2026-11-21T02:00:00+00:00" });
+  });
+
   it("previews exactly the six reviewed questions and answers with zero writes or permit claims", async () => {
     const db = database();
     const result = await publishContent(preview, db.client, context);
