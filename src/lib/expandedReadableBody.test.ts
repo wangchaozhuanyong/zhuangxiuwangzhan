@@ -272,3 +272,32 @@ describe.each(["en", "zh", "ms"] as const)("locations hub readable body (%s)", l
     expect(html).toContain(`href="/${lang}/locations/custom-district"`);
   });
 });
+
+describe.each(["en", "zh", "ms"] as const)("B2 pre-injected readable bodies (%s)", lang => {
+  const pages = [
+    { path: "/about", target: 1200, checkContent: "FLASH CAST" },
+    { path: "/contact", target: 900, checkContent: "+60 11-2885 3888" },
+    { path: "/quote", target: 1000, checkContent: "WhatsApp" },
+    { path: "/promotions", target: 900, checkContent: `/${lang}/quote` },
+    { path: "/custom-cabinets", target: 1200, checkContent: "<h3>" },
+  ];
+
+  it.each(pages)("generates expanded readable body for $path exceeding target $target", ({ path, target, checkContent }) => {
+    const html = buildExpandedReadableBody(`/${lang}${path}`, {});
+    expect(html).toContain("data-flashcast-readable-body");
+    expect(html).toContain(checkContent);
+
+    const dom = new JSDOM(html);
+    const main = dom.window.document.querySelector("main[data-flashcast-readable-body]")!;
+    expect(main).not.toBeNull();
+    expect(main.querySelectorAll("h1")).toHaveLength(1);
+    expect(main.querySelectorAll("h2").length).toBeGreaterThan(0);
+    expect(main.querySelectorAll("nav a").length).toBeGreaterThan(0);
+
+    expect(html.length).toBeGreaterThanOrEqual(target);
+    const visibleTextLength = main.textContent?.trim().length || 0;
+    expect(visibleTextLength).toBeGreaterThan(0);
+    dom.window.close();
+  });
+});
+
