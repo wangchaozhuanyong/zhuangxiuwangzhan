@@ -26,7 +26,11 @@ async function onlyPart(page:Page,id:string) {
 for(const lang of ['zh','en','ms'] as const)for(const width of [360,390,768,1024,1440])test(`simple catalogue to recolour to enquiry ${lang} ${width}`,async({page})=>{
   await page.setViewportSize({width,height:width<600?844:1000});await page.goto(`/${lang}/custom-cabinets?fc_test=1`);
   await expect(page.locator('[data-scheme]')).toHaveCount(12);await expect(page.locator('.studio-workbench,.studio-package-panel,.studio-compare-tray,.studio-heading,.studio-tabs')).toHaveCount(0);
-  const columns=await page.locator('.studio-gallery').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length);expect(columns).toBe(width<600?1:width<1180?2:3);
+  const firstRowCount = await page.locator('.studio-gallery > article').evaluateAll(cards => {
+    const firstTop = cards[0].getBoundingClientRect().top;
+    return cards.filter(card => Math.abs(card.getBoundingClientRect().top - firstTop) < 1).length;
+  });
+  expect(firstRowCount).toBe(width <= 600 ? 1 : width < 1180 ? 2 : 3);
   await page.locator('[data-scheme="cream-1"] img').evaluate((img:HTMLImageElement)=>img.decode());
   const ratio=await page.locator('[data-scheme="cream-1"] img').evaluate(e=>e.getBoundingClientRect().width/e.getBoundingClientRect().height);expect(ratio).toBeCloseTo(1.5,2);
   await page.screenshot({path:evidencePath(`catalogue-${lang}-${width}.png`)});

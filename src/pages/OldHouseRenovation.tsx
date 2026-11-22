@@ -66,7 +66,7 @@ const OldHouseRenovation = () => {
 
       <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<><PhotoEnquiryLink source="old_house_hero" label={t.whatsapp} /><Link to={quotePath} className="fc-route-hero-action-secondary" onClick={() => trackCtaClick("quote", "old_house_hero", { destination: quotePath })}>{t.assessment}</Link></>} />
 
-      <SchemeASection title={t.introTitle} description={t.intro.join(" ")}>
+      <SchemeASection title={t.introTitle} description={t.intro}>
         <div className="fc-route-tagline">{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
       </SchemeASection>
 
@@ -79,7 +79,7 @@ const OldHouseRenovation = () => {
               <article key={comparison.id} className="scheme-a-transformation" data-cinematic-section>
                 <header className="scheme-a-transformation__copy">
                   <div>
-                    <h2>{comparison.title}</h2>
+                    <h3>{comparison.title}</h3>
                     <p className="scheme-a-transformation__location">{comparison.meta}</p>
                     <p className="scheme-a-transformation__description">{comparison.description}</p>
                   </div>
@@ -102,7 +102,7 @@ const OldHouseRenovation = () => {
                     height={900}
                     sourceWidth={1600}
                     candidateWidths={[360, 560, 720, 900, 1200, 1600]}
-                    sizes="(max-width: 767px) 100vw, 88vw"
+                    sizes="(max-width: 1023px) 94vw, (min-width: 1536px) 920px, 60vw"
                     quality={86}
                     rootMargin="900px 0px"
                   />
@@ -116,7 +116,7 @@ const OldHouseRenovation = () => {
                       height={900}
                       sourceWidth={1600}
                       candidateWidths={[360, 560, 720, 900, 1200, 1600]}
-                      sizes="(max-width: 767px) 100vw, 88vw"
+                      sizes="(max-width: 1023px) 94vw, (min-width: 1536px) 920px, 60vw"
                       quality={86}
                       rootMargin="900px 0px"
                     />

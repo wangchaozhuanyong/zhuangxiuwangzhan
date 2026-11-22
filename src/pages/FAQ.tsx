@@ -30,7 +30,7 @@ const FAQ = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.eyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.title} description={pageContent?.description || t.intro} />
 
-      <SchemeASection title={pageContent?.subtitle || t.eyebrow} description={pageContent?.description || t.intro}>
+      <SchemeASection>
         {categories.map((category) => (
           <div key={category.category} className="fc-route-faq-group">
             {showCategoryHeadings ? <h2>{category.category}</h2> : null}

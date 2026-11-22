@@ -88,12 +88,6 @@
     --public-floating-height: 88px;
   }
 
-  .public-update-notice {
-    bottom: calc(var(--public-floating-bottom) + var(--public-floating-height) + 1rem + env(safe-area-inset-bottom));
-    max-height: calc(100dvh - var(--public-floating-bottom) - var(--public-floating-height) - 6rem - env(safe-area-inset-bottom));
-    overflow-y: auto;
-  }
-
   .fc-furniture-floating {
     position: relative;
     z-index: 105;

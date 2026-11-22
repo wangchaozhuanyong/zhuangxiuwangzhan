@@ -209,6 +209,8 @@
   function render() {
     root.lang = window.showroomPolicy?.languageTag(lang) || lang;
     document.title = text('title');
+    const mainService = document.querySelector('[data-main-service]');
+    if (mainService) mainService.href = 'https://flashcast.com.my/' + lang + '/services/digital-lock';
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
       const publicUrl = new URL('/' + lang + '/', canonical.href).href;
@@ -218,19 +220,28 @@
       for (const [key,value] of Object.entries({url:publicUrl, title:document.title, description, locale:lang + '_MY'})) {
         document.querySelector('meta[property="og:' + key + '"]').content = value;
       }
-      const structured = document.querySelector('script[type="application/ld+json"]');
-      const collection = JSON.parse(structured.textContent);
-      Object.assign(collection,{url:publicUrl,name:document.title,description,inLanguage:lang==='zh'?'zh-Hans':root.lang});
-      structured.textContent = JSON.stringify(collection);
+      const inLanguage = lang === 'zh' ? 'zh-Hans' : root.lang;
+      for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
+        const data = JSON.parse(script.textContent);
+        if (data['@type'] === 'CollectionPage') {
+          Object.assign(data, {url:publicUrl, name:document.title, description, inLanguage});
+        } else if (data['@type'] === 'FAQPage' && data.inLanguage !== inLanguage) {
+          data.inLanguage = inLanguage;
+          data.mainEntity.forEach((question, index) => {
+            question.name = text('installFaq' + (index + 1));
+            question.acceptedAnswer.text = text('installAnswer' + (index + 1));
+          });
+        } else {
+          continue;
+        }
+        script.textContent = JSON.stringify(data);
+      }
     }
-    if (mainSiteReturn) {
-      const brand = document.querySelector('.mast .brand');
-      const returnLabel = brand.querySelector('.brand-return');
-      brand.href = mainSiteReturn;
-      brand.dataset.mainReturn = '';
-      brand.setAttribute('aria-label', brand.querySelector('img').alt + ' · ' + text('returnToMain'));
-      returnLabel.textContent = '← ' + text('returnToMainShort');
-      returnLabel.hidden = false;
+    const back = document.querySelector('[data-main-return]');
+    if (mainSiteReturn && back) {
+      back.href = mainSiteReturn;
+      back.setAttribute('aria-label', text('returnToMain'));
+      back.hidden = false;
     }
     document.querySelectorAll('[data-t]').forEach(el => {el.textContent = text(el.dataset.t);});
     document.querySelectorAll('[data-alt]').forEach(el => {el.alt = text(el.dataset.alt);});

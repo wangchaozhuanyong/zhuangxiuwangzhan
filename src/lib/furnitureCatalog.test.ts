@@ -65,6 +65,24 @@ describe("published admin furniture catalog", () => {
     expect(getManagedFurnitureProductsForCategory(chinese, "bedroom")).toHaveLength(0);
   });
 
+  it("adds verified Y201 dimensions on its existing bilingual URL", () => {
+    const sofa = getFurnitureProduct("y201-tofu-block")!;
+    const chinese = localizeFurnitureProduct(sofa, "zh");
+    const english = localizeFurnitureProduct(sofa, "en");
+    expect(chinese).toMatchObject({ price: sofa.price, images: sofa.images, sourceUrl: sofa.sourceUrl });
+    expect(chinese.shortDescription).toContain("宽 300、深 95、高 75 厘米");
+    expect(english.description).toContain("72 cm deep and 40 cm high");
+    const otherSource = { ...sofa, sourceUrl: "https://example.test/other-model" };
+    expect(localizeFurnitureProduct(otherSource, "en").description).not.toContain("72 cm deep and 40 cm high");
+  });
+
+  it("does not append reviewed fit notes twice", () => {
+    const bed = getFurnitureProduct("ws-2102-wooden-bunk-bed-white")!;
+    const product = localizeFurnitureProduct(bed, "zh");
+    expect(product.description).toContain("可转换为两张单人床");
+    expect(localizeFurnitureProduct(product, "zh").description).toBe(product.description);
+  });
+
   it("preserves static product URLs when an admin record has the same slug", async () => {
     const staticProduct = furnitureCatalog.products[0];
     vi.mocked(fetchPublishedMaterialRowsByCategory).mockResolvedValue([{ ...managedRow, slug: staticProduct.slug }]);

@@ -6,6 +6,7 @@ import LandingQuoteForm from "@/components/landing/LandingQuoteForm";
 import PageMeta from "@/components/PageMeta";
 import { SchemeAFaqList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import pageText from "@/components/services/serviceAreaPageText.json";
+import { ANZHE_SHOWROOM_ORIGIN, anzheShowroomModelUrl } from "@/config/anzheShowroom";
 import { usePublishedServiceAreaBySlug, usePublishedServiceBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isMalayContentReady } from "@/i18n/localizedContent";
@@ -47,7 +48,7 @@ export default function ServiceAreaPage() {
     { name: areaName, url: areaPath },
     { name: page.service, url: route.path },
   ];
-  const faqs = [{ question: page.question, answer: page.answer }];
+  const faqs = "faqs" in page ? page.faqs : [{ question: page.question, answer: page.answer }];
   const quotePath = buildQuotePath({
     source: "service",
     title: page.heading,
@@ -77,7 +78,40 @@ export default function ServiceAreaPage() {
         description={page.description}
         actions={<Link to={quotePath}>{copy.quote}<ArrowUpRight aria-hidden="true" /></Link>}
       />
-      <SchemeASection title={page.bodyHeading} description={page.body.map(stripHtml)} children={null} />
+      {"sections" in page ? <>
+        {page.sections.map(section => (
+          <SchemeASection key={section.heading} title={section.heading} description={section.paragraphs}>
+            {section.checks.length > 0 || section.topics.length > 0 ? (
+              <div className="fc-route-service-overview-copy fc-service-area-guide">
+                {section.checks.length > 0 && <ul className="fc-service-area-checks">
+                  {section.checks.map(check => <li key={check}>{check}</li>)}
+                </ul>}
+                {section.topics.map(topic => (
+                  <div key={topic.heading}>
+                    <h3>{topic.heading}</h3>
+                    {topic.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </SchemeASection>
+        ))}
+        <SchemeASection title={page.modelHeading} description={page.modelIntro}>
+          <div className="fc-route-service-overview-copy fc-service-area-guide">
+            <ul className="fc-service-area-checks">
+              {page.models.map(model => (
+                <li key={model.slug}>
+                  <a href={anzheShowroomModelUrl(language, model.slug)}>{model.name}</a>
+                  {" "}{model.description}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </SchemeASection>
+        <SchemeASection title={page.areasHeading} description={page.areasDescription}>
+          <Link className="font-medium text-accent underline" to="/locations">{page.areasLink}</Link>
+        </SchemeASection>
+      </> : <SchemeASection title={page.bodyHeading} description={page.body.map(stripHtml)} children={null} />}
       <SchemeASection title={copy.faqTitle(page.area)}>
         <SchemeAFaqList items={faqs} />
       </SchemeASection>
@@ -96,6 +130,9 @@ export default function ServiceAreaPage() {
             <li aria-current="page">{page.service}</li>
           </ol>
           <Link to={servicePath}>{parentServiceName || copy.internalServices}</Link>
+          {"showroomLink" in page && typeof page.showroomLink === "string" && (
+            <a href={`${ANZHE_SHOWROOM_ORIGIN}/${language}/`}>{page.showroomLink}</a>
+          )}
         </nav>
       </SchemeASection>
     </main>

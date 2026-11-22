@@ -50,6 +50,7 @@ export type SchemeANumberItem = {
   title: string;
   description?: string;
   supplement?: string;
+  details?: readonly string[];
 };
 
 export type SchemeAFaqItem = {
@@ -204,10 +205,13 @@ export function SchemeAFilter({
 
 export function SchemeAListingGrid({ items, actionLabel }: { items: readonly SchemeAListingItem[]; actionLabel: string }) {
   const { language } = useLanguage();
+  // A remainder of one becomes two pairs, keeping the last desktop rows balanced.
+  const remainder = items.length % 3;
+  const pairedFrom = items.length - (remainder === 1 ? 4 : remainder);
   return (
     <div className="fc-route-grid">
       {items.map((item, index) => (
-        <Link key={item.id} to={item.href} className="fc-route-card">
+        <Link key={item.id} to={item.href} className="fc-route-card" data-paired={index >= pairedFrom || undefined}>
           <div className="fc-route-card-media relative" data-cinematic-media>
             {item.image ? <SmartImage
               src={item.image}
@@ -219,7 +223,9 @@ export function SchemeAListingGrid({ items, actionLabel }: { items: readonly Sch
               loading="lazy"
               fetchPriority="auto"
               revealOnLoad
-              sizes="(max-width: 374px) calc(100vw - 24px), (max-width: 639px) calc(100vw - 32px), (max-width: 1023px) 46vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)"
+              sizes={index >= pairedFrom
+                ? "(max-width: 639px) calc(100vw - 32px), (min-width: 1536px) 710px, 46vw"
+                : "(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) 46vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)"}
               candidateWidths={[360, 560, 720, 960, 1200]}
               quality={82}
             /> : <span className="absolute inset-0 flex items-center justify-center bg-muted p-6 text-center text-sm text-muted-foreground">{schemeARouteText[language].imagePending}</span>}
@@ -245,7 +251,7 @@ export function SchemeALinkGrid({ items, actionLabel }: { items: readonly Scheme
           <div className="fc-route-link-card-copy">
             <span className="fc-route-link-card-label">{item.label}</span>
             <h3>{item.title}</h3>
-            <p>{item.description}</p>
+            {item.description && <p>{item.description}</p>}
           </div>
           <span className="fc-route-link-card-action"><span className="sr-only">{actionLabel}</span><ArrowUpRight aria-hidden="true" /></span>
         </Link>
@@ -296,6 +302,7 @@ export function SchemeAFeatureList({ items, layout = "grid" }: { items: readonly
 }
 
 export function SchemeANumberList({ items }: { items: readonly SchemeANumberItem[] }) {
+  if (!items.length) return null;
   return (
     <ol className="fc-route-number-list">
       {items.map((item, index) => (
@@ -304,6 +311,11 @@ export function SchemeANumberList({ items }: { items: readonly SchemeANumberItem
           <div>
             <strong>{item.title}</strong>
             {item.description ? <span>{item.description}</span> : null}
+            {item.details?.length ? (
+              <ul className="fc-route-step-details">
+                {item.details.map((detail, index) => <li key={`${index}-${detail}`}>{detail}</li>)}
+              </ul>
+            ) : null}
             {item.supplement ? <span className="fc-route-number-list__supplement">{item.supplement}</span> : null}
           </div>
         </li>
@@ -345,13 +357,12 @@ export function SchemeAGallery({
   const visibleImages = images.slice(0, 8);
   const isSingle = visibleImages.length === 1;
 
+  const trioFrom = !isSingle && visibleImages.length % 2 ? visibleImages.length - 3 : visibleImages.length;
+
   return (
-    <div
-      className="fc-route-gallery"
-      style={isSingle ? { gridTemplateColumns: "1fr" } : undefined}
-    >
+    <div className="fc-route-gallery">
       {visibleImages.map((image, index) => (
-        <figure key={`${image.src}-${index}`} className="m-0 min-w-0">
+        <figure key={`${image.src}-${index}`} className="m-0 min-w-0" data-trio={index >= trioFrom || undefined}>
         <div className="fc-route-gallery-media" data-cinematic-media>
           <SmartImage
             src={image.src}
@@ -360,7 +371,9 @@ export function SchemeAGallery({
             height={750}
             targetAspectRatio={{ width: 8, height: 5 }}
             resize="cover"
-            sizes={isSingle ? "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 1440px, calc(100vw - 96px)" : "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 710px, calc((100vw - 116px) / 2)"}
+            sizes={isSingle ? "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 1440px, calc(100vw - 96px)"
+              : index >= trioFrom ? "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 464px, 30vw"
+              : "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 710px, calc((100vw - 116px) / 2)"}
             candidateWidths={isSingle ? [560, 720, 960, 1200, 1600, 2400] : [560, 720, 960, 1200, 1600]}
             quality={84}
             revealOnLoad

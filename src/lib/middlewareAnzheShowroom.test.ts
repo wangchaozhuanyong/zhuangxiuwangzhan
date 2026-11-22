@@ -98,11 +98,18 @@ describe("ANZHE showroom on the independent hostname", () => {
     } finally { vi.unstubAllGlobals(); }
   });
 
-  it("grants immutable caching only when the public fingerprint matches the returned bytes", async () => {
+  it.each([
+    ["/public-section-spacing.css", "/public-section-spacing.css"],
+    ["/public-contact-entry.css", "/public-contact-entry.css"],
+    ["/showroom-intro.css", "/anzhe-showroom/showroom-intro.css"],
+    ["/showroom-films.css", "/anzhe-showroom/showroom-films.css"],
+    ["/showroom-catalog.css", "/anzhe-showroom/showroom-catalog.css"],
+    ["/showroom-fit.css", "/anzhe-showroom/showroom-fit.css"],
+  ])("only caches %s as immutable when its content matches its fingerprint", async (path, assetPath) => {
     const body = "body{}";
     const hash = createHash("sha256").update(body).digest("hex").slice(0, 12);
     const asset = vi.fn(async () => new Response(body, { headers: { "content-type": "text/css", "cache-control": "immutable" } }));
-    const url = ANZHE_SHOWROOM_ORIGIN + "/public-section-spacing.css";
+    const url = ANZHE_SHOWROOM_ORIGIN + path;
     for (const suffix of ["", "?v=000000000000", "?v=bad"]) {
       const response = await requestPage(new Request(url + suffix), asset);
       expect(response.headers.get("cache-control")).toBe("no-cache, max-age=0, must-revalidate");
@@ -116,10 +123,37 @@ describe("ANZHE showroom on the independent hostname", () => {
     }
     const fresh = await requestPage(new Request(url + "?v=" + hash), asset);
     expect(fresh.headers.get("cache-control")).toBe("public, max-age=31536000, immutable");
-    expect(asset).toHaveBeenLastCalledWith(expect.objectContaining({ url }));
+    expect(asset).toHaveBeenLastCalledWith(expect.objectContaining({ url: ANZHE_SHOWROOM_ORIGIN + assetPath }));
     expect(await fresh.text()).toBe(body);
     const revalidated = await requestPage(new Request(url + "?v=" + hash, { headers: { "if-none-match": fresh.headers.get("etag")! } }), asset);
     expect(revalidated.status).toBe(304);
+  });
+
+  it.each([
+    ["bytes=1-2", 206, "bytes 1-2/4", "bc"],
+    ["bytes=2-", 206, "bytes 2-3/4", "cd"],
+    ["bytes=-1", 206, "bytes 3-3/4", "d"],
+    ["bytes=8-", 416, "bytes */4", ""],
+  ] as const)("supports film seeking when the binding returns the whole asset for %s", async (range, status, contentRange, body) => {
+    const asset = vi.fn(async () => new Response("abcd", { headers: { "content-type": "video/mp4" } }));
+    const response = await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/assets/film-0377.mp4", { headers: { range } }), asset);
+    expect(response.status).toBe(status);
+    expect(response.headers.get("content-range")).toBe(contentRange);
+    expect(await response.text()).toBe(body);
+  });
+
+  it("preserves native partial film responses and forwards only media request headers", async () => {
+    const asset = vi.fn(async (request: Request) => {
+      expect(request.headers.get("range")).toBe("bytes=1-2");
+      expect(request.headers.has("cookie")).toBe(false);
+      return new Response("bc", { status: 206, headers: { "content-type": "video/mp4", "content-range": "bytes 1-2/4" } });
+    });
+    const response = await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/assets/film-0384.mp4", {
+      headers: { range: "bytes=1-2", cookie: "language=zh" },
+    }), asset);
+    expect(response.status).toBe(206);
+    expect(response.headers.get("content-range")).toBe("bytes 1-2/4");
+    expect(await response.text()).toBe("bc");
   });
 
   it("only serves showroom routes, and rejects a fallback shell for missing assets", async () => {
@@ -130,6 +164,17 @@ describe("ANZHE showroom on the independent hostname", () => {
     expect(fetch).not.toHaveBeenCalled();
     expect((await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/assets/missing.webp"), fetch)).status).toBe(404);
     expect((await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/zh/", { method: "POST" }), fetch)).status).toBe(405);
+  });
+
+  it("serves the standalone update script as same-origin fingerprinted JavaScript", async () => {
+    const body = "window.updateNoticeLoaded = true;";
+    const hash = createHash("sha256").update(body).digest("hex").slice(0, 12);
+    const fetch = vi.fn(async () => new Response(body, { headers: { "content-type": "text/javascript" } }));
+    const response = await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/showroom-updates.js?v=" + hash), fetch);
+    expect(response.status).toBe(200);
+    expect(fetch).toHaveBeenCalledWith(expect.objectContaining({ url: ANZHE_SHOWROOM_ORIGIN + "/anzhe-showroom/showroom-updates.js" }));
+    expect(response.headers.get("cache-control")).toContain("immutable");
+    expect(await response.text()).toBe(body);
   });
 
   it("publishes the exact Pages revision on the showroom hostname", async () => {

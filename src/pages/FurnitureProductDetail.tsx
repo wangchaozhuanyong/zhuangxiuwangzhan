@@ -11,7 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { withLanguagePrefix } from "@/i18n/routes";
 import { usePublishedFurnitureProduct } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureText, formatFurnitureEnquiryMessage, getFurnitureDisplaySku } from "@/i18n/furnitureText";
-import { getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { furnitureProductPath, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import { furnitureShopUrlForLanguage } from "@/lib/furnitureCatalogConfig";
 import { usePageWhatsAppMessage } from "@/contexts/PublicChromeContext";
 import { getFurnitureListingOrigin, LISTING_SCROLL_INTENT } from "@/lib/publicScrollRestoration";
@@ -66,15 +66,16 @@ export default function FurnitureProductDetail() {
   const currentImage = images[selectedImage] || images[0];
   const displaySku = getFurnitureDisplaySku(localizedProduct.sku, language);
   const description = localizedProduct.description || localizedProduct.shortDescription;
+  const canonicalPath = furnitureProductPath(product, language);
 
   return (
     <main className="fc-route-page fc-furniture-page">
-      <PageMeta title={product.seoTitle || localizedProduct.name} description={product.seoDescription || copy.detailMeta.replace("{name}", localizedProduct.name)} canonicalPath={`/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`} ogImage={currentImage} />
+      <PageMeta title={product.seoTitle || localizedProduct.name} description={product.seoDescription || copy.detailMeta.replace("{name}", localizedProduct.name)} canonicalPath={canonicalPath} ogImage={currentImage} malayReady={false} />
       <JsonLdBreadcrumb items={[
         { name: copy.home, url: "/" },
         { name: copy.title, url: "/furniture" },
         ...(category ? [{ name: furnitureCategoryName(category.key, language), url: `/furniture/${category.key}` }] : []),
-        { name: localizedProduct.name, url: `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}` },
+        { name: localizedProduct.name, url: canonicalPath },
       ].map((item) => ({ ...item, url: withLanguagePrefix(item.url, language) }))} />
       <div className="fc-furniture-detail">
         <LocalizedLink className="fc-furniture-back" to={origin ? origin.pathname + origin.search : category ? `/furniture/${category.key}` : "/furniture"} state={returnState}>← {copy.backToCatalog}</LocalizedLink>
@@ -108,7 +109,9 @@ export default function FurnitureProductDetail() {
         </div>
         <section className="fc-furniture-description">
           <h2>{copy.description}</h2>
-          {description ? description.split("\n").map((line, index) => <p key={`${index}-${line.slice(0, 12)}`}>{line}</p>) : <p>{copy.descriptionUnavailable}</p>}
+          <div className="fc-furniture-description__copy">
+            {description ? description.split("\n").map((line, index) => <p key={`${index}-${line.slice(0, 12)}`}>{line}</p>) : <p>{copy.descriptionUnavailable}</p>}
+          </div>
         </section>
       </div>
     </main>

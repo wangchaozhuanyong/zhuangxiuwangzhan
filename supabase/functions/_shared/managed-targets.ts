@@ -1,5 +1,7 @@
 import { LOCATION_SEVEN_BODY_TARGETS } from './location-seven-body-targets.ts';
 import { C4_SERVICE_SEO_TARGETS } from "./c4-service-seo-targets.ts";
+import { CMS_SEO_TITLE_TARGETS } from "./cms-seo-title-targets.ts";
+import { FAQ_START_TIMING_15_DAY_TARGET, FAQ_START_TIMING_TARGET } from "./faq-start-timing-target.ts";
 import { KL_LOCATION_BODY_FIRST_TARGETS } from "./kl-location-body-first-target.ts";
 import { CONTENT_LINK_REPAIR_TARGETS } from "./content-link-repair-targets.ts";
 import { ORG020_V7_TARGETS } from "./org020-v7-targets.ts";
@@ -10,6 +12,7 @@ import { BUILTIN_WARDROBE_TARGETS } from "./builtin-wardrobe-targets.ts";
 import { MALAY_TRANSLATION_TARGETS } from "./malay-translation-targets.ts";
 import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "./shop-office-six-field-targets.ts";
 import { SEO_CABINET_TWO_ANCHOR_TARGETS } from "./seo-cabinet-two-anchor-targets.ts";
+import { CABINET_PRICE_TARGETS } from "./cabinet-price-targets.ts";
 import { NEXT8_TWO_RECORD_TARGETS } from "./next8-two-record-targets.ts";
 import { NEXT8_RENOVATION_ZH05971_TARGETS } from "./next8-renovation-zh05971-target.ts";
 import { NEXT12_FIVE_RECORD_TARGETS } from "./next12-five-record-targets.ts";
@@ -147,6 +150,7 @@ export const MANAGED_AREAS: readonly ManagedTarget[] = [
 
 export const MANAGED_BLOGS: readonly ManagedTarget[] = [
   ...SEO_CABINET_TWO_ANCHOR_TARGETS,
+  ...CABINET_PRICE_TARGETS,
   ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "blog"),
   ...NATIVE_BODY_TARGETS.filter((target) => target.contentType === "blog"),
   { id: "3fa4ff63-1ee6-4b7c-8f32-792c948c8545", slug: "kitchen-cabinet-price-malaysia", contentType: "blog", taskId: "fc-20260925-organic-query-page-completion-v1", actionId: "update-kitchen-cabinet-cost-existing-blog-v1", candidateVersion: "kitchen-cabinet-cost-r1-v1", scope: "flashcast.com.my:blog_posts/3fa4ff63-1ee6-4b7c-8f32-792c948c8545", changedFields: ["content_en", "content_zh", "seo_description_zh"], baselineFieldsSha256: "50b0c1510443cb59996e12117ad374ede0f279b4d1658cacb74d43d014f47704", desiredFieldsSha256: "4bca36e72073660d3328e6241cb3128c97b2c4a0230a17d2a5a2645726cf755f" },
@@ -157,8 +161,11 @@ export const MANAGED_BLOGS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_TARGETS: readonly ManagedTarget[] = [
+  ...CMS_SEO_TITLE_TARGETS,
   ...TWO_ORIGINAL_MATERIAL_BODY_TARGETS,
   ...CONTACT_CMS_PAGE_TITLE_TARGETS,
+  FAQ_START_TIMING_TARGET,
+  FAQ_START_TIMING_15_DAY_TARGET,
   ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
 

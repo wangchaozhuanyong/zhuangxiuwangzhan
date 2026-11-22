@@ -18,6 +18,7 @@ import { createPublicHtmlGenerationCoalescer, createUnconditionalPublicShellRequ
 import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreloads";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, normalizeFurnitureSlug, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
+import { getLegacyFurnitureProductRedirectPath, resolveFurnitureSourceSlug } from "../src/lib/furnitureProductUrls.mjs";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableFaqPageBody, buildReadableFurnitureListingBody, buildReadableFurnitureProductBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
@@ -76,6 +77,7 @@ type SeoEntry = {
   imageAlt?: string;
   breadcrumbCategory?: string;
   owned_static?: boolean;
+  source_kind?: string;
 };
 
 type SiteSettingsHead = {
@@ -1337,7 +1339,7 @@ const fetchDynamicRouteState = async (
   const path = match[2] || "/";
   if (/^\/furniture\/product\/[^/]+$/.test(path)) {
     const setting = await (furnitureSetting || fetchFurnitureCatalogSetting(env));
-    const slug = normalizeFurnitureSlug(path.split("/").at(-1));
+    const slug = resolveFurnitureSourceSlug(path.split("/").at(-1));
     if (!slug) return null;
     const saved = readFurnitureCatalogOverrides(setting?.items_zh).reverse().find((item) => normalizeFurnitureSlug(item.slug) === slug);
     if (saved) {
@@ -1750,7 +1752,8 @@ const getUnprefixedPublicPath = (pathname: string) => {
   }
 
   const englishPath = `/en${cleaned}`;
-  return (manifest as Record<string, SeoEntry>)[englishPath] ? cleaned : null;
+  const catalogPath = getLegacyFurnitureProductRedirectPath(englishPath) || englishPath;
+  return (manifest as Record<string, SeoEntry>)[catalogPath] ? cleaned : null;
 };
 
 const getRequestLanguage = (request: Request) =>
@@ -1761,7 +1764,7 @@ const getRequestLanguage = (request: Request) =>
 
 const getExactLegacyRedirectPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
-  return EXACT_LEGACY_REDIRECTS[cleaned] || null;
+  return EXACT_LEGACY_REDIRECTS[cleaned] || getLegacyFurnitureProductRedirectPath(cleaned);
 };
 
 const resolveReadableMaterialLink = (href: string) => {
@@ -1970,7 +1973,7 @@ const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefin
 };
 
 const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefined>, detailSlug?: string, furnitureSetting?: Promise<PublicDataRow | null>) => {
-  const decodedDetailSlug = normalizeFurnitureSlug(detailSlug);
+  const decodedDetailSlug = resolveFurnitureSourceSlug(detailSlug);
   if (detailSlug !== undefined && decodedDetailSlug === undefined) return null;
   try {
   const [materials, setting] = await Promise.all([
@@ -2007,7 +2010,10 @@ const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => 
 };
 
 const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: string[] = []) => {
-  const blocks = [...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
+  const blocks = [
+    ...Array.from(dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ([block]) => ({ block, built: false })),
+    ...Array.from(staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ([block]) => ({ block, built: true })),
+  ];
   if (!blocks.length) return staticXml || dynamicXml;
   const dynamicLocations = new Set(
     Array.from(dynamicXml.matchAll(/<loc>([^<]+)<\/loc>/gi), (match) => match[1].trim())
@@ -2022,25 +2028,30 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: str
     return normalized === undefined ? [] : [normalized];
   }));
   const byLocation = new Map<string, string>();
-  for (const match of blocks) {
-    const block = match[0].trim();
+  for (const { block: rawBlock, built } of blocks) {
+    const block = rawBlock.trim();
     const location = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     if (!location) continue;
+    let builtTaxonomy = false;
     try {
       const parsedLocation = new URL(location);
       if (parsedLocation.origin !== PUBLIC_SITE_URL) continue;
       const pathname = parsedLocation.pathname;
       if (isRedirectOnlySitemapPath(pathname) || isExcludedFromPublicSitemap(pathname)) continue;
-      if (liveSitemapAvailable && !(manifest as Record<string, SeoEntry>)[pathname]?.owned_static && !dynamicLocations.has(location)) continue;
+      const entry = (manifest as Record<string, SeoEntry>)[pathname];
+      // Taxonomy translations use the complete build snapshot. The live
+      // discovery source emits individual records, not their taxonomy paths.
+      builtTaxonomy = built && entry?.source_kind === "material_taxonomy";
+      if (liveSitemapAvailable && !entry?.owned_static && !builtTaxonomy && !dynamicLocations.has(location)) continue;
       const furnitureSlug = pathname.match(/^\/(?:en|zh|ms)\/furniture\/product\/([^/]+)$/)?.[1];
       if (furnitureSlug) {
-        const normalized = normalizeFurnitureSlug(furnitureSlug);
+        const normalized = resolveFurnitureSourceSlug(furnitureSlug);
         if (normalized === undefined || hiddenSlugSet.has(normalized)) continue;
       }
     } catch {
       continue;
     }
-    if (!byLocation.has(location)) byLocation.set(location, block);
+    if (!byLocation.has(location) || builtTaxonomy) byLocation.set(location, block);
   }
   const body = Array.from(byLocation.values()).sort((a, b) => {
     const left = a.match(/<loc>([^<]+)<\/loc>/i)?.[1] || "";
@@ -2260,12 +2271,16 @@ export const onRequest: PagesFunction = async (context) => {
   if (unprefixedPublicPath) {
     const language = getRequestLanguage(request);
     url.pathname = unprefixedPublicPath === "/" ? `/${language}` : `/${language}${unprefixedPublicPath}`;
+    url.pathname = getLegacyFurnitureProductRedirectPath(url.pathname) || url.pathname;
     return languageRedirect(url);
   }
 
   const key = normalizePath(url.pathname);
   const faqPageLanguage = /^\/(en|zh|ms)\/faq$/.exec(key)?.[1] as "en" | "zh" | "ms" | undefined;
-  const englishMeta = key.startsWith("/ms") ? (manifest as Record<string, SeoEntry>)[key.replace(/^\/ms(?=\/|$)/, "/en")] : undefined;
+  const englishPath = key.replace(/^\/ms(?=\/|$)/, "/en");
+  const englishMeta = key.startsWith("/ms")
+    ? (manifest as Record<string, SeoEntry>)[getLegacyFurnitureProductRedirectPath(englishPath) || englishPath]
+    : undefined;
   const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...localizeMalayMaterialFallback(englishMeta, key), lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
   const isPublicLanguagePath = /^\/(?:en|zh|ms)(?:\/|$)/.test(key);
   const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;

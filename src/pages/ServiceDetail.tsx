@@ -122,16 +122,20 @@ export default function ServiceDetail() {
         </SchemeASection>
       </>}
       <SchemeASection title={copy.overview} description={richDescription ? undefined : display(rawDescription)} className="fc-route-service-overview">
-        {richDescription ? <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: richDescription }} /> : null}
-        <div className="fc-route-scope-grid">
-          <div className="fc-route-scope-group">
-            <h3>{copy.suitableFor}</h3>
-            <SchemeAFeatureList items={suitable} layout="list" />
-          </div>
-          <div className="fc-route-scope-group">
-            <h3>{copy.offer}</h3>
-            <SchemeAFeatureList items={offered} layout="list" />
-          </div>
+        <div className="fc-route-detail-columns">
+          {richDescription ? <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: richDescription }} /> : null}
+          {(suitable.length > 0 || offered.length > 0) && (
+            <div className="fc-route-scope-grid">
+              {suitable.length > 0 && <div className="fc-route-scope-group">
+                <h3>{copy.suitableFor}</h3>
+                <SchemeAFeatureList items={suitable} layout="list" />
+              </div>}
+              {offered.length > 0 && <div className="fc-route-scope-group">
+                <h3>{copy.offer}</h3>
+                <SchemeAFeatureList items={offered} layout="list" />
+              </div>}
+            </div>
+          )}
         </div>
       </SchemeASection>
       {commonProjects.length ? <SchemeASection title={copy.commonProjects}><SchemeAFeatureList items={commonProjects} /></SchemeASection> : null}

@@ -7,6 +7,7 @@ import { stripHtml } from "@/lib/text";
 
 const origin = "https://flashcast.com.my";
 const paths = Object.keys(pageText);
+const klLockPath = "/locations/kuala-lumpur/digital-lock";
 
 const generated = vi.hoisted(() => ({ manifest: {} as Record<string, { noIndex?: boolean }>, sitemap: "" }));
 vi.mock("../../../functions/seo-manifest.json", async (importOriginal) => {
@@ -41,11 +42,11 @@ async function readEdge(path: string) {
 }
 
 describe("C1 service and area routes", () => {
-  it("copies all seven approved bilingual records and four body paragraphs verbatim", () => {
+  it("keeps the six unsuperseded approved bilingual records verbatim", () => {
     const document = readFileSync("docs/seo/cross-pages-batch-2.md", "utf8");
     const sections = [...document.matchAll(/^## `(\/locations\/[^`]+)`\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)];
     expect(sections).toHaveLength(7);
-    for (const [, path, section] of sections) {
+    for (const [, path, section] of sections.filter(([, path]) => path !== klLockPath)) {
       const approved = Object.assign({}, ...[...section.matchAll(/```json\s*\n([\s\S]*?)\n```/g)]
         .map(([, json]) => JSON.parse(json)));
       expect(Object.keys(approved).sort()).toEqual(["en", "zh"]);
@@ -82,16 +83,31 @@ describe("C1 service and area routes", () => {
       else expect(html).not.toContain('hreflang="ms-MY"');
       expect(html).not.toMatch(/name="robots" content="noindex/);
       for (const schema of ["Service", "FAQPage", "BreadcrumbList"]) expect(html).toContain('"@type":"' + schema + '"');
-      expect(html).toContain(expected.question.replace(/&/g, "\\u0026"));
+      const faqs = "faqs" in expected ? expected.faqs : [{ question: expected.question, answer: expected.answer }];
+      for (const { question } of faqs) expect(html).toContain(question.replace(/&/g, "\\u0026"));
 
       const doc = new DOMParser().parseFromString(html, "text/html");
       const readable = doc.querySelector("noscript[data-flashcast-geo-summary] [data-flashcast-readable-body]");
       expect(readable?.querySelector("h1")?.textContent).toBe(expected.heading);
-      const overview = readable?.querySelector("section");
-      expect(overview?.querySelector("h2")?.textContent).toBe(expected.bodyHeading);
-      expect(Array.from(overview?.querySelectorAll("p") ?? [], node => node.textContent)).toEqual(expected.body.map(stripHtml));
-      expect(overview?.innerHTML).not.toContain("&lt;p&gt;");
-      expect(readable?.querySelector("section:last-child h3")?.textContent).toBe(expected.question);
+      if ("sections" in expected) {
+        const headings = Array.from(readable?.querySelectorAll("h2") || [], node => node.textContent);
+        expect(headings).toEqual(expect.arrayContaining(expected.sections.map(section => section.heading)));
+        expect(headings.filter(heading => /[?？]$/.test(heading || "")).length).toBeGreaterThanOrEqual(2);
+        const text = Array.from(readable?.querySelectorAll("h1,h2,h3,p,li") || [], node => node.textContent?.trim()).join(" ");
+        expect([...text].length).toBeGreaterThanOrEqual(language === "zh" ? 2500 : 4000);
+        if (language === "en") expect(text.trim().split(/\s+/).length).toBeGreaterThanOrEqual(600);
+        const links = Array.from(readable?.querySelectorAll("a[href]") || [], node => node.getAttribute("href"));
+        expect(links).toEqual(expect.arrayContaining(expected.models.map(model =>
+          `https://locks.flashcast.com.my/${language}/lock/${model.slug}/`
+        )));
+      } else {
+        const overview = readable?.querySelector("section");
+        expect(overview?.querySelector("h2")?.textContent).toBe(expected.bodyHeading);
+        expect(Array.from(overview?.querySelectorAll("p") ?? [], node => node.textContent)).toEqual(expected.body.map(stripHtml));
+        expect(overview?.innerHTML).not.toContain("&lt;p&gt;");
+      }
+      expect(Array.from(readable?.querySelectorAll("section:last-child h3") || [], node => node.textContent))
+        .toEqual(faqs.map(item => item.question));
     },
   );
 

@@ -7,6 +7,7 @@ import { publishContent } from "../../supabase/functions/content-publish/service
 import { issueManagedPermit } from "../../supabase/functions/content-publish/permit-issuer.ts";
 import { UNIFIED_CONTENT_TARGETS } from "../../supabase/functions/content-publish/unified-content-targets.ts";
 import { MANAGED_TARGETS, findManagedTarget, managedAction } from "../../supabase/functions/content-publish/managed-targets.ts";
+import { CMS_SEO_TITLE_TARGETS } from "../../supabase/functions/_shared/cms-seo-title-targets.ts";
 import type { ContentPublishClient, ContentPublishRequest } from "../../supabase/functions/content-publish/types.ts";
 import { lockedUnifiedContentCandidates, readUnifiedContentCandidate } from "../../scripts/managed-cms-targets-unified-content-v1.mjs";
 import { stableDigest, targetConfigs, assertLockedServiceCandidate, buildLockedDryRunRequest } from "../../scripts/publish-content-trust-fixes.mjs";
@@ -55,8 +56,9 @@ function clientFor(initial: Row, race = false) {
 describe("two exact combined native CMS targets", () => {
   it("registers two additional selectors while preserving historical bindings", () => {
     expect(Object.keys(lockedUnifiedContentCandidates)).toEqual(names);
-    const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
-    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(historicalTargets).toHaveLength(106); // Seven additional regional bodies.
+    const historicalTargets = MANAGED_TARGETS.filter(target => target.contentType !== "translation_patch"
+      && !CMS_SEO_TITLE_TARGETS.includes(target));
+    expect(UNIFIED_CONTENT_TARGETS).toHaveLength(2); expect(historicalTargets).toHaveLength(111); // Includes both FAQ timing versions and three cabinet market-price bindings.
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

@@ -12,6 +12,9 @@ type ServiceContextLinksBySlug = Record<string, readonly ServiceContextLink[]>;
 
 const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
   en: {
+    "digital-lock": [
+      { id: "digital-lock-kl", label: "Service area", title: "Kuala Lumpur digital lock fitting guide", description: "Check condo doors, management approval and grille clearance before booking an installation.", href: "/locations/kuala-lumpur/digital-lock" },
+    ],
     renovation: [
       { id: "renovation-kl", label: "Service area", title: "Kuala Lumpur renovation", description: "Review property types, common renovation needs, and service coverage in Kuala Lumpur.", href: "/locations/kuala-lumpur" },
       { id: "renovation-mont-kiara", label: "Service area", title: "Mont Kiara renovation", description: "See local planning considerations for condos and managed residential properties.", href: "/locations/mont-kiara" },
@@ -71,6 +74,9 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     ],
   },
   zh: {
+    "digital-lock": [
+      { id: "digital-lock-kl", label: "服务地区", title: "吉隆坡公寓换电子锁指南", description: "预约前核对门型、铁闸净距、进场条件和管理处要求。", href: "/locations/kuala-lumpur/digital-lock" },
+    ],
     renovation: [
       { id: "renovation-kl", label: "服务地区", title: "吉隆坡装修服务", description: "了解吉隆坡常见房产类型、装修需求和实际服务范围。", href: "/locations/kuala-lumpur" },
       { id: "renovation-mont-kiara", label: "服务地区", title: "Mont Kiara 装修服务", description: "查看公寓和有管理处住宅常见的装修规划事项。", href: "/locations/mont-kiara" },
@@ -131,6 +137,9 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
   },
 
   ms: {
+    "digital-lock": [
+      { id: "digital-lock-kl", label: "Kawasan perkhidmatan", title: "Panduan menukar kunci digital di Kuala Lumpur", description: "Semak jenis pintu, jarak jeriji dan kelulusan pengurusan sebelum menempah pemasangan.", href: "/locations/kuala-lumpur/digital-lock" },
+    ],
     renovation: [
       { id: "renovation-kl", label: "Kawasan perkhidmatan", title: "pengubahsuaian Kuala Lumpur", description: "Semak jenis hartanah, keperluan pengubahsuaian biasa dan liputan perkhidmatan di Kuala Lumpur.", href: "/locations/kuala-lumpur" },
       { id: "renovation-mont-kiara", label: "Kawasan perkhidmatan", title: "Pengubahsuaian Mont Kiara", description: "Lihat pertimbangan perancangan tempatan untuk kondo dan harta kediaman terurus.", href: "/locations/mont-kiara" },

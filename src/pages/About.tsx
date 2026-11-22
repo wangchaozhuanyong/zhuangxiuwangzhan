@@ -68,7 +68,7 @@ const About = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={heroSection?.subtitle || heroSection?.content || t.description} />
 
-      <SchemeASection title={introSection?.title || t.introTitle} description={[introParagraphs.join(" "), getChineseBrandAssociation(settings, language)].filter(Boolean).join(" ")}>
+      <SchemeASection title={introSection?.title || t.introTitle} description={[...introParagraphs, getChineseBrandAssociation(settings, language)].filter(Boolean)}>
         <SchemeAFacts items={stats} />
         <div className="fc-route-tagline" aria-label={t.label}>{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
       </SchemeASection>

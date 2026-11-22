@@ -66,8 +66,10 @@ export default function MaterialDetail() {
         { label: copy.category, value: categoryName },
       ]} />
       <SchemeASection title={routeText.materialConsiderations}>
-        {richBody ? <div className="fc-route-service-overview-copy [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2" dangerouslySetInnerHTML={{ __html: richBody }} /> : paragraphs.length ? <div className="fc-route-service-overview-copy">{paragraphs.map((paragraph, index) => <p key={index}>{translateDisplayText(paragraph, language)}</p>)}</div> : null}
-        <SchemeANumberList items={judgementItems} />
+        <div className="fc-route-detail-columns">
+          {richBody ? <div className="fc-route-service-overview-copy [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2" dangerouslySetInnerHTML={{ __html: richBody }} /> : paragraphs.length ? <div className="fc-route-service-overview-copy">{paragraphs.map((paragraph, index) => <p key={index}>{translateDisplayText(paragraph, language)}</p>)}</div> : null}
+          <SchemeANumberList items={judgementItems} />
+        </div>
       </SchemeASection>
       {galleryImages.length ? <SchemeASection title={routeText.materialContext} description={translateDisplayText(material.recommendedPairing || material.note || "", language)}>
         <SchemeAGallery images={galleryImages} />

@@ -33,8 +33,9 @@ function BeforeAfterComparison({
     <article className="scheme-a-transformation" data-cinematic-section>
       <header className="scheme-a-transformation__copy">
         <div>
-          <h2>{title}</h2>
+          <h3>{title}</h3>
           <p className="scheme-a-transformation__description">{reviewedCopy ? t.itemDescription : item.description?.trim() || t.itemDescription}</p>
+          {reviewedCopy && <p className="scheme-a-transformation__description">{reviewedCopy.description}</p>}
         </div>
       </header>
 
@@ -52,7 +53,7 @@ function BeforeAfterComparison({
           width={1600}
           height={1000}
           quality={86}
-          sizes="(max-width: 767px) 100vw, 88vw"
+          sizes="(max-width: 1023px) 94vw, (min-width: 1536px) 920px, 60vw"
           rootMargin="900px 0px"
         />
         <div className="scheme-a-transformation__before" aria-hidden="true">
@@ -64,7 +65,7 @@ function BeforeAfterComparison({
             width={1600}
             height={1000}
             quality={86}
-            sizes="(max-width: 767px) 100vw, 88vw"
+            sizes="(max-width: 1023px) 94vw, (min-width: 1536px) 920px, 60vw"
             rootMargin="900px 0px"
           />
         </div>
@@ -108,6 +109,7 @@ export default function BeforeAfter() {
         keywords={t.metaKeywords}
         canonicalPath="/before-after"
         ogImage={ogImage}
+        malayReady={false}
       />
       <JsonLdBreadcrumb
         items={[

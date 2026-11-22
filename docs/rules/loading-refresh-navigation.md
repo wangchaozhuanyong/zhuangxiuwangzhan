@@ -77,6 +77,8 @@ HTML 预注入仅允许 `publicQuerySeed` 初始化查询缓存，`publicQuerySe
 
 ### ANZHE 电子锁独立子域名
 
-电子锁展示站属于装修网站，保留独立视觉和产品目录布局。首次进入、刷新、慢加载恢复、版本更新提示、公开页面缓存及内容模块间距沿用主站规则。静态页面的共享启动入口是 `src/showroomBoot.ts`。改动共享启动、语言或版本逻辑后，运行 `node scripts/generate-anzhe-boot.mjs` 更新独立域名使用的浏览器脚本及三语资源指纹。
+电子锁展示站属于装修网站，保留独立视觉和产品目录布局。首次进入、刷新、慢加载恢复、版本更新提示、公开页面缓存及内容模块间距沿用主站规则。展厅首页的启动入口是 `src/showroomBoot.ts`。展厅首页与型号详情通过轻量入口 `src/showroomUpdates.ts` 使用主站的更新提示。改动共享启动、语言或版本逻辑后，依次运行 `node scripts/generate-anzhe-boot.mjs` 和 `node scripts/generate-anzhe-lock-pages.mjs` 更新浏览器脚本及三语页面资源指纹。
 
 直接打开电子锁域名使用独立导航。从装修网站的首页、菜单或页脚进入时提供返回来源页面的入口；在独立页内换语言或刷新后仍可返回。产品详情、比较和筛选等页内操作保持现有状态，不重复展示文档加载画面。
+
+静态型号详情页使用 `/{zh|en|ms}/lock/{slug}/`，仅接受产品目录中已发布的 17 个型号。非法 slug 返回 HTTP 404，无尾斜杠或带 `index.html` 的合法路径以 HTTP 301 跳转到规范地址。标题、含安装价和规格直接放在 HTML 中，关闭 JavaScript 也能读取。语言切换和同类对比使用普通链接，刷新由浏览器按当前网址重验证。此处登记静态子域路由，交互由 `e2e/anzhe-showroom-lock-pages.spec.ts` 验收。

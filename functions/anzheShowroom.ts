@@ -8,8 +8,19 @@ import {
 export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
-const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|showroom-boot\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml)$/;
-const pagePath = /^\/(zh|en|ms)(?:\/(index\.html)?)?$/;
+const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|updates|films)\.js|showroom-(?:intro|fit|films|catalog)\.css|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
+const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
+const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
+const TYPE_SLUGS = "entrance-door|interior-door|aluminium-door";
+const FEATURE_SLUGS = "face-recognition|palm-vein|video-intercom";
+const pagePath = new RegExp(
+  `^/(zh|en|ms)(?:/lock/(${LOCK_SLUGS}|type/(?:${TYPE_SLUGS})|feature/(?:${FEATURE_SLUGS})))?(?:/(?:index\\.html)?)?$`,
+);
+const categoryLinkText = {
+  zh: { label: "按门型查看品类页", all: "查看全部型号", types: ["入户门品类", "室内门品类", "窄框铝门品类"] },
+  en: { label: "Browse lock categories by door type", all: "View all models", types: ["Entrance door locks", "Interior door locks", "Aluminium door locks"] },
+  ms: { label: "Lihat kategori kunci mengikut jenis pintu", all: "Lihat semua model", types: ["Kunci pintu utama", "Kunci pintu dalaman", "Kunci pintu aluminium"] },
+};
 const securityHeaders = {
   "Content-Security-Policy": [
     "default-src 'self'",
@@ -71,10 +82,20 @@ async function inlineDocumentBoot(html: string, binding: AssetBinding) {
   return { html: html.replace(tag[0], () => `<script data-showroom-boot>${source}</script>`), hash };
 }
 
-async function serveDocument(request: Request, binding: AssetBinding, locale: Language, version: string, waitUntil?: (write: Promise<unknown>) => void) {
+function addHomeCategoryLinks(html: string, locale: Language) {
+  const copy = categoryLinkText[locale];
+  const links = TYPE_SLUGS.split("|").map((slug, index) =>
+    `<a class="studio-link" href="/${locale}/lock/type/${slug}/"><span>${copy.types[index]}</span></a>`);
+  const navigation = `<nav class="section-actions" data-lock-category-links aria-label="${copy.label}">`
+    + `<a class="studio-link" href="#model-details"><span>${copy.all}</span></a>${links.join("")}</nav>`;
+  // The interactive directory replaces its own markup when it mounts or filters.
+  return html.replace('<div id="directory"', `${navigation}<div id="directory"`);
+}
+
+async function serveDocument(request: Request, binding: AssetBinding, pathname: string, locale: Language, version: string, waitUntil?: (write: Promise<unknown>) => void) {
   const cache = getEdgeCache();
   const origin = new URL(ANZHE_SHOWROOM_ORIGIN);
-  origin.pathname = `/${locale}/`;
+  origin.pathname = pathname;
   const key = getPublicHtmlCacheRequest(new Request(origin), { CF_PAGES_COMMIT_SHA: version });
   const cached = cache && await cache.match(key).catch(() => undefined);
   if (cached) return createPublicHtmlBrowserResponse(cached, request, "hit");
@@ -83,7 +104,8 @@ async function serveDocument(request: Request, binding: AssetBinding, locale: La
   const asset = await binding.fetch(new Request(origin));
   if (!asset.ok || !asset.headers.get("content-type")?.includes("text/html")) return null;
   const boot = await inlineDocumentBoot(await asset.text(), binding);
-  const document = boot.html.replace("<head>", `<head><meta name="flashcast-deployment-version" content="${encodeURIComponent(version)}">`);
+  const html = pathname === `/${locale}/` ? addHomeCategoryLinks(boot.html, locale) : boot.html;
+  const document = html.replace("<head>", `<head><meta name="flashcast-deployment-version" content="${encodeURIComponent(version)}">`);
   const headers = new Headers(asset.headers);
   // The deployment marker changes the representation. Retain upstream security headers only with valid body metadata.
   for (const name of ["content-length", "content-encoding", "accept-ranges", "set-cookie"]) headers.delete(name);
@@ -101,12 +123,49 @@ async function serveDocument(request: Request, binding: AssetBinding, locale: La
   return createPublicHtmlBrowserResponse(response, request, "miss");
 }
 
+// A Pages binding can return either a native range or the complete small showroom clip.
+async function serveFilm(request: Request, binding: AssetBinding, target: URL) {
+  const forwarded = new Headers();
+  for (const name of ["range", "if-range", "if-none-match", "if-modified-since"]) {
+    const value = request.headers.get(name);
+    if (value && (name !== "range" || request.method === "GET")) forwarded.set(name, value);
+  }
+  const asset = await binding.fetch(new Request(target, { method: request.method, headers: forwarded }));
+  if (asset.status !== 304 && asset.status !== 416 &&
+    (!asset.ok || !asset.headers.get("content-type")?.includes("video/mp4"))) return null;
+  const headers = new Headers(asset.headers);
+  for (const [name, value] of Object.entries(securityHeaders)) headers.set(name, value);
+  headers.set("cache-control", "public, no-cache");
+  headers.set("accept-ranges", "bytes");
+  const range = /^bytes=(\d*)-(\d*)$/i.exec(forwarded.get("range") || "");
+  const ifRange = forwarded.get("if-range");
+  const matches = !ifRange || (!ifRange.startsWith("W/") &&
+    (ifRange === headers.get("etag") || ifRange === headers.get("last-modified")));
+  if (asset.status === 200 && request.method === "GET" && matches && range && (range[1] || range[2])) {
+    const bytes = await asset.arrayBuffer();
+    const size = bytes.byteLength;
+    const start = range[1] ? Number(range[1]) : Math.max(0, size - Number(range[2]));
+    const end = range[1] && range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
+    headers.delete("content-encoding");
+    if (start >= size || start > end) {
+      headers.set("content-range", `bytes */${size}`);
+      headers.set("content-length", "0");
+      return new Response(null, { status: 416, headers });
+    }
+    headers.set("content-range", `bytes ${start}-${end}/${size}`);
+    headers.set("content-length", String(end - start + 1));
+    return new Response(new Uint8Array(bytes, start, end - start + 1), { status: 206, headers });
+  }
+  return new Response(request.method === "HEAD" ? null : asset.body, { status: asset.status, headers });
+}
+
 async function serveStaticFile(request: Request, binding: AssetBinding, target: URL) {
   const path = target.pathname;
-  // The shared spacing stylesheet belongs to both hosts. Showroom files live in their private asset directory.
-  if (path !== "/public-section-spacing.css") target.pathname = ANZHE_ASSET_PREFIX + path;
+  // Shared stylesheets are served from the root asset directory on both hosts.
+  if (!sharedStylesheets.has(path)) target.pathname = ANZHE_ASSET_PREFIX + path;
   const requestedVersion = target.searchParams.get("v");
   target.search = "";
+  if (path.endsWith(".mp4")) return serveFilm(request, binding, target);
   const asset = await binding.fetch(new Request(target));
   if (!asset.ok || !asset.headers.get("content-type")?.includes(expectedContentType(path))) return null;
   const headers = new Headers(asset.headers);
@@ -159,13 +218,17 @@ export async function serveAnzheShowroom(
     const language = url.searchParams.get("lang");
     return redirect(url, `/${isSupportedLanguage(language) ? language : preferredLanguage}/`, 302);
   }
-  const locale = pagePath.exec(url.pathname)?.[1];
-  if (locale && url.pathname !== `/${locale}/`) return redirect(url, `/${locale}/`, 301);
-  if (assetBinding && isSupportedLanguage(locale)) {
-    const document = await serveDocument(request, assetBinding, locale, deploymentVersion, waitUntil);
-    if (document) return document;
+  const page = pagePath.exec(url.pathname);
+  if (page) {
+    const [, locale, slug] = page;
+    const canonicalPath = slug ? `/${locale}/lock/${slug}/` : `/${locale}/`;
+    if (url.pathname !== canonicalPath) return redirect(url, canonicalPath, 301);
+    if (assetBinding) {
+      const document = await serveDocument(request, assetBinding, canonicalPath, locale as Language, deploymentVersion, waitUntil);
+      if (document) return document;
+    }
   }
-  if (assetBinding && (staticFiles.test(url.pathname) || url.pathname === "/public-section-spacing.css")) {
+  if (assetBinding && (staticFiles.test(url.pathname) || sharedStylesheets.has(url.pathname))) {
     const file = await serveStaticFile(request, assetBinding, url);
     if (file) return file;
   }

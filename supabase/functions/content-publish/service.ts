@@ -1,5 +1,8 @@
 import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "../_shared/shop-office-six-field-targets.ts";
 import { CONTENT_LINK_REPAIR_TARGETS, CONTENT_LINK_REPAIR_APPROVAL_ID } from "../_shared/content-link-repair-targets.ts";
+import {
+  FAQ_START_TIMING_15_DAY_APPROVAL_ID, FAQ_START_TIMING_15_DAY_TARGET, FAQ_START_TIMING_APPROVAL_ID, FAQ_START_TIMING_TARGET,
+} from "../_shared/faq-start-timing-target.ts";
 import { publishMediaContent } from "./mediaPublishing.ts";
 import { cleanText, errorResult } from "./publishValues.ts";
 import { dispatchContentPublish } from "./dispatch.ts";
@@ -20,6 +23,7 @@ import {
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus, PublishContext } from "./types.ts";
 import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, CONTACT_CMS_PAGE_TITLE_TARGETS, TWO_ORIGINAL_MATERIAL_BODY_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
+import { CMS_SEO_TITLE_APPROVAL_ID, CMS_SEO_TITLE_TARGETS } from "../_shared/cms-seo-title-targets.ts";
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 import { pendingContentPaths, validateContentLinks } from "../_shared/content-links.mjs";
@@ -1881,12 +1885,19 @@ function isSparseNativeBodyPatch(target: ManagedTarget, record: Record<string, u
     && Boolean(target.baselineProjectionFields?.some((field) => !READONLY_FIELDS.has(field) && record[field] === undefined));
 }
 
+const faqStartTimingApproval = (target: ManagedTarget) => {
+  if (target === FAQ_START_TIMING_TARGET) return FAQ_START_TIMING_APPROVAL_ID;
+  if (target === FAQ_START_TIMING_15_DAY_TARGET) return FAQ_START_TIMING_15_DAY_APPROVAL_ID;
+  return undefined;
+};
+
 async function publishOrg020ExactPatch(
   input: ContentPublishRequest, client: ContentPublishClient, context: PublishContext,
   mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
 ): Promise<ContentPublishResult> {
   const record = input.record!;
   const operation = (input.managedPermit || input.managedCandidate)?.operation;
+  const faqApprovalId = faqStartTimingApproval(target);
   const shopOfficeRestore = SHOP_OFFICE_SIX_FIELD_TARGETS.includes(target)
     && target.rollbackAllowed === true && operation === "rollback";
   if ((operation !== "publish" && !shopOfficeRestore)
@@ -1895,6 +1906,9 @@ async function publishOrg020ExactPatch(
   }
   const existing = await fetchRecordByField(client, target.table!, "id", target.id);
   if (!existing) return errorResult("The exact existing CMS row was not found.", 404);
+  if (faqApprovalId && (existing.page_key !== "general" || existing.sort_order !== 130)) {
+    return errorResult("The existing FAQ does not match the reviewed general start-timing row.", 409);
+  }
   const expected = String(input.expectedUpdatedAt || "");
   if (!expected || (!shopOfficeRestore && !samePgTimestamp(expected, target.expectedUpdatedAt))
       || !samePgTimestamp(existing.updated_at, expected)) {
@@ -1927,7 +1941,13 @@ async function publishOrg020ExactPatch(
     else if (target.contentType === "service_area") cleaned = cleanServiceAreaPayload(record, nextStatus).payload;
     else if (target.contentType === "blog") cleaned = cleanBlogPayload(validationRecord, nextStatus).payload;
     else if (target.contentType === "site_page") cleaned = cleanStandaloneSitePagePayload(record, nextStatus).payload;
-    else cleaned = Object.fromEntries(["answer_en", "answer_zh"].map((field) => [field, cleanText(record[field])]));
+    else if (faqApprovalId) {
+      const faqFields = target.changedFields!;
+      if (faqFields.some(field => typeof record[field] !== "string" || !record[field] || cleanText(record[field]) !== record[field])) {
+        return errorResult("The reviewed FAQ questions and answers must be non-empty strings.", 400);
+      }
+      cleaned = Object.fromEntries(faqFields.map(field => [field, cleanText(record[field])]));
+    } else cleaned = Object.fromEntries(["answer_en", "answer_zh"].map((field) => [field, cleanText(record[field])]));
   } catch (error) {
     return errorResult(error instanceof Error ? error.message : "Invalid exact patch", 400);
   }
@@ -1940,6 +1960,9 @@ async function publishOrg020ExactPatch(
     action: "update", slug: target.slug, existing_id: target.id, status: existing.status,
     warnings: [], auth_mode: context.authMode || "admin" };
   if (mode === "dry-run") return { body: { ...common, performed_write: false, payload_preview: patch } };
+  if (faqApprovalId && input.approvalId !== faqApprovalId) {
+    return errorResult("This FAQ requires its own explicit owner approval reference.", 403);
+  }
   if (!cleanText(input.approvalId, 180)) return errorResult("Publishing requires a non-empty approvalId.", 403);
   // The raw row is already checked for unrelated changes. Pass only unchanged existing fields + cleaned patch.
   const checkedPayload = Object.fromEntries(Object.keys(record).filter((field) => !READONLY_FIELDS.has(field) && field !== "id")
@@ -1966,6 +1989,69 @@ async function publishOrg020ExactPatch(
 }
 
 const MALAY_TRANSLATION_APPROVAL_ID = "owner-authorized-malay-cms-completion-20261019";
+
+async function publishRegisteredSeoTitlePatch(
+  input: ContentPublishRequest, client: ContentPublishClient, context: PublishContext,
+  mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
+): Promise<ContentPublishResult> {
+  const record = input.record!;
+  const fields = target.changedFields!;
+  const key = target.contentType === "site_page" ? "page_key" : "slug";
+  const allowed = new Set(["id", key, ...fields]);
+  const selection = input.managedPermit || input.managedCandidate;
+  if (!context.managedIdentity || nextStatus !== "published" || selection?.operation !== "publish"
+      || input.approvalId !== CMS_SEO_TITLE_APPROVAL_ID || record.id !== target.id || record[key] !== target.slug
+      || Object.keys(record).some(field => !allowed.has(field)) || fields.some(field => {
+        const value = record[field];
+        return !/^seo_title_(en|zh|ms)$/.test(field) || typeof value !== "string" || !value
+          || /[<>\r\n]/.test(value) || cleanText(value, 180) !== value;
+      })) {
+    return errorResult("SEO title publishing requires the registered title fields and verified owner approval.", 403);
+  }
+  const patch = Object.fromEntries(fields.map(field => [field, record[field]]));
+  if (await sha256(patch) !== target.desiredFieldsSha256) {
+    return errorResult("SEO title values differ from the reviewed candidate.", 403);
+  }
+  const expected = String(input.expectedUpdatedAt || "");
+  if (!samePgTimestamp(expected, target.expectedUpdatedAt)) {
+    return errorResult("SEO title candidate version no longer matches the registered record.", 409);
+  }
+  const table = target.table!;
+  const existing = await fetchRecordByField(client, table, "id", target.id);
+  if (!existing || existing.status !== "published" || !samePgTimestamp(existing.updated_at, expected)
+      || await sha256(Object.fromEntries(target.baselineProjectionFields!.map(field => [field, existing[field] ?? null]))) !== target.baselineFieldsSha256) {
+    return errorResult("The published SEO title baseline changed. Reconcile before any write.", 409);
+  }
+  const warnings: string[] = [];
+  const common = { ok: true, dry_run: mode === "dry-run", content_type: target.contentType, action: "update",
+    slug: target.slug, existing_id: target.id, status: "published", warnings };
+  if (mode === "dry-run") return { body: { ...common, performed_write: false, payload_preview: patch } };
+
+  const denied = await beginManagedCmsWrite(input, client, context, target, existing, target.slug, patch, expected);
+  if (denied) return denied;
+  const permitId = input.managedPermit!.permitId;
+  const retained = (row: ContentRow) => Object.fromEntries(Object.entries(row)
+    .filter(([field]) => field !== "updated_at" && field !== "version" && !fields.includes(field)));
+  let saved: ContentRow | null;
+  try { saved = await updateContentRecordAtVersion(client, table, target.id, expected, patch); }
+  catch {
+    await finishManagedCmsWrite(client, context, permitId, null);
+    return errorResult("SEO title write result is unknown. Read back before retrying.", 500, { uncertain: true });
+  }
+  if (!saved || saved.id !== target.id || !saved.updated_at || samePgTimestamp(saved.updated_at, expected)
+      || fields.some(field => saved[field] !== patch[field])
+      || await sha256(retained(saved)) !== await sha256(retained(existing))) {
+    await finishManagedCmsWrite(client, context, permitId, null);
+    return errorResult("SEO title or retained fields could not be confirmed. Read back before retrying.", 409, { uncertain: true });
+  }
+  if (!await finishManagedCmsWrite(client, context, permitId, saved)) {
+    return errorResult("SEO title was saved but permit completion is uncertain.", 409, { uncertain: true });
+  }
+  try { await insertAdminAuditLog(client, { adminUserId: context.adminUserId || null, action: "update",
+    tableName: table, recordId: target.id, oldValue: existing, newValue: saved }); }
+  catch { warnings.push("SEO title audit log could not be confirmed."); }
+  return { body: { ...common, performed_write: true, saved_id: saved.id, saved_updated_at: saved.updated_at } };
+}
 
 // Existing site_page request shape; this one registered target writes cms_pages,
 // without sending a sparse title patch through the legacy site_pages normalizer.
@@ -2176,7 +2262,7 @@ export async function publishContent(
     input.contentType !== "cache_invalidation" &&
     input.contentType !== "translation_patch"
   ) {
-    return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page, faq (exact managed answers only), media, cache_invalidation.");
+    return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page, faq (exact managed patches only), media, cache_invalidation.");
   }
 
   const mode = input.mode || "dry-run";
@@ -2255,8 +2341,9 @@ export async function publishContent(
       exact?.contentType === "translation_patch" ? exact : undefined);
   }
   if (exact && CONTACT_CMS_PAGE_TITLE_TARGETS.includes(exact)) return publishExactContactTitles(input, client, context, mode, nextStatus, exact);
+  if (exact && CMS_SEO_TITLE_TARGETS.includes(exact)) return publishRegisteredSeoTitlePatch(input, client, context, mode, nextStatus, exact);
   if (protectedOriginalMaterial && exact) return publishOriginalMaterialBodies(input, client, context, mode, nextStatus, exact);
-  if (exact && (ORG020_V7_TARGETS.includes(exact) || SHOP_OFFICE_SIX_FIELD_TARGETS.includes(exact)
+  if (exact && (faqStartTimingApproval(exact) || ORG020_V7_TARGETS.includes(exact) || SHOP_OFFICE_SIX_FIELD_TARGETS.includes(exact)
       || isSparseNativeBodyPatch(exact, input.record, selection?.operation))) {
     return publishOrg020ExactPatch(input, client, context, mode, nextStatus, exact);
   }

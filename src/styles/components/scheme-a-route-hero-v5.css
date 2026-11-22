@@ -322,7 +322,7 @@ html[data-public-theme] #root .fc-route-page .fc-route-hero-actions a.fc-route-h
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy {
     position: relative;
-    align-items: center;
+    align-items: flex-start;
     order: 2;
     width: 100%;
     min-height: 0;
@@ -334,7 +334,7 @@ html[data-public-theme] #root .fc-route-page .fc-route-hero-actions a.fc-route-h
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions,
   .scheme-a-public-shell .fc-route-page .fc-route-hero-support > div {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1 {
@@ -350,7 +350,7 @@ html[data-public-theme] #root .fc-route-page .fc-route-hero-actions a.fc-route-h
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy > p {
     width: min(100%, 42rem);
     max-width: 100%;
-    margin-inline: auto;
+    margin-inline: 0;
     margin-top: 24px;
     font-size: 16px;
     line-height: 1.75;
@@ -358,7 +358,7 @@ html[data-public-theme] #root .fc-route-page .fc-route-hero-actions a.fc-route-h
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
-    margin-inline: auto;
+    margin-inline: 0;
   }
 }
 

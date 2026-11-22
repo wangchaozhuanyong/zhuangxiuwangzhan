@@ -1,9 +1,10 @@
+import { SchemeASectionHeading } from "@/components/scheme-a/SchemeASection";
 import { contactEntryText } from "@/i18n/contactEntryText";
 import { malayFormat } from "@/i18n/malayText";
 import { interactionText } from "@/i18n/interactionText";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactElement } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import PublicContactRow from "@/components/PublicContactRow";
@@ -51,6 +52,55 @@ const focusFirstContactError = (errors: FormErrors) => {
   if (!firstKey || typeof window === "undefined") return;
   focusElementByIdWhenReady(contactFieldIds[firstKey] || firstKey);
 };
+
+function ContactNavigationDialog({ children, title, description, address, links, source }: {
+  children: ReactElement;
+  title: string;
+  description: string;
+  address: string;
+  links: readonly { label: string; href: string }[];
+  source: "contact_navigation_dialog" | "contact_map";
+}) {
+  const [open, setOpen] = useState(false);
+
+  const closeOnEarlyEscape = (event: KeyboardEvent<HTMLDivElement>) => {
+    // Radix normally handles Escape in capture, but its layer can still be registering after focus enters.
+    if (event.key !== "Escape" || event.defaultPrevented || event.nativeEvent.isComposing || !open ||
+      event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+      !(event.target instanceof Element) || event.target.closest('[role="dialog"]') !== event.currentTarget) return;
+    event.preventDefault();
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="navigation-dialog rounded-sm border-border bg-background" onKeyDown={closeOnEarlyEscape}>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <p className="border-y border-border py-4 text-sm leading-6 text-muted-foreground">{address}</p>
+        <div className="grid gap-2">
+          {links.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="navigation-dialog__option"
+              onClick={() => trackCtaClick("map", source, { destination: link.label })}
+            >
+              <Navigation className="h-4 w-4" />
+              <span>{link.label}</span>
+              <ExternalLink className="ml-auto h-4 w-4" />
+            </a>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 const Contact = () => {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
@@ -202,36 +252,12 @@ const Contact = () => {
                     };
 
                     return item.navigation ? (
-                      <Dialog key={item.title}>
-                        <DialogTrigger asChild>
-                          <PublicContactRow {...rowProps} asChild>
-                            <button type="button" />
-                          </PublicContactRow>
-                        </DialogTrigger>
-                        <DialogContent className="navigation-dialog rounded-sm border-border bg-background">
-                          <DialogHeader>
-                            <DialogTitle>{t.navigationTitle}</DialogTitle>
-                            <DialogDescription>{t.navigationDescription}</DialogDescription>
-                          </DialogHeader>
-                          <p className="border-y border-border py-4 text-sm leading-6 text-muted-foreground">{mapAddress}</p>
-                          <div className="grid gap-2">
-                            {navigationLinks.map((link) => (
-                              <a
-                                key={link.label}
-                                href={link.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="navigation-dialog__option"
-                                onClick={() => trackCtaClick("map", "contact_navigation_dialog", { destination: link.label })}
-                              >
-                                <Navigation className="h-4 w-4" />
-                                <span>{link.label}</span>
-                                <ExternalLink className="ml-auto h-4 w-4" />
-                              </a>
-                            ))}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <ContactNavigationDialog key={item.title} title={t.navigationTitle} description={t.navigationDescription}
+                        address={mapAddress} links={navigationLinks} source="contact_navigation_dialog">
+                        <PublicContactRow {...rowProps} asChild>
+                          <button type="button" />
+                        </PublicContactRow>
+                      </ContactNavigationDialog>
                     ) : item.href ? (
                       <PublicContactRow key={item.title} {...rowProps} asChild>
                         <a href={item.href} onClick={() => trackCtaClick(item.track, "contact_info_card", { destination: item.track })} />
@@ -447,41 +473,14 @@ const Contact = () => {
       <section className="forest-map-section section-padding section-padding--continued bg-background">
         <div className="container-narrow">
           <Reveal>
-            <div className="forest-map-heading mb-6 flex flex-col items-center gap-5">
-              <header className="scheme-a-heading">
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.mapTitle}</h2>
-                <p className="text-muted-foreground text-sm">{mapDescription}</p>
-              </header>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button type="button" className="btn-brand-secondary min-h-11 shrink-0 rounded-sm">
-                    <Navigation className="mr-2 h-4 w-4" /> {t.navigateAction}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="navigation-dialog rounded-sm border-border bg-background">
-                  <DialogHeader>
-                    <DialogTitle>{t.navigationTitle}</DialogTitle>
-                    <DialogDescription>{t.navigationDescription}</DialogDescription>
-                  </DialogHeader>
-                  <p className="border-y border-border py-4 text-sm leading-6 text-muted-foreground">{mapAddress}</p>
-                  <div className="grid gap-2">
-                    {navigationLinks.map((link) => (
-                      <a
-                        key={link.label}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="navigation-dialog__option"
-                        onClick={() => trackCtaClick("map", "contact_map", { destination: link.label })}
-                      >
-                        <Navigation className="h-4 w-4" />
-                        <span>{link.label}</span>
-                        <ExternalLink className="ml-auto h-4 w-4" />
-                      </a>
-                    ))}
-                  </div>
-                </DialogContent>
-              </Dialog>
+            <div className="forest-map-heading">
+              <SchemeASectionHeading title={t.mapTitle} description={mapDescription} />
+              <ContactNavigationDialog title={t.navigationTitle} description={t.navigationDescription}
+                address={mapAddress} links={navigationLinks} source="contact_map">
+                <Button type="button" className="btn-brand-secondary min-h-11 shrink-0 rounded-sm">
+                  <Navigation className="mr-2 h-4 w-4" /> {t.navigateAction}
+                </Button>
+              </ContactNavigationDialog>
             </div>
           </Reveal>
           <GoogleMapEmbed

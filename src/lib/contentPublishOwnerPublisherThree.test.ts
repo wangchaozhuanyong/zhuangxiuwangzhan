@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { OWNER_PUBLISHER_THREE_TARGETS } from "../../supabase/functions/content-publish/owner-publisher-three-targets.ts";
 import { NATIVE_BODY_TARGETS } from "../../supabase/functions/content-publish/native-body-targets.ts";
 import { MANAGED_TARGETS, findManagedTarget } from "../../supabase/functions/content-publish/managed-targets.ts";
+import { CMS_SEO_TITLE_TARGETS } from "../../supabase/functions/_shared/cms-seo-title-targets.ts";
 import { lockedOwnerPublisherThreeCandidates, readOwnerPublisherThreeCandidate } from "../../scripts/managed-cms-targets-owner-publisher-three-v1.mjs";
 import { targetConfigs, buildLockedDryRunRequest, stableDigest, assertLockedPublishGate } from "../../scripts/publish-content-trust-fixes.mjs";
 
@@ -23,8 +24,9 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(Object.keys(lockedOwnerPublisherThreeCandidates)).toEqual(names);
     expect(OWNER_PUBLISHER_THREE_TARGETS).toHaveLength(3);
     expect(NATIVE_BODY_TARGETS).toHaveLength(19);
-    const historicalTargets = MANAGED_TARGETS.filter((target) => target.contentType !== "translation_patch");
-    expect(historicalTargets).toHaveLength(106); // Includes seven additional owner-approved regional bodies; historical bindings are preserved.
+    const historicalTargets = MANAGED_TARGETS.filter(target => target.contentType !== "translation_patch"
+      && !CMS_SEO_TITLE_TARGETS.includes(target));
+    expect(historicalTargets).toHaveLength(111); // Includes both FAQ timing versions and three cabinet market-price bindings.
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

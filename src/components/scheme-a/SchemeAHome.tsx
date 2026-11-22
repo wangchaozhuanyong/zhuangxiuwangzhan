@@ -244,7 +244,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                         height={desktopIntrinsicHeight}
                         sizes={supportingProjects.length === 2
                           ? "(max-width: 767px) 78vw, (min-width: 1536px) 708px, calc((100vw - 120px) / 2)"
-                          : "(max-width: 767px) 78vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)"}
+                          : "(max-width: 767px) 94vw, (min-width: 1536px) 576px, 40vw"}
                         candidateWidths={PROJECT_CARD_DESKTOP_WIDTHS}
                         quality={84}
                         resize="cover"
@@ -252,7 +252,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                         pictureSources={mobileSrcSet
                           ? [{
                               media: PROJECT_CARD_MOBILE_MEDIA,
-                              sizes: PROJECT_CARD_MOBILE_SIZES,
+                              sizes: supportingProjects.length === 1 ? "94vw" : PROJECT_CARD_MOBILE_SIZES,
                               srcSet: mobileSrcSet,
                             }]
                           : undefined}
@@ -267,7 +267,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                 );
               })}
             </div>
-            <p className="scheme-a-frame scheme-a-project__collection-hint">{copy.projectSwipeHint}</p>
+            {supportingProjects.length > 1 && <p className="scheme-a-frame scheme-a-project__collection-hint">{copy.projectSwipeHint}</p>}
           </>
         )}
       </section>

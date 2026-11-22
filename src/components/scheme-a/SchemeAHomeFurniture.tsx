@@ -8,6 +8,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { furnitureCategoryName, furnitureText } from "@/i18n/furnitureText";
 import { homeFurnitureText } from "@/i18n/homeFurnitureText";
 import { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
+import { furnitureProductPathForSlug } from "@/lib/furnitureProductUrls.mjs";
 
 export default function SchemeAHomeFurniture() {
   const { language } = useLanguage();
@@ -43,18 +44,18 @@ export default function SchemeAHomeFurniture() {
           </figure>
           <div className="home-furniture__catalog">
             <PublicResultsBoundary query={query} loading={copy.loading} error={copy.loadFailed} empty={copy.empty} isEmpty={!products.length}>
-              <p className="home-furniture__swipe-hint">{copy.swipeHint}</p>
+              {products.length > 2 && <p className="home-furniture__swipe-hint">{copy.swipeHint}</p>}
               <div className="home-furniture__products" tabIndex={0} role="region" aria-label={copy.allFurniture}>
                 {products.map((product) => (
                   <article className="home-furniture__product" key={product.slug}>
-                    <LocalizedLink className="home-furniture__product-link" to={`/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`} aria-label={`${furnitureCopy.viewDetails}: ${product.name}`}>
+                    <LocalizedLink className="home-furniture__product-link" to={furnitureProductPathForSlug(product.slug, language)} aria-label={`${furnitureCopy.viewDetails}: ${product.name}`}>
                       <div className="home-furniture__product-image">
                         <DeferredSmartImage
                           src={product.image}
                           alt={product.name}
                           width={540}
                           height={540}
-                          sizes="(max-width: 767px) 45vw, 22vw"
+                          sizes={`(max-width: 767px) 45vw, ${Math.ceil(94 / Math.max(2, products.length))}vw`}
                           rootMargin="1200px 0px"
                           loading="lazy"
                           fetchPriority="auto"

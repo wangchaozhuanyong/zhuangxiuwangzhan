@@ -2,6 +2,7 @@
 import { readFileSync } from "node:fs";
 const serviceAreaCopy = JSON.parse(readFileSync(new URL("../src/components/services/serviceAreaPageText.json", import.meta.url), "utf8"));
 const cabinetText = JSON.parse(readFileSync(new URL("../src/i18n/customCabinetsText.json", import.meta.url), "utf8"));
+const beforeAfterSeo = JSON.parse(readFileSync(new URL("../src/i18n/beforeAfterPageSeo.json", import.meta.url), "utf8"));
 export const SITE_URL = (process.env.VITE_SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 export const OG_IMAGE = `${SITE_URL}/og-image.webp`;
 // Title suffix only. The registered name stays in schema and llms.txt; using the
@@ -151,7 +152,25 @@ const servicesFaqs = {
   ],
 };
 
+const klDigitalLockPath = "/locations/kuala-lumpur/digital-lock";
+
+const digitalLockAreaPaths = [
+  "/locations/petaling-jaya/digital-lock",
+  "/locations/cheras/digital-lock",
+  "/locations/subang-jaya/digital-lock",
+  "/locations/mont-kiara/digital-lock",
+  "/locations/bangsar/digital-lock",
+  "/locations/puchong/digital-lock",
+  "/locations/selangor/digital-lock",
+  "/locations/shah-alam/digital-lock",
+  "/locations/kajang/digital-lock",
+];
+
 const staticDefs = [
+  ...digitalLockAreaPaths.flatMap(path => ["en", "zh"].map(lang => {
+    const { title, description, keywords, entityName } = serviceAreaCopy[path][lang];
+    return page(lang, path, title, description, keywords, { schemaType: "Service", entityName });
+  })),
   // Batch 2: exact approved English and Chinese copy; Malay awaits translation.
   {
     "lang": "en",
@@ -225,24 +244,11 @@ const staticDefs = [
     "schemaType": "Service",
     "entityName": "梳邦再有地住宅装修"
   },
-  {
-    "lang": "en",
-    "path": "/locations/kuala-lumpur/digital-lock",
-    "title": "Digital Lock Installation Kuala Lumpur | FLASH CAST",
-    "description": "Digital lock installation in Kuala Lumpur condos and landed homes. Door compatibility and building approval checked first, then supply, installation, user enrolment and handover testing.",
-    "keywords": "digital lock installation kuala lumpur, smart lock kl, digital lock condo door",
-    "schemaType": "Service",
-    "entityName": "Digital Lock Installation Kuala Lumpur"
-  },
-  {
-    "lang": "zh",
-    "path": "/locations/kuala-lumpur/digital-lock",
-    "title": "吉隆坡公寓电子锁安装｜门体兼容核对｜FLASH CAST",
-    "description": "吉隆坡公寓与有地住宅电子锁安装。先核对门体兼容与大楼审批，再供应、安装、录入使用者并做交付测试。",
-    "keywords": "吉隆坡电子锁安装, 智能门锁, 公寓门锁更换",
-    "schemaType": "Service",
-    "entityName": "吉隆坡电子锁安装"
-  },
+  ...Object.entries(serviceAreaCopy[klDigitalLockPath]).map(([lang, copy]) =>
+    page(lang, klDigitalLockPath, copy.title, copy.description, copy.keywords, {
+      schemaType: "Service", entityName: copy.entityName,
+    }),
+  ),
   {
     "lang": "en",
     "path": "/locations/selangor/office-renovation",
@@ -466,8 +472,8 @@ const staticDefs = [
   page("zh", "/locations", "吉隆坡与雪兰莪装修服务地区 | FLASH CAST", "查看 FLASH CAST 在吉隆坡、雪兰莪与巴生谷的装修服务覆盖地区。"),
   page("en", "/projects", "Renovation Projects Portfolio | Kuala Lumpur | FLASH CAST", "Browse FLASH CAST renovation project references and clearly labelled planning concepts for homes and commercial spaces in Kuala Lumpur and Selangor."),
   page("zh", "/projects", "装修案例 | 吉隆坡 | FLASH CAST", "浏览 FLASH CAST 在吉隆坡与雪兰莪发布的装修项目参考和清楚标注的效果图概念。"),
-  page("en", "/before-after", "Renovation Before and After Kuala Lumpur | FLASH CAST", "Explore renovation before-and-after comparisons by FLASH CAST across Kuala Lumpur and Klang Valley."),
-  page("zh", "/before-after", "吉隆坡装修前后对比案例 | FLASH CAST", "查看 FLASH CAST 在吉隆坡与 Klang Valley 的装修前后对比示例与空间改造效果。"),
+  page("en", "/before-after", beforeAfterSeo.en.metaTitle, beforeAfterSeo.en.metaDescription),
+  page("zh", "/before-after", beforeAfterSeo.zh.metaTitle, beforeAfterSeo.zh.metaDescription),
   page("en", "/process", "Our Renovation Process | FLASH CAST Kuala Lumpur", "Understand FLASH CAST's renovation process from consultation to handover."),
   page("zh", "/process", "装修流程 | FLASH CAST 吉隆坡", "了解 FLASH CAST 从咨询、设计、施工到交付的装修流程。"),
   page("en", "/faq", "Renovation FAQ | Kuala Lumpur | FLASH CAST", "Frequently asked questions about renovation services, pricing, and timelines."),
@@ -488,7 +494,7 @@ export function buildStaticManifest() {
   const manifest = {};
   for (const def of staticDefs) {
     const areaCopy = serviceAreaCopy[def.path]?.[def.lang];
-    const faqs = areaCopy ? [{ question: areaCopy.question, answer: areaCopy.answer }] : def.faqs;
+    const faqs = areaCopy ? areaCopy.faqs ?? [{ question: areaCopy.question, answer: areaCopy.answer }] : def.faqs;
     const localizedPath = def.path === "/" ? `/${def.lang}` : `/${def.lang}${def.path}`;
     const canonicalPath = def.path === "/" ? `/${def.lang}` : `/${def.lang}${def.path}`;
     const enPath = def.path === "/" ? "/en" : `/en${def.path}`;

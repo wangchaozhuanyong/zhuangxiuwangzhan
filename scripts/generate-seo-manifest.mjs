@@ -1,13 +1,15 @@
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { resolveFurnitureDisplay } from "../src/lib/furnitureDisplaySafety.mjs";
+import { furnitureProductPathForSlug, getLegacyFurnitureProductRedirectPath, validateFurnitureProductUrlAliases } from "../src/lib/furnitureProductUrls.mjs";
 import { formatPublicSeoTitle, normalizePublicSeoTitle } from "../src/lib/publicSeoTitle.mjs";
 import { pickPublicSourceOwners, qualifiesMalayLocale } from "../src/lib/publicContentQualification.mjs";
 import { readFileSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
-import { loadMaterialSeoCategories, qualifiesLocale, currentSourcePath, serializeSourcePath, snapshotProvenance, isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
+import { loadMalayMaterialSeoEntries, loadMaterialSeoCategories, qualifiesLocale, currentSourcePath, serializeSourcePath, snapshotProvenance, isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
 
 const furnitureCatalog = JSON.parse(readFileSync(new URL("../src/data/furnitureCatalog.json", import.meta.url), "utf8"));
+const furnitureEditorialDetails = JSON.parse(readFileSync(new URL("../src/data/furnitureEditorialDetails.json", import.meta.url), "utf8"));
 const furnitureLabels = JSON.parse(readFileSync(new URL("../src/i18n/furnitureTaxonomyLabels.json", import.meta.url), "utf8"));
 const furnitureLocales = Object.fromEntries(["en", "zh"].map((lang) => [
   lang,
@@ -85,6 +87,7 @@ const redirectOnlyLandingSlugs = new Set([
 const isRedirectSource = localized => {
   const path = localized.replace(/^\/(en|zh|ms)(?=\/|$)/, "") || "/";
   return legacyRedirectPaths.has(localized) || redirectOnlyPaths.has(path)
+    || Boolean(getLegacyFurnitureProductRedirectPath(localized))
     || (path.startsWith("/landing/") && redirectOnlyLandingSlugs.has(path.slice("/landing/".length)));
 };
 
@@ -191,6 +194,8 @@ const addSitePage = (lang, row) => {
 const {projects,blog_posts:posts,materials,service_areas:areas,landing_pages:landings,services,site_pages:sitePages,cms_pages:cmsPages}=snapshot.rows;
 const sourceOwners=pickPublicSourceOwners(snapshot.rows);
 const regularMaterials = materials.filter(row=>row.category!=="furniture");
+const managedFurniture = materials.filter(row => row.category === "furniture");
+validateFurnitureProductUrlAliases(furnitureCatalog.products.map(product => product.slug), managedFurniture.map(row => row.slug));
 const bind=(row,kind,lang,ownedStatic=false)=>({...snapshotProvenance(snapshot,kind,row.id||row.path||row.slug||"static-provider",lang,ownedStatic),available_locales:ownedStatic?["en","zh"]:["en","zh"].filter(l=>qualifiesLocale(row,kind,l))});
 for(const [route,meta] of Object.entries(manifest)) manifest[route]={...meta,...snapshotProvenance(snapshot,"static_page",route,meta.lang,true),available_locales:["en","zh"]};
 for (const lang of ["en", "zh"]) {
@@ -210,11 +215,18 @@ for (const lang of ["en", "zh"]) {
     }
   }
   for (const product of furnitureCatalog.products) {
-    const localized = resolveFurnitureDisplay({ ...product, ...furnitureLocales[lang][product.slug] }, lang);
+    const translated = { ...product, ...furnitureLocales[lang][product.slug] };
+    const editorial = furnitureEditorialDetails[product.slug];
+    const details = editorial?.sourceUrl === product.sourceUrl ? editorial[lang] : undefined;
+    const localized = resolveFurnitureDisplay({
+      ...translated,
+      shortDescription: details?.shortDescription ?? translated.shortDescription,
+      description: details?.description ?? translated.description,
+    }, lang);
     addDynamic(
       lang,
       "/furniture/product",
-      encodeURIComponent(decodeURIComponent(product.slug)),
+      furnitureProductPathForSlug(product.slug, lang).split("/").at(-1),
       localized.name,
       (localized.shortDescription || localized.description || furnitureMeta.description).replace(/\s+/g, " ").trim(),
       {
@@ -227,7 +239,7 @@ for (const lang of ["en", "zh"]) {
       },
     );
   }
-  for (const row of materials.filter(row => row.category === "furniture")) {
+  for (const row of managedFurniture) {
     const path = currentSourcePath(row, "material");
     if (!path || !qualifiesLocale(row, "material", lang) || manifest[`/${lang}${path}`]?.owned_static) continue;
     provenance = bind(row, "material", lang);
@@ -366,7 +378,15 @@ for (const lang of ["en", "zh"]) {
   }
 }
 
-// Malay routes are emitted only from complete published translations. Missing
+for (const entry of await loadMalayMaterialSeoEntries(regularMaterials)) {
+  const path = `/materials/category/${entry.key}`;
+  if (!manifest[`/en${path}`] || !manifest[`/zh${path}`]) continue;
+  provenance = { ...snapshotProvenance(snapshot, "material_taxonomy", entry.key, "ms", entry.ownedStatic), available_locales: ["en", "zh", "ms"] };
+  const [category, subcategory] = entry.key.split("/");
+  addDynamic("ms", subcategory ? `/materials/category/${category}` : "/materials/category", subcategory || category, entry.title, entry.description);
+}
+
+// Malay CMS routes are emitted only from complete published translations. Missing
 // translations remain readable through the runtime fallback, outside discovery.
 for (const [path, { row, kind }] of sourceOwners) {
   if (!qualifiesMalayLocale(row, kind)) continue;

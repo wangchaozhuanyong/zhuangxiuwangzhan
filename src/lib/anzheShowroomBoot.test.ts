@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { readPublicLanguageCookie, resolvePreferredLanguage } from "@/i18n/languageDetection";
@@ -15,6 +15,17 @@ it("ships the current shared public boot and exact script and style revisions in
     expect(boot).toBeTruthy();
     expect(boot).not.toMatch(/\b(?:defer|async)\b/);
     expect(html.indexOf(boot!)).toBeLessThan(html.indexOf("data-public-style"));
+    const updateHash = createHash("sha256").update(readFileSync(resolve(dir, "../showroom-updates.js"))).digest("hex").slice(0, 12);
+    expect(html).toContain(`<script defer src="../showroom-updates.js?v=${updateHash}"></script>`);
+    const lockPages = readdirSync(resolve(dir, "lock"), { recursive: true, withFileTypes: true })
+      .filter(entry => entry.isFile() && entry.name === "index.html");
+    expect(lockPages.length).toBeGreaterThan(0);
+    for (const page of lockPages) {
+      const path = resolve(page.parentPath, page.name);
+      const detail = readFileSync(path, "utf8");
+      expect(detail, path).toContain(`<script defer src="/showroom-updates.js?v=${updateHash}"></script>`);
+      expect(detail, path).not.toContain("showroom-boot.js");
+    }
     const styles = Array.from(html.matchAll(/<link data-public-style[^>]*href="([^"]+)"/g));
     expect(styles.length).toBeGreaterThan(0);
     for (const [tag, href] of styles) {
