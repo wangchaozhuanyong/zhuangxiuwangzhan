@@ -65,4 +65,26 @@ describe("location page readable body", () => {
     });
     expect(buildReadablePublicBody("/en/services/kitchen", row)).toContain("Kitchen body text");
   });
+
+  describe("B3 digital lock Malay location combo pages", () => {
+    const lockAreas = [
+      { slug: "petaling-jaya", expectedHeading: "Pemasangan Kunci Digital di Petaling Jaya" },
+      { slug: "cheras", expectedHeading: "Pemasangan Kunci Digital di Cheras" },
+      { slug: "subang-jaya", expectedHeading: "Pemasangan Kunci Digital di Subang Jaya" },
+      { slug: "mont-kiara", expectedHeading: "Pemasangan Kunci Digital di Mont Kiara" },
+      { slug: "bangsar", expectedHeading: "Pemasangan Kunci Digital di Bangsar" },
+      { slug: "puchong", expectedHeading: "Pemasangan Kunci Digital di Puchong" },
+      { slug: "selangor", expectedHeading: "Pemasangan Kunci Digital di Selangor" },
+      { slug: "shah-alam", expectedHeading: "Pemasangan Kunci Digital di Shah Alam" },
+      { slug: "kajang", expectedHeading: "Pemasangan Kunci Digital di Kajang" },
+    ];
+
+    it.each(lockAreas)("renders Malay readable body for /ms/locations/$slug/digital-lock", ({ slug, expectedHeading }) => {
+      const html = buildReadablePublicBody(`/ms/locations/${slug}/digital-lock`, undefined);
+      expect(html).toContain("data-flashcast-readable-body");
+      expect(html).toContain(expectedHeading);
+      expect(html).toContain("Kunci digital");
+      expect(html).toContain("Lihat bilik pameran kunci digital ANZHE");
+    });
+  });
 });
