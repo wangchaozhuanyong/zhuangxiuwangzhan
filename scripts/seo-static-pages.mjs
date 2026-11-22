@@ -167,7 +167,7 @@ const digitalLockAreaPaths = [
 ];
 
 const staticDefs = [
-  ...digitalLockAreaPaths.flatMap(path => ["en", "zh"].map(lang => {
+  ...digitalLockAreaPaths.flatMap(path => ["en", "zh", "ms"].map(lang => {
     const { title, description, keywords, entityName } = serviceAreaCopy[path][lang];
     return page(lang, path, title, description, keywords, { schemaType: "Service", entityName });
   })),
