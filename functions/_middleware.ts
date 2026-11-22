@@ -2496,7 +2496,7 @@ export const onRequest: PagesFunction = async (context) => {
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
   const expandedBody = readableBody || buildExpandedReadableBody(key, {
-    row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, processSteps,
+    row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, serviceAreas, processSteps,
     resolveMaterialLink: resolveReadableMaterialLink,
   });
   let transformed = meta ? injectSeo(html, meta, siteSettings, expandedBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);

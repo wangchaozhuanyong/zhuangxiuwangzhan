@@ -233,3 +233,42 @@ describe("shop project guidance in initial HTML", () => {
     }
   });
 });
+
+describe.each(["en", "zh", "ms"] as const)("locations hub readable body (%s)", lang => {
+  it("renders all 30 region links and fulfills curl acceptance criteria", () => {
+    const html = buildExpandedReadableBody(`/${lang}/locations`, {});
+    expect(html).toContain("data-flashcast-readable-body");
+
+    const dom = new JSDOM(html);
+    const main = dom.window.document.querySelector("main[data-flashcast-readable-body]")!;
+    expect(main).not.toBeNull();
+    expect(main.querySelectorAll("h1")).toHaveLength(1);
+
+    const matches = [...html.matchAll(new RegExp(`href="/${lang}/locations/[a-z0-9-]+"`, "g"))].map(m => m[0]);
+    const uniqueLinks = new Set(matches);
+    expect(uniqueLinks.size).toBe(30);
+
+    const textLength = main.textContent?.trim().length || 0;
+    if (lang === "zh") {
+      expect(textLength).toBeGreaterThanOrEqual(1200);
+    } else {
+      expect(textLength).toBeGreaterThanOrEqual(2000);
+    }
+
+    expect(html).not.toContain("<table");
+    dom.window.close();
+  });
+
+  it("prioritizes provided published serviceAreas rows when available", () => {
+    const customArea = {
+      slug: "custom-district",
+      status: "published",
+      title_en: "Custom District Renovation",
+      title_zh: "定制区域装修",
+      excerpt_en: "Custom planning excerpt.",
+      excerpt_zh: "定制规划摘要。",
+    };
+    const html = buildExpandedReadableBody(`/${lang}/locations`, { serviceAreas: [customArea] });
+    expect(html).toContain(`href="/${lang}/locations/custom-district"`);
+  });
+});
