@@ -11,7 +11,16 @@ type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|updates|films)\.js|showroom-(?:intro|fit|films|catalog)\.css|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
 const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
 const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
-const pagePath = new RegExp(`^/(zh|en|ms)(?:/lock/(${LOCK_SLUGS}))?(?:/(?:index\\.html)?)?$`);
+const TYPE_SLUGS = "entrance-door|interior-door|aluminium-door";
+const FEATURE_SLUGS = "face-recognition|palm-vein|video-intercom";
+const pagePath = new RegExp(
+  `^/(zh|en|ms)(?:/lock/(${LOCK_SLUGS}|type/(?:${TYPE_SLUGS})|feature/(?:${FEATURE_SLUGS})))?(?:/(?:index\\.html)?)?$`,
+);
+const categoryLinkText = {
+  zh: { label: "按门型查看品类页", all: "查看全部型号", types: ["入户门品类", "室内门品类", "窄框铝门品类"] },
+  en: { label: "Browse lock categories by door type", all: "View all models", types: ["Entrance door locks", "Interior door locks", "Aluminium door locks"] },
+  ms: { label: "Lihat kategori kunci mengikut jenis pintu", all: "Lihat semua model", types: ["Kunci pintu utama", "Kunci pintu dalaman", "Kunci pintu aluminium"] },
+};
 const securityHeaders = {
   "Content-Security-Policy": [
     "default-src 'self'",
@@ -73,7 +82,17 @@ async function inlineDocumentBoot(html: string, binding: AssetBinding) {
   return { html: html.replace(tag[0], () => `<script data-showroom-boot>${source}</script>`), hash };
 }
 
-async function serveDocument(request: Request, binding: AssetBinding, pathname: string, version: string, waitUntil?: (write: Promise<unknown>) => void) {
+function addHomeCategoryLinks(html: string, locale: Language) {
+  const copy = categoryLinkText[locale];
+  const links = TYPE_SLUGS.split("|").map((slug, index) =>
+    `<a class="studio-link" href="/${locale}/lock/type/${slug}/"><span>${copy.types[index]}</span></a>`);
+  const navigation = `<nav class="section-actions" data-lock-category-links aria-label="${copy.label}">`
+    + `<a class="studio-link" href="#model-details"><span>${copy.all}</span></a>${links.join("")}</nav>`;
+  // The interactive directory replaces its own markup when it mounts or filters.
+  return html.replace('<div id="directory"', `${navigation}<div id="directory"`);
+}
+
+async function serveDocument(request: Request, binding: AssetBinding, pathname: string, locale: Language, version: string, waitUntil?: (write: Promise<unknown>) => void) {
   const cache = getEdgeCache();
   const origin = new URL(ANZHE_SHOWROOM_ORIGIN);
   origin.pathname = pathname;
@@ -85,7 +104,8 @@ async function serveDocument(request: Request, binding: AssetBinding, pathname: 
   const asset = await binding.fetch(new Request(origin));
   if (!asset.ok || !asset.headers.get("content-type")?.includes("text/html")) return null;
   const boot = await inlineDocumentBoot(await asset.text(), binding);
-  const document = boot.html.replace("<head>", `<head><meta name="flashcast-deployment-version" content="${encodeURIComponent(version)}">`);
+  const html = pathname === `/${locale}/` ? addHomeCategoryLinks(boot.html, locale) : boot.html;
+  const document = html.replace("<head>", `<head><meta name="flashcast-deployment-version" content="${encodeURIComponent(version)}">`);
   const headers = new Headers(asset.headers);
   // The deployment marker changes the representation. Retain upstream security headers only with valid body metadata.
   for (const name of ["content-length", "content-encoding", "accept-ranges", "set-cookie"]) headers.delete(name);
@@ -204,7 +224,7 @@ export async function serveAnzheShowroom(
     const canonicalPath = slug ? `/${locale}/lock/${slug}/` : `/${locale}/`;
     if (url.pathname !== canonicalPath) return redirect(url, canonicalPath, 301);
     if (assetBinding) {
-      const document = await serveDocument(request, assetBinding, canonicalPath, deploymentVersion, waitUntil);
+      const document = await serveDocument(request, assetBinding, canonicalPath, locale as Language, deploymentVersion, waitUntil);
       if (document) return document;
     }
   }

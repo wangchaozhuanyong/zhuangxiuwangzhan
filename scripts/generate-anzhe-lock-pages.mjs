@@ -269,6 +269,270 @@ const answerHeadings = {
   ms: name => `Berapakah harga ${name} termasuk pemasangan, dan untuk pintu jenis apa?`,
 };
 
+// Prices and counts in the approved copy come from each category's catalogue results.
+const categoryDefinitions = [
+  {
+    slug: "type/entrance-door",
+    matches: model => model.group === "entrance",
+    zh: {
+      title: "入户门电子锁｜含安装 {min} 起｜吉隆坡 雪兰莪",
+      h1: "入户门电子锁",
+      answer: "ANZHE 入户门电子锁共 {count} 款，含安装 {min} 至 {max}。按开锁方式分为指纹、人脸、掌静脉三类，全系列在吉隆坡与雪兰莪上门安装，装前先核对门厚与锁体。",
+      points: [
+        ["先量门厚与锁体位置", "从门边量门厚，并拍下原有锁体和门框上的锁扣。门外有铁闸时，也量一下两扇门之间的间距，确认面板和把手可以正常活动。"],
+        ["按家人习惯选开锁方式", "愿意伸手按感应区可以比较指纹款，经常提着东西进门可以比较人脸款。家人常用门卡或密码时，先看型号页列出的开锁方式。"],
+        ["比较把手与上锁方式", "入户门型号有把手式与推拉式。确认开门方向、关门后的上锁方式，以及从室内能否按自己的习惯开门。"],
+      ],
+    },
+    en: {
+      title: "Entrance Door Digital Locks from {min} Installed｜KL & Selangor",
+      h1: "Entrance Door Digital Locks",
+      answer: "ANZHE carries {count} entrance door digital locks from {min} to {max} including installation, split by fingerprint, face recognition and palm vein access. Supplied and installed across Kuala Lumpur and Selangor after door thickness and lock body are checked.",
+      points: [
+        ["Measure the door and check the lock body", "Measure the door at its edge and photograph the existing lock body and strike plate. If there is a grille, measure the space between the doors so the panel and handle have room to move."],
+        ["Choose entry methods for the household", "Compare fingerprint models if users are comfortable touching a reader, or face recognition if they often arrive with their hands full. Check the model specifications for cards or PINs that other household members use."],
+        ["Compare handle and locking styles", "Look at lever and push-pull designs. Check the door swing, how the door locks after closing and how you would normally open it from inside."],
+      ],
+    },
+    ms: {
+      title: "Kunci Digital Pintu Utama dari {min} Termasuk Pemasangan",
+      h1: "Kunci Digital Pintu Utama",
+      answer: "ANZHE menawarkan {count} model kunci digital pintu utama dari {min} hingga {max} termasuk pemasangan, dengan pilihan cap jari, pengecaman wajah dan vena tapak tangan. Pemasangan di Kuala Lumpur dan Selangor dibuat selepas ketebalan pintu dan badan kunci diperiksa.",
+      points: [
+        ["Ukur pintu dan periksa badan kunci", "Ukur ketebalan di tepi pintu dan ambil gambar badan kunci serta plat pada bingkai. Jika ada jeriji, ukur jarak antara kedua-dua pintu supaya panel dan pemegang boleh bergerak."],
+        ["Pilih kaedah buka kunci untuk seisi rumah", "Bandingkan model cap jari jika pengguna selesa menyentuh pengimbas, atau pengecaman wajah jika mereka kerap membawa barang. Periksa pilihan kad atau PIN dalam spesifikasi setiap model."],
+        ["Bandingkan pemegang dan cara mengunci", "Lihat model tuil dan tolak-tarik. Semak arah bukaan pintu, cara ia dikunci selepas ditutup dan cara membukanya dari dalam."],
+      ],
+    },
+  },
+  {
+    slug: "type/interior-door",
+    matches: model => model.group === "room",
+    zh: {
+      title: "室内门电子锁｜含安装 {min} 起",
+      h1: "室内门电子锁",
+      answer: "室内门电子锁共 {count} 款，含安装 {min} 至 {max}。主要解决房内反锁与分租单位的进出管理，适合卧室、书房与出租房间。",
+      points: [
+        ["确认室内反锁的操作", "卧室或书房要从室内上锁时，先确认反锁怎么开启，以及哪些开锁方式在反锁后仍可使用。"],
+        ["安排出租房间的权限", "房间换租客时，需要知道怎样注销旧密码、门卡或指纹，再为新住户设置权限。先看具体型号支持哪些方式。"],
+        ["核对原有把手孔与门边", "拍下现有把手和门边锁舌，并量门厚。让安装人员确认原有开孔能否复用，以及新面板能否盖住留下的孔位。"],
+      ],
+    },
+    en: {
+      title: "Interior Door Digital Locks from {min} Installed",
+      h1: "Interior Door Digital Locks",
+      answer: "{wordCount} interior door models from {min} to {max} including installation, built around in-room privacy and sublet access control for bedrooms, studies and rental rooms.",
+      points: [
+        ["Check how inside privacy works", "For a bedroom or study, check how the privacy setting is engaged from the room and which access methods work while it is active."],
+        ["Plan access when tenants change", "Check how to remove an old PIN, card or fingerprint and register a new occupant. Compare the methods shown on each model page."],
+        ["Check the existing handle holes and door edge", "Photograph the handle and latch and measure the thickness. Ask the installer whether the holes can be reused and whether the new panel will cover them."],
+      ],
+    },
+    ms: {
+      title: "Kunci Digital Pintu Dalaman dari {min} Termasuk Pemasangan",
+      h1: "Kunci Digital Pintu Dalaman",
+      answer: "Terdapat {count} model kunci digital pintu dalaman dari {min} hingga {max} termasuk pemasangan. Pilihan ini membantu mengurus privasi dari dalam dan akses bilik sewa, bilik tidur atau bilik kerja.",
+      points: [
+        ["Semak cara menggunakan mod privasi", "Untuk bilik tidur atau bilik kerja, semak cara mengaktifkan mod privasi dari dalam dan kaedah akses yang masih berfungsi apabila mod itu aktif."],
+        ["Urus akses apabila penyewa bertukar", "Semak cara memadam PIN, kad atau cap jari lama dan mendaftarkan penghuni baharu. Bandingkan pilihan pada halaman setiap model."],
+        ["Periksa lubang pemegang dan tepi pintu", "Ambil gambar pemegang dan selak, kemudian ukur ketebalan pintu. Tanya pemasang sama ada lubang sedia ada boleh digunakan semula dan ditutup oleh panel baharu."],
+      ],
+    },
+  },
+  {
+    slug: "type/aluminium-door",
+    matches: model => model.group === "slim",
+    zh: {
+      title: "窄框铝门电子锁｜38.6mm 窄面板｜含安装 {min}",
+      h1: "窄框铝门电子锁",
+      answer: "窄框铝门目前 {count} 款，面板宽 38.6 毫米，含安装 {min}。铝门框边比木门窄，常规面板装不下，选购前必须量门框可用宽度。",
+      points: [
+        ["量锁具所在的平面宽度", "在现有把手周围量铝型材的可用平面宽度，留意压条或玻璃边占用的空间。给安装人员一张带尺子的照片。"],
+        ["确认锁体能放进铝型材", "面板宽度和锁体需要分别检查。拍清楚门边和门框上的锁扣，让安装人员核对锁体空间和锁舌位置。"],
+        ["确认开门后有没有干涉", "正面和侧面各拍一张，把拉手、玻璃压条和附近的铁闸拍进去。现场核对把手转动和开门时的空间。"],
+      ],
+    },
+    en: {
+      title: "Narrow Frame Aluminium Door Lock｜38.6mm Panel｜{min}",
+      h1: "Narrow Frame Aluminium Door Locks",
+      answer: "{wordCount} narrow-frame model with a 38.6 mm panel at {min} including installation. Aluminium stiles are narrower than timber, so the available frame width is measured before anything is ordered.",
+      points: [
+        ["Measure the flat area around the lock", "Measure the usable flat width of the aluminium stile around the existing handle, allowing for trim and glazing beads. Send the installer a photo with a ruler in place."],
+        ["Check the space for the lock body", "Check the panel width and the lock body separately. Photograph the door edge and strike so the installer can check the space inside the stile and the latch position."],
+        ["Check clearance as the door opens", "Take front and side photos that show the handle, glazing bead and any nearby grille. Confirm there is room for the handle and the door to move."],
+      ],
+    },
+    ms: {
+      title: "Kunci Pintu Aluminium Bingkai Sempit｜Panel 38.6mm",
+      h1: "Kunci Pintu Aluminium Bingkai Sempit",
+      answer: "Terdapat {count} model untuk bingkai sempit, dengan panel 38.6 mm pada harga {min} termasuk pemasangan. Ukur lebar permukaan profil aluminium yang tersedia sebelum membuat pesanan.",
+      points: [
+        ["Ukur permukaan rata di sekeliling kunci", "Ukur lebar permukaan rata profil aluminium di sekeliling pemegang sedia ada. Ambil kira jalur tepi kaca dan hantar gambar yang menunjukkan ukuran kepada pemasang."],
+        ["Semak ruang untuk badan kunci", "Semak lebar panel dan ruang badan kunci secara berasingan. Ambil gambar tepi pintu dan plat selak supaya pemasang boleh memeriksa ruang serta kedudukan selak."],
+        ["Periksa ruang ketika pintu dibuka", "Ambil gambar dari depan dan sisi yang menunjukkan pemegang, jalur tepi kaca dan jeriji berdekatan. Pastikan pemegang dan pintu boleh bergerak."],
+      ],
+    },
+  },
+  {
+    slug: "feature/face-recognition",
+    matches: model => model.access.zh.includes("人脸"),
+    zh: {
+      title: "人脸识别电子锁｜3D 结构光｜吉隆坡 雪兰莪",
+      h1: "人脸识别电子锁",
+      answer: "支持人脸识别的型号含安装 {min} 起。3D 结构光判断面部深度，照片与屏幕翻拍难以通过，需要门口有足够站立距离与一定光线。",
+      points: [
+        ["确认平时站在哪里", "按家人日常进门的站位来看门口空间。铁闸、对面墙或狭窄走廊可能让人只能站得很近，安装前一起确认感应位置。"],
+        ["比较门口白天和晚上的光线", "从平时开门的位置看门外照明。背光明显或夜间光线弱时，可以把门口照片和开门时段告诉安装人员。"],
+        ["留一个常用的备用开锁方式", "为不方便使用人脸识别的成员选好备用方式。查看每个型号的规格，确认它是否支持自己习惯的指纹、密码或门卡。"],
+      ],
+    },
+    en: {
+      title: "Face Recognition Door Locks｜3D Structured Light｜KL & Selangor",
+      h1: "Face Recognition Door Locks",
+      answer: "Face recognition models start at {min} including installation. Structured-light 3D judges facial depth, so photos and screen replays are hard to pass, provided the doorway has standing distance and some light.",
+      points: [
+        ["Check where people will stand", "Consider where household members normally stand when they unlock the door. Show the installer any grille, opposite wall or narrow corridor that limits the standing distance."],
+        ["Check the doorway by day and by night", "Look at the lighting from the usual standing point. Share a photo and tell the installer when the entrance is strongly backlit or dim."],
+        ["Choose a backup entry method", "Pick a method for household members who may have difficulty using face recognition. The individual specifications show which models support fingerprints, PINs or cards."],
+      ],
+    },
+    ms: {
+      title: "Kunci Digital Pengecaman Wajah｜Cahaya Berstruktur 3D",
+      h1: "Kunci Digital Pengecaman Wajah",
+      answer: "Model pengecaman wajah bermula dari {min} termasuk pemasangan. Cahaya berstruktur 3D mengesan kedalaman wajah supaya gambar atau paparan skrin sukar melepasi semakan. Ruang berdiri dan cahaya di pintu masuk perlu mencukupi.",
+      points: [
+        ["Semak kedudukan pengguna ketika membuka pintu", "Perhatikan tempat ahli rumah biasa berdiri. Tunjukkan kepada pemasang jika jeriji, dinding bertentangan atau koridor sempit menghadkan jarak berdiri."],
+        ["Periksa pencahayaan siang dan malam", "Lihat pencahayaan dari kedudukan biasa pengguna. Kongsi gambar dan beritahu pemasang jika kawasan itu malap atau menerima cahaya kuat dari belakang."],
+        ["Pilih cara buka kunci sandaran", "Pilih kaedah sandaran untuk pengguna yang sukar menggunakan pengecaman wajah. Semak model yang menawarkan cap jari, PIN atau kad."],
+      ],
+    },
+  },
+  {
+    slug: "feature/palm-vein",
+    matches: model => model.access.zh.includes("掌静脉"),
+    zh: {
+      title: "掌静脉电子锁｜手湿也能开｜吉隆坡 雪兰莪",
+      h1: "掌静脉电子锁",
+      answer: "支持掌静脉的型号含安装 {min} 起。读取皮下血管分布，不受手指干湿、脱皮与磨损影响，手湿或指纹磨损明显时比指纹稳。",
+      points: [
+        ["看手掌能否自然伸到感应区", "按家人平日的开门姿势试一下。把手旁有铁闸或门框突出时，先确认手掌可以放到感应区前。"],
+        ["按家人的实际情况试用", "经常做家务、接触水或指纹磨损明显的人，可以在展厅比较掌静脉和指纹的操作手势，看看哪种更顺手。"],
+        ["区分识别方式与其他配置", "掌静脉是开锁方式。室内屏、门铃与远程功能按型号分别确认，也为访客预留合适的密码或门卡方式。"],
+      ],
+    },
+    en: {
+      title: "Palm Vein Door Locks｜Works With Wet Hands｜KL & Selangor",
+      h1: "Palm Vein Door Locks",
+      answer: "Palm vein models start at {min} including installation. Reading the vein pattern under the skin means wet hands, peeling skin and worn fingertips do not interfere.",
+      points: [
+        ["Check that the reader is easy to reach", "Use the position in which you normally open the door. If a grille or raised frame sits beside the handle, check whether a palm can comfortably reach the reader area."],
+        ["Try both gestures at the showroom", "People who often work with water or have worn fingerprints can compare the hand positions for palm vein and fingerprint entry at the showroom."],
+        ["Compare the other features separately", "Check the model page for an indoor screen, doorbell or remote features. Check whether its PIN or card options suit the way you give visitors access."],
+      ],
+    },
+    ms: {
+      title: "Kunci Digital Vena Tapak Tangan｜Tangan Basah Pun Boleh",
+      h1: "Kunci Digital Vena Tapak Tangan",
+      answer: "Model vena tapak tangan bermula dari {min} termasuk pemasangan. Pengimbas membaca corak salur darah di bawah kulit, jadi tangan basah, kulit mengelupas dan hujung jari haus tidak mengganggu bacaan.",
+      points: [
+        ["Pastikan pengimbas mudah dicapai", "Berdiri seperti biasa ketika membuka pintu. Jika ada jeriji atau bingkai yang timbul di sisi pemegang, pastikan tapak tangan boleh dihalakan ke kawasan pengimbas."],
+        ["Cuba kedua-dua cara di bilik pameran", "Jika tangan kerap terkena air atau cap jari sudah haus, bandingkan gerakan tangan bagi akses vena tapak tangan dan cap jari."],
+        ["Bandingkan ciri lain pada setiap model", "Semak spesifikasi skrin dalaman, loceng dan fungsi jarak jauh secara berasingan. Pilih kaedah PIN atau kad yang sesuai untuk tetamu."],
+      ],
+    },
+  },
+  {
+    slug: "feature/video-intercom",
+    matches: model => model.screen !== null && /对讲|门铃/.test(model.copy.zh),
+    zh: {
+      title: "可视对讲电子锁｜门铃与室内屏｜吉隆坡 雪兰莪",
+      h1: "可视对讲电子锁",
+      answer: "带门铃与室内屏的型号含安装 {min} 起。访客按铃可在室内屏查看，部分型号支持远程对讲与远程开锁，依赖门口稳定 Wi-Fi。",
+      points: [
+        ["先选室内查看还是远程接听", "只需在屋内看访客时，先看室内屏的位置和大小。需要外出时接听，则逐款核对远程对讲和远程开锁功能。"],
+        ["在关门状态测试 Wi-Fi", "站在锁具安装点附近，用手机检查家中 Wi-Fi。关上大门与外侧铁闸再测一次，确认日常关门时的连接情况。"],
+        ["让镜头看得到访客站位", "在实际按铃位置拍一张照片。安装前确认铁闸横杆、门框或狭窄走廊是否会挡住镜头视线。"],
+      ],
+    },
+    en: {
+      title: "Video Intercom Door Locks｜Doorbell and Indoor Screen",
+      h1: "Video Intercom Door Locks",
+      answer: "Models with a doorbell and indoor screen start at {min} including installation. Visitors can be seen on the indoor display, and some models add remote talk and remote unlock over stable Wi-Fi.",
+      points: [
+        ["Decide where you need to answer the door", "Compare the indoor screen position and size for viewing from home. If you also need to answer while away, check remote talk and remote unlock on the individual model."],
+        ["Test Wi-Fi with the doors shut", "Check your home Wi-Fi on a phone beside the lock position. Repeat with the door and any outer grille shut to see how the connection behaves during normal use."],
+        ["Check the camera view at the usual standing point", "Take a photo from where a visitor presses the bell. Ask the installer whether grille bars, the frame or a narrow corridor will block the view."],
+      ],
+    },
+    ms: {
+      title: "Kunci Digital Interkom Video｜Loceng dan Skrin Dalaman",
+      h1: "Kunci Digital Interkom Video",
+      answer: "Model dengan loceng dan skrin dalaman bermula dari {min} termasuk pemasangan. Pelawat dapat dilihat pada skrin dalaman. Sesetengah model menawarkan interkom dan buka kunci jarak jauh melalui Wi-Fi yang stabil.",
+      points: [
+        ["Tentukan dari mana anda mahu menjawab loceng", "Bandingkan kedudukan dan saiz skrin untuk melihat pelawat dari dalam. Jika perlu menjawab ketika di luar, semak fungsi interkom dan buka kunci jarak jauh bagi setiap model."],
+        ["Uji Wi-Fi ketika pintu ditutup", "Periksa Wi-Fi rumah dengan telefon di tempat kunci akan dipasang. Ulangi ujian apabila pintu dan jeriji luar ditutup seperti biasa."],
+        ["Semak pandangan kamera di tempat pelawat berdiri", "Ambil gambar dari tempat pelawat menekan loceng. Tanya pemasang sama ada palang jeriji, bingkai atau laluan sempit menghalang pandangan kamera."],
+      ],
+    },
+  },
+];
+
+const categoryUi = {
+  zh: {
+    models: "本品类型号",
+    selection: "选购要点",
+    related: "相关电子锁品类",
+    membership: "所属品类",
+    ask: "WhatsApp 咨询选锁",
+    message: name => "你好，我想咨询 ANZHE " + name + "和安装。",
+    fitQuestion: "安装前需要确认什么？",
+    priceQuestion: "这个品类的含安装价是多少？",
+    priceAnswer: (count, min, max) => "本页共 " + count + " 款，含安装价" + (min === max ? "为 " + min : "从 " + min + " 到 " + max) + "。",
+  },
+  en: {
+    models: "Models in this category",
+    selection: "What to check",
+    related: "Related lock categories",
+    membership: "Lock categories",
+    ask: "Ask about lock selection on WhatsApp",
+    message: name => "Hi, I'd like help choosing and installing an ANZHE lock from the " + name + " range.",
+    fitQuestion: "What should I check before installation?",
+    priceQuestion: "How much do these locks cost including installation?",
+    priceAnswer: (count, min, max) => (count === 1 ? "This model costs " + min : "The " + count + " models cost from " + min + " to " + max) + " including installation.",
+  },
+  ms: {
+    models: "Model dalam kategori ini",
+    selection: "Perkara yang perlu disemak",
+    related: "Kategori kunci berkaitan",
+    membership: "Kategori kunci",
+    ask: "Tanya tentang pilihan kunci di WhatsApp",
+    message: name => "Helo, saya ingin bertanya tentang pilihan " + name + " ANZHE dan pemasangan.",
+    fitQuestion: "Apakah yang perlu diperiksa sebelum pemasangan?",
+    priceQuestion: "Berapakah harga kunci ini termasuk pemasangan?",
+    priceAnswer: (count, min, max) => "Terdapat " + count + " model " + (min === max ? "pada harga " + min : "dari " + min + " hingga " + max) + " termasuk pemasangan.",
+  },
+};
+
+function categoryCopy(category, lang, words) {
+  const { h1, title, answer, points } = category[lang];
+  const sorted = category.models.toSorted((left, right) => left.price - right.price);
+  const count = sorted.length;
+  const min = sorted[0].prices.display;
+  const max = sorted.at(-1).prices.display;
+  const wordCount = { 1: "One", 2: "Two" }[count] ?? String(count);
+  const fill = text => text.replaceAll("{min}", min).replaceAll("{max}", max)
+    .replaceAll("{count}", String(count)).replaceAll("{wordCount}", wordCount);
+  const ui = categoryUi[lang];
+  return {
+    h1, title: fill(title), answer: fill(answer), points,
+    faqs: [
+      { q: ui.priceQuestion, a: ui.priceAnswer(count, min, max) },
+      { q: ui.fitQuestion, a: points[0][1] },
+      { q: words.costTitle, a: words.costCopy },
+    ],
+  };
+}
+
 function pageCopy(model, lang, words, overrides) {
   const { name, group } = model;
   const price = model.prices.display;
@@ -363,45 +627,66 @@ function img(image, alt, eager = false) {
   return `<img src="${escape(image.path)}" width="${image.width}" height="${image.height}" alt="${escape(alt)}" loading="${eager ? "eager" : "lazy"}" decoding="async"${eager ? ' fetchpriority="high"' : ""}>`;
 }
 
-function renderSchema(model, copy, lang, homeLabel) {
-  const url = absolute(pagePath(lang, model.id));
-  const schema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Product",
-        "@id": url + "#product",
-        name: "ANZHE " + model.name,
-        model: model.name,
-        description: copy.description,
-        image: absolute(model.imageInfo.path),
-        url,
-        brand: { "@type": "Brand", name: "ANZHE" },
-        offers: { "@type": "Offer", url, price: model.prices.offer, priceCurrency: "MYR" },
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: homeLabel, item: absolute(pagePath(lang)) },
-          { "@type": "ListItem", position: 2, name: model.name, item: url },
-        ],
-      },
-      {
-        "@type": "FAQPage",
-        inLanguage: locales[lang].alternate,
-        mainEntity: copy.faqs.map(({ q, a }) => ({
-          "@type": "Question",
-          name: q,
-          acceptedAnswer: { "@type": "Answer", text: a },
-        })),
-      },
-    ],
-  };
-  // This is a JSON data block, not executable JavaScript.
-  return JSON.stringify(schema, null, 2).replace(/</g, "\\u003c");
+function pageLanguageLinks(slug, lang) {
+  return languages.map(code => {
+    const { alternate, label, short } = locales[code];
+    return `<a class="studio-button light-button" href="${pagePath(code, slug)}" lang="${alternate}" aria-label="${label}"${code === lang ? ' aria-current="page"' : ""}>${short}</a>`;
+  });
 }
 
-function renderPage(model, lang, sources, catalog, shared, overrides) {
+function categoryLink(category, lang) {
+  return `<a class="studio-link" href="${pagePath(lang, category.slug)}"><span>${escape(category[lang].h1)}</span></a>`;
+}
+
+function breadcrumbSchema(lang, homeLabel, name, url) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: homeLabel, item: absolute(pagePath(lang)) },
+      { "@type": "ListItem", position: 2, name, item: url },
+    ],
+  };
+}
+
+function faqSchema(lang, faqs) {
+  return {
+    "@type": "FAQPage",
+    inLanguage: locales[lang].alternate,
+    mainEntity: faqs.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+}
+
+function jsonLd(nodes) {
+  // This is a JSON data block, not executable JavaScript.
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": nodes }, null, 2).replace(/</g, "\\u003c");
+}
+
+function renderSchema(model, copy, lang, homeLabel) {
+  const url = absolute(pagePath(lang, model.id));
+  return jsonLd([
+    {
+      "@type": "Product",
+      "@id": url + "#product",
+      name: "ANZHE " + model.name,
+      model: model.name,
+      description: copy.description,
+      image: absolute(model.imageInfo.path),
+      url,
+      brand: { "@type": "Brand", name: "ANZHE" },
+      offers: { "@type": "Offer", url, price: model.prices.offer, priceCurrency: "MYR" },
+    },
+    breadcrumbSchema(lang, homeLabel, model.name, url),
+    faqSchema(lang, copy.faqs),
+  ]);
+}
+
+const whatsappLink = message => "https://wa.me/601128853888?text=" + encodeURIComponent(message);
+
+function renderPage(model, lang, sources, catalog, shared, overrides, categories) {
   const words = sources.showroomWords[lang];
   const labels = sources.lockSpecLabels;
   const ui = copyTemplates[lang];
@@ -410,12 +695,10 @@ function renderPage(model, lang, sources, catalog, shared, overrides) {
   const url = absolute(pagePath(lang, model.id));
   const home = pagePath(lang);
   const imageAlt = `ANZHE ${model.name} · ${ui.photo}`;
-  const contact = "https://wa.me/601128853888?text=" + encodeURIComponent(ui.message({ name: model.name, price: model.prices.display }));
+  const contact = whatsappLink(ui.message({ name: model.name, price: model.prices.display }));
   const altLinks = alternates(model.id).map(([tag, href]) => `<link rel="alternate" hreflang="${tag}" href="${href}">`);
-  const langLinks = languages.map(code => {
-    const { alternate, label, short } = locales[code];
-    return `<a class="studio-button light-button" href="${pagePath(code, model.id)}" lang="${alternate}" aria-label="${label}"${code === lang ? ' aria-current="page"' : ""}>${short}</a>`;
-  });
+  const langLinks = pageLanguageLinks(model.id, lang);
+  const membership = categories.filter(category => category.models.includes(model)).map(category => categoryLink(category, lang));
   const rows = specRows(model, lang, labels).map(({ key, label, value }) =>
     `<tr data-spec="${key}"><th scope="row" class="dir-spec-model">${escape(label)}</th><td>${escape(value)}</td></tr>`);
   const faq = copy.faqs.map(({ q, a }) => `<article><h3>${escape(q)}</h3><p>${escape(a)}</p></article>`);
@@ -527,6 +810,12 @@ ${renderSchema(model, copy, lang, words.title)}
       <p>${escape(ui.comparisonIntro)}</p>
       ${renderComparison(model, lang, catalog, words, labels)}
     </section>
+    <section class="wrap collection" aria-labelledby="model-categories-title">
+      <h2 id="model-categories-title">${escape(categoryUi[lang].membership)}</h2>
+      <nav class="section-actions" data-model-categories aria-labelledby="model-categories-title">
+        ${membership.join("\n        ")}
+      </nav>
+    </section>
   </main>
   <footer class="site-footer">
     <div class="wrap">
@@ -539,15 +828,159 @@ ${renderSchema(model, copy, lang, words.title)}
 `;
 }
 
-function renderSitemap(catalog) {
-  const entries = [undefined, ...catalog.map(model => model.id)].flatMap(slug =>
-    languages.map(lang => {
-      const links = alternates(slug).map(([tag, href]) => `<xhtml:link rel="alternate" hreflang="${tag}" href="${href}"/>`);
+function renderCategoryPage(category, lang, sources, shared, categories) {
+  const { slug, models } = category;
+  const words = sources.showroomWords[lang];
+  const ui = categoryUi[lang];
+  const homeLabel = copyTemplates[lang].home;
+  const copy = categoryCopy(category, lang, words);
+  const locale = locales[lang];
+  const home = pagePath(lang);
+  const url = absolute(pagePath(lang, slug));
+  const image = absolute(models[0].imageInfo.path);
+  const altLinks = alternates(slug).map(([tag, href]) => `<link rel="alternate" hreflang="${tag}" href="${href}">`);
+  const robots = lang === "ms" ? '\n  <meta name="robots" content="noindex">' : "";
+  const cards = models.map((model, index) => {
+    const highlight = model.feature?.highlights[0]?.[lang] ?? model.copy[lang];
+    return `<a href="${pagePath(lang, model.id)}" data-category-model="${model.id}">
+          <figure>
+            ${img(model.imageInfo, "", index === 0)}
+            <figcaption>
+              <strong class="dir-index-model">${escape(model.name)}</strong>
+              <span>${escape(highlight)}</span>
+              <b>${escape(model.prices.display)} <small>${escape(words.included)}</small></b>
+            </figcaption>
+          </figure>
+        </a>`;
+  });
+  const points = copy.points.map(([heading, detail]) => `<h2>${escape(heading)}</h2>\n      <p>${escape(detail)}</p>`);
+  const faqs = copy.faqs.map(({ q, a }) => `<article><h3>${escape(q)}</h3><p>${escape(a)}</p></article>`);
+  const related = categories.filter(entry => entry !== category).map(entry => categoryLink(entry, lang));
+  const schema = jsonLd([
+    {
+      "@type": "CollectionPage",
+      "@id": url,
+      name: copy.h1,
+      description: copy.answer,
+      url,
+      inLanguage: locale.alternate,
+      mainEntity: { "@id": url + "#models" },
+    },
+    {
+      "@type": "ItemList",
+      "@id": url + "#models",
+      numberOfItems: models.length,
+      itemListElement: models.map((model, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: model.name,
+        url: absolute(pagePath(lang, model.id)),
+      })),
+    },
+    breadcrumbSchema(lang, homeLabel, copy.h1, url),
+    faqSchema(lang, copy.faqs),
+  ]);
+  return `<!doctype html>
+<!-- Generated by scripts/generate-anzhe-lock-pages.mjs. -->
+<html lang="${locale.tag}" data-anzhe-showroom>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f6eb">
+  <link rel="icon" href="data:,">
+  <title>${escape(copy.title)}</title>
+  <meta name="description" content="${escape(copy.answer)}">${robots}
+  <link rel="canonical" href="${url}">
+  ${altLinks.join("\n  ")}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FLASH CAST">
+  <meta property="og:locale" content="${locale.og}">
+  <meta property="og:url" content="${url}">
+  <meta property="og:title" content="${escape(copy.title)}">
+  <meta property="og:description" content="${escape(copy.answer)}">
+  <meta property="og:image" content="${image}">
+  <meta property="og:image:alt" content="ANZHE ${escape(models[0].name)}">
+  ${shared.styles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
+  <script defer src="${shared.updates}"></script>
+  <script type="application/ld+json">
+${schema}
+  </script>
+</head>
+<body id="top">
+  <a class="skip" href="#main-content">${escape(words.skip)}</a>
+  <header class="mast">
+    <div class="wrap mast-inner">
+      <div class="mast-brand-group">
+        <a href="${home}" class="brand" aria-label="${escape(homeLabel)}">${img(shared.logo, "ANZHE", true)}</a>
+      </div>
+      <nav class="site-nav" aria-label="${escape(words.navigation)}">
+        <a href="#models">${escape(ui.models)}</a>
+        <a href="#selection">${escape(ui.selection)}</a>
+        <a href="#faq">${escape(copyTemplates[lang].faq)}</a>
+      </nav>
+      <nav class="lang-switch" aria-label="${escape(words.language)}">
+        ${pageLanguageLinks(slug, lang).join("\n        ")}
+      </nav>
+    </div>
+  </header>
+  <main id="main-content" tabindex="-1">
+    <section class="compare-section" aria-labelledby="category-title">
+      <div class="wrap collection">
+        <h1 class="hero-headline" id="category-title">${escape(copy.h1)}</h1>
+        <p data-category-answer>${escape(copy.answer)}</p>
+        <div class="hero-actions">
+          <a class="studio-button" href="${escape(whatsappLink(ui.message(copy.h1)))}" target="_blank" rel="noopener noreferrer">${escape(ui.ask)}</a>
+        </div>
+      </div>
+    </section>
+    <section class="wrap collection" id="models" aria-labelledby="category-models-title">
+      <h2 id="category-models-title">${escape(ui.models)}</h2>
+      <div class="compare-samples">
+        ${cards.join("\n        ")}
+      </div>
+    </section>
+    <div class="wrap collection" id="selection">
+      ${points.join("\n      ")}
+    </div>
+    <section class="wrap collection" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">${escape(copyTemplates[lang].faq)}</h2>
+      ${faqs.join("\n      ")}
+    </section>
+    <section class="wrap collection" aria-labelledby="related-title">
+      <h2 id="related-title">${escape(ui.related)}</h2>
+      <nav class="section-actions" aria-labelledby="related-title">
+        ${related.join("\n        ")}
+      </nav>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <a href="${home}">${escape(homeLabel)}</a>
+      <a href="#top">${escape(words.back)}</a>
+    </div>
+  </footer>
+</body>
+</html>
+`;
+}
+
+const indexedCategoryLanguages = ["zh", "en"];
+
+function renderSitemap(catalog, categories) {
+  const entriesFor = (slugs, includedLanguages) => slugs.flatMap(slug =>
+    includedLanguages.map(lang => {
+      const links = alternates(slug)
+        .filter(([tag]) => tag === "x-default" || includedLanguages.some(code => locales[code].alternate === tag))
+        .map(([tag, href]) => `<xhtml:link rel="alternate" hreflang="${tag}" href="${href}"/>`);
       return `  <url>
     <loc>${absolute(pagePath(lang, slug))}</loc>
     ${links.join("\n    ")}
   </url>`;
     }));
+  const entries = [
+    ...entriesFor([undefined, ...catalog.map(model => model.id)], languages),
+    ...entriesFor(categories.map(category => category.slug), indexedCategoryLanguages),
+  ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${entries.join("\n")}
@@ -601,6 +1034,11 @@ const catalog = await Promise.all(sources.lockCatalog.map(async model => {
     imageInfo: await imageInfo(model.image),
   };
 }));
+const categories = categoryDefinitions.map(definition => {
+  const models = catalog.filter(definition.matches);
+  if (models.length === 0) throw new Error(`${definition.slug}: no models match the catalogue filter`);
+  return { ...definition, models };
+});
 const shared = {
   updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
   styles: await Promise.all([
@@ -613,11 +1051,16 @@ const shared = {
 };
 const pages = catalog.flatMap(model => languages.map(lang => {
   const path = pagePath(lang, model.id);
-  const html = renderPage(model, lang, sources, catalog, shared, overrides);
+  const html = renderPage(model, lang, sources, catalog, shared, overrides, categories);
   return { path, target: join(showroom, "." + path, "index.html"), html, length: visibleChars(html) };
 }));
 const short = pages.filter(page => page.length < minimumVisibleChars);
 if (short.length) throw new Error(`Expected ${minimumVisibleChars} visible characters per page:\n`
   + short.map(page => `${page.path} ${page.length}`).join("\n"));
-await syncOutputs([...pages, { target: join(showroom, "sitemap.xml"), html: renderSitemap(catalog) }]);
-console.log(`${args.check ? "Checked" : "Generated"} ${pages.length} lock pages and ${pages.length + languages.length} sitemap URLs (${Math.min(...pages.map(page => page.length))} or more visible characters per page).`);
+const categoryPages = categories.flatMap(category => languages.map(lang => ({
+  target: join(showroom, "." + pagePath(lang, category.slug), "index.html"),
+  html: renderCategoryPage(category, lang, sources, shared, categories),
+})));
+await syncOutputs([...pages, ...categoryPages, { target: join(showroom, "sitemap.xml"), html: renderSitemap(catalog, categories) }]);
+const sitemapCount = pages.length + languages.length + categories.length * indexedCategoryLanguages.length;
+console.log(`${args.check ? "Checked" : "Generated"} ${pages.length} model pages (${Math.min(...pages.map(page => page.length))}+ visible characters), ${categoryPages.length} category pages and ${sitemapCount} sitemap URLs.`);
