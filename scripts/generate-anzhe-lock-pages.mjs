@@ -55,6 +55,53 @@ async function readCopy() {
   }
 }
 
+async function readCategoryBodyExtra() {
+  const file = join(root, "docs/seo/anzhe-lock-category-body.json");
+  try {
+    return JSON.parse((await readFile(file, "utf8")).replace(/^\uFEFF/, ""));
+  } catch (error) {
+    if (error.code === "ENOENT") return {};
+    throw error;
+  }
+}
+
+function getCategoryPointExtra(categoryExtra, slug, heading) {
+  const extra = categoryExtra?.zh?.[slug];
+  if (!extra) return "";
+  if (slug === "type/entrance-door") {
+    if (heading === "先量门厚与锁体位置") return extra.doorCheck || "";
+    if (heading === "按家人习惯选开锁方式") return extra.accessChoice || "";
+    if (heading === "比较把手与上锁方式") return extra.handleStyle || "";
+  } else if (slug === "type/interior-door") {
+    if (heading === "确认室内反锁的操作") return extra.whatSkip || "";
+    if (heading === "安排出租房间的权限") return extra.privacyUse || "";
+    if (heading === "核对原有把手孔与门边") return extra.doorCheck || "";
+  } else if (slug === "type/aluminium-door") {
+    if (heading === "量锁具所在的平面宽度") return extra.doorCheck || "";
+    if (heading === "确认锁体能放进铝型材") return extra.cutoutAndSwing || "";
+    if (heading === "确认开门后有没有干涉") return extra.glassFrame || "";
+  } else if (slug === "feature/face-recognition") {
+    if (heading === "确认平时站在哪里") return extra.doorCheck || "";
+    if (heading === "比较门口白天和晚上的光线") {
+      return (extra.whoFits || "") + (extra.privacyNote || "");
+    }
+    if (heading === "留一个常用的备用开锁方式") {
+      let text = extra.accessChoice || "";
+      if (text.startsWith("undefined")) text = text.slice(9);
+      return text;
+    }
+  } else if (slug === "feature/palm-vein") {
+    if (heading === "看手掌能否自然伸到感应区") return extra.doorCheck || "";
+    if (heading === "按家人的实际情况试用") return extra.whoFits || "";
+    if (heading === "区分识别方式与其他配置") return extra.enrolNote || "";
+  } else if (slug === "feature/video-intercom") {
+    if (heading === "先选室内查看还是远程接听") return extra.screenAndCamera || "";
+    if (heading === "在关门状态测试 Wi-Fi") return extra.remoteNote || "";
+    if (heading === "让镜头看得到访客站位") return extra.doorCheck || "";
+  }
+  return "";
+}
+
 function prices(model, formatPrice) {
   const amount = String(model.price);
   if (typeof model.price !== "number" || !/^\d+(?:\.\d{1,2})?$/.test(amount) || model.price <= 0) {
@@ -844,7 +891,7 @@ ${renderSchema(model, copy, lang, words.title)}
 `;
 }
 
-function renderCategoryPage(category, lang, sources, shared, categories) {
+function renderCategoryPage(category, lang, sources, shared, categories, categoryExtra) {
   const { slug, models } = category;
   const words = sources.showroomWords[lang];
   const ui = categoryUi[lang];
@@ -862,7 +909,7 @@ function renderCategoryPage(category, lang, sources, shared, categories) {
     return `<a href="${pagePath(lang, model.id)}" data-category-model="${model.id}" aria-label="${escape(label)}">
           <figure>
             <div class="category-card-photo">${img(model.cardImage, `${model.name} · ${copyTemplates[lang].photo}`, {
-              sizes: categoryCardSizes, loading: index < 2 ? "eager" : "lazy", priority: index < 2 ? "auto" : "low",
+              sizes: categoryCardSizes, loading: index < 2 ? "eager" : "lazy", priority: index < 2 ? "high" : "low",
             })}</div>
             <figcaption>
               <strong>${escape(model.name)}</strong>
@@ -872,7 +919,10 @@ function renderCategoryPage(category, lang, sources, shared, categories) {
           </figure>
         </a>`;
   });
-  const points = copy.points.map(([heading, detail]) => `<h2>${escape(heading)}</h2>\n      <p>${escape(detail)}</p>`);
+  const points = copy.points.map(([heading, detail]) => {
+    const extra = lang === "zh" ? getCategoryPointExtra(categoryExtra, slug, heading) : "";
+    return `<h2>${escape(heading)}</h2>\n      <p>${escape(detail)}</p>${extra ? "\n      " + extra : ""}`;
+  });
   const faqs = copy.faqs.map(({ q, a }) => `<article><h3>${escape(q)}</h3><p>${escape(a)}</p></article>`);
   const related = categories.filter(entry => entry !== category).map(entry => categoryLink(entry, lang));
   const schema = jsonLd([
@@ -1037,6 +1087,7 @@ async function syncOutputs(outputs) {
 
 const sources = await readShowroomSources();
 const overrides = await readCopy();
+const categoryExtra = await readCategoryBodyExtra();
 const ids = sources.lockCatalog.map(model => model.id);
 if (ids.length !== 17 || new Set(ids).size !== 17 || ids.some(id => !/^[a-z\d]+(?:-[a-z\d]+)*$/.test(id))) {
   throw new Error("Expected the 17 distinct, URL-safe slugs in the showroom catalogue");
@@ -1082,7 +1133,7 @@ if (short.length) throw new Error(`Expected ${minimumVisibleChars} visible chara
   + short.map(page => `${page.path} ${page.length}`).join("\n"));
 const categoryPages = categories.flatMap(category => languages.map(lang => ({
   target: join(showroom, "." + pagePath(lang, category.slug), "index.html"),
-  html: renderCategoryPage(category, lang, sources, shared, categories),
+  html: renderCategoryPage(category, lang, sources, shared, categories, categoryExtra),
 })));
 await syncOutputs([...pages, ...categoryPages, { target: join(showroom, "sitemap.xml"), html: renderSitemap(catalog, categories) }]);
 const sitemapCount = pages.length + languages.length + categories.length * indexedCategoryLanguages.length;
