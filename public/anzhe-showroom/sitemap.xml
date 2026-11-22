@@ -378,4 +378,76 @@
     <xhtml:link rel="alternate" hreflang="ms-MY" href="https://locks.flashcast.com.my/ms/lock/p59j-pro/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/p59j-pro/"/>
   </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/zh/lock/type/entrance-door/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/type/entrance-door/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/type/entrance-door/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/type/entrance-door/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/en/lock/type/entrance-door/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/type/entrance-door/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/type/entrance-door/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/type/entrance-door/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/zh/lock/type/interior-door/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/type/interior-door/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/type/interior-door/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/type/interior-door/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/en/lock/type/interior-door/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/type/interior-door/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/type/interior-door/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/type/interior-door/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/zh/lock/type/aluminium-door/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/type/aluminium-door/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/type/aluminium-door/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/type/aluminium-door/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/en/lock/type/aluminium-door/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/type/aluminium-door/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/type/aluminium-door/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/type/aluminium-door/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/zh/lock/feature/face-recognition/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/feature/face-recognition/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/feature/face-recognition/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/feature/face-recognition/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/en/lock/feature/face-recognition/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/feature/face-recognition/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/feature/face-recognition/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/feature/face-recognition/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/zh/lock/feature/palm-vein/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/feature/palm-vein/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/feature/palm-vein/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/feature/palm-vein/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/en/lock/feature/palm-vein/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/feature/palm-vein/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/feature/palm-vein/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/feature/palm-vein/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/zh/lock/feature/video-intercom/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/feature/video-intercom/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/feature/video-intercom/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/feature/video-intercom/"/>
+  </url>
+  <url>
+    <loc>https://locks.flashcast.com.my/en/lock/feature/video-intercom/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://locks.flashcast.com.my/zh/lock/feature/video-intercom/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://locks.flashcast.com.my/en/lock/feature/video-intercom/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://locks.flashcast.com.my/en/lock/feature/video-intercom/"/>
+  </url>
 </urlset>

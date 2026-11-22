@@ -17,10 +17,14 @@ it("ships the current shared public boot and exact script and style revisions in
     expect(html.indexOf(boot!)).toBeLessThan(html.indexOf("data-public-style"));
     const updateHash = createHash("sha256").update(readFileSync(resolve(dir, "../showroom-updates.js"))).digest("hex").slice(0, 12);
     expect(html).toContain(`<script defer src="../showroom-updates.js?v=${updateHash}"></script>`);
-    for (const model of readdirSync(resolve(dir, "lock"))) {
-      const detail = readFileSync(resolve(dir, "lock", model, "index.html"), "utf8");
-      expect(detail).toContain(`<script defer src="/showroom-updates.js?v=${updateHash}"></script>`);
-      expect(detail).not.toContain("showroom-boot.js");
+    const lockPages = readdirSync(resolve(dir, "lock"), { recursive: true, withFileTypes: true })
+      .filter(entry => entry.isFile() && entry.name === "index.html");
+    expect(lockPages.length).toBeGreaterThan(0);
+    for (const page of lockPages) {
+      const path = resolve(page.parentPath, page.name);
+      const detail = readFileSync(path, "utf8");
+      expect(detail, path).toContain(`<script defer src="/showroom-updates.js?v=${updateHash}"></script>`);
+      expect(detail, path).not.toContain("showroom-boot.js");
     }
     const styles = Array.from(html.matchAll(/<link data-public-style[^>]*href="([^"]+)"/g));
     expect(styles.length).toBeGreaterThan(0);
