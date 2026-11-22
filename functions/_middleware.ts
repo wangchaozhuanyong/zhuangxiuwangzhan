@@ -2471,10 +2471,10 @@ export const onRequest: PagesFunction = async (context) => {
       en: `${PUBLIC_SITE_URL}/en${listingPath}`, zh: `${PUBLIC_SITE_URL}/zh${listingPath}`, xDefault: `${PUBLIC_SITE_URL}/en${listingPath}`,
     } };
   }
-  const homeFaqs = shouldInjectHomeBundle && isHomePageKey(key)
-    ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
+  const homeFaqs = shouldInjectHomeBundle && isHomeDataPageKey(key)
+    ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : key === "/ms" ? "ms" : "en")
     : [];
-  if (shouldInjectHomeBundle && isHomePageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
+  if (shouldInjectHomeBundle && isHomeDataPageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
   let faqPageBody = "";
   if (meta && faqPageLanguage) {
     const published = faqPageRows?.ok ? faqPageRows.rows.filter((row) => row.status === "published") : [];
