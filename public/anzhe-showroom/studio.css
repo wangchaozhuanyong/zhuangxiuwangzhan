@@ -23,6 +23,9 @@ button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{
 .lang-switch{display:flex;align-items:center;border:1px solid var(--rule)}
 .lang-switch button{border:0;background:transparent;min-width:39px;height:38px;padding:0 8px;font-size:11px;font-weight:650}
 .lang-switch button[aria-pressed=true]{background:var(--olive);color:white}
+.mast-inner{reading-flow:source-order}
+.mast-inner>.lang-switch{reading-order:-1}
+.lang-switch a.studio-button{min-inline-size:44px;padding-inline:8px}
 .hero{background:#293a32;color:#fff9e9;border-bottom:1px solid #32483c}
 .hero-copy .kicker{color:#efc3a1}
 .hero-inner{display:grid;grid-template-columns:minmax(0,.96fr) minmax(0,1.06fr);align-items:center;gap:clamp(28px,5.25vw,82px)}
@@ -90,6 +93,13 @@ button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{
 .guide-pair figcaption>span{font:500 11px var(--mono);color:var(--brick)}
 .guide-pair figcaption strong{font-size:15px;font-weight:650}
 .guide-pair figcaption p{font-size:13px;color:var(--muted);margin:4px 0 0}
+.model-guide-photo{aspect-ratio:3/4;content-visibility:auto}
+.dir-card-photo,#model-details .dir-thumb,.lf-cover{content-visibility:auto}
+[data-lock-detail] #comparison{content-visibility:auto;contain-intrinsic-block-size:auto 64rem}
+[data-lock-category] .compare-samples{--category-photo-height:clamp(140px,13vw,205px)}
+.category-card-photo{block-size:var(--category-photo-height);content-visibility:auto}
+.compare-samples .category-card-photo img{height:100%}
+.compare-samples [data-category-model] strong{overflow-wrap:anywhere}
 .site-footer{border-top:1px solid var(--rule);background:#eaeade}
 .site-footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-block:18px;font-size:12px}
 .site-footer span{font:600 11px var(--mono)}.site-footer b{color:var(--brick)}
@@ -144,6 +154,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{
   .fit-copy .section-heading{align-items:end}
   .fit-copy h2,.compare-copy h2{font-size:clamp(24px,6.5vw,36px)}
   .compare-samples img{height:138px}.compare-samples figcaption{padding:10px 11px;gap:3px}
+  [data-lock-category] .compare-samples{--category-photo-height:138px}
   .fit-copy>p.fit-included{margin-top:13px;padding-top:12px}
   .guide-pair{gap:9px}.guide-pair figcaption{gap:5px}.guide-pair figcaption strong{font-size:13px}.guide-pair figcaption p{font-size:12px}
 }
