@@ -77,6 +77,32 @@
 
 ---
 
+### Bahasa Melayu
+
+马来文正文 2059 字符（4 段）
+
+```json
+{
+  "ms": {
+    "heading": "Pengubahsuaian Kondominium di Kuala Lumpur",
+    "area": "Kuala Lumpur",
+    "service": "Pengubahsuaian Kondominium",
+    "question": "Apakah yang perlu saya sahkan sebelum mengubah suai kondominium di Kuala Lumpur?",
+    "answer": "Sahkan keperluan pejabat pengurusan dahulu: dokumen permohonan, deposit, waktu kerja yang dibenarkan, tempahan lif servis dan perlindungan kawasan bersama. Kemudian tentukan apa yang dikekalkan dan apa yang diubah, kerana peraturan bangunan menentukan program lebih daripada reka bentuk.",
+    "title": "Pengubahsuaian Kondominium Kuala Lumpur | FLASH CAST",
+    "description": "Pengubahsuaian kondominium di Kuala Lumpur untuk unit dari era 1990-an hingga bangunan semasa. Kerja susun atur, penyimpanan, elektrik dan penghawa dingin dirancang mengikut peraturan pengurusan dan had struktur.",
+    "keywords": "pengubahsuaian kondominium kuala lumpur, pengubahsuaian apartmen kl, kerja dalaman kondo",
+    "entityName": "Pengubahsuaian Kondominium Kuala Lumpur",
+    "bodyHeading": "Rancang unit mengikut apa yang dibenarkan bangunan",
+    "body": [
+      "<p>Kondominium di Kuala Lumpur merangkumi tiga generasi bangunan, dan setiap satu berkelakuan berbeza. Unit dari era 1990-an biasanya mempunyai susunan paip buangan yang tetap, kapasiti elektrik terhad dan bilik mandi yang kalis airnya sudah dibaiki sekurang-kurangnya sekali. Bangunan dari tahun 2000-an dan selepasnya lebih longgar pada perkhidmatan tetapi lebih ketat pada proses pengurusan. Sama ada, dinding struktur, fasad dan kedudukan kawasan basah sebahagian besarnya tetap, jadi kerjanya ialah susun atur, penyimpanan, perkhidmatan dan kemasan dan bukan pembesaran.</p>",
+      "<p>Mulakan sebut harga dengan senarai dan bukan hasrat: bilik mana yang bertukar fungsi, kelengkapan mana yang dikekalkan, sama ada dapur atau bilik mandi dipindahkan, dan berapa banyak titik kuasa serta data tambahan diperlukan. Minta kerja perobohan, kerja basah, pertukangan, elektrik, penghawa dingin dan pengecatan muncul sebagai baris berasingan. Satu jumlah pukal menyembunyikan item mana yang sementara, dan dalam kondo item sementara biasanya yang dilengahkan oleh kelulusan pengurusan.</p>",
+      "<p>Keputusan yang paling mahal jika tersilap ialah bilik mandi. Memindahkan bilik mandi bermakna laluan saliran baharu, yang bermakna sama ada menaikkan lantai atau memotong papak, dan kedua-duanya perlu kelulusan dan kedua-duanya menjejaskan unit di bawah. Jika susun atur kekal, pilihan yang lebih murah dan lebih boleh diharap ialah membuat semula kalis air dengan betul semasa jubin dibuka, dan bukan menampal serta berharap. Logik yang sama berlaku pada dapur: memindahkan sinki mudah, memindahkan dapur memasak dan penyedut biasanya tidak.</p>",
+      "<p>Persetujui senarai semak serahan sebelum kerja bermula. Uji setiap alur keluar dan suis, jalankan setiap paip dan periksa sambungan yang kelihatan selepas beberapa minit, sahkan penghawa dingin mengalir keluar dan bukan ke siling, dan periksa pintu serta laci menutup seperti yang ditetapkan. Rekod kecacatan secara bertulis dengan tarikh kembali, dan sahkan apa yang diperlukan pejabat pengurusan sebelum deposit dilepaskan.</p>"
+    ]
+  }
+}
+```
 ## `/locations/petaling-jaya/kitchen-renovation`
 
 英文正文 1909 字符 / 中文 960 汉字（4 段）
@@ -129,6 +155,32 @@
 
 ---
 
+### Bahasa Melayu
+
+马来文正文 2069 字符（4 段）
+
+```json
+{
+  "ms": {
+    "heading": "Pengubahsuaian Dapur di Petaling Jaya",
+    "area": "Petaling Jaya",
+    "service": "Pengubahsuaian Dapur",
+    "question": "Apakah yang berbeza semasa merancang dapur di Petaling Jaya?",
+    "answer": "Kebanyakan dapur di PJ berada dalam bangunan dari era 1980-an dan 1990-an, di mana kedudukan susunan paip buangan dan kapasiti elektrik ialah had sebenar. Sahkan kedua-duanya sebelum memilih kabinet, kerana kedua-duanya mahal untuk dialihkan kemudian.",
+    "title": "Pengubahsuaian Dapur Petaling Jaya | FLASH CAST",
+    "description": "Pengubahsuaian dapur di Petaling Jaya untuk apartmen dan teres lama. Susunan paip buangan dan kapasiti elektrik disemak dahulu, kemudian kabinet, permukaan kerja dan perancangan peralatan.",
+    "keywords": "pengubahsuaian dapur petaling jaya, kabinet dapur pj, kontraktor pengubahsuaian dapur pj",
+    "entityName": "Pengubahsuaian Dapur Petaling Jaya",
+    "bodyHeading": "Selesaikan paip buangan dan bekalan sebelum susun atur",
+    "body": [
+      "<p>Dapur di Petaling Jaya biasanya beroperasi dalam sampul bangunan yang lebih lama. Susunan paip buangan kekal di tempat pembina asal meletakkannya, bekalan masuk disaiz untuk beban peralatan yang jauh lebih kecil, dan tingkap dapur atau ruang servis menentukan sejauh mana permukaan kerja boleh memanjang. Sebelum mana-mana kabinet dilukis, sahkan di mana saliran sinki benar-benar boleh pergi dan berapa banyak litar khusus yang dapat ditanggung unit itu. Dapur induksi, ketuhar terbina dan pengering masing-masing mahukan litar sendiri, dan papan pengguna era 1990-an jarang mempunyai ruang lebihan.</p>",
+      "<p>Bawa gambar, pelan lantai dan senarai peralatan ke perbincangan pertama, dan tandakan item sedia ada yang anda mahu kekalkan. Di PJ, item yang paling kerap wajar dikekalkan ialah jubin lantai dan pintu ruang servis; item yang paling kurang wajar dikekalkan ialah badan kabinet asal, yang jarang bertahan apabila dibuka kali kedua. Minta sebut harga mengasingkan perobohan, paip, elektrik, pertukangan kabinet, permukaan kerja dan pemasangan, supaya perubahan kemudian pada satu baris tidak mengganggu yang lain.</p>",
+      "<p>Keputusan susun atur yang perlu diselesaikan awal ialah sama ada dapur kekal satu baris atau menjadi bentuk L atau U. Satu baris mengekalkan kos rendah dan sesuai untuk unit sempit, tetapi penyimpanan terjejas. Bentuk L mendapat ruang kerja sudut dengan kos satu kabinet buta, dan itulah sebabnya penyelesaian sudut lebih penting daripada yang kelihatan. Jika unit mempunyai dapur basah di ruang servis, tentukan sama ada masakan berat kekal di situ — keputusan itu mengubah laluan penyedut, skop kalis air dan bilangan titik kuasa di kedua-dua belah.</p>",
+      "<p>Semasa serahan, buka setiap laci sepenuhnya dan periksa ia tidak menggeser dinding atau peti sejuk, jalankan air di sinki dan lihat sambungan perangkap selepas beberapa minit, uji setiap peralatan pada litar sendiri dan bukan serentak, dan sahkan penyedut benar-benar menggerakkan udara. Rekod item tampalan dengan tarikh kembali, dan simpan manual peralatan bersama sebut harga.</p>"
+    ]
+  }
+}
+```
 ## `/locations/cheras/condo-renovation`
 
 英文正文 1811 字符 / 中文 867 汉字（4 段）
@@ -181,6 +233,32 @@
 
 ---
 
+### Bahasa Melayu
+
+马来文正文 1891 字符（4 段）
+
+```json
+{
+  "ms": {
+    "heading": "Pengubahsuaian Kondominium di Cheras",
+    "area": "Cheras",
+    "service": "Pengubahsuaian Kondominium",
+    "question": "Apakah perbezaan antara kondo lama dan baharu di Cheras untuk pengubahsuaian?",
+    "answer": "Blok lama sekitar Taman Maluri dan Taman Midah biasanya memerlukan semakan perkhidmatan — kapasiti bekalan, paip dan kalis air — sebelum kemasan. Blok baharu menghala Sungai Besi kebanyakannya tentang susun atur dan penyimpanan dalam peraturan pengurusan. Sahkan yang mana satu unit anda sebelum meminta sebut harga.",
+    "title": "Pengubahsuaian Kondominium Cheras | FLASH CAST",
+    "description": "Pengubahsuaian kondominium di Cheras untuk blok lama sekitar Taman Maluri dan unit baharu menghala Sungai Besi. Semakan perkhidmatan untuk blok lama, susun atur dan penyimpanan dalam peraturan pengurusan untuk yang baharu.",
+    "keywords": "pengubahsuaian kondominium cheras, pengubahsuaian apartmen cheras, kontraktor pengubahsuaian kondo cheras",
+    "entityName": "Pengubahsuaian Kondominium Cheras",
+    "bodyHeading": "Kenal pasti generasi bangunan dahulu",
+    "body": [
+      "<p>Cheras mempunyai dua populasi kondo yang berkelakuan sangat berbeza. Blok yang dibina pada era 1990-an dan awal 2000-an sekitar Taman Maluri, Taman Pertama dan Taman Midah direka dengan beban lebih kecil, titik kuasa lebih sedikit dan bilik mandi yang kalis airnya biasanya telah ditampal sekurang-kurangnya sekali. Blok menghala Sungai Besi dan Cheras Selatan lebih baharu, dengan perkhidmatan lebih baik, tetapi dengan pejabat pengurusan yang melaksanakan peraturan pengubahsuaian lebih konsisten. Lawatan pertama dihabiskan untuk menentukan kategori unit itu, kerana skop dan risikonya tidak sama.</p>",
+      "<p>Bagi blok lama, tanya kapasiti elektrik, keadaan bekalan masuk dan sama ada unit masih menggunakan paip asal sebelum membincangkan kemasan. Bagi blok baharu, minta pejabat pengurusan memberikan borang permohonan pengubahsuaian, deposit, waktu yang dibenarkan dan proses tempahan lif servis. Kedua-dua set jawapan itu wajar dimasukkan ke dalam sebut harga sebagai andaian, supaya jika satu ternyata salah, perubahannya kelihatan dan bukan diserap secara senyap.</p>",
+      "<p>Kejutan mahal yang paling biasa di kondo Cheras ialah bilik mandi. Dalam blok lama, kalis airnya sering ditampal secara setempat, dan lantai mungkin sudah dinaikkan sekali, yang mengurangkan ketinggian siling dan boleh menjejaskan kejatuhan saliran. Dalam blok baharu, bilik mandinya biasanya baik tetapi susun aturnya sempit, jadi godaan adalah memindahkan dinding yang ternyata struktur. Sahkan kedua-duanya sebelum perobohan, bukan selepasnya.</p>",
+      "<p>Semasa serahan, jalankan air di setiap bilik mandi dan periksa sambungan selepas beberapa minit, uji setiap alur keluar dan suis, dan sahkan penghawa dingin mengalir dengan betul. Rekod kecacatan dengan tarikh kembali, dan selesaikan langkah pemulangan deposit pengurusan sebelum bayaran terakhir, kerana itulah item yang paling kerap melengahkan penutupan.</p>"
+    ]
+  }
+}
+```
 ## `/locations/subang-jaya/landed-house-renovation`
 
 英文正文 1765 字符 / 中文 848 汉字（4 段）
@@ -233,6 +311,32 @@
 
 ---
 
+### Bahasa Melayu
+
+马来文正文 1852 字符（4 段）
+
+```json
+{
+  "ms": {
+    "heading": "Pengubahsuaian Rumah Bertanah di Subang Jaya",
+    "area": "Subang Jaya",
+    "service": "Pengubahsuaian Rumah Bertanah",
+    "question": "Apakah yang perlu saya periksa sebelum membesarkan teres di Subang Jaya?",
+    "answer": "Periksa struktur sedia ada, bumbung dan saliran sebelum mereka bentuk pembesaran, dan sahkan peraturan jarak sekatan serta liputan MBSJ terlebih dahulu. Pembesaran yang mengabaikan mana-mana satu daripadanya akan mahal untuk dibetulkan selepas dibina.",
+    "title": "Pengubahsuaian Rumah Bertanah Subang Jaya | FLASH CAST",
+    "description": "Pengubahsuaian rumah bertanah di Subang Jaya: pembesaran teres dan rumah separa berasingan, pendawaian semula, paip semula, kerja bumbung dan pengubahsuaian seluruh rumah dengan panduan penyerahan MBSJ.",
+    "keywords": "pengubahsuaian rumah bertanah subang jaya, pembesaran teres subang jaya, pengubahsuaian rumah usj",
+    "entityName": "Pengubahsuaian Rumah Bertanah Subang Jaya",
+    "bodyHeading": "Struktur, bumbung dan saliran mendahului reka bentuk",
+    "body": [
+      "<p>Kebanyakan teres dan rumah separa berasingan di Subang Jaya dibina antara era 1980-an dan 2000-an, bermakna pendawaian, paip dan bumbung asal berada pada atau melepasi jangka hayat dijangka. Sebelum mereka bentuk apa-apa pembesaran, struktur sedia ada perlu diperiksa: keadaan asas, sama ada ubah suai terdahulu dilakukan dengan kelulusan, dan sama ada bumbung dapat menanggung beban tambahan. Pembesaran belakang yang diikat pada bumbung yang sudah gagal hanya memindahkan masalah ke dalam.</p>",
+      "<p>Bawa pelan asal jika anda ada, berserta gambar semasa setiap fasad dan lorong belakang. Minta keperluan jarak sekatan dan liputan MBSJ disahkan sebelum lakaran dimuktamadkan, kerana dua angka itu menentukan berapa banyak keluasan lantai yang boleh ditambah. Dalam amalan, keluarga sering mendapati had liputan plot itulah kekangan sebenar, bukan belanjawan. Mendapat jawapan itu dahulu menjimatkan satu pusingan reka bentuk.</p>",
+      "<p>Urutan kerja lebih penting di sini berbanding di kondo. Kerja bumbung dan struktur dahulu, kemudian pendawaian dan paip, kemudian kerja basah dan kalis air, kemudian pertukangan, kemudian cat. Membalikkan urutan itu ialah cara sebuah rumah berakhir dengan cat baharu di atas dinding yang kemudian perlu dibuka kerana paip bocor. Jika keluarga tinggal semasa kerja, tentukan pintu masuk, dapur dan bilik mandi mana yang kekal boleh digunakan, dan sahkan susunan sementara itu dapat bertahan melalui peringkat kerja basah.</p>",
+      "<p>Semasa serahan, periksa setiap bilik terhadap skop bertulis, uji setiap alur keluar dan paip, jalankan air di bilik mandi dan lihat sambungan selepas beberapa minit, dan periksa persimpangan pembesaran dengan rumah asal untuk resapan. Retak enapan pada bulan-bulan pertama adalah normal dan ditampal pada tampalan berikutnya. Simpan lukisan sebagaimana-dibina dan gambar kerja tersembunyi.</p>"
+    ]
+  }
+}
+```
 ## `/locations/kuala-lumpur/digital-lock`
 
 英文正文 1753 字符 / 中文 860 汉字（4 段）
@@ -337,6 +441,32 @@
 
 ---
 
+### Bahasa Melayu
+
+马来文正文 1973 字符（4 段）
+
+```json
+{
+  "ms": {
+    "heading": "Pengubahsuaian Pejabat di Selangor",
+    "area": "Selangor",
+    "service": "Pengubahsuaian Pejabat",
+    "question": "Apakah yang berbeza semasa mengubah suai pejabat di Selangor berbanding KL?",
+    "answer": "Selangor merangkumi beberapa pihak berkuasa tempatan dengan proses penyerahan berbeza, dan banyak pejabat berada dalam kedai atau bangunan industri dan bukan menara khusus. Itu mengubah keperluan bomba, akses pemunggahan dan kadangkala peruntukan parkir, semuanya menjejaskan program.",
+    "title": "Pengubahsuaian Pejabat Selangor | Kerja Ubah Suai | FLASH CAST",
+    "description": "Pengubahsuaian dan kerja ubah suai pejabat di seluruh Selangor, termasuk pejabat kedai, bangunan industri dan menara khusus. Penyerahan pihak berkuasa, keperluan bomba dan pengezonan dirancang lebih awal.",
+    "keywords": "pengubahsuaian pejabat selangor, kerja ubah suai pejabat selangor, pengubahsuaian pejabat kedai",
+    "entityName": "Pengubahsuaian Pejabat Selangor",
+    "bodyHeading": "Sahkan pihak berkuasa dan jenis bangunan",
+    "body": [
+      "<p>Selangor bukan satu bidang kuasa. Pejabat kedai di Petaling Jaya di bawah MBPJ, di Subang Jaya di bawah MBSJ, di Shah Alam di bawah MBSA, dan Klang di bawah pihak berkuasa tempatannya. Keperluan penyerahan berbeza, begitu juga ketegasan pelaksanaannya. Sebelum susun atur ditetapkan, sahkan pihak berkuasa mana yang meliputi alamat itu dan sama ada penggunaan yang dimaksudkan memerlukan kelulusan tukar guna, kerana menukar unit kedai menjadi pejabat tidak selalunya dibenarkan secara automatik.</p>",
+      "<p>Jenis bangunan menentukan kekangan teknikal. Pejabat kedai selalunya mempunyai ketinggian siling ke siling terhad, satu tangga yang melayani beberapa unit, dan keperluan bomba yang menganggap penggunaan asal. Bangunan industri mungkin membenarkan plat lantai lebih besar tetapi mengenakan peraturan beban, pengudaraan dan pengasingan. Pejabat khusus biasanya mempunyai peraturan paling jelas dan pengurusan paling ketat. Setiap satu mengubah rupa susun atur sekatan, ketinggian siling dan laluan keluar, jadi reka bentuk tidak boleh dimuktamadkan sebelum kategori bangunan diketahui.</p>",
+      "<p>Kemudian soalan operasi: adakah pasukan akan bekerja sepanjang kerja ubah suai? Jika ya, urutannya mengikut zon, dan pengezonan mesti mengikut cara orang benar-benar bekerja dan bukan cara pelan membahagikannya. Menamakan bilik mesyuarat dahulu dan stesen kerja terakhir biasanya urutan yang salah. Akses pemunggahan juga lebih penting di Selangor berbanding menara bandar, kerana fasad kedai dikongsi dan estet industri sering mengehadkan waktu kenderaan berat.</p>",
+      "<p>Semasa serahan, periksa setiap zon terhadap pelan yang dipersetujui: titik kuasa dan data di tempat yang ditetapkan, penghawa dingin tidak bertiup terus ke tempat duduk, sekatan sampai ke siling seperti dilukis, dan pintu menutup tanpa bergesel. Rekod item tertunggak dengan tarikh kembali, dan simpan pelan bertanda sebagaimana-dibina, kerana orang seterusnya yang menggerudi dinding akan memerlukannya.</p>"
+    ]
+  }
+}
+```
 ## `/locations/petaling-jaya/landed-house-renovation`
 
 英文正文 1902 字符 / 中文 813 汉字（4 段）
@@ -387,3 +517,29 @@
 }}
 ```
 
+### Bahasa Melayu
+
+马来文正文 1981 字符（4 段）
+
+```json
+{
+  "ms": {
+    "heading": "Pengubahsuaian Rumah Bertanah di Petaling Jaya",
+    "area": "Petaling Jaya",
+    "service": "Pengubahsuaian Rumah Bertanah",
+    "question": "Apakah yang paling penting semasa mengubah suai teres lama di Petaling Jaya?",
+    "answer": "Sahkan apa yang sudah diubah dan sama ada ia diluluskan. Bahagian lama PJ telah melalui beberapa dekad pembesaran berperingkat, dan kerja tanpa dokumen ialah sebab paling biasa sesuatu penyerahan baharu ditolak atau sebut harga berubah di tengah projek.",
+    "title": "Pengubahsuaian Rumah Bertanah Petaling Jaya | FLASH CAST",
+    "description": "Pengubahsuaian rumah bertanah di Petaling Jaya untuk teres dan rumah separa berasingan dari era 1960-an hingga 1980-an. Ubah suai sedia ada, struktur dan perkhidmatan disemak sebelum reka bentuk.",
+    "keywords": "pengubahsuaian rumah bertanah petaling jaya, pengubahsuaian rumah teres pj, pengubahsuaian rumah ss",
+    "entityName": "Pengubahsuaian Rumah Bertanah Petaling Jaya",
+    "bodyHeading": "Tetapkan keadaan sedia ada sebelum mereka bentuk",
+    "body": [
+      "<p>Bahagian kediaman lama Petaling Jaya — kawasan SS, Seksyen 17, Seksyen 13 — mengandungi teres dan rumah separa berasingan yang dibina antara era 1960-an dan 1980-an. Banyak yang telah dibesarkan sekurang-kurangnya sekali, sering tanpa lukisan, dan kadang-kadang merentas dua atau tiga pemilik. Sejarah itu ialah pemboleh ubah terbesar dalam pengubahsuaian. Sebelum apa-apa kerja reka bentuk, tetapkan apa yang asli, apa yang ditambah, dan sama ada tambahan itu diluluskan, kerana struktur tanpa kelulusan mesti sama ada disahkan atau dibuang sebelum kerja baharu boleh diserahkan.</p>",
+      "<p>Bawa apa-apa dokumen yang ada: pelan hakmilik asal, lukisan pengubahsuaian terdahulu, dan sebarang surat menyurat dengan MBPJ. Kemudian periksa rumah dengan tumpuan pada struktur dan bukan kemasan: retak asas, garis bumbung melendut, dinding yang dibuang tanpa rasuk, dan lantai yang condong dengan cara pembina asal tidak akan membinanya. Inilah item yang menentukan sama ada projek itu pemulihan atau pembinaan semula sebahagian.</p>",
+      "<p>Perkhidmatan ialah pemboleh ubah kedua. Rumah seusia ini biasanya masih mempunyai pendawaian asal, dan ia disaiz untuk sebahagian kecil beban hari ini. Bekalan fasa tunggal, dua atau tiga unit penghawa dingin dan tiada perlindungan arus bocor pada sesetengah litar ialah titik mula yang biasa. Paip pula sering campuran bahagian asal dan bahagian yang telah dibaiki, yang menjadikan pengesanan kebocoran lebih sukar daripada menggantinya sepenuhnya. Belanjawankan perkhidmatan dengan jujur dan bukan menemukannya selepas kemasan dipasang.</p>",
+      "<p>Semasa serahan, periksa setiap bilik terhadap skop bertulis, uji alur keluar, paip dan saliran, periksa persimpangan antara struktur lama dan baharu untuk resapan, dan sahkan bumbung mengalir keluar dari rumah dan bukan ke arahnya. Rekod kecacatan dengan tarikh kembali dan simpan gambar kerja tersembunyi, kerana dalam rumah yang telah diubah tiga kali, gambar itu satu-satunya rekod yang boleh diharap.</p>"
+    ]
+  }
+}
+```
