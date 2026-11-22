@@ -21,6 +21,7 @@ on:
           - cms-seo-titles-51-20261121-v1
           - digital-lock-service-titles-20261121-v1
           - faq-start-timing-20261121-v2
+          - faq-start-timing-20261122-v3
           - location-cheras-final-20261119-v1
           - location-seven-body-20261119-v1
           - kl-location-body-first-20261119-v1
@@ -210,11 +211,16 @@ jobs:
               *) exit 1 ;;
             esac
           fi
-          if [ "$PUBLISH_TARGET" = "faq-start-timing-20261121-v2" ]; then
+          if [ "$PUBLISH_TARGET" = "faq-start-timing-20261121-v2" ] || [ "$PUBLISH_TARGET" = "faq-start-timing-20261122-v3" ]; then
             test "$MANAGED_OPERATION" = "publish" && test -z "$PARENT_RUN_ID" && test -z "$MANAGED_PERMIT_ID" || exit 1
             case "$PUBLISH_MODE" in
               dry-run) ;;
-              publish) test "$APPROVAL_ID" = "owner-approved-faq-start-timing-copy-20261121" || exit 1 ;;
+              publish)
+                case "$PUBLISH_TARGET:$APPROVAL_ID" in
+                  faq-start-timing-20261121-v2:owner-approved-faq-start-timing-copy-20261121|faq-start-timing-20261122-v3:owner-approved-faq-15-day-start-20261122) ;;
+                  *) exit 1 ;;
+                esac
+                ;;
               *) exit 1 ;;
             esac
           fi
@@ -382,7 +388,7 @@ jobs:
 
       - name: Preview or publish the exact FAQ and cabinet price updates
         if: >-
-          ${{ inputs.target == 'faq-start-timing-20261121-v2' || inputs.target == 'c2-cabinet-prices-3fa4ff63-20261121-v1' || inputs.target == 'c2-cabinet-prices-73142986-20261121-v1' || inputs.target == 'c2-cabinet-prices-bf690bf8-20261121-v1' }}
+          ${{ inputs.target == 'faq-start-timing-20261121-v2' || inputs.target == 'faq-start-timing-20261122-v3' || inputs.target == 'c2-cabinet-prices-3fa4ff63-20261121-v1' || inputs.target == 'c2-cabinet-prices-73142986-20261121-v1' || inputs.target == 'c2-cabinet-prices-bf690bf8-20261121-v1' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || '' }}
@@ -396,14 +402,14 @@ jobs:
           MANAGED_OPERATION: ${{ inputs.managed_operation }}
           PARENT_RUN_ID: ${{ inputs.parent_run_id }}
         run: |
-          if [ "$PUBLISH_TARGET" = "faq-start-timing-20261121-v2" ]; then
+          if [ "$PUBLISH_TARGET" = "faq-start-timing-20261121-v2" ] || [ "$PUBLISH_TARGET" = "faq-start-timing-20261122-v3" ]; then
             node --experimental-strip-types scripts/publish-faq-start-timing.mjs
           else
             node --experimental-strip-types scripts/publish-cabinet-market-prices.mjs
           fi
 
       - name: Validate or publish approved updates
-        if: ${{ inputs.target != 'cms-seo-titles-51-20261121-v1' && inputs.target != 'kl-location-body-first-20261119-v1' && inputs.target != 'c4-four-service-seo-20261118-v1' && inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' && inputs.target != 'content-link-repair-20261024' && inputs.target != 'faq-start-timing-20261121-v2' && inputs.target != 'c2-cabinet-prices-3fa4ff63-20261121-v1' && inputs.target != 'c2-cabinet-prices-73142986-20261121-v1' && inputs.target != 'c2-cabinet-prices-bf690bf8-20261121-v1' }}
+        if: ${{ inputs.target != 'cms-seo-titles-51-20261121-v1' && inputs.target != 'kl-location-body-first-20261119-v1' && inputs.target != 'c4-four-service-seo-20261118-v1' && inputs.target != 'remaining-completion-20261009' && inputs.target != 'remaining-completion-after-37893433883' && inputs.target != 'remaining-completion-after-37898568406' && inputs.target != 'remaining-completion-after-37903094390' && inputs.target != 'remaining-completion-after-38037667102' && inputs.target != 'paid-three-page-native-20261010' && inputs.target != 'rental-unit-renovation-kl-malay-v1' && inputs.target != 'malay-cms-continuation-20261019' && inputs.target != 'content-link-repair-20261024' && inputs.target != 'faq-start-timing-20261121-v2' && inputs.target != 'faq-start-timing-20261122-v3' && inputs.target != 'c2-cabinet-prices-3fa4ff63-20261121-v1' && inputs.target != 'c2-cabinet-prices-73142986-20261121-v1' && inputs.target != 'c2-cabinet-prices-bf690bf8-20261121-v1' }}
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ (inputs.target == 'location-seven-body-20261119-v1' || inputs.target == 'location-cheras-final-20261119-v1') && inputs.mode == 'publish' && secrets.SUPABASE_SERVICE_ROLE_KEY || '' }}
