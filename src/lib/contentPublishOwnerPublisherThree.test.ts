@@ -26,7 +26,7 @@ describe("three exact owner-publisher successor bindings", () => {
     expect(NATIVE_BODY_TARGETS).toHaveLength(19);
     const historicalTargets = MANAGED_TARGETS.filter(target => target.contentType !== "translation_patch"
       && !CMS_SEO_TITLE_TARGETS.includes(target));
-    expect(historicalTargets).toHaveLength(110); // Includes the FAQ timing and three cabinet market-price bindings.
+    expect(historicalTargets).toHaveLength(111); // Includes both FAQ timing versions and three cabinet market-price bindings.
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
   });
 

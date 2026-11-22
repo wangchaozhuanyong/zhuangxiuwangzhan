@@ -7,9 +7,12 @@ import { fileURLToPath } from "node:url";
 import { setTimeout } from "node:timers/promises";
 import { createClient } from "@supabase/supabase-js";
 import {
+  FAQ_START_TIMING_15_DAY_APPROVAL_ID,
+  FAQ_START_TIMING_15_DAY_TARGET_ID,
+  FAQ_START_TIMING_15_DAY_TARGET,
   FAQ_START_TIMING_APPROVAL_ID as APPROVAL_ID,
   FAQ_START_TIMING_TARGET_ID as TARGET_ID,
-  FAQ_START_TIMING_TARGET as target,
+  FAQ_START_TIMING_TARGET,
 } from "../supabase/functions/_shared/faq-start-timing-target.ts";
 import { verifyGithubOidcToken } from "../supabase/functions/content-publish/github-oidc.ts";
 import { issueManagedPermit, readManagedPermit } from "../supabase/functions/content-publish/permit-issuer.ts";
@@ -20,11 +23,16 @@ const site = "https://flashcast.com.my";
 const languages = ["en", "zh", "ms"];
 const project = (row, fields) => Object.fromEntries([...fields].sort().map(field => [field, row[field]]));
 const digest = obj => createHash("sha256").update(JSON.stringify(project(obj, Object.keys(obj)))).digest("hex");
-const managed = { taskId: target.taskId, actionId: target.actionId, scope: target.scope,
-  candidateVersion: target.candidateVersion, operation: "publish" };
+const releases = new Map([
+  [TARGET_ID, { target: FAQ_START_TIMING_TARGET, approvalId: APPROVAL_ID }],
+  [FAQ_START_TIMING_15_DAY_TARGET_ID, { target: FAQ_START_TIMING_15_DAY_TARGET, approvalId: FAQ_START_TIMING_15_DAY_APPROVAL_ID }],
+]);
 
-export function readFaqStartTimingCopy() {
-  const copy = JSON.parse(readFileSync(resolve(root, "drafts/publishing", TARGET_ID, "copy.json"), "utf8"));
+export function readFaqStartTimingCopy(targetId = TARGET_ID) {
+  const release = releases.get(targetId);
+  assert(release, "Unknown FAQ start-timing candidate");
+  const { target } = release;
+  const copy = JSON.parse(readFileSync(resolve(root, "drafts/publishing", targetId, "copy.json"), "utf8"));
   assert.deepEqual(Object.keys(copy).sort(), [...target.changedFields]);
   assert.equal(digest(copy), target.desiredFieldsSha256, "The reviewed FAQ copy changed");
   return copy;
@@ -38,12 +46,13 @@ export function assertFaqStartTimingEnvironment(env, checkoutSha) {
   assert.equal(env.GITHUB_REPOSITORY_ID, "1248188229");
   assert.match(checkoutSha, /^[0-9a-f]{40}$/);
   assert.equal(env.GITHUB_SHA, checkoutSha);
-  assert.equal(env.PUBLISH_TARGET, TARGET_ID);
+  const release = releases.get(env.PUBLISH_TARGET);
+  assert(release, "Unknown FAQ start-timing candidate");
   assert.equal(env.MANAGED_OPERATION, "publish");
   assert(!env.PARENT_RUN_ID && !env.MANAGED_PERMIT_ID);
   assert(["dry-run", "publish"].includes(env.PUBLISH_MODE));
   if (env.PUBLISH_MODE === "publish") {
-    assert.equal(env.APPROVAL_ID, APPROVAL_ID);
+    assert.equal(env.APPROVAL_ID, release.approvalId);
     assert(env.SUPABASE_SERVICE_ROLE_KEY, "Missing protected permit issuer credential");
   } else {
     assert(!env.SUPABASE_SERVICE_ROLE_KEY);
@@ -54,10 +63,13 @@ async function main() {
   const env = process.env;
   assert.equal(resolve(process.cwd()), root);
   assertFaqStartTimingEnvironment(env, execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim());
+  const { target, approvalId } = releases.get(env.PUBLISH_TARGET);
+  const managed = { taskId: target.taskId, actionId: target.actionId, scope: target.scope,
+    candidateVersion: target.candidateVersion, operation: "publish" };
   assert.equal(new URL(env.VITE_SUPABASE_URL).origin, "https://rbsnyexjifounogswrjp.supabase.co");
   assert(env.CONTENT_PUBLISH_SECRET && env.VITE_SUPABASE_ANON_KEY && env.ACTIONS_ID_TOKEN_REQUEST_TOKEN);
   const output = resolve(root, "audits", `content-publish-${env.GITHUB_RUN_ID}`, "faq-start-timing");
-  const copy = readFaqStartTimingCopy();
+  const copy = readFaqStartTimingCopy(env.PUBLISH_TARGET);
   const client = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY, { auth: { persistSession: false } });
   const read = async () => {
     const { data, error } = await client.from(target.table).select(target.baselineProjectionFields.join(",")).eq("id", target.id).single();
@@ -117,12 +129,12 @@ async function main() {
     expectedUpdatedAt: before.updated_at, payloadSha256: target.desiredFieldsSha256,
     rollbackPayloadSha256: target.rollbackFieldsSha256, githubActorId: identity.actorId,
     githubWorkflowSha: identity.workflowSha, qaReceiptId: "faq-130-preview-" + identity.runId,
-    operationsDecisionId: APPROVAL_ID, policyDecisionId: "exact-faq-row-cas-oidc-v2",
+    operationsDecisionId: approvalId, policyDecisionId: "exact-faq-row-cas-oidc-v2",
     issuerEvidenceSha256: digest(preflight), expiresAt: new Date(Date.now() + 10 * 60_000).toISOString(),
   });
   write("permit-issued.json", issued);
   const receipt = await post({ ...input, mode: "publish", ownerApproved: true, explicitExecution: true,
-    approvalId: APPROVAL_ID, managedPermit: { ...managed, permitId: issued.permitId } });
+    approvalId, managedPermit: { ...managed, permitId: issued.permitId } });
   write("publish-receipt.json", receipt);
   assert.equal(receipt.performed_write, true);
   assert.equal(receipt.saved_id, target.id);
@@ -144,7 +156,7 @@ async function main() {
       const response = await fetch(url, { headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(20_000) });
       const html = await response.text();
       const body = html.match(/<main data-flashcast-readable-body[^>]*>([\s\S]*?)<\/main>/)?.[1];
-      const question = copy["question_" + language];
+      const question = saved["question_" + language];
       const answer = copy["answer_" + language];
       const matchedBody = [2, 3].some(level => body?.includes("<h" + level + ">" + question + "</h" + level + "><p>" + answer + "</p>"));
       const matchedSchema = [...html.matchAll(/<script type="application\/ld\+json" data-flashcast-edge-schema>([\s\S]*?)<\/script>/g)]

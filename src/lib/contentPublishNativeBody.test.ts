@@ -63,7 +63,7 @@ describe("19 exact original-identity multilingual body targets", () => {
     const historicalTargets = MANAGED_TARGETS.filter(target => target.contentType !== "translation_patch"
       && !CMS_SEO_TITLE_TARGETS.includes(target));
     expect(historicalTargets.filter((target) => !target.rollbackFieldsSha256)).toHaveLength(45);
-    expect(historicalTargets).toHaveLength(110); // Includes the FAQ timing and three cabinet market-price bindings.
+    expect(historicalTargets).toHaveLength(111); // Includes both FAQ timing versions and three cabinet market-price bindings.
     const workflow = readFileSync(".github/workflows/content-publish-approved.yml", "utf8");
     for (const name of names) {
       const locked = lockedNativeBodyCandidates[name]; const row = frozenRow(name);

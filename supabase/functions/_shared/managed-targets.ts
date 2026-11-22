@@ -1,7 +1,7 @@
 import { LOCATION_SEVEN_BODY_TARGETS } from './location-seven-body-targets.ts';
 import { C4_SERVICE_SEO_TARGETS } from "./c4-service-seo-targets.ts";
 import { CMS_SEO_TITLE_TARGETS } from "./cms-seo-title-targets.ts";
-import { FAQ_START_TIMING_TARGET } from "./faq-start-timing-target.ts";
+import { FAQ_START_TIMING_15_DAY_TARGET, FAQ_START_TIMING_TARGET } from "./faq-start-timing-target.ts";
 import { KL_LOCATION_BODY_FIRST_TARGETS } from "./kl-location-body-first-target.ts";
 import { CONTENT_LINK_REPAIR_TARGETS } from "./content-link-repair-targets.ts";
 import { ORG020_V7_TARGETS } from "./org020-v7-targets.ts";
@@ -165,6 +165,7 @@ export const MANAGED_TARGETS: readonly ManagedTarget[] = [
   ...TWO_ORIGINAL_MATERIAL_BODY_TARGETS,
   ...CONTACT_CMS_PAGE_TITLE_TARGETS,
   FAQ_START_TIMING_TARGET,
+  FAQ_START_TIMING_15_DAY_TARGET,
   ...MANAGED_SERVICES, ...MANAGED_AREAS, ...MANAGED_BLOGS, ...ORG020_V7_TARGETS, ...MALAY_TRANSLATION_TARGETS, ...CONTENT_LINK_REPAIR_TARGETS,
 ];
 
