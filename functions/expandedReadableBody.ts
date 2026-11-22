@@ -44,7 +44,10 @@ const records = (value: unknown): Row[] => Array.isArray(value) ? value.filter((
 const list = (label: string, values: string[]) => values.length ? `${heading(label)}<ul>${values.map(value => `<li>${escape(value)}</li>`).join("")}</ul>` : "";
 const faqs = (label: string, values: { question: string; answer: string }[]) => values.length
   ? `${heading(label)}${values.map(value => `<h3>${escape(value.question)}</h3>${paragraph(value.answer)}`).join("")}` : "";
-const link = (path: string, label: string, lang: Lang) => `<a href="/${lang}${escape(path)}">${escape(label)}</a>`;
+const link = (path: string, label: string, lang: Lang) =>
+  path.startsWith("http://") || path.startsWith("https://")
+    ? `<a href="${escape(path)}">${escape(label)}</a>`
+    : `<a href="/${lang}${escape(path)}">${escape(label)}</a>`;
 const navigation = (lang: Lang) => `<nav>${[
   link("/services", servicesPageText[lang].title, lang), link("/projects", projectsPageText[lang].title, lang),
   link("/materials", materialsPageText[lang].title, lang), link("/blog", blogPageText[lang].title, lang),

@@ -343,7 +343,8 @@ const wrapBody = (body: string, lang: "en" | "zh" | "ms") => body.length <= 2621
 
 function buildContextLinks(links: readonly { href: string; title: string; description: string }[], lang: "en" | "zh" | "ms") {
   return `<section>${links.map(link => {
-    const href = publicHref(`/${lang}${link.href}`, lang);
+    const raw = link.href.startsWith("http") ? link.href : `/${lang}${link.href}`;
+    const href = publicHref(raw, lang);
     return href ? `<h3><a href="${escape(href)}">${escape(link.title)}</a></h3>${paragraph(link.description)}` : "";
   }).join("")}</section>`;
 }
