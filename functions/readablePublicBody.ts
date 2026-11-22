@@ -27,7 +27,7 @@ import { localizedContentValue } from "../src/i18n/localizedContentValue";
 import type { resolveFaqPageCategories } from "../src/lib/publicFaqs";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = [
-  "/services/builtin", "/services/kitchen", "/services/renovation", "/services/digital-lock",
+  "/services/builtin", "/services/kitchen", "/services/renovation",
   "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas",
   "/locations/petaling-jaya/digital-lock",
   "/locations/cheras/digital-lock",
@@ -317,8 +317,6 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   }
   if (reviewedOffice) {
     body += buildContextLinks(getServiceContextLinks("office-renovation", lang), lang);
-  } else if (path === "/services/digital-lock") {
-    body += buildContextLinks(getServiceContextLinks("digital-lock", lang), lang);
   }
   body += buildReviewedCta(path, lang, identity);
   if (body.length > 262144) return "";

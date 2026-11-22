@@ -28,14 +28,14 @@ it.each(["en", "zh", "ms"] as const)("exposes the %s planning comparisons in the
   expect(main.querySelector(`a[href="/${lang}/quote#quote-form"]`)).toBeTruthy();
   dom.window.close();
 });
-it.each(["en", "zh", "ms"] as const)("links the %s digital-lock service to the existing KL guide", async lang => {
+it.each(["en", "zh", "ms"] as const)("links the %s digital-lock service to the existing KL guide and other areas", async lang => {
   if (lang === "ms") await loadMalayContent();
   const key = `/${lang}/services/digital-lock`;
   const body = buildExpandedReadableBody(key, {
     row: { status: "published", slug: "digital-lock", [`title_${lang}`]: "Digital Lock", [`content_${lang}`]: "<p>Door fit.</p>" },
   });
   expect(body).toContain(`href="/${lang}/locations/kuala-lumpur/digital-lock"`);
-  expect(body).not.toContain("/locations/cheras/digital-lock");
+  expect(body).toContain(`href="/${lang}/locations/cheras/digital-lock"`);
 });
 
 describe.each(["en", "zh"] as const)("expanded %s raw HTML", lang => {

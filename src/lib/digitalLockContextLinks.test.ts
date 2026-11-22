@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getServiceContextLinks } from '@/i18n/serviceContextLinks';
-import { buildReadablePublicBody } from '../../functions/readablePublicBody';
+import { loadMalayContent } from '@/i18n/malayContentRuntime';
+import { buildExpandedReadableBody } from '../../functions/expandedReadableBody';
 
 describe('digital-lock service context links and readable body', () => {
   it.each(['zh', 'en', 'ms'] as const)('provides all 16 links for %s', (lang) => {
@@ -30,7 +31,8 @@ describe('digital-lock service context links and readable body', () => {
     expect(areas[9].href).toBe('/locations/kajang/digital-lock');
   });
 
-  it.each(['zh', 'en', 'ms'] as const)('generates readable edge body with all 16 links for %s', (lang) => {
+  it.each(['zh', 'en', 'ms'] as const)('generates readable edge body with all 16 links for %s', async (lang) => {
+    if (lang === 'ms') await loadMalayContent();
     const mockRow = {
       id: '01c632e5-4057-479e-93e3-303c17d6ad31',
       slug: 'digital-lock',
@@ -39,7 +41,7 @@ describe('digital-lock service context links and readable body', () => {
       [`excerpt_${lang}`]: 'Summary',
       [`content_${lang}`]: '<p>Content</p>',
     };
-    const body = buildReadablePublicBody(`/${lang}/services/digital-lock`, mockRow);
+    const body = buildExpandedReadableBody(`/${lang}/services/digital-lock`, { row: mockRow });
     expect(body).toContain('data-flashcast-readable-body');
     expect(body).toContain(`https://locks.flashcast.com.my/${lang}/lock/type/entrance-door/`);
     expect(body).toContain(`/${lang}/locations/kuala-lumpur/digital-lock`);
