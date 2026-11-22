@@ -183,5 +183,467 @@
       "en": "Kids Stool",
       "ms": "Najis Kanak-kanak"
     }
+  },
+  "subcategoryPages": {
+    "bed-frame": {
+      "en": {
+        "title": "Bed Frames in Malaysia | FLASH CAST",
+        "h1": "Bed Frames",
+        "description": "Bed frames listed with dimensions, material and mattress size. Confirm frame height, slat spacing and floor clearance before ordering, and check that the internal size matches your mattress.",
+        "intro": "Bed frames here cover solid rubberwood and metal constructions. Check the internal mattress size, the slat spacing and the clearance under the frame before deciding. A frame that fits the room can still be wrong for the mattress you already own, and headboard height changes how the bed sits against a wall or beside a switch."
+      },
+      "zh": {
+        "title": "马来西亚床架 | FLASH CAST",
+        "h1": "床架",
+        "description": "床架商品标注尺寸、材质与适配床垫。下单前确认床架高度、排骨架间距与床下净空，并核对内径尺寸是否匹配现有床垫。",
+        "intro": "这里的床架以实木橡胶木与金属结构为主。决定之前先核对三件事：内径对应的床垫尺寸、排骨架间距，以及床架下方净空。房间放得下不等于床垫放得进去；床头高度还会影响靠墙的摆法，以及会不会挡住开关。"
+      },
+      "ms": {
+        "title": "Rangka Katil di Malaysia | FLASH CAST",
+        "h1": "Rangka Katil",
+        "description": "Rangka katil disenaraikan dengan dimensi, bahan dan saiz tilam. Sahkan ketinggian rangka, jarak selat dan ruang bawah sebelum menempah, serta pastikan saiz dalaman sepadan dengan tilam anda.",
+        "intro": "Rangka katil di sini merangkumi binaan kayu getah padu dan logam. Semak saiz tilam dalaman, jarak selat dan ruang di bawah rangka sebelum membuat keputusan. Rangka yang muat dalam bilik masih boleh tidak sesuai dengan tilam yang anda sudah ada, dan ketinggian kepala katil mengubah cara katil diletakkan bersama dinding atau bersebelahan suis."
+      }
+    },
+    "bedside-table": {
+      "en": {
+        "title": "Bedside Tables in Malaysia | FLASH CAST",
+        "h1": "Bedside Tables",
+        "description": "Bedside tables listed with width, height and drawer configuration. Check the height against your mattress top and confirm the width still leaves clearance for the wardrobe or access side.",
+        "intro": "A bedside table is decided by two measurements rather than by style: the top should sit close to the mattress surface so things are reachable, and the width has to leave walking space on the access side of the bed. Confirm the drawer or door swing, because a unit that opens toward the bed blocks the walkway."
+      },
+      "zh": {
+        "title": "马来西亚床头柜 | FLASH CAST",
+        "h1": "床头柜",
+        "description": "床头柜标注宽度、高度与抽屉配置。核对台面高度与床垫上沿的关系，并确认宽度不会挡住衣柜或下床通道。",
+        "intro": "选床头柜靠两个尺寸，不是靠样式：台面要接近床垫表面，随手才够得着；宽度要在下床那侧留出走道。抽屉或柜门的开启方向也要确认——朝床那侧开的柜子会把通道堵住。"
+      },
+      "ms": {
+        "title": "Meja Sisi Katil di Malaysia | FLASH CAST",
+        "h1": "Meja Sisi Katil",
+        "description": "Meja sisi katil disenaraikan dengan lebar, tinggi dan susunan laci. Semak ketinggian berbanding permukaan tilam dan pastikan lebarnya masih memberi ruang untuk almari atau laluan keluar katil.",
+        "intro": "Meja sisi katil ditentukan oleh dua ukuran dan bukan oleh gaya: permukaannya perlu dekat dengan paras tilam supaya barang mudah dicapai, dan lebarnya mesti meninggalkan ruang berjalan di sebelah katil yang digunakan untuk turun. Sahkan arah bukaan laci atau pintu, kerana unit yang terbuka ke arah katil menyekat laluan."
+      }
+    },
+    "chest-drawer": {
+      "en": {
+        "title": "Chest Drawers in Malaysia | FLASH CAST",
+        "h1": "Chest Drawers",
+        "description": "Chest drawers listed with width, height, drawer count and material. Confirm drawer depth, runner type and how far each drawer extends before deciding.",
+        "intro": "Drawer count matters less than drawer depth. A five-drawer chest with shallow drawers holds less than a three-drawer unit with deep ones. Check the runner type, whether the drawer comes out fully, and how much floor space the open drawer needs, because a chest placed in a narrow gap cannot be used if the drawer cannot extend."
+      },
+      "zh": {
+        "title": "马来西亚斗柜 | FLASH CAST",
+        "h1": "斗柜",
+        "description": "斗柜标注宽度、高度、抽屉数量与材质。决定前确认抽屉深度、滑轨类型，以及抽屉完全拉出时需要多少地面空间。",
+        "intro": "抽屉数量没有深度重要。五个浅抽屉装得比三个深抽屉少。要确认滑轨类型、抽屉能否完全拉出，以及拉开时占多少地面——柜子放在窄过道里，抽屉拉不开就等于没用。"
+      },
+      "ms": {
+        "title": "Laci Dada di Malaysia | FLASH CAST",
+        "h1": "Laci Dada",
+        "description": "Laci dada disenaraikan dengan lebar, tinggi, bilangan laci dan bahan. Sahkan kedalaman laci, jenis landasan dan jarak laci terbuka sepenuhnya sebelum membuat keputusan.",
+        "intro": "Bilangan laci kurang penting daripada kedalamannya. Laci dada lima tingkat dengan laci cetek menyimpan lebih sedikit daripada unit tiga tingkat yang dalam. Semak jenis landasan, sama ada laci keluar sepenuhnya, dan berapa banyak ruang lantai diperlukan apabila laci ditarik, kerana laci dada di celah sempit tidak berguna jika lacinya tidak dapat dibuka."
+      }
+    },
+    "dressing-table": {
+      "en": {
+        "title": "Dressing Tables in Malaysia | FLASH CAST",
+        "h1": "Dressing Tables",
+        "description": "Dressing tables listed with width, depth and mirror options. Check the seated depth, the knee clearance and whether the mirror is fixed or separate before ordering.",
+        "intro": "Comfort at a dressing table comes from seated depth and knee clearance, not from the mirror size. Confirm the depth leaves room for a stool and for your knees, and check the height against the seat you intend to use. If the mirror is separate, decide the fixing method before the table is placed, because wall-fixed mirrors cannot move once installed."
+      },
+      "zh": {
+        "title": "马来西亚梳妆台 | FLASH CAST",
+        "h1": "梳妆台",
+        "description": "梳妆台标注宽度、深度与镜子配置。下单前确认坐下后的进深、腿部净空，以及镜子是连体还是独立安装。",
+        "intro": "梳妆台舒不舒服看进深和腿部净空，不看镜子大小。确认台面深度能放下凳子和腿，并核对高度与你打算用的座椅是否匹配。如果镜子是独立的，要在摆放之前定下固定方式——上墙的镜子装好后就不能挪了。"
+      },
+      "ms": {
+        "title": "Meja Solek di Malaysia | FLASH CAST",
+        "h1": "Meja Solek",
+        "description": "Meja solek disenaraikan dengan lebar, kedalaman dan pilihan cermin. Semak kedalaman duduk, ruang lutut dan sama ada cermin tetap atau berasingan sebelum menempah.",
+        "intro": "Keselesaan di meja solek datang daripada kedalaman duduk dan ruang lutut, bukan daripada saiz cermin. Sahkan kedalaman itu meninggalkan ruang untuk najis dan untuk lutut anda, dan semak ketinggiannya berbanding tempat duduk yang akan digunakan. Jika cermin berasingan, tetapkan kaedah pemasangan sebelum meja diletakkan, kerana cermin yang dipasang pada dinding tidak boleh dialihkan selepas dipasang."
+      }
+    },
+    "dressing-chair": {
+      "en": {
+        "title": "Dressing Chairs in Malaysia | FLASH CAST",
+        "h1": "Dressing Chairs",
+        "description": "Dressing chairs and stools listed with seat height, seat depth and material. Check the seat height against the table and confirm the footprint fits the space you have.",
+        "intro": "A dressing chair has to match the table height and the available depth. Too low and the table becomes uncomfortable; too deep and it will not tuck under. Confirm the seat height, whether the chair fits under the table when not in use, and the material, since an upholstered seat in a humid room needs more care than a solid timber one."
+      },
+      "zh": {
+        "title": "马来西亚梳妆凳 | FLASH CAST",
+        "h1": "梳妆凳",
+        "description": "梳妆凳标注座高、座深与材质。核对座高与梳妆台是否匹配，并确认占地尺寸放得下。",
+        "intro": "梳妆凳要同时对上桌高和可用进深。太矮坐着难受，太深塞不进桌下。确认座高、不用时能否推进桌下，以及材质——潮湿房间里的软包座面比实木更需要照顾。"
+      },
+      "ms": {
+        "title": "Kerusi Solek di Malaysia | FLASH CAST",
+        "h1": "Kerusi Solek",
+        "description": "Kerusi dan najis solek disenaraikan dengan ketinggian tempat duduk, kedalaman dan bahan. Semak ketinggiannya berbanding meja dan pastikan tapaknya muat dalam ruang yang ada.",
+        "intro": "Kerusi solek mesti sepadan dengan ketinggian meja dan kedalaman yang tersedia. Terlalu rendah dan meja menjadi tidak selesa; terlalu dalam dan ia tidak dapat dimasukkan ke bawah meja. Sahkan ketinggian tempat duduk, sama ada kerusi muat di bawah meja apabila tidak digunakan, dan bahannya, kerana tempat duduk berkusyen di bilik lembap memerlukan lebih penjagaan daripada kayu padu."
+      }
+    },
+    "garment-rack": {
+      "en": {
+        "title": "Garment Racks in Malaysia | FLASH CAST",
+        "h1": "Garment Racks",
+        "description": "Garment racks and open wardrobes listed with width, height and rail capacity. Confirm the footprint, the weight the rail carries and whether the base needs anchoring.",
+        "intro": "An open garment rack works well where a built-in wardrobe is not possible, but it has to be sized against the clothes it will hold rather than against the wall it stands on. Confirm the rail length, the frame rigidity and whether the base is stable enough when loaded on one side. Freestanding racks holding heavy coats can tip if the load is uneven."
+      },
+      "zh": {
+        "title": "马来西亚挂衣架 | FLASH CAST",
+        "h1": "挂衣架",
+        "description": "挂衣架与开放式衣柜标注宽度、高度与挂杆承重。确认占地尺寸、挂杆能承多少重量，以及底座是否需要固定。",
+        "intro": "做不了定制衣柜的地方，开放式挂衣架是好选择，但尺寸要按要挂的衣服算，不是按靠的那面墙算。确认挂杆长度、框架刚性，以及单侧挂满时底座够不够稳。立式挂衣架挂满厚外套、又只挂一边时，是会翻的。"
+      },
+      "ms": {
+        "title": "Rak Pakaian di Malaysia | FLASH CAST",
+        "h1": "Rak Pakaian",
+        "description": "Rak pakaian dan almari terbuka disenaraikan dengan lebar, tinggi dan kapasiti rel. Sahkan tapak, berat yang ditanggung rel dan sama ada tapak perlu diikat.",
+        "intro": "Rak pakaian terbuka berfungsi baik di tempat almari terbina tidak mungkin dibuat, tetapi saiznya mesti dikira berdasarkan pakaian yang akan digantung dan bukan berdasarkan dinding tempat ia berdiri. Sahkan panjang rel, ketegaran rangka dan sama ada tapaknya cukup stabil apabila dimuatkan pada satu sisi. Rak berdiri sendiri yang menampung kot tebal boleh tumbang jika beban tidak sekata."
+      }
+    },
+    "standing-mirror": {
+      "en": {
+        "title": "Standing Mirrors in Malaysia | FLASH CAST",
+        "h1": "Standing Mirrors",
+        "description": "Standing and leaning mirrors listed with height, width and frame type. Confirm the footprint, the lean angle and whether the piece needs wall restraint.",
+        "intro": "A full-height mirror changes how a small room feels, but a leaning mirror needs a wall it can safely lean against and a floor that is genuinely level. Confirm the height, whether the frame leans or stands upright, and plan a wall restraint for anything tall, because a leaning mirror in a household with children is a tipping risk."
+      },
+      "zh": {
+        "title": "马来西亚全身镜 | FLASH CAST",
+        "h1": "全身镜",
+        "description": "全身镜与靠墙镜标注高度、宽度与边框形式。确认占地、倾角，以及是否需要防倾倒固定。",
+        "intro": "一面通高镜能改变小房间的观感，但靠墙镜需要一面能安全倚靠的墙，以及真正水平的地面。确认高度、是斜靠还是直立，并为高镜规划防倾倒固定——家里有小孩的话，靠墙的镜子是会倒的。"
+      },
+      "ms": {
+        "title": "Cermin Berdiri di Malaysia | FLASH CAST",
+        "h1": "Cermin Berdiri",
+        "description": "Cermin berdiri dan cermin bersandar disenaraikan dengan tinggi, lebar dan jenis bingkai. Sahkan tapak, sudut sandaran dan sama ada ia perlu diikat pada dinding.",
+        "intro": "Cermin setinggi penuh mengubah rasa sesuatu bilik kecil, tetapi cermin bersandar memerlukan dinding yang selamat untuk disandari dan lantai yang benar-benar rata. Sahkan ketinggian, sama ada bingkainya bersandar atau berdiri tegak, dan rancang ikatan dinding untuk apa-apa yang tinggi, kerana cermin bersandar dalam rumah yang ada kanak-kanak ialah risiko tumbang."
+      }
+    },
+    "mattress": {
+      "en": {
+        "title": "Mattresses in Malaysia | FLASH CAST",
+        "h1": "Mattresses",
+        "description": "Mattresses listed with size, thickness and firmness type. Confirm the size against your frame, the thickness against your headboard and whether the mattress needs a specific base.",
+        "intro": "Mattress choice depends on the base it sits on. A pocket-spring mattress on a slat base needs closer slat spacing than foam does, and a very thick mattress can hide the headboard behind it. Confirm the size, the thickness, and whether the frame you own is suitable, then check the delivery route, since a queen mattress in a rolled form is far easier to move into a walk-up unit."
+      },
+      "zh": {
+        "title": "马来西亚床垫 | FLASH CAST",
+        "h1": "床垫",
+        "description": "床垫标注尺寸、厚度与软硬类型。核对尺寸与床架是否匹配、厚度与床头的关系，以及床垫是否需要特定底座。",
+        "intro": "床垫选什么，取决于它放在什么上面。独立袋装弹簧放在排骨架上，需要的间距比泡棉密；太厚的床垫会把床头挡在后面。确认尺寸、厚度，以及你现有的床架是否适配，然后还要看送货路线——卷装的女王尺寸床垫，搬上没有电梯的单位要容易得多。"
+      },
+      "ms": {
+        "title": "Tilam di Malaysia | FLASH CAST",
+        "h1": "Tilam",
+        "description": "Tilam disenaraikan dengan saiz, ketebalan dan jenis kekerasan. Sahkan saiz berbanding rangka anda, ketebalan berbanding kepala katil dan sama ada tilam memerlukan tapak tertentu.",
+        "intro": "Pilihan tilam bergantung pada tapak tempat ia diletakkan. Tilam spring poket di atas tapak selat memerlukan jarak selat yang lebih rapat daripada busa, dan tilam yang sangat tebal boleh menenggelamkan kepala katil di belakangnya. Sahkan saiz, ketebalan dan sama ada rangka yang anda ada sesuai, kemudian semak laluan penghantaran, kerana tilam queen dalam bentuk bergulung jauh lebih mudah dibawa masuk ke unit tanpa lif."
+      }
+    },
+    "dining-set-malaysia": {
+      "en": {
+        "title": "Dining Sets in Malaysia | FLASH CAST",
+        "h1": "Dining Sets",
+        "description": "Dining sets listed with table dimensions, seat count and material. Confirm the seated clearance per person and the table height before choosing a set.",
+        "intro": "A dining set is decided by seated clearance. Measure the space behind each chair for pushing back, not just the table footprint, and check that the table height suits the chairs it comes with. A set that seats six on paper can crowd a narrow room once the chairs are pulled out."
+      },
+      "zh": {
+        "title": "马来西亚餐桌套装 | FLASH CAST",
+        "h1": "餐桌套装",
+        "description": "餐桌套装标注桌面尺寸、座位数与材质。选定之前确认每人座位宽度，以及桌面高度与座椅是否匹配。",
+        "intro": "餐桌套装好不好用，看的是座位余量。量的时候不只量桌子占地，还要量每把椅子往后退的空间，并确认桌高和配套椅子的座高是否对得上。纸面上能坐六人的套装，椅子一拉出来，窄房间就挤了。"
+      },
+      "ms": {
+        "title": "Set Makan di Malaysia | FLASH CAST",
+        "h1": "Set Makan",
+        "description": "Set makan disenaraikan dengan dimensi meja, bilangan tempat duduk dan bahan. Sahkan ruang duduk bagi setiap orang dan ketinggian meja sebelum memilih set.",
+        "intro": "Set makan ditentukan oleh ruang duduk. Ukur ruang di belakang setiap kerusi untuk bergerak ke belakang, bukan hanya tapak meja, dan semak sama ada ketinggian meja sepadan dengan kerusi yang disertakan. Set yang memuatkan enam orang di atas kertas boleh menjadi sesak dalam bilik sempit setelah kerusi ditarik keluar."
+      }
+    },
+    "dining-chair": {
+      "en": {
+        "title": "Dining Chairs in Malaysia | FLASH CAST",
+        "h1": "Dining Chairs",
+        "description": "Dining chairs listed with seat height, seat depth and material. Confirm the seat height against your table and check whether the chair fits under the table when not in use.",
+        "intro": "Seat height is the measurement that decides whether a dining chair works with your table. A chair that is too low leaves elbows below the tabletop; too high and the thighs press against it. Confirm the seat height, whether the armrest clears the table edge, and whether the chair tucks in, since chairs that cannot be pushed under take up floor space every day."
+      },
+      "zh": {
+        "title": "马来西亚餐椅 | FLASH CAST",
+        "h1": "餐椅",
+        "description": "餐椅标注座高、座深与材质。核对座高与餐桌是否匹配，并确认不用时能否推进桌下。",
+        "intro": "决定餐椅配不配你家餐桌的，是座高。太矮，手肘低于桌面；太高，大腿压着桌沿。确认座高、扶手会不会顶到桌边，以及椅子能不能推进桌下——推不进去的椅子，每天都在占地方。"
+      },
+      "ms": {
+        "title": "Kerusi Makan di Malaysia | FLASH CAST",
+        "h1": "Kerusi Makan",
+        "description": "Kerusi makan disenaraikan dengan ketinggian tempat duduk, kedalaman dan bahan. Sahkan ketinggian tempat duduk berbanding meja anda dan sama ada kerusi muat di bawah meja apabila tidak digunakan.",
+        "intro": "Ketinggian tempat duduk ialah ukuran yang menentukan sama ada kerusi makan sesuai dengan meja anda. Kerusi yang terlalu rendah meninggalkan siku di bawah permukaan meja; terlalu tinggi dan peha menekan tepi meja. Sahkan ketinggian tempat duduk, sama ada tempat letak tangan melepasi tepi meja, dan sama ada kerusi boleh dimasukkan ke bawah, kerana kerusi yang tidak dapat ditolak masuk mengambil ruang lantai setiap hari."
+      }
+    },
+    "dining-table": {
+      "en": {
+        "title": "Dining Tables in Malaysia | FLASH CAST",
+        "h1": "Dining Tables",
+        "description": "Dining tables listed with length, width, height and material. Confirm the seated depth per side, the leg position and the access route into the room before ordering.",
+        "intro": "Table length is the easy number; width and leg position are the ones that cause problems. A 90 cm wide table seats people comfortably opposite each other, while a narrower one puts plates close together. Legs placed inboard give more seating positions but reduce legroom. Also confirm the table can physically reach the room, since a one-piece top has to fit through the door and the corridor turn."
+      },
+      "zh": {
+        "title": "马来西亚餐桌 | FLASH CAST",
+        "h1": "餐桌",
+        "description": "餐桌标注长、宽、高与材质。下单前确认两侧座位进深、桌脚位置，以及桌子能不能搬进房间。",
+        "intro": "餐桌长度是最容易量的一项，容易出问题的是宽度和桌脚位置。90 厘米宽的桌子对面坐人比较舒服，窄一些的盘子就挤在一起。桌脚往里收能多坐人，但腿部空间变小。另外要确认桌子搬得进去——整块桌面的，得过得去门和走廊转角。"
+      },
+      "ms": {
+        "title": "Meja Makan di Malaysia | FLASH CAST",
+        "h1": "Meja Makan",
+        "description": "Meja makan disenaraikan dengan panjang, lebar, tinggi dan bahan. Sahkan kedalaman duduk setiap sisi, kedudukan kaki dan laluan masuk ke bilik sebelum menempah.",
+        "intro": "Panjang meja ialah angka yang mudah; lebar dan kedudukan kaki pula yang menimbulkan masalah. Meja selebar 90 cm membolehkan orang duduk berhadapan dengan selesa, manakala yang lebih sempit meletakkan pinggan berdekatan. Kaki yang diletakkan ke dalam memberi lebih banyak tempat duduk tetapi mengurangkan ruang kaki. Sahkan juga meja itu benar-benar boleh sampai ke bilik, kerana permukaan sekeping perlu melepasi pintu dan selekoh koridor."
+      }
+    },
+    "sideboard": {
+      "en": {
+        "title": "Sideboards in Malaysia | FLASH CAST",
+        "h1": "Sideboards",
+        "description": "Sideboards listed with width, depth, height and internal layout. Confirm the depth against your walkway and check whether the top height suits the way you will use it.",
+        "intro": "A sideboard in a dining room does two jobs: storage and a surface. Confirm the depth first, because a deep sideboard in a narrow walkway is a daily obstruction, and check the top height against whether you will use it standing or seated. Internal layout matters more than the outside, so look at shelf adjustability and whether the doors slide or swing."
+      },
+      "zh": {
+        "title": "马来西亚餐边柜 | FLASH CAST",
+        "h1": "餐边柜",
+        "description": "餐边柜标注宽度、深度、高度与内部结构。确认深度不会挡住走道，并核对台面高度适合站着还是坐着使用。",
+        "intro": "餐边柜在餐厅里干两件事：收纳和台面。先确认深度——窄走道里放个深柜子，天天碍事；再核对台面高度，看你主要是站着用还是坐着用。内部结构比外观重要，要看层板能不能调、柜门是推拉还是平开。"
+      },
+      "ms": {
+        "title": "Sideboard di Malaysia | FLASH CAST",
+        "h1": "Sideboard",
+        "description": "Sideboard disenaraikan dengan lebar, kedalaman, tinggi dan susunan dalaman. Sahkan kedalaman berbanding laluan anda dan semak sama ada ketinggian permukaannya sesuai dengan cara anda menggunakannya.",
+        "intro": "Sideboard di ruang makan memainkan dua peranan: penyimpanan dan permukaan. Sahkan kedalaman dahulu, kerana sideboard dalam di laluan sempit menjadi halangan setiap hari, dan semak ketinggian permukaan berbanding sama ada anda akan menggunakannya sambil berdiri atau duduk. Susunan dalaman lebih penting daripada rupa luar, jadi lihat sama ada para boleh dilaras dan sama ada pintunya gelangsar atau berengsel."
+      }
+    },
+    "kitchen-cabinet": {
+      "en": {
+        "title": "Kitchen Cabinets in Malaysia | FLASH CAST",
+        "h1": "Kitchen Cabinets",
+        "description": "Kitchen cabinets listed with carcass material, door finish and configuration. Confirm the linear footage, whether wall units are included and how the worktop is priced separately.",
+        "intro": "Kitchen cabinets are priced by linear foot, so the measurement that matters is the run length, not the room size. Confirm the carcass material, the door finish and whether wall units are included in the quoted rate, since many published rates cover base units only and price worktops separately. Check the internal fittings too: a soft-close drawer costs more than a standard one and changes the total."
+      },
+      "zh": {
+        "title": "马来西亚厨房橱柜 | FLASH CAST",
+        "h1": "厨房橱柜",
+        "description": "厨房橱柜标注柜身材质、门板饰面与配置。确认延尺长度、是否含吊柜，以及台面是否另行计价。",
+        "intro": "厨房橱柜按延尺计价，所以关键是柜体总长度，不是房间面积。确认柜身材质、门板饰面，以及报价里是否含吊柜——不少公开报价只算地柜，台面另计。内部五金也要问清：缓冲抽屉比普通抽屉贵，会直接改变总价。"
+      },
+      "ms": {
+        "title": "Kabinet Dapur di Malaysia | FLASH CAST",
+        "h1": "Kabinet Dapur",
+        "description": "Kabinet dapur disenaraikan dengan bahan badan, kemasan pintu dan konfigurasi. Sahkan panjang kaki linear, sama ada unit dinding disertakan dan bagaimana permukaan kerja dinilai berasingan.",
+        "intro": "Kabinet dapur dinilai mengikut kaki linear, jadi ukuran yang penting ialah panjang deretan dan bukan saiz bilik. Sahkan bahan badan, kemasan pintu dan sama ada unit dinding termasuk dalam kadar yang disebut harga, kerana banyak kadar yang diterbitkan meliputi unit bawah sahaja dan permukaan kerja dinilai berasingan. Semak juga kelengkapan dalaman: laci soft-close lebih mahal daripada laci standard dan mengubah jumlah keseluruhan."
+      }
+    },
+    "sofa-bed": {
+      "en": {
+        "title": "Sofa Beds in Malaysia | FLASH CAST",
+        "h1": "Sofa Beds",
+        "description": "Sofa beds listed with sofa dimensions, bed dimensions and mechanism type. Confirm the extended length and the clearance needed in front of it before choosing.",
+        "intro": "A sofa bed has to work in two states. Confirm the length and width when opened, and measure the floor space it needs in front, because a pull-out mechanism that cannot fully extend is useless. Check the mechanism type as well: a click-clack folds flat, while a pull-out needs clear floor and a firmer frame. Both feel different to sleep on, so decide which matters more."
+      },
+      "zh": {
+        "title": "马来西亚沙发床 | FLASH CAST",
+        "h1": "沙发床",
+        "description": "沙发床标注沙发尺寸、展开尺寸与机构类型。选定前确认展开后的长度，以及前方需要多少地面空间。",
+        "intro": "沙发床要在两种状态下都好用。确认展开后的长宽，并量好前方需要的地面——拉不出来的抽拉机构等于没法用。机构类型也要看：翻折式是往平里折，抽拉式需要前方空地且框架更硬。两种睡感不同，先想清楚哪个更重要。"
+      },
+      "ms": {
+        "title": "Katil Sofa di Malaysia | FLASH CAST",
+        "h1": "Katil Sofa",
+        "description": "Katil sofa disenaraikan dengan dimensi sofa, dimensi katil dan jenis mekanisme. Sahkan panjang apabila dibuka dan ruang yang diperlukan di hadapannya sebelum memilih.",
+        "intro": "Katil sofa mesti berfungsi dalam dua keadaan. Sahkan panjang dan lebar apabila dibuka, dan ukur ruang lantai yang diperlukan di hadapannya, kerana mekanisme tarik keluar yang tidak dapat dibuka sepenuhnya tidak berguna. Semak juga jenis mekanisme: klik-klak melipat rata, manakala tarik keluar memerlukan lantai lapang dan rangka lebih tegar. Kedua-duanya berbeza untuk tidur, jadi tentukan mana yang lebih penting."
+      }
+    },
+    "sofa": {
+      "en": {
+        "title": "Sofas in Malaysia | FLASH CAST",
+        "h1": "Sofas",
+        "description": "Sofas listed with length, depth, seat height and material. Confirm the depth against your room and the door width before ordering, since a deep sofa needs clearance behind it.",
+        "intro": "Sofa depth decides comfort and how much floor is left. A deep seat is comfortable to lounge on but takes walking space from the room. Confirm the overall length against the wall it will sit on, the depth against your walkway, and whether the piece arrives assembled, because a sofa that does not fit through the door or lift becomes a delivery problem on the day."
+      },
+      "zh": {
+        "title": "马来西亚沙发 | FLASH CAST",
+        "h1": "沙发",
+        "description": "沙发布注长度、进深、座高与材质。下单前确认进深与房间是否匹配、门宽是否进得去，深沙发背后还要留空间。",
+        "intro": "沙发进深同时决定舒适度和剩下多少地面。坐得深是舒服，但会吃掉走道。确认总长度和那面墙对不对得上、进深会不会挡住通道，以及是否整件到货——进不了门或电梯的沙发，当天就变成送货事故。"
+      },
+      "ms": {
+        "title": "Sofa di Malaysia | FLASH CAST",
+        "h1": "Sofa",
+        "description": "Sofa disenaraikan dengan panjang, kedalaman, ketinggian tempat duduk dan bahan. Sahkan kedalaman berbanding bilik anda dan lebar pintu sebelum menempah, kerana sofa dalam memerlukan ruang di belakangnya.",
+        "intro": "Kedalaman sofa menentukan keselesaan dan berapa banyak lantai yang tinggal. Tempat duduk yang dalam selesa untuk berehat tetapi mengambil ruang berjalan daripada bilik. Sahkan panjang keseluruhan berbanding dinding tempat ia akan diletakkan, kedalaman berbanding laluan anda, dan sama ada ia tiba dalam keadaan siap dipasang, kerana sofa yang tidak muat melalui pintu atau lif menjadi masalah penghantaran pada hari itu."
+      }
+    },
+    "pouf-stool": {
+      "en": {
+        "title": "Poufs and Stools in Malaysia | FLASH CAST",
+        "h1": "Poufs and Stools",
+        "description": "Poufs and stools listed with diameter, height and material. Check the height against the table or surface they will be used with, and confirm the load rating where given.",
+        "intro": "A pouf is versatile because it moves, but that also means its height has to suit more than one use. Check the height against a coffee table, a dressing table and a seat, and decide which matters most. Confirm the filling type as well, since a soft foam pouf settles over time while a firm one keeps its shape but is less comfortable to sit on for long."
+      },
+      "zh": {
+        "title": "马来西亚坐墩与矮凳 | FLASH CAST",
+        "h1": "坐墩与矮凳",
+        "description": "坐墩与矮凳标注直径、高度与材质。核对高度与要搭配的桌面或台面，有标注承重的也一并确认。",
+        "intro": "坐墩好用在于能搬来搬去，但也意味着它的高度要同时适配多种用途。对着茶几、梳妆台和当座位比一比，决定哪个最重要。填充方式也要看——软泡棉坐久了会塌，硬一些的能保持形状但久坐不舒服。"
+      },
+      "ms": {
+        "title": "Pouf dan Najis di Malaysia | FLASH CAST",
+        "h1": "Pouf dan Najis",
+        "description": "Pouf dan najis disenaraikan dengan diameter, ketinggian dan bahan. Semak ketinggian berbanding meja atau permukaan yang akan digunakan, dan sahkan had beban jika dinyatakan.",
+        "intro": "Pouf serba boleh kerana ia boleh dialihkan, tetapi itu juga bermakna ketinggiannya mesti sesuai untuk lebih daripada satu kegunaan. Semak ketinggian berbanding meja kopi, meja solek dan tempat duduk, dan tentukan mana yang paling penting. Sahkan juga jenis isiannya, kerana pouf busa lembut mendap lama-kelamaan manakala yang lebih tegar mengekalkan bentuk tetapi kurang selesa untuk diduduki lama."
+      }
+    },
+    "side-table": {
+      "en": {
+        "title": "Side Tables in Malaysia | FLASH CAST",
+        "h1": "Side Tables",
+        "description": "Side tables listed with top dimensions, height and material. Confirm the height against the sofa or bed arm and check that the footprint fits the gap you have.",
+        "intro": "A side table is judged by height against the arm it sits beside, and by footprint against the gap available. A top that sits well below the sofa arm is awkward to reach; one above it looks wrong. Confirm the diameter or width, the height, and whether the base is stable on the floor you have, since a light table on a soft rug can wobble."
+      },
+      "zh": {
+        "title": "马来西亚边几 | FLASH CAST",
+        "h1": "边几",
+        "description": "边几标注台面尺寸、高度与材质。核对高度与沙发扶手或床沿是否匹配，并确认占地能塞进现有空隙。",
+        "intro": "边几好不好用，看高度对不对得上旁边的扶手，看占地塞不塞得进那个空。台面明显低于扶手，伸手别扭；高过扶手，看着不对劲。确认直径或宽度、高度，以及底座在你家的地面上稳不稳——轻的桌子放在软地毯上会晃。"
+      },
+      "ms": {
+        "title": "Meja Sisi di Malaysia | FLASH CAST",
+        "h1": "Meja Sisi",
+        "description": "Meja sisi disenaraikan dengan dimensi permukaan, ketinggian dan bahan. Sahkan ketinggian berbanding tempat letak tangan sofa atau katil dan pastikan tapaknya muat dalam ruang yang ada.",
+        "intro": "Meja sisi dinilai melalui ketinggiannya berbanding tempat letak tangan di sebelahnya, dan melalui tapaknya berbanding ruang yang tersedia. Permukaan yang jauh di bawah tempat letak tangan sofa menyusahkan capaian; yang lebih tinggi kelihatan tidak kena. Sahkan diameter atau lebar, ketinggian, dan sama ada tapaknya stabil di atas lantai anda, kerana meja ringan di atas permaidani lembut boleh bergoyang."
+      }
+    },
+    "display-rack": {
+      "en": {
+        "title": "Display Racks in Malaysia | FLASH CAST",
+        "h1": "Display Racks",
+        "description": "Display racks and shelving units listed with width, height, shelf count and load rating. Confirm the depth, the anchoring method and the weight each shelf carries before ordering.",
+        "intro": "Open shelving shows everything, including the clutter, so the shelf count matters less than the spacing between them. Confirm the shelf heights suit what you intend to display, the depth suits the objects, and whether the unit must be anchored to the wall. Tall open shelving in a household with children should be fixed regardless of how stable it feels empty."
+      },
+      "zh": {
+        "title": "马来西亚展示架 | FLASH CAST",
+        "h1": "展示架",
+        "description": "展示架与置物架标注宽度、高度、层数与承重。下单前确认进深、固定方式，以及每层能承多少重量。",
+        "intro": "开放式层架什么都露出来，包括杂乱，所以层数不如层间距重要。确认层高放得下你要展示的东西、进深对得上物件，以及是否需要上墙固定。家里有小孩的话，高身开放层架不管空着多稳，都该固定。"
+      },
+      "ms": {
+        "title": "Rak Paparan di Malaysia | FLASH CAST",
+        "h1": "Rak Paparan",
+        "description": "Rak paparan dan unit para disenaraikan dengan lebar, tinggi, bilangan para dan had beban. Sahkan kedalaman, kaedah ikatan dan berat yang ditanggung setiap para sebelum menempah.",
+        "intro": "Para terbuka menunjukkan segala-galanya, termasuk kekemasan yang tidak kemas, jadi bilangan para kurang penting daripada jarak antaranya. Sahkan ketinggian para sesuai dengan apa yang ingin dipamerkan, kedalamannya sesuai dengan objek, dan sama ada unit itu mesti diikat pada dinding. Para terbuka yang tinggi dalam rumah dengan kanak-kanak wajar diikat tanpa mengira betapa stabilnya ia ketika kosong."
+      }
+    },
+    "shoe-cabinet": {
+      "en": {
+        "title": "Shoe Cabinets in Malaysia | FLASH CAST",
+        "h1": "Shoe Cabinets",
+        "description": "Shoe cabinets listed with width, height, depth and shelf configuration. Confirm the internal depth suits your largest shoe and whether the door type needs clearance in front.",
+        "intro": "Shoe cabinets fail on depth more often than on size. Measure your longest shoe first, then confirm the internal depth allows for it with the door closed. Check whether the shelves are fixed or adjustable, since a shelf set for flats will not take boots. If the cabinet has swing doors, allow clearance in front; tilt-out mechanisms need less room but hold fewer pairs."
+      },
+      "zh": {
+        "title": "马来西亚鞋柜 | FLASH CAST",
+        "h1": "鞋柜",
+        "description": "鞋柜标注宽度、高度、进深与层板配置。确认内部进深放得下最大的鞋，并核对柜门开启是否需要前方空间。",
+        "intro": "鞋柜出问题多半在进深，不在尺寸。先量你最长的那双鞋，再确认关门状态下内部进深够不够。看层板是固定还是可调——按平底鞋定的层高放不进靴子。平开门的鞋柜前方要留空间；翻斗式占得少，但装得也少。"
+      },
+      "ms": {
+        "title": "Kabinet Kasut di Malaysia | FLASH CAST",
+        "h1": "Kabinet Kasut",
+        "description": "Kabinet kasut disenaraikan dengan lebar, tinggi, kedalaman dan susunan para. Sahkan kedalaman dalaman sesuai dengan kasut terbesar anda dan sama ada jenis pintunya memerlukan ruang di hadapan.",
+        "intro": "Kabinet kasut lebih kerap gagal pada kedalaman daripada pada saiz. Ukur kasut terpanjang anda dahulu, kemudian sahkan kedalaman dalaman mencukupinya dengan pintu tertutup. Semak sama ada para tetap atau boleh dilaras, kerana para yang ditetapkan untuk kasut rata tidak memuatkan but. Jika kabinet berpintu berengsel, sediakan ruang di hadapan; mekanisme juling memerlukan ruang lebih sedikit tetapi menyimpan lebih sedikit pasang."
+      }
+    },
+    "bookcase": {
+      "en": {
+        "title": "Bookcases in Malaysia | FLASH CAST",
+        "h1": "Bookcases",
+        "description": "Bookcases listed with width, height, shelf count and load rating. Confirm the shelf span, the depth and whether the unit needs wall anchoring before ordering.",
+        "intro": "Shelf span decides how much weight a bookcase carries. A long shelf loaded with books bows in the middle unless it has a centre support or a thicker board. Confirm the span, the rated load where given, and the depth against the books and files you actually own. Anything taller than waist height should be anchored, because a loaded bookcase is heavy and front-weighted."
+      },
+      "zh": {
+        "title": "马来西亚书架 | FLASH CAST",
+        "h1": "书架",
+        "description": "书架标注宽度、高度、层数与承重。下单前确认层板跨度、进深，以及是否需要上墙固定。",
+        "intro": "决定书架能承多少重量的是层板跨度。长层板堆满书，中间会下沉，除非有中立板或板材够厚。确认跨度、有标注的承重值，以及进深放不放得下你实际有的书和文件。高过腰的都该固定——装满书的书架很重，而且重心靠前。"
+      },
+      "ms": {
+        "title": "Almari Buku di Malaysia | FLASH CAST",
+        "h1": "Almari Buku",
+        "description": "Almari buku disenaraikan dengan lebar, tinggi, bilangan para dan had beban. Sahkan rentang para, kedalaman dan sama ada unit perlu diikat pada dinding sebelum menempah.",
+        "intro": "Rentang para menentukan berapa banyak berat yang ditanggung almari buku. Para panjang yang penuh buku melendut di tengah kecuali ada sokongan tengah atau papan lebih tebal. Sahkan rentang, had beban jika dinyatakan, dan kedalaman berbanding buku serta fail yang anda benar-benar ada. Apa-apa yang lebih tinggi daripada paras pinggang wajar diikat, kerana almari buku yang penuh itu berat dan beratnya tertumpu di hadapan."
+      }
+    },
+    "study-desk": {
+      "en": {
+        "title": "Study Desks in Malaysia | FLASH CAST",
+        "h1": "Study Desks",
+        "description": "Study desks listed with width, depth, height and cable management. Confirm the seated depth, the knee clearance and whether the desk suits the chair you will use.",
+        "intro": "Desk depth matters more than width for daily use. A 60 cm deep desk takes a laptop and a notebook; anything less forces the screen too close. Confirm the knee clearance and whether there is a centre drawer or support that blocks your legs, then check the height between 72 and 75 cm for a standard chair. Cable routing is worth deciding before delivery, not after."
+      },
+      "zh": {
+        "title": "马来西亚书桌 | FLASH CAST",
+        "h1": "书桌",
+        "description": "书桌标注宽度、进深、高度与走线设计。确认坐下后的进深、腿部净空，以及桌面高度是否配得上你要用的椅子。",
+        "intro": "日常用起来，书桌进深比宽度更重要。60 厘米进深放得下笔电加笔记本；再浅，屏幕就被推得太近。确认腿部净空，看中间有没有抽屉或支撑挡腿，再核对桌高——配标准椅子一般是 72 到 75 厘米。走线要在送货前想好，不是装完再想。"
+      },
+      "ms": {
+        "title": "Meja Belajar di Malaysia | FLASH CAST",
+        "h1": "Meja Belajar",
+        "description": "Meja belajar disenaraikan dengan lebar, kedalaman, ketinggian dan pengurusan kabel. Sahkan kedalaman duduk, ruang lutut dan sama ada meja sesuai dengan kerusi yang akan digunakan.",
+        "intro": "Kedalaman meja lebih penting daripada lebarnya untuk kegunaan harian. Meja sedalam 60 cm memuatkan komputer riba dan buku nota; lebih cetek memaksa skrin terlalu dekat. Sahkan ruang lutut dan sama ada terdapat laci tengah atau sokongan yang menghalang kaki, kemudian semak ketinggian antara 72 dan 75 cm untuk kerusi standard. Laluan kabel wajar ditentukan sebelum penghantaran, bukan selepasnya."
+      }
+    },
+    "kids-ergonomic-study-desk": {
+      "en": {
+        "title": "Kids Ergonomic Study Desks in Malaysia | FLASH CAST",
+        "h1": "Kids Ergonomic Study Desks",
+        "description": "Height-adjustable kids study desks listed with adjustment range, desktop tilt and load. Confirm the range covers your child's current and near-future height before ordering.",
+        "intro": "An adjustable desk is only useful if its range covers the years you need. Confirm the minimum and maximum height, and check the range against your child's seated elbow height now and in two or three years. Check the tilt mechanism too, since a desktop that tilts needs a lip or stop to keep books from sliding, and confirm the desk is stable at its highest setting, which is where adjustable desks most often feel shaky."
+      },
+      "zh": {
+        "title": "马来西亚儿童人体工学书桌 | FLASH CAST",
+        "h1": "儿童人体工学书桌",
+        "description": "可升降儿童书桌标注调节范围、桌面倾角与承重。下单前确认调节范围能覆盖孩子现在以及未来几年的身高。",
+        "intro": "可调书桌只有调节范围覆盖你要用的那几年才有意义。确认最低和最高高度，并对着孩子现在以及两三年后的坐姿手肘高度核对一遍。倾角机构也要看——会倾斜的桌面需要挡边或限位，不然书本会滑。还要确认桌子升到最高时稳不稳，可调桌最常出问题的地方就是这里。"
+      },
+      "ms": {
+        "title": "Meja Belajar Ergonomik Kanak-kanak di Malaysia | FLASH CAST",
+        "h1": "Meja Belajar Ergonomik Kanak-kanak",
+        "description": "Meja belajar kanak-kanak boleh laras ketinggian disenaraikan dengan julat larasan, kecondongan permukaan dan beban. Sahkan julat itu meliputi ketinggian anak anda sekarang dan beberapa tahun akan datang sebelum menempah.",
+        "intro": "Meja boleh laras hanya berguna jika julatnya meliputi tahun-tahun yang anda perlukan. Sahkan ketinggian minimum dan maksimum, dan semak julat itu berbanding ketinggian siku anak anda semasa duduk sekarang dan dalam dua atau tiga tahun. Semak juga mekanisme kecondongan, kerana permukaan yang condong memerlukan bibir atau hentian supaya buku tidak tergelincir, dan sahkan meja stabil pada tetapan tertinggi, iaitu tempat meja boleh laras paling kerap terasa goyang."
+      }
+    },
+    "kids-stool": {
+      "en": {
+        "title": "Kids Stools in Malaysia | FLASH CAST",
+        "h1": "Kids Stools",
+        "description": "Kids stools listed with seat height, base width and material. Confirm the seat height for the surface it will be used at and check the base stability.",
+        "intro": "A child's stool is judged by seat height against the desk or basin it will be used at, and by base stability. A wide base resists tipping when a child leans, which matters more than weight rating. Confirm the seat height, whether the stool has a backrest, and the material, since a painted or edged finish needs to survive being dragged across the floor."
+      },
+      "zh": {
+        "title": "马来西亚儿童凳 | FLASH CAST",
+        "h1": "儿童凳",
+        "description": "儿童凳标注座高、底座宽度与材质。核对座高与要搭配的桌面或洗手台，并确认底座稳定性。",
+        "intro": "儿童凳看两点：座高对不对得上要用的书桌或洗手台，底座稳不稳。底座宽的在孩子侧身时不容易翻，这比承重标称更重要。确认座高、有没有靠背，以及材质——上漆或带棱边的，得经得起在地上拖。"
+      },
+      "ms": {
+        "title": "Najis Kanak-kanak di Malaysia | FLASH CAST",
+        "h1": "Najis Kanak-kanak",
+        "description": "Najis kanak-kanak disenaraikan dengan ketinggian tempat duduk, lebar tapak dan bahan. Sahkan ketinggian tempat duduk untuk permukaan yang akan digunakan dan semak kestabilan tapak.",
+        "intro": "Najis kanak-kanak dinilai melalui ketinggian tempat duduk berbanding meja atau besen yang akan digunakan, dan melalui kestabilan tapak. Tapak yang lebar menahan terjatuh apabila kanak-kanak menyandar, dan itu lebih penting daripada had berat. Sahkan ketinggian tempat duduk, sama ada najis mempunyai sandaran, dan bahannya, kerana kemasan bercat atau bertepi perlu bertahan apabila diseret di atas lantai."
+      }
+    }
   }
 }

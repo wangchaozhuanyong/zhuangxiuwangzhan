@@ -8,9 +8,22 @@ const subcategoryNames: Record<string, { zh: string; en: string; ms: string }> =
 export const furnitureCategoryName = (key: string, language: Language) =>
   categoryNames[key as keyof typeof categoryNames]?.[language] || key;
 
-// Only the approved bedroom landing receives dedicated copy; menus/subcategories stay unchanged.
-export const furnitureCategoryPageCopy = (key: string | undefined, language: Language, subcategoryKey?: string) =>
-  key === "bedroom" && !subcategoryKey ? furnitureTaxonomyLabels.categoryPages.bedroom[language] : undefined;
+type CategoryPageCopy = { title: string; h1: string; description: string; intro: string };
+
+const categoryPageCopy = furnitureTaxonomyLabels.categoryPages as Record<string, Record<Language, CategoryPageCopy>>;
+const subcategoryPageCopy = (furnitureTaxonomyLabels.subcategoryPages ?? {}) as Record<string, Record<Language, CategoryPageCopy>>;
+
+// Category and subcategory landings each carry reviewed copy; menus stay unchanged.
+export const furnitureCategoryPageCopy = (
+  key: string | undefined,
+  language: Language,
+  subcategoryKey?: string,
+): CategoryPageCopy | undefined =>
+  subcategoryKey
+    ? subcategoryPageCopy[subcategoryKey]?.[language]
+    : key
+      ? categoryPageCopy[key]?.[language]
+      : undefined;
 
 export const furnitureSubcategoryName = (key: string, language: Language, fallback: string) =>
   subcategoryNames[key]?.[language] || fallback;

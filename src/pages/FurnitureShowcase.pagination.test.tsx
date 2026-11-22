@@ -59,16 +59,27 @@ async function expectDescription(expected: string, noIndex = false) {
 
 describe("furniture displayed pagination metadata", () => {
   it.each(["en", "zh"] as const)("keeps generated %s category and subcategory descriptions before and after published data resolves", async (language) => {
-    const cases = [
-      ["bedroom/bed-frame", furnitureTaxonomyLabels.subcategories["bed-frame"][language]],
-      ["bedroom/bedside-table", furnitureTaxonomyLabels.subcategories["bedside-table"][language]],
-      ["dining", furnitureTaxonomyLabels.categories.dining[language]],
-      ["living", furnitureTaxonomyLabels.categories.living[language]],
-      ["study", furnitureTaxonomyLabels.categories.study[language]],
-      ["preorder", furnitureTaxonomyLabels.categories.preorder[language]],
+    const cases: Array<[string, string]> = [
+      ["bedroom/bed-frame", furnitureTaxonomyLabels.subcategoryPages["bed-frame"][language].description],
+      ["bedroom/bedside-table", furnitureTaxonomyLabels.subcategoryPages["bedside-table"][language].description],
+      [
+        "dining",
+        `${furnitureTaxonomyLabels.categories.dining[language]} · ${furnitureTaxonomyLabels.meta[language].description}`,
+      ],
+      [
+        "living",
+        `${furnitureTaxonomyLabels.categories.living[language]} · ${furnitureTaxonomyLabels.meta[language].description}`,
+      ],
+      [
+        "study",
+        `${furnitureTaxonomyLabels.categories.study[language]} · ${furnitureTaxonomyLabels.meta[language].description}`,
+      ],
+      [
+        "preorder",
+        `${furnitureTaxonomyLabels.categories.preorder[language]} · ${furnitureTaxonomyLabels.meta[language].description}`,
+      ],
     ];
-    for (const [path, label] of cases) {
-      const expected = `${label} · ${furnitureTaxonomyLabels.meta[language].description}`;
+    for (const [path, expected] of cases) {
       await renderPage(`/${language}/furniture/${path}`, language, null);
       await expectDescription(expected);
       expect(container.querySelector('main')?.getAttribute("data-route-pending")).toBe("true");
