@@ -37,6 +37,25 @@ describe("service context links", () => {
     }
   });
 
+  it("includes all 16 digital lock links (6 showroom categories and 10 service areas) across en, zh, and ms", () => {
+    for (const language of ["zh", "en", "ms"] as const) {
+      const links = getServiceContextLinks("digital-lock", language);
+      expect(links).toHaveLength(16);
+      expect(new Set(links.map((item) => item.id)).size).toBe(16);
+
+      const showroomLinks = links.slice(0, 6);
+      const areaLinks = links.slice(6);
+
+      showroomLinks.forEach((item) => {
+        expect(item.href).toMatch(new RegExp(`^https://locks\\.flashcast\\.com\\.my/${language}/lock/(type|feature)/[a-z-]+/$`));
+      });
+
+      areaLinks.forEach((item) => {
+        expect(item.href).toMatch(/^\/locations\/[a-z-]+\/digital-lock$/);
+      });
+    }
+  });
+
   it("does not invent contextual links for services outside the current delivery batch", () => {
     expect(getServiceContextLinks("design", "en")).toEqual([]);
   });

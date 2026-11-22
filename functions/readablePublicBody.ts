@@ -27,7 +27,7 @@ import { localizedContentValue } from "../src/i18n/localizedContentValue";
 import type { resolveFaqPageCategories } from "../src/lib/publicFaqs";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = [
-  "/services/builtin", "/services/kitchen", "/services/renovation",
+  "/services/builtin", "/services/kitchen", "/services/renovation", "/services/digital-lock",
   "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas",
   "/locations/petaling-jaya/digital-lock",
   "/locations/cheras/digital-lock",
@@ -317,6 +317,8 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   }
   if (reviewedOffice) {
     body += buildContextLinks(getServiceContextLinks("office-renovation", lang), lang);
+  } else if (path === "/services/digital-lock") {
+    body += buildContextLinks(getServiceContextLinks("digital-lock", lang), lang);
   }
   body += buildReviewedCta(path, lang, identity);
   if (body.length > 262144) return "";
@@ -343,7 +345,8 @@ const wrapBody = (body: string, lang: "en" | "zh" | "ms") => body.length <= 2621
 
 function buildContextLinks(links: readonly { href: string; title: string; description: string }[], lang: "en" | "zh" | "ms") {
   return `<section>${links.map(link => {
-    const href = publicHref(`/${lang}${link.href}`, lang);
+    const raw = link.href.startsWith("http") ? link.href : `/${lang}${link.href}`;
+    const href = publicHref(raw, lang);
     return href ? `<h3><a href="${escape(href)}">${escape(link.title)}</a></h3>${paragraph(link.description)}` : "";
   }).join("")}</section>`;
 }
