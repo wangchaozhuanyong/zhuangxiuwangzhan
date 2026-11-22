@@ -9,6 +9,8 @@ import { servicesPageText } from "../src/i18n/servicesPageText";
 import { projectsPageText } from "../src/i18n/projectsPageText";
 import { materialsPageText } from "../src/i18n/materialsPageText";
 import { blogPageText } from "../src/i18n/blogPageText";
+import { locationsPageText } from "../src/i18n/newClientPageText";
+import { fallbackServiceAreas } from "./serviceAreasFallback";
 import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { materialsData } from "../src/data/materials";
@@ -26,7 +28,7 @@ import { stripHtml } from "../src/lib/text";
 type Row = Record<string, unknown>;
 type Lang = "en" | "zh" | "ms";
 type ResolveMaterialLink = (href: string) => string | undefined;
-type Sources = { row?: Row | null; services?: Row[] | null; materials?: Row[] | null; projects?: Row[] | null; blogPosts?: Row[] | null; processSteps?: Row[] | null; resolveMaterialLink?: ResolveMaterialLink };
+type Sources = { row?: Row | null; services?: Row[] | null; materials?: Row[] | null; projects?: Row[] | null; blogPosts?: Row[] | null; serviceAreas?: Row[] | null; processSteps?: Row[] | null; resolveMaterialLink?: ResolveMaterialLink };
 const text = (value: unknown) => typeof value === "string" ? value : "";
 const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const plain = (value: unknown, lang: Lang) => stripHtml(translateDisplayText(text(value), lang));
@@ -250,11 +252,24 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
   }
   const category = path.match(/^\/materials\/category\/([^/]+)(?:\/([^/]+))?$/);
   const kind = path.slice(1);
-  const collection = ({ services: sources.services, projects: sources.projects, materials: sources.materials, blog: sources.blogPosts } as Record<string, Row[] | null | undefined>)[category ? "materials" : kind];
-  const rows = collection?.filter(item => item.status === "published" && safeSlug(item.slug) && text(item[`title_${lang}`]).trim()
+  const collection = ({
+    services: sources.services,
+    projects: sources.projects,
+    materials: sources.materials,
+    blog: sources.blogPosts,
+    locations: sources.serviceAreas && sources.serviceAreas.length ? sources.serviceAreas : (kind === "locations" ? fallbackServiceAreas : undefined),
+  } as Record<string, Row[] | null | undefined>)[category ? "materials" : kind];
+  const rows = collection?.filter(item => item.status === "published" && safeSlug(item.slug)
+    && (text(item[`title_${lang}`]).trim() || text(item.title_en).trim() || text(item.area_name).trim() || text(item.title_zh).trim() || safeSlug(item.slug))
     && (!category || taxonomy(item.category) === category[1] && (!category[2] || taxonomy(item.subcategory) === category[2]))) || [];
   if (!rows.length) return category ? materialTaxonomyFallbackBody(category[1], category[2], lang, sources.resolveMaterialLink) : "";
-  const copy = ({ services: servicesPageText, projects: projectsPageText, materials: materialsPageText, blog: blogPageText } as const)[category ? "materials" : kind as "services" | "projects" | "materials" | "blog"];
+  const copy = ({
+    services: servicesPageText,
+    projects: projectsPageText,
+    materials: materialsPageText,
+    blog: blogPageText,
+    locations: locationsPageText,
+  } as const)[category ? "materials" : kind as "services" | "projects" | "materials" | "blog" | "locations"];
   if (!copy) return "";
   const categoryName = category ? translateMaterialCategory(text(rows[0].category), lang) : "";
   const categoryTitle = category?.[2] ? translateMaterialSubcategory(text(rows[0].subcategory), lang) : categoryName;
@@ -262,9 +277,19 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
   if (category?.[2]) {
     body += materialSubcategoryGuidanceBody(category[1], categoryName, categoryTitle, lang, (href, title) => link(href, title, lang));
   }
-  body += `<ul>${rows.map(item =>
-    `<li><h2>${link(`/${category ? "materials" : kind}/${safeSlug(item.slug)}`, plain(item[`title_${lang}`], lang), lang)}</h2>${paragraph(plain(item[`excerpt_${lang}`], lang))}</li>`
-  ).join("")}</ul>`;
+  body += `<ul>${rows.map(item => {
+    const itemTitle = plain(item[`title_${lang}`], lang)
+      || (lang === "ms" ? plain(item.title_en, lang) : "")
+      || plain(item.area_name, lang)
+      || plain(item.title_zh, lang)
+      || safeSlug(item.slug);
+    const itemExcerpt = plain(item[`excerpt_${lang}`], lang)
+      || plain(item[`seo_description_${lang}`], lang)
+      || (lang === "ms" ? (plain(item.excerpt_en, lang) || plain(item.seo_description_en, lang)) : "")
+      || plain(item.excerpt_zh, lang)
+      || plain(item.seo_description_zh, lang);
+    return `<li><h2>${link(`/${category ? "materials" : kind}/${safeSlug(item.slug)}`, itemTitle, lang)}</h2>${paragraph(itemExcerpt)}</li>`;
+  }).join("")}</ul>`;
   if (category && !category[2]) body += buildMaterialCategoryGuidanceBody(category[1], lang);
   return wrap(body, lang);
 }
