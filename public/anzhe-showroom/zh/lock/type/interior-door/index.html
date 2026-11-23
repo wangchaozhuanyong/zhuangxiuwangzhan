@@ -22,7 +22,7 @@
   <meta property="og:image" content="https://locks.flashcast.com.my/assets/p-g5.webp">
   <meta property="og:image:alt" content="ANZHE G5">
   <link rel="stylesheet" href="/public-section-spacing.css?v=d39be8be255b">
-  <link rel="stylesheet" href="/studio.css?v=6f0166d25500">
+  <link rel="stylesheet" href="/studio.css?v=943667ae7fdd">
   <script defer src="/showroom-updates.js?v=48bf541c7bee"></script>
   <script type="application/ld+json">
 {
@@ -121,11 +121,30 @@
         <a href="#selection">选购要点</a>
         <a href="#faq">常见问题</a>
       </nav>
-      <nav class="lang-switch" aria-label="页面语言">
-        <a class="studio-button light-button" href="/zh/lock/type/interior-door/" lang="zh-Hans" aria-label="简体中文" aria-current="page">中文</a>
-        <a class="studio-button light-button" href="/en/lock/type/interior-door/" lang="en" aria-label="English">English</a>
-        <a class="studio-button light-button" href="/ms/lock/type/interior-door/" lang="ms-MY" aria-label="Bahasa Melayu">Bahasa Melayu</a>
-      </nav>
+      <div class="lang-switch" role="group" aria-label="页面语言">
+      <button type="button" class="language-selector language-selector--header" data-lang-trigger aria-label="页面语言: 简体中文" aria-haspopup="true" aria-expanded="false">
+        <svg class="globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        <span class="lang-current-label">中文</span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="lang-dropdown" role="menu">
+        <a class="lang-option" href="/zh/lock/type/interior-door/" lang="zh-Hans" aria-label="简体中文" aria-current="page">
+          <span class="lang-code">ZH</span>
+          <span class="lang-name">简体中文</span>
+          <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        </a>
+        <a class="lang-option" href="/en/lock/type/interior-door/" lang="en" aria-label="English">
+          <span class="lang-code">EN</span>
+          <span class="lang-name">English</span>
+          
+        </a>
+        <a class="lang-option" href="/ms/lock/type/interior-door/" lang="ms-MY" aria-label="Bahasa Melayu">
+          <span class="lang-code">MS</span>
+          <span class="lang-name">Bahasa Melayu</span>
+          
+        </a>
+      </div>
+    </div>
     </div>
   </header>
   <main id="main-content" tabindex="-1">
@@ -197,5 +216,9 @@
       <a href="#top">回到顶部 ↑</a>
     </div>
   </footer>
+  <script>
+    document.addEventListener("click",function(e){var t=e.target.closest("[data-lang-trigger]"),s=document.querySelector(".lang-switch.is-open");if(t){e.preventDefault();var c=t.closest(".lang-switch"),o=!c.classList.contains("is-open");c.classList.toggle("is-open",o);t.setAttribute("aria-expanded",String(o))}else if(s&&!e.target.closest(".lang-switch")){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"){var s=document.querySelector(".lang-switch.is-open");if(s){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}}});
+  </script>
 </body>
 </html>

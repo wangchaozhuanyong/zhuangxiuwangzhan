@@ -3,7 +3,7 @@
 
   const text = {
     zh: {
-      all:'全部',entrance:'入户门',room:'室内门',slim:'窄框铝门',filter:'按门型筛选',index:'型号索引',model:'型号',choose:'选择型号',chooseOther:'切换型号',close:'关闭',
+      all:'全部',entrance:'入户门',room:'室内门',slim:'窄框铝门',filter:'按门型筛选',index:'型号索引',choose:'选择型号',chooseOther:'切换型号',close:'关闭',
       installed:'含安装',views:'产品视图',product:'产品图',installation:'安装实拍',width:'面板宽度',outside:'门外侧',inside:'门内侧',handle:'把手细节',
       dimensions:'锁体尺寸',fit:'适用门型',access:'开锁方式',visitor:'访客与屏幕',screen:'室内屏幕',security:'安全提醒',privacy:'室内反锁',peephole:'防猫眼开启',
       power:'应急供电',ask:'咨询 {model}',compare:'加入对比',nextCompare:'选第二款',viewCompare:'查看对比',replace:'替换对比型号',
@@ -13,7 +13,7 @@
       panel:'窄框面板',colour:'颜色',panelWidth:'面板宽度',indexCount:'款型号',stockroom:'产品档案',doorFit:'窄框铝门',fitNote:'选购前，请量门框的可用宽度，并核对现有锁孔。',
     },
     en: {
-      all:'All',entrance:'Entrance doors',room:'Room doors',slim:'Slim aluminium doors',filter:'Filter by door type',index:'Model index',model:'Model',choose:'Choose a model',chooseOther:'Change model',close:'Close',
+      all:'All',entrance:'Entrance doors',room:'Room doors',slim:'Slim aluminium doors',filter:'Filter by door type',index:'Model index',choose:'Choose a model',chooseOther:'Change model',close:'Close',
       installed:'Installation included',views:'Product views',product:'Product view',installation:'Installed view',width:'Panel width',outside:'Outside',inside:'Inside',handle:'Handle detail',
       dimensions:'Lock dimensions',fit:'Door type',access:'Access methods',visitor:'Visitors & display',screen:'Indoor display',security:'Security alerts',privacy:'Inside privacy lock',peephole:'Peephole protection',
       power:'Emergency power',ask:'Enquire about {model}',compare:'Add to comparison',nextCompare:'Choose second lock',viewCompare:'View comparison',replace:'Replace a lock',
@@ -23,7 +23,7 @@
       panel:'Slim panel',colour:'Colour',panelWidth:'Panel width',indexCount:'models',stockroom:'Model file',doorFit:'Slim aluminium doors',fitNote:'Measure the usable width of your door frame and check the existing lock cut-out before ordering.',
     },
     ms: {
-      all:'Semua',entrance:'Pintu utama',room:'Pintu bilik',slim:'Pintu aluminium sempit',filter:'Tapis ikut jenis pintu',index:'Indeks model',model:'Model',choose:'Pilih model',chooseOther:'Tukar model',close:'Tutup',
+      all:'Semua',entrance:'Pintu utama',room:'Pintu bilik',slim:'Pintu aluminium sempit',filter:'Tapis ikut jenis pintu',index:'Indeks model',choose:'Pilih model',chooseOther:'Tukar model',close:'Tutup',
       installed:'Termasuk pemasangan',views:'Paparan produk',product:'Imej produk',installation:'Foto pemasangan',width:'Lebar panel',outside:'Bahagian luar',inside:'Bahagian dalam',handle:'Butiran pemegang',
       dimensions:'Ukuran kunci',fit:'Jenis pintu',access:'Cara buka kunci',visitor:'Pelawat dan skrin',screen:'Skrin dalaman',security:'Amaran keselamatan',privacy:'Kunci privasi dalaman',peephole:'Perlindungan lubang intai',
       power:'Kuasa kecemasan',ask:'Tanya tentang {model}',compare:'Tambah ke perbandingan',nextCompare:'Pilih kunci kedua',viewCompare:'Lihat perbandingan',replace:'Gantikan model',
@@ -161,16 +161,10 @@
       setAttr(b,'aria-pressed',selected);
     });
   }
-  function specTable(p) {
-    const f=window.lockFeatures[p.id], values=f.specs;
-    const keys=[...new Set(['dimensions','type','material','finish','color','weight',...Object.keys(window.lockSpecLabels)])];
-    const pairs=[['model',t('model'),p.name],...keys.filter(k=>values[k]).map(k=>[k,loc(window.lockSpecLabels[k]),loc(values[k])])];
-    return '<p class="dir-product-copy">'+esc(loc(p.copy))+'</p><dl class="dir-spec-table">'+pairs.map(([key,label,value])=>'<div data-dir-property="'+key+'"><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl>';
-  }
   function fullSpecs() {
     const p=model();
     return '<section class="dir-full-spec"><div class="dir-spec-heading"><h4>'+t('full')+'</h4><span class="dir-spec-model">'+esc(p.name)+'</span></div>'+
-      '<div class="dir-spec-body">'+specTable(p)+'</div></section>';
+      '<div class="dir-spec-body"><p class="dir-product-copy">'+esc(loc(p.copy))+'</p>'+window.lockSpecSheet.directory(p,lang())+'</div></section>';
   }
   function ensureIndex() {
     const rail=$('.dir-index-list'), selected=rail.querySelector('[aria-pressed="true"]');

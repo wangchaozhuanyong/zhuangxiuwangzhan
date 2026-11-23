@@ -13,4 +13,13 @@ ${Object.entries(meta.hreflang||{}).map(([lang,url])=>`    <xhtml:link rel="alte
 </urlset>
 `;
 }
-if(isGeneratorEntry(import.meta.url)) runQualifiedSeoGeneration().catch(error=>{console.error(error.message);process.exitCode=1;});
+if (isGeneratorEntry(import.meta.url)) {
+  runQualifiedSeoGeneration().then(async () => {
+    // The static showroom has its own sitemap. Render its page HTML in the same build step.
+    const { generateAnzheLockPages } = await import("./generate-anzhe-lock-pages.mjs");
+    await generateAnzheLockPages();
+  }).catch(error => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+}

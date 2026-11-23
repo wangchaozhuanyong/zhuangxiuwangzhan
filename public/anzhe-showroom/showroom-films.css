@@ -1,4 +1,4 @@
-#lock-films {scroll-margin-top:8px;background:var(--paper);color:var(--ink);border-bottom:1px solid var(--rule)}
+#lock-films {position:relative;z-index:2;clear:both;scroll-margin-top:8px;background:var(--paper);color:var(--ink);border-bottom:1px solid var(--rule)}
 .lf-frame {padding-block:var(--public-section-space-start,50px) var(--public-section-space-end,58px)}
 #lock-films .lf-head {
   display: grid;

@@ -252,4 +252,52 @@
     };
     f.specs=facts;
   }
+
+  // The model page, catalogue panel and static catalogue use the same specification sheet.
+  const specGroups = [
+    { id: 'build', title: tr('结构与尺寸', 'Construction & dimensions', 'Binaan dan ukuran'),
+      fields: ['model', 'dimensions', 'type', 'material', 'weight', 'finish', 'color', 'machining', 'cylinder', 'application'] },
+    { id: 'access', title: tr('开锁与连接', 'Access & connectivity', 'Akses dan sambungan'),
+      fields: ['access', 'connection', 'app', 'appPlatform', 'remote', 'cardType', 'face3d', 'hiddenPrint', 'oneTouch', 'voice'] },
+    { id: 'security', title: tr('影像与安防', 'Security & monitoring', 'Keselamatan dan pemantauan'),
+      fields: ['screen', 'camera', 'lens', 'video', 'bellUnlock', 'monitoring', 'lingering', 'alarm', 'privacy', 'peephole'] },
+    { id: 'power', title: tr('供电与环境', 'Power & operating conditions', 'Kuasa dan keadaan operasi'),
+      fields: ['power', 'emergency', 'phoneBackup', 'capacity', 'lowBattery', 'temperature', 'humidity'] },
+  ];
+  const otherSpecs = tr('其他规格', 'Other specifications', 'Spesifikasi lain');
+  const modelLabel = tr('型号', 'Model', 'Model');
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[char]);
+
+  function renderSpecGroups(rows, lang, compact) {
+    const remaining = new Map(rows.map(row => [row.key, row]));
+    const heading = compact ? 'h5' : 'h3';
+    const attribute = compact ? 'data-dir-property' : 'data-spec';
+    function groupMarkup(id, title, items) {
+      const pairs = items.map(({ key, label, value }) =>
+        `<div ${attribute}="${escapeHtml(key)}"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`);
+      return `<div class="spec-group" data-spec-group="${id}"><${heading} class="spec-group-title">${escapeHtml(title[lang])}</${heading}><dl class="spec-values">${pairs.join('')}</dl></div>`;
+    }
+    const groups = [];
+    for (const { id, title, fields } of specGroups) {
+      const items = fields.map(key => remaining.get(key)).filter(Boolean);
+      if (items.length) groups.push(groupMarkup(id, title, items));
+      for (const { key } of items) remaining.delete(key);
+    }
+    if (remaining.size) groups.push(groupMarkup('other', otherSpecs, [...remaining.values()]));
+    return `<div class="spec-groups">${groups.join('')}</div>`;
+  }
+
+  window.lockSpecSheet = {
+    detail: (rows, lang) => renderSpecGroups(rows, lang, false),
+    directory(model, lang) {
+      const facts = window.lockFeatures[model.id].specs;
+      const rows = [{ key: 'model', label: modelLabel[lang], value: model.name }];
+      for (const [key, label] of Object.entries(window.lockSpecLabels)) {
+        if (facts[key]) rows.push({ key, label: label[lang], value: facts[key][lang] });
+      }
+      return renderSpecGroups(rows, lang, true);
+    },
+  };
 })();
