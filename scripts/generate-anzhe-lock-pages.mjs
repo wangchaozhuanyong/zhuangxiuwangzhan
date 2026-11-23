@@ -887,6 +887,7 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   <meta property="og:image:alt" content="${escape(imageAlt)}">
   ${[...shared.styles, shared.fitAssets["showroom-fit.css"], shared.modelStyle].map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
+  <script defer src="${shared.navScript}"></script>
   <script type="application/ld+json">
 ${renderSchema(model, copy, lang, words.title)}
   </script>
@@ -969,10 +970,6 @@ ${renderSchema(model, copy, lang, words.title)}
       <a href="#top">${escape(words.back)}</a>
     </div>
   </footer>
-  <script>
-    document.addEventListener("click",function(e){var t=e.target.closest("[data-lang-trigger]"),s=document.querySelector(".lang-switch.is-open");if(t){e.preventDefault();var c=t.closest(".lang-switch"),o=!c.classList.contains("is-open");c.classList.toggle("is-open",o);t.setAttribute("aria-expanded",String(o))}else if(s&&!e.target.closest(".lang-switch")){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}});
-    document.addEventListener("keydown",function(e){if(e.key==="Escape"){var s=document.querySelector(".lang-switch.is-open");if(s){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}}});
-  </script>
 </body>
 </html>
 `;
@@ -1058,6 +1055,7 @@ function renderCategoryPage(category, lang, sources, shared, categories, categor
   <meta property="og:image:alt" content="ANZHE ${escape(models[0].name)}">
   ${shared.categoryStyles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
+  <script defer src="${shared.navScript}"></script>
   <script type="application/ld+json">
 ${schema}
   </script>
@@ -1113,10 +1111,6 @@ ${schema}
       <a href="#top">${escape(words.back)}</a>
     </div>
   </footer>
-  <script>
-    document.addEventListener("click",function(e){var t=e.target.closest("[data-lang-trigger]"),s=document.querySelector(".lang-switch.is-open");if(t){e.preventDefault();var c=t.closest(".lang-switch"),o=!c.classList.contains("is-open");c.classList.toggle("is-open",o);t.setAttribute("aria-expanded",String(o))}else if(s&&!e.target.closest(".lang-switch")){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}});
-    document.addEventListener("keydown",function(e){if(e.key==="Escape"){var s=document.querySelector(".lang-switch.is-open");if(s){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}}});
-  </script>
 </body>
 </html>
 `;
@@ -1230,6 +1224,7 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
   ]);
   const shared = {
     updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
+    navScript: await versionedAsset("/showroom-nav.js", join(showroom, "showroom-nav.js")),
     categoryStyles,
     modelStyle: await versionedAsset("/showroom-model.css", join(showroom, "showroom-model.css")),
     styles: [

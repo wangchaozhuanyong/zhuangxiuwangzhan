@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="/public-section-spacing.css?v=d39be8be255b">
   <link rel="stylesheet" href="/studio.css?v=943667ae7fdd">
   <script defer src="/showroom-updates.js?v=48bf541c7bee"></script>
+  <script defer src="/showroom-nav.js?v=634bd23632c1"></script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -197,9 +198,5 @@
       <a href="#top">Back to top ↑</a>
     </div>
   </footer>
-  <script>
-    document.addEventListener("click",function(e){var t=e.target.closest("[data-lang-trigger]"),s=document.querySelector(".lang-switch.is-open");if(t){e.preventDefault();var c=t.closest(".lang-switch"),o=!c.classList.contains("is-open");c.classList.toggle("is-open",o);t.setAttribute("aria-expanded",String(o))}else if(s&&!e.target.closest(".lang-switch")){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}});
-    document.addEventListener("keydown",function(e){if(e.key==="Escape"){var s=document.querySelector(".lang-switch.is-open");if(s){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}}});
-  </script>
 </body>
 </html>
