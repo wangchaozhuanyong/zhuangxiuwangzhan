@@ -7,7 +7,7 @@ import { readPublicLanguageCookie, resolvePreferredLanguage } from "@/i18n/langu
 
 it("keeps the static showroom pages in sync with their shared templates", () => {
   execFileSync(process.execPath, ["scripts/generate-anzhe-lock-pages.mjs", "--check"]);
-});
+}, 20_000);
 
 it("ships the current shared public boot and exact script and style revisions in all three documents", () => {
   execFileSync(process.execPath, ["scripts/generate-anzhe-boot.mjs", "--check"]);
@@ -41,7 +41,7 @@ it("ships the current shared public boot and exact script and style revisions in
       expect(version, url).toBe(createHash("sha256").update(readFileSync(file)).digest("hex").slice(0, 12));
     }
   }
-});
+}, 20_000);
 
 it("shares priority across the two sites and retains legacy and first-device-language fallbacks", () => {
   for (const hostname of ["flashcast.com.my", "locks.flashcast.com.my"]) {

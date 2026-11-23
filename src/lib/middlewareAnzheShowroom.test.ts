@@ -178,6 +178,17 @@ describe("ANZHE showroom on the independent hostname", () => {
     expect(await response.text()).toBe(body);
   });
 
+  it("serves the showroom navigation script as same-origin fingerprinted JavaScript", async () => {
+    const body = "window.showroomNavLoaded = true;";
+    const hash = createHash("sha256").update(body).digest("hex").slice(0, 12);
+    const fetch = vi.fn(async () => new Response(body, { headers: { "content-type": "text/javascript" } }));
+    const response = await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/showroom-nav.js?v=" + hash), fetch);
+    expect(response.status).toBe(200);
+    expect(fetch).toHaveBeenCalledWith(expect.objectContaining({ url: ANZHE_SHOWROOM_ORIGIN + "/anzhe-showroom/showroom-nav.js" }));
+    expect(response.headers.get("cache-control")).toContain("immutable");
+    expect(await response.text()).toBe(body);
+  });
+
   it("publishes the exact Pages revision on the showroom hostname", async () => {
     const response = await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/__flashcast/version"));
     expect(await response.json()).toEqual({ deploymentVersion: "anzhe-verified-source" });
