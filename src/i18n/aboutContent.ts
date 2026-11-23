@@ -244,22 +244,22 @@ export const aboutMilestoneCopy = {
 
 export const aboutStatCopy = {
   en: [
-    { value: "Scope", label: "Clear Project Planning" },
-    { value: "KL & Selangor", label: "Published Service Areas" },
-    { value: "Homes", label: "Residential Planning" },
-    { value: "Business", label: "Commercial Planning" },
+    { value: "2015", label: "Founded Year" },
+    { value: "Klang Valley", label: "Published Service Areas" },
+    { value: "Turnkey", label: "Design & Build Delivery" },
+    { value: "Compliant", label: "SSM & CIDB Registered" },
   ],
   zh: [
-    { value: "范围", label: "清楚规划项目" },
-    { value: "吉隆坡与雪兰莪", label: "网站公布服务区域" },
-    { value: "住宅", label: "住宅空间规划" },
-    { value: "商业", label: "商业空间规划" },
+    { value: "2015", label: "团队始创年份" },
+    { value: "巴生谷", label: "网站公布服务区域" },
+    { value: "全案落地", label: "设计与施工交付" },
+    { value: "正规合规", label: "SSM与CIDB企业资质" },
   ],
 
   ms: [
-    { value: "Skop", label: "Perancangan Projek yang Jelas" },
-    { value: "KL & Selangor", label: "Kawasan Perkhidmatan Terbitan" },
-    { value: "rumah", label: "Perancangan Kediaman" },
-    { value: "Perniagaan", label: "Perancangan Komersial" },
+    { value: "2015", label: "Tahun Ditubuhkan" },
+    { value: "Lembah Klang", label: "Kawasan Perkhidmatan Terbitan" },
+    { value: "Reka & Bina", label: "Penyampaian Projek" },
+    { value: "Berdaftar", label: "Pematuhan SSM & CIDB" },
   ],
 } as const;

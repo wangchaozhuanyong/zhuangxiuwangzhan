@@ -1,8 +1,10 @@
 import { isMalayContentReady } from "@/i18n/localizedContent";
 import { useMemo } from "react";
-import { MapPin } from "lucide-react";
+import { ArrowUpRight, Clock, MapPin, ShieldCheck } from "lucide-react";
 import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 import PageMeta from "@/components/PageMeta";
+import Link from "@/components/LocalizedLink";
+import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeAFacts, SchemeANumberList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { coreValues, teamHighlights } from "@/data/siteContent";
@@ -88,10 +90,35 @@ const About = () => {
       <SchemeASection title={officeSection?.title || t.officeTitle} description={officeSection?.content || officeSection?.subtitle || t.officeDescription} className="fc-route-office">
         <div className="fc-route-office-grid">
           <div className="fc-route-office-copy">
-            <header><MapPin aria-hidden="true" /><h3>{settings.company_name}</h3></header>
-            <address>{settings.address}</address>
-            <p className="fc-route-registration text-sm text-muted-foreground">{t.registrationDetails}</p>
-            <p>{t.visitNote}</p>
+            <div>
+              <header><MapPin aria-hidden="true" /><h3>{settings.company_name}</h3></header>
+              <address>{settings.address}</address>
+              {t.registrationDetails ? (
+                <div className="fc-route-office-badge">
+                  <ShieldCheck aria-hidden="true" />
+                  <span>{t.registrationDetails}</span>
+                </div>
+              ) : null}
+              <div className="fc-route-office-note">
+                <Clock aria-hidden="true" />
+                <p>{t.visitNote}</p>
+              </div>
+            </div>
+            <div className="fc-route-office-actions">
+              <a
+                href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fc-route-office-btn fc-route-office-btn--primary"
+              >
+                {language === "zh" ? "在地图中打开" : (language === "ms" ? "Buka Peta" : "Open in Maps")}
+                <ArrowUpRight aria-hidden="true" />
+              </a>
+              <Link to="/contact" className="fc-route-office-btn fc-route-office-btn--secondary">
+                {language === "zh" ? "预约到访" : (language === "ms" ? "Temujanji" : "Book Visit")}
+                <ArrowUpRight aria-hidden="true" />
+              </Link>
+            </div>
           </div>
           <GoogleMapEmbed title={t.mapTitle} addressLabel={settings.address} latitude={settings.map_latitude} longitude={settings.map_longitude} height={360} className="min-h-[360px]" />
         </div>
