@@ -30,8 +30,8 @@ describe("ANZHE showroom on the independent hostname", () => {
     const policy = response.headers.get("content-security-policy")?.split("; ");
     expect(policy).toEqual(expect.arrayContaining([
       "default-src 'self'",
-      "script-src 'self' https://static.cloudflareinsights.com/beacon.min.js https://static.cloudflareinsights.com/beacon.min.js/",
-      "connect-src 'self'",
+      "script-src 'self' https://static.cloudflareinsights.com/beacon.min.js https://static.cloudflareinsights.com/beacon.min.js/ https://www.googletagmanager.com https://googleads.g.doubleclick.net",
+      "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://www.google.com https://ad.doubleclick.net https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://region1.google-analytics.com",
     ]));
   });
 
