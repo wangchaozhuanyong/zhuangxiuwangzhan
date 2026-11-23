@@ -8,7 +8,7 @@ import {
 export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
-const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|updates|films)\.js|showroom-(?:intro|fit|films|catalog)\.css|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
+const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|updates|films)\.js|showroom-(?:intro|fit|films|catalog|model)\.css|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
 const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
 const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
 const TYPE_SLUGS = "entrance-door|interior-door|aluminium-door";
@@ -86,7 +86,7 @@ function addHomeCategoryLinks(html: string, locale: Language) {
   const copy = categoryLinkText[locale];
   const links = TYPE_SLUGS.split("|").map((slug, index) =>
     `<a class="studio-link" href="/${locale}/lock/type/${slug}/"><span>${copy.types[index]}</span></a>`);
-  const navigation = `<nav class="section-actions" data-lock-category-links aria-label="${copy.label}">`
+  const navigation = `<nav class="section-actions" data-lock-category-links style="margin-top:clamp(8px,1.8vw,12px);margin-bottom:clamp(16px,3vw,20px);" aria-label="${copy.label}">`
     + `<a class="studio-link" href="#model-details"><span>${copy.all}</span></a>${links.join("")}</nav>`;
   // The interactive directory replaces its own markup when it mounts or filters.
   return html.replace('<div id="directory"', `${navigation}<div id="directory"`);

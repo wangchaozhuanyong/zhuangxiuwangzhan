@@ -116,18 +116,24 @@ test("renders one model heading and switches language on the same model", async 
   await expect(heading).toHaveCount(1);
   await expect(heading).toContainText("V37J-P16");
   await expect(heading).toBeInViewport();
-  await expect(page.locator(".hero-board img")).toHaveJSProperty("complete", true);
-  expect(await page.locator(".hero-board img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  await expect(page.locator(".model-plate img")).toHaveJSProperty("complete", true);
+  expect(await page.locator(".model-plate img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  const plate = await page.locator(".model-plate").boundingBox();
+  const name = await page.locator(".model-name").boundingBox();
+  expect(plate!.x + plate!.width).toBeLessThan(name!.x);
+  await expect(page.locator(".model-actions .studio-button")).toBeInViewport();
   await assertHeaderFits(page);
   await page.screenshot({ path: testInfo.outputPath("v37j-p16-desktop.png") });
   await expect(page.locator('[data-model-categories] a[href="/zh/lock/type/entrance-door/"]')).toBeVisible();
   await page.locator(".site-footer").scrollIntoViewIfNeeded();
   await page.screenshot({ path: testInfo.outputPath("v37j-p16-desktop-category-footer.png") });
 
+  await page.locator("[data-lang-trigger]").click();
   await page.getByRole("link", { name: "English", exact: true }).click();
   await expect(page).toHaveURL(origin + "/en/lock/v37j-p16/");
   await expect(heading).toHaveText("V37J-P16 Palm Vein Digital Lock — RM2,360");
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", page.url());
+  await page.locator("[data-lang-trigger]").click();
   await page.getByRole("link", { name: "Bahasa Melayu", exact: true }).click();
   await expect(page).toHaveURL(origin + "/ms/lock/v37j-p16/");
   await expect(page.locator("meta[name=robots]")).toHaveAttribute("content", "noindex");
@@ -136,12 +142,75 @@ test("renders one model heading and switches language on the same model", async 
 test.describe("without JavaScript at mobile widths", () => {
   test.use({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, hasTouch: true });
 
+  test("opens an indexed model, expands its information and returns to the index", async ({ page }) => {
+    for (const lang of languages) {
+      const homeIndex = `${origin}/${lang}/#model-details`;
+      const model = `/${lang}/lock/q58j-k19/`;
+      await page.goto(homeIndex);
+      await page.locator(`#model-details a[href="${model}"]`).click();
+      await expect(page).toHaveURL(origin + model);
+      await expect(page.locator(".model-name")).toHaveText("Q58J-K19");
+      await expect(page.locator(".model-offer b")).toHaveText("RM2,270");
+      const title = await page.locator("h1").boundingBox();
+      const plate = await page.locator(".model-plate").boundingBox();
+      expect(title!.y + title!.height).toBeLessThanOrEqual(plate!.y);
+      await expect(page.locator(".model-actions .studio-button")).toBeInViewport();
+
+      const faq = page.locator("#faq details").nth(1);
+      await faq.locator("summary").focus();
+      await page.keyboard.press("Enter");
+      await expect(faq.locator("p")).toBeVisible();
+      const handover = page.locator('[aria-labelledby="guide-title"] details').last();
+      await handover.locator("summary").click();
+      await expect(handover.locator("article")).toHaveCount(2);
+      await expect(handover.locator("article").last()).toBeVisible();
+
+      const peerLink = page.locator(`.model-peer-link[href="/${lang}/lock/g13/"]`);
+      const peer = page.locator(".model-peer").filter({ has: peerLink });
+      await expect(peerLink).toContainText("RM635.20");
+      await expect(peer.locator("dl")).toBeHidden();
+      await peer.locator("summary").click();
+      await expect(peer.locator("dl")).toBeVisible();
+      await peerLink.click();
+      await expect(page.locator(".model-offer b")).toHaveText("RM635.20");
+      await page.locator(".model-back").click();
+      await expect(page).toHaveURL(homeIndex);
+      await expect(page.locator("#model-details-title")).toBeInViewport();
+    }
+  });
+
+  test("uses the home door fit guide on model pages in all three languages", async ({ page }) => {
+    const guide = page.locator("#installation");
+    const guideContent = () => guide.evaluate(section => ({
+      text: Array.from(section.querySelectorAll("[data-t]"), el => el.textContent),
+      images: Array.from(section.querySelectorAll("img"), img => ({
+        path: new URL(img.src).pathname,
+        alt: img.alt,
+        width: img.width,
+        height: img.height,
+      })),
+      photoLayout: getComputedStyle(section.querySelector(".fit-guide__photos")!).gridTemplateColumns,
+    }));
+    for (const language of languages) {
+      await page.goto(`${origin}/${language}/#installation`);
+      await expect(guide.locator("img")).toHaveCount(2);
+      const home = await guideContent();
+      await page.goto(`${origin}/${language}/lock/f8/#installation`);
+      await expect(guide.getByRole("heading")).toBeInViewport();
+      expect(await guideContent()).toEqual(home);
+      const cta = guide.getByRole("link");
+      const modelEnquiry = await page.locator('.model-actions a[href^="https://wa.me/"]').getAttribute("href");
+      expect(modelEnquiry).toBeTruthy();
+      await expect(cta).toHaveAttribute("href", modelEnquiry!);
+    }
+  });
+
   test("keeps the installed price and specifications readable", async ({ page }, testInfo) => {
     expect((await page.goto(origin + modelPath))?.status()).toBe(200);
     await expect(page.locator("h1")).toHaveText(/V37J-P16.*含安装 RM[\d,.]+/);
     await expect(page.locator("h1")).toBeInViewport();
     await expect(page.locator('#specifications [data-spec="access"]')).toContainText("指纹");
-    await expect(page.locator("#faq article")).toHaveCount(3);
+    await expect(page.locator("#faq details")).toHaveCount(3);
     await assertHeaderFits(page);
     await page.screenshot({ path: testInfo.outputPath("v37j-p16-mobile-no-js.png") });
     await expect(page.locator('[data-model-categories] a[href="/zh/lock/feature/palm-vein/"]')).toBeVisible();
@@ -153,6 +222,28 @@ test.describe("without JavaScript at mobile widths", () => {
       await assertHeaderFits(page);
     }
   });
+});
+
+test("adapts the grouped specification sheet to the reading width", async ({ page }) => {
+  await page.goto(origin + "/ms/lock/f8/#specifications");
+  const sheet = page.locator("#specifications");
+  await expect(sheet.getByRole("heading", { name: "Binaan dan ukuran" })).toBeVisible();
+  await expect(sheet.locator('[data-spec="dimensions"] dd')).toHaveText("258 × 65.2 × 26 mm");
+  const fields = await sheet.locator("[data-spec]").evaluateAll(rows => rows.map(row => row.getAttribute("data-spec")));
+  expect(new Set(fields).size).toBe(fields.length);
+
+  for (const width of [360, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const dimensions = await sheet.locator('[data-spec="dimensions"]').boundingBox();
+    const mechanism = await sheet.locator('[data-spec="type"]').boundingBox();
+    expect(dimensions).toBeTruthy();
+    expect(mechanism).toBeTruthy();
+    if (width === 360) expect(mechanism!.y).toBeGreaterThan(dimensions!.y);
+    else expect(mechanism!.y).toBe(dimensions!.y);
+    const overflowing = await sheet.locator("dt, dd").evaluateAll(cells =>
+      cells.filter(cell => cell.scrollWidth > cell.clientWidth + 1).map(cell => cell.textContent));
+    expect(overflowing).toEqual([]);
+  }
 });
 
 test("returns 404 for a model outside the allowlist", async ({ page }) => {
@@ -231,7 +322,8 @@ test.describe("public lock categories without JavaScript", () => {
   }
 });
 
-test("retains the interactive home filters alongside ordinary category links", async ({ page }, testInfo) => {
+test("keeps home category links next to the filters and leaves room for the model reader", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1609, height: 884 });
   for (const language of languages) {
     expect((await page.goto(`${origin}/${language}/`))?.status()).toBe(200);
     const navigation = page.locator("nav[data-lock-category-links]");
@@ -240,9 +332,30 @@ test("retains the interactive home filters alongside ordinary category links", a
     for (const { slug } of categories.slice(0, 3)) {
       await expect(navigation.locator(`a[href="/${language}/lock/${slug}/"]`)).toBeVisible();
     }
+    await page.waitForFunction(() => window.showroomInteractive);
+    const layout = await page.locator("#collection").evaluate(section => {
+      const bounds = (selector: string) => section.querySelector(selector)!.getBoundingClientRect();
+      const links = [...section.querySelectorAll("[data-lock-category-links] a")].map(link => link.getBoundingClientRect());
+      return {
+        afterHeading: Math.min(...links.map(link => link.top)) - bounds(".catalog-heading").bottom,
+        beforeFilters: bounds(".dir-filterbar").top - Math.max(...links.map(link => link.bottom)),
+        readerHeight: bounds(".dir-reading").height,
+      };
+    });
+    expect(layout.afterHeading).toBeGreaterThanOrEqual(0);
+    expect(layout.afterHeading).toBeLessThanOrEqual(24);
+    expect(layout.beforeFilters).toBeGreaterThanOrEqual(0);
+    expect(layout.beforeFilters).toBeLessThanOrEqual(24);
+    expect(layout.readerHeight).toBeGreaterThan(100);
     const allFilter = page.locator('button[data-dir-filter="all"]');
     await allFilter.click();
     await expect(allFilter).toHaveAttribute("aria-pressed", "true");
+    await page.locator('.dir-index-list [data-dir-model="f8"]').click();
+    const reading = page.locator(".dir-reading");
+    const dimensions = reading.locator('[data-dir-property="dimensions"] dd');
+    await dimensions.scrollIntoViewIfNeeded();
+    await expect(dimensions).toHaveText("258 × 65.2 × 26 mm");
+    await expect(dimensions).toBeInViewport();
     const slimFilter = page.locator('button[data-dir-filter="slim"]');
     await slimFilter.click();
     await expect(slimFilter).toHaveAttribute("aria-pressed", "true");

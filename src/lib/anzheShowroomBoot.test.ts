@@ -5,6 +5,10 @@ import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { readPublicLanguageCookie, resolvePreferredLanguage } from "@/i18n/languageDetection";
 
+it("keeps the static showroom pages in sync with their shared templates", () => {
+  execFileSync(process.execPath, ["scripts/generate-anzhe-lock-pages.mjs", "--check"]);
+});
+
 it("ships the current shared public boot and exact script and style revisions in all three documents", () => {
   execFileSync(process.execPath, ["scripts/generate-anzhe-boot.mjs", "--check"]);
   for (const lang of ["zh", "en", "ms"]) {
