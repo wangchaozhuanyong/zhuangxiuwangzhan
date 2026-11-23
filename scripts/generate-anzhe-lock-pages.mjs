@@ -1033,13 +1033,14 @@ ${schema}
 `;
 }
 
+const indexedModelLanguages = ["zh", "en"];
 const indexedCategoryLanguages = ["zh", "en"];
 
 function renderSitemap(catalog, categories) {
-  const entriesFor = (slugs, includedLanguages) => slugs.flatMap(slug =>
+  const entriesFor = (slugs, includedLanguages, alternateLanguages = includedLanguages) => slugs.flatMap(slug =>
     includedLanguages.map(lang => {
       const links = alternates(slug)
-        .filter(([tag]) => tag === "x-default" || includedLanguages.some(code => locales[code].alternate === tag))
+        .filter(([tag]) => tag === "x-default" || alternateLanguages.some(code => locales[code].alternate === tag))
         .map(([tag, href]) => `<xhtml:link rel="alternate" hreflang="${tag}" href="${href}"/>`);
       return `  <url>
     <loc>${absolute(pagePath(lang, slug))}</loc>
@@ -1047,8 +1048,9 @@ function renderSitemap(catalog, categories) {
   </url>`;
     }));
   const entries = [
-    ...entriesFor([undefined, ...catalog.map(model => model.id)], languages),
-    ...entriesFor(categories.map(category => category.slug), indexedCategoryLanguages),
+    ...entriesFor([undefined], languages, languages),
+    ...entriesFor(catalog.map(model => model.id), indexedModelLanguages, languages),
+    ...entriesFor(categories.map(category => category.slug), indexedCategoryLanguages, indexedCategoryLanguages),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -1136,5 +1138,5 @@ const categoryPages = categories.flatMap(category => languages.map(lang => ({
   html: renderCategoryPage(category, lang, sources, shared, categories, categoryExtra),
 })));
 await syncOutputs([...pages, ...categoryPages, { target: join(showroom, "sitemap.xml"), html: renderSitemap(catalog, categories) }]);
-const sitemapCount = pages.length + languages.length + categories.length * indexedCategoryLanguages.length;
+const sitemapCount = languages.length + catalog.length * indexedModelLanguages.length + categories.length * indexedCategoryLanguages.length;
 console.log(`${args.check ? "Checked" : "Generated"} ${pages.length} model pages (${Math.min(...pages.map(page => page.length))}+ visible characters), ${categoryPages.length} category pages and ${sitemapCount} sitemap URLs.`);
