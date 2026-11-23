@@ -157,7 +157,7 @@ function aboutBody(lang: Lang) {
       ? "94, Jalan Mega Mendung, Taman United, 58200 吉隆坡，马来西亚"
       : "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia";
     const officeAddr = (copy.officeAddress || "").replace("{address}", address);
-    body += heading(copy.officeTitle) + paragraph(copy.officeDescription) + paragraph(officeAddr) + paragraph(copy.visitNote);
+    body += heading(copy.officeTitle) + paragraph(copy.officeDescription) + paragraph(officeAddr) + paragraph(copy.registrationDetails) + paragraph(copy.visitNote);
   }
 
   const aboutFaqHeading = lang === "zh" ? "常见规划问题与合作保障" : lang === "ms" ? "Soalan Lazim Perancangan dan Jaminan Kerjasama" : "Planning FAQs and Project Assurance";

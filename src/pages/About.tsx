@@ -90,6 +90,7 @@ const About = () => {
           <div className="fc-route-office-copy">
             <header><MapPin aria-hidden="true" /><h3>{settings.company_name}</h3></header>
             <address>{settings.address}</address>
+            <p className="fc-route-registration text-sm text-muted-foreground">{t.registrationDetails}</p>
             <p>{t.visitNote}</p>
           </div>
           <GoogleMapEmbed title={t.mapTitle} addressLabel={settings.address} latitude={settings.map_latitude} longitude={settings.map_longitude} height={360} className="min-h-[360px]" />
