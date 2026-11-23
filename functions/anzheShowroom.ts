@@ -31,7 +31,7 @@ const securityHeaders = {
     "object-src 'none'",
     "frame-ancestors 'none'",
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
+    "img-src 'self' data: https://www.google.com https://www.google.com.my https://www.googleadservices.com https://googleads.g.doubleclick.net",
     "form-action 'none'",
   ].join("; "),
   "Referrer-Policy": "strict-origin-when-cross-origin",
