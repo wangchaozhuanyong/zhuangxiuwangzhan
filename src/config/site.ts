@@ -13,6 +13,8 @@ const whatsappNumber = normalizeWhatsAppNumber(env.VITE_SITE_WHATSAPP_NUMBER || 
 export const siteConfig = {
   name: "FLASH CAST SDN. BHD.",
   ssmNumber: env.VITE_SITE_SSM_NUMBER || "202501027419 (1628831-M)",
+  cidbNumber: env.VITE_SITE_CIDB_NUMBER || "0120260929-WP177947",
+  cidbGrade: env.VITE_SITE_CIDB_GRADE || "G3",
   url: siteUrl,
   email: env.VITE_SITE_EMAIL || "support@flashcast.com.my",
   phoneDisplay,
