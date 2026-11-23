@@ -51,10 +51,10 @@ export const adminDefaultContentSeedText = {
       completed: "同步完成：新增 {inserted} 条，补充 {updated} 条。",
     },
     companyStats: [
-      { value: "范围", label: "清楚规划范围" },
-      { value: "吉隆坡与雪兰莪", label: "本地服务区域" },
-      { value: "住宅", label: "住宅项目沟通" },
-      { value: "商业", label: "商业项目沟通" },
+      { value: "2015", label: "团队始创年份" },
+      { value: "巴生谷", label: "本地服务区域" },
+      { value: "全案落地", label: "住宅与商业空间" },
+      { value: "正规合规", label: "SSM与CIDB资质" },
     ],
     coreValues: [
       { title: "品质工艺", desc: "每个项目都重视细节、材料和施工方法，让空间不只好看，也经得起长期使用。" },

@@ -101,10 +101,10 @@ export const teamHighlights: TeamHighlightItem[] = [
   },
 ];
 export const companyStats = [
-  { value: "Scope", label: "Clear Project Planning" },
-  { value: "KL & Selangor", label: "Local Service Areas" },
-  { value: "Homes", label: "Residential Projects" },
-  { value: "Business", label: "Commercial Projects" },
+  { value: "2015", label: "Founded Year" },
+  { value: "Klang Valley", label: "Local Service Areas" },
+  { value: "Turnkey", label: "Residential & Commercial" },
+  { value: "Compliant", label: "SSM & CIDB Registered" },
 ]; // ============ TESTIMONIALS ============
 export interface Testimonial {
   text: string;
