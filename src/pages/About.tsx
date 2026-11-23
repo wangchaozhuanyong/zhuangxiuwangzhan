@@ -111,11 +111,11 @@ const About = () => {
                 rel="noopener noreferrer"
                 className="fc-route-office-btn fc-route-office-btn--primary"
               >
-                {language === "zh" ? "在地图中打开" : (language === "ms" ? "Buka Peta" : "Open in Maps")}
+                {t.openMapLabel}
                 <ArrowUpRight aria-hidden="true" />
               </a>
               <Link to="/contact" className="fc-route-office-btn fc-route-office-btn--secondary">
-                {language === "zh" ? "预约到访" : (language === "ms" ? "Temujanji" : "Book Visit")}
+                {t.bookVisitLabel}
                 <ArrowUpRight aria-hidden="true" />
               </Link>
             </div>
