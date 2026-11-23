@@ -42,6 +42,7 @@ const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) =>
     addressRegion: "Kuala Lumpur",
     addressCountry: "MY",
   },
+  taxID: siteConfig.ssmNumber,
   sameAs: getSameAs(settings),
 });
 
@@ -51,6 +52,7 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
   "@id": `${siteConfig.url}/#localbusiness`,
   name: settings.company_name,
   alternateName: getPublicBrandAliases(settings).filter((name) => name !== settings.company_name),
+  taxID: siteConfig.ssmNumber,
   description: settings.default_seo_description_en,
   url: siteConfig.url,
   telephone: settings.phone_e164,

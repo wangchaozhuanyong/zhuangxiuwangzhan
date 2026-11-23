@@ -28,14 +28,14 @@ it.each(["en", "zh", "ms"] as const)("exposes the %s planning comparisons in the
   expect(main.querySelector(`a[href="/${lang}/quote#quote-form"]`)).toBeTruthy();
   dom.window.close();
 });
-it.each(["en", "zh", "ms"] as const)("links the %s digital-lock service to the existing KL guide", async lang => {
+it.each(["en", "zh", "ms"] as const)("links the %s digital-lock service to the existing KL guide and other areas", async lang => {
   if (lang === "ms") await loadMalayContent();
   const key = `/${lang}/services/digital-lock`;
   const body = buildExpandedReadableBody(key, {
     row: { status: "published", slug: "digital-lock", [`title_${lang}`]: "Digital Lock", [`content_${lang}`]: "<p>Door fit.</p>" },
   });
   expect(body).toContain(`href="/${lang}/locations/kuala-lumpur/digital-lock"`);
-  expect(body).not.toContain("/locations/cheras/digital-lock");
+  expect(body).toContain(`href="/${lang}/locations/cheras/digital-lock"`);
 });
 
 describe.each(["en", "zh"] as const)("expanded %s raw HTML", lang => {
@@ -233,3 +233,71 @@ describe("shop project guidance in initial HTML", () => {
     }
   });
 });
+
+describe.each(["en", "zh", "ms"] as const)("locations hub readable body (%s)", lang => {
+  it("renders all 30 region links and fulfills curl acceptance criteria", () => {
+    const html = buildExpandedReadableBody(`/${lang}/locations`, {});
+    expect(html).toContain("data-flashcast-readable-body");
+
+    const dom = new JSDOM(html);
+    const main = dom.window.document.querySelector("main[data-flashcast-readable-body]")!;
+    expect(main).not.toBeNull();
+    expect(main.querySelectorAll("h1")).toHaveLength(1);
+
+    const matches = [...html.matchAll(new RegExp(`href="/${lang}/locations/[a-z0-9-]+"`, "g"))].map(m => m[0]);
+    const uniqueLinks = new Set(matches);
+    expect(uniqueLinks.size).toBe(30);
+
+    const textLength = main.textContent?.trim().length || 0;
+    if (lang === "zh") {
+      expect(textLength).toBeGreaterThanOrEqual(1200);
+    } else {
+      expect(textLength).toBeGreaterThanOrEqual(2000);
+    }
+
+    expect(html).not.toContain("<table");
+    dom.window.close();
+  });
+
+  it("prioritizes provided published serviceAreas rows when available", () => {
+    const customArea = {
+      slug: "custom-district",
+      status: "published",
+      title_en: "Custom District Renovation",
+      title_zh: "定制区域装修",
+      excerpt_en: "Custom planning excerpt.",
+      excerpt_zh: "定制规划摘要。",
+    };
+    const html = buildExpandedReadableBody(`/${lang}/locations`, { serviceAreas: [customArea] });
+    expect(html).toContain(`href="/${lang}/locations/custom-district"`);
+  });
+});
+
+describe.each(["en", "zh", "ms"] as const)("B2 pre-injected readable bodies (%s)", lang => {
+  const pages = [
+    { path: "/about", target: 1200, checkContent: "FLASH CAST" },
+    { path: "/contact", target: 900, checkContent: "+60 11-2885 3888" },
+    { path: "/quote", target: 1000, checkContent: "WhatsApp" },
+    { path: "/promotions", target: 900, checkContent: `/${lang}/quote` },
+    { path: "/custom-cabinets", target: 1200, checkContent: "<h3>" },
+  ];
+
+  it.each(pages)("generates expanded readable body for $path exceeding target $target", ({ path, target, checkContent }) => {
+    const html = buildExpandedReadableBody(`/${lang}${path}`, {});
+    expect(html).toContain("data-flashcast-readable-body");
+    expect(html).toContain(checkContent);
+
+    const dom = new JSDOM(html);
+    const main = dom.window.document.querySelector("main[data-flashcast-readable-body]")!;
+    expect(main).not.toBeNull();
+    expect(main.querySelectorAll("h1")).toHaveLength(1);
+    expect(main.querySelectorAll("h2").length).toBeGreaterThan(0);
+    expect(main.querySelectorAll("nav a").length).toBeGreaterThan(0);
+
+    expect(html.length).toBeGreaterThanOrEqual(target);
+    const visibleTextLength = main.textContent?.trim().length || 0;
+    expect(visibleTextLength).toBeGreaterThan(0);
+    dom.window.close();
+  });
+});
+

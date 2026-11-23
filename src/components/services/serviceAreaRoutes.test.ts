@@ -42,17 +42,18 @@ async function readEdge(path: string) {
 }
 
 describe("C1 service and area routes", () => {
-  it("keeps the six unsuperseded approved bilingual records verbatim", () => {
+  it("keeps the six unsuperseded approved trilingual records verbatim", () => {
     const document = readFileSync("docs/seo/cross-pages-batch-2.md", "utf8");
     const sections = [...document.matchAll(/^## `(\/locations\/[^`]+)`\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)];
     expect(sections).toHaveLength(7);
     for (const [, path, section] of sections.filter(([, path]) => path !== klLockPath)) {
       const approved = Object.assign({}, ...[...section.matchAll(/```json\s*\n([\s\S]*?)\n```/g)]
         .map(([, json]) => JSON.parse(json)));
-      expect(Object.keys(approved).sort()).toEqual(["en", "zh"]);
+      expect(Object.keys(approved).sort()).toEqual(["en", "ms", "zh"]);
       expect(pageText[path as keyof typeof pageText]).toEqual(approved);
       expect(approved.en.body).toHaveLength(4);
       expect(approved.zh.body).toHaveLength(4);
+      expect(approved.ms.body).toHaveLength(4);
     }
   });
 

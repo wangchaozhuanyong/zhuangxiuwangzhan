@@ -13,7 +13,22 @@ type ServiceContextLinksBySlug = Record<string, readonly ServiceContextLink[]>;
 const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
   en: {
     "digital-lock": [
-      { id: "digital-lock-kl", label: "Service area", title: "Kuala Lumpur digital lock fitting guide", description: "Check condo doors, management approval and grille clearance before booking an installation.", href: "/locations/kuala-lumpur/digital-lock" },
+      { id: "digital-lock-entrance-door", label: "Door type", title: "Entrance door digital locks (14 models)", description: "ANZHE digital locks for condo entrance doors, terrace main doors, and security doors.", href: "https://locks.flashcast.com.my/en/lock/type/entrance-door/" },
+      { id: "digital-lock-interior-door", label: "Door type", title: "Interior door digital locks (2 models)", description: "Compact digital locks for bedrooms, studies, and interior office doors.", href: "https://locks.flashcast.com.my/en/lock/type/interior-door/" },
+      { id: "digital-lock-aluminium-door", label: "Door type", title: "Narrow frame aluminium door locks (1 model)", description: "Slim mortise digital locks for narrow aluminium frame and sliding glass doors.", href: "https://locks.flashcast.com.my/en/lock/type/aluminium-door/" },
+      { id: "digital-lock-face-recognition", label: "Feature", title: "Face recognition locks (10 models)", description: "3D structured light facial recognition for hands-free instant unlocking.", href: "https://locks.flashcast.com.my/en/lock/feature/face-recognition/" },
+      { id: "digital-lock-palm-vein", label: "Feature", title: "Palm vein locks (9 models)", description: "Subdermal vein recognition that works reliably across all ages and worn fingerprints.", href: "https://locks.flashcast.com.my/en/lock/feature/palm-vein/" },
+      { id: "digital-lock-video-intercom", label: "Feature", title: "Video intercom locks (6 models)", description: "Wide-angle camera with indoor display screen, remote video call, and motion capture.", href: "https://locks.flashcast.com.my/en/lock/feature/video-intercom/" },
+      { id: "digital-lock-area-kl", label: "Service area", title: "Digital lock installation Kuala Lumpur", description: "Condo and landed home digital lock fitting across Kuala Lumpur with door checks.", href: "/locations/kuala-lumpur/digital-lock" },
+      { id: "digital-lock-area-pj", label: "Service area", title: "Digital lock installation Petaling Jaya", description: "Door compatibility check and digital lock fitting in Petaling Jaya.", href: "/locations/petaling-jaya/digital-lock" },
+      { id: "digital-lock-area-cheras", label: "Service area", title: "Digital lock installation Cheras", description: "Digital lock replacement for condo fire doors and terrace homes in Cheras.", href: "/locations/cheras/digital-lock" },
+      { id: "digital-lock-area-subang", label: "Service area", title: "Digital lock installation Subang Jaya", description: "Gate clearance check and main door digital lock installation in Subang Jaya.", href: "/locations/subang-jaya/digital-lock" },
+      { id: "digital-lock-area-mont-kiara", label: "Service area", title: "Digital lock installation Mont Kiara", description: "Non-destructive lock fitting and building management coordination in Mont Kiara.", href: "/locations/mont-kiara/digital-lock" },
+      { id: "digital-lock-area-bangsar", label: "Service area", title: "Digital lock installation Bangsar", description: "Bespoke digital lock sizing and installation for bungalows and condos in Bangsar.", href: "/locations/bangsar/digital-lock" },
+      { id: "digital-lock-area-puchong", label: "Service area", title: "Digital lock installation Puchong", description: "Lock selection, old lock removal, and full user enrolment in Puchong.", href: "/locations/puchong/digital-lock" },
+      { id: "digital-lock-area-selangor", label: "Service area", title: "Digital lock installation Selangor", description: "Supply and professional on-site installation across Selangor townships.", href: "/locations/selangor/digital-lock" },
+      { id: "digital-lock-area-shah-alam", label: "Service area", title: "Digital lock installation Shah Alam", description: "Smart lock installation and mechanical override testing in Shah Alam.", href: "/locations/shah-alam/digital-lock" },
+      { id: "digital-lock-area-kajang", label: "Service area", title: "Digital lock installation Kajang", description: "Prompt digital lock installation for terrace, semi-D, and condo homes in Kajang.", href: "/locations/kajang/digital-lock" },
     ],
     renovation: [
       { id: "renovation-kl", label: "Service area", title: "Kuala Lumpur renovation", description: "Review property types, common renovation needs, and service coverage in Kuala Lumpur.", href: "/locations/kuala-lumpur" },
@@ -75,7 +90,22 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
   },
   zh: {
     "digital-lock": [
-      { id: "digital-lock-kl", label: "服务地区", title: "吉隆坡公寓换电子锁指南", description: "预约前核对门型、铁闸净距、进场条件和管理处要求。", href: "/locations/kuala-lumpur/digital-lock" },
+      { id: "digital-lock-entrance-door", label: "按门型选", title: "入户门电子锁（14 款）", description: "适用于公寓入户门、排屋大门与防盗门，含安装与送货。", href: "https://locks.flashcast.com.my/zh/lock/type/entrance-door/" },
+      { id: "digital-lock-interior-door", label: "按门型选", title: "室内门电子锁（2 款）", description: "适用于卧室、书房与办公室室内门，轻巧静音、快速指纹识别。", href: "https://locks.flashcast.com.my/zh/lock/type/interior-door/" },
+      { id: "digital-lock-aluminium-door", label: "按门型选", title: "窄框铝门电子锁（1 款）", description: "专为窄边框铝合金门、玻璃推拉门设计，超窄锁体适配。", href: "https://locks.flashcast.com.my/zh/lock/type/aluminium-door/" },
+      { id: "digital-lock-face-recognition", label: "按功能选", title: "人脸识别电子锁（10 款）", description: "3D 结构光人脸识别，无感秒开，双手拿物也能轻松解锁。", href: "https://locks.flashcast.com.my/zh/lock/feature/face-recognition/" },
+      { id: "digital-lock-palm-vein", label: "按功能选", title: "掌静脉电子锁（9 款）", description: "皮下生物识别技术，老人小孩、指纹磨损均能高灵敏秒开。", href: "https://locks.flashcast.com.my/zh/lock/feature/palm-vein/" },
+      { id: "digital-lock-video-intercom", label: "按功能选", title: "可视对讲电子锁（6 款）", description: "广角摄像头与高清大屏，支持远程视频对讲与逗留抓拍。", href: "https://locks.flashcast.com.my/zh/lock/feature/video-intercom/" },
+      { id: "digital-lock-area-kl", label: "服务地区", title: "吉隆坡电子锁安装", description: "吉隆坡公寓与住宅电子锁换装，核对门厚与物业管理规定。", href: "/locations/kuala-lumpur/digital-lock" },
+      { id: "digital-lock-area-pj", label: "服务地区", title: "八打灵再也电子锁安装", description: "八打灵再也成熟住宅、排屋与公寓门锁兼容性核对与安装。", href: "/locations/petaling-jaya/digital-lock" },
+      { id: "digital-lock-area-cheras", label: "服务地区", title: "蕉赖电子锁安装", description: "蕉赖高密度住宅、公寓防火门与排屋木门电子锁更换。", href: "/locations/cheras/digital-lock" },
+      { id: "digital-lock-area-subang", label: "服务地区", title: "梳邦再也电子锁安装", description: "梳邦再也排屋铁闸间距测量与公寓大门智能锁安装。", href: "/locations/subang-jaya/digital-lock" },
+      { id: "digital-lock-area-mont-kiara", label: "服务地区", title: "Mont Kiara 电子锁安装", description: "满家乐高档公寓大门锁孔无损适配与管理处施工报备。", href: "/locations/mont-kiara/digital-lock" },
+      { id: "digital-lock-area-bangsar", label: "服务地区", title: "Bangsar 电子锁安装", description: "孟沙独立洋房、排屋与高档公寓门锁量尺及上门安装。", href: "/locations/bangsar/digital-lock" },
+      { id: "digital-lock-area-puchong", label: "服务地区", title: "蒲种电子锁安装", description: "蒲种排屋与公寓住户电子锁选型、旧锁拆除与用户录入。", href: "/locations/puchong/digital-lock" },
+      { id: "digital-lock-area-selangor", label: "服务地区", title: "雪兰莪电子锁安装", description: "雪兰莪主要市镇电子锁供应与上门安装服务网络。", href: "/locations/selangor/digital-lock" },
+      { id: "digital-lock-area-shah-alam", label: "服务地区", title: "莎阿南电子锁安装", description: "莎阿南有地住宅与公寓智能门锁安装及机械应急钥匙测试。", href: "/locations/shah-alam/digital-lock" },
+      { id: "digital-lock-area-kajang", label: "服务地区", title: "加影电子锁安装", description: "加影排屋、半独立屋及公寓大门电子锁快速上门安装。", href: "/locations/kajang/digital-lock" },
     ],
     renovation: [
       { id: "renovation-kl", label: "服务地区", title: "吉隆坡装修服务", description: "了解吉隆坡常见房产类型、装修需求和实际服务范围。", href: "/locations/kuala-lumpur" },
@@ -138,7 +168,22 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
 
   ms: {
     "digital-lock": [
-      { id: "digital-lock-kl", label: "Kawasan perkhidmatan", title: "Panduan menukar kunci digital di Kuala Lumpur", description: "Semak jenis pintu, jarak jeriji dan kelulusan pengurusan sebelum menempah pemasangan.", href: "/locations/kuala-lumpur/digital-lock" },
+      { id: "digital-lock-entrance-door", label: "Jenis pintu", title: "Kunci pintu masuk digital (14 model)", description: "Kunci digital untuk pintu utama kondo, rumah teres dan pintu keselamatan termasuk pemasangan.", href: "https://locks.flashcast.com.my/ms/lock/type/entrance-door/" },
+      { id: "digital-lock-interior-door", label: "Jenis pintu", title: "Kunci pintu bilik dalaman (2 model)", description: "Kunci digital padat dan senyap untuk bilik tidur, bilik belajar dan pintu pejabat dalaman.", href: "https://locks.flashcast.com.my/ms/lock/type/interior-door/" },
+      { id: "digital-lock-aluminium-door", label: "Jenis pintu", title: "Kunci pintu aluminium bingkai sempit (1 model)", description: "Kunci mortise nipis khas untuk pintu gelongsor dan pintu aluminium berbingkai sempit.", href: "https://locks.flashcast.com.my/ms/lock/type/aluminium-door/" },
+      { id: "digital-lock-face-recognition", label: "Fungsi", title: "Kunci pengecaman wajah (10 model)", description: "Pengecaman wajah 3D berstruktur untuk buka kunci pantas tanpa sentuhan tangan.", href: "https://locks.flashcast.com.my/ms/lock/feature/face-recognition/" },
+      { id: "digital-lock-palm-vein", label: "Fungsi", title: "Kunci vena tapak tangan (9 model)", description: "Teknologi biometrik vena bawah kulit yang boleh dipercayai untuk semua peringkat umur.", href: "https://locks.flashcast.com.my/ms/lock/feature/palm-vein/" },
+      { id: "digital-lock-video-intercom", label: "Fungsi", title: "Kunci interkom video (6 model)", description: "Kamera sudut luas dengan paparan dalaman, panggilan video jarak jauh dan rakaman pergerakan.", href: "https://locks.flashcast.com.my/ms/lock/feature/video-intercom/" },
+      { id: "digital-lock-area-kl", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Kuala Lumpur", description: "Pemasangan kunci digital untuk kondo dan rumah bertanah di Kuala Lumpur.", href: "/locations/kuala-lumpur/digital-lock" },
+      { id: "digital-lock-area-pj", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Petaling Jaya", description: "Semakan kesesuaian pintu dan pemasangan kunci digital di Petaling Jaya.", href: "/locations/petaling-jaya/digital-lock" },
+      { id: "digital-lock-area-cheras", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Cheras", description: "Pemasangan kunci digital untuk pintu api kondo dan rumah teres di Cheras.", href: "/locations/cheras/digital-lock" },
+      { id: "digital-lock-area-subang", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Subang Jaya", description: "Pemeriksaan kelegaan jeriji dan pemasangan kunci digital di Subang Jaya.", href: "/locations/subang-jaya/digital-lock" },
+      { id: "digital-lock-area-mont-kiara", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Mont Kiara", description: "Pemasangan kunci kemas dan koordinasi pengurusan bangunan di Mont Kiara.", href: "/locations/mont-kiara/digital-lock" },
+      { id: "digital-lock-area-bangsar", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Bangsar", description: "Pengukuran dan pemasangan kunci digital untuk banglo dan kondo di Bangsar.", href: "/locations/bangsar/digital-lock" },
+      { id: "digital-lock-area-puchong", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Puchong", description: "Pemilihan model, penanggalan kunci lama dan pendaftaran pengguna di Puchong.", href: "/locations/puchong/digital-lock" },
+      { id: "digital-lock-area-selangor", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Selangor", description: "Pembekalan dan pemasangan kunci digital di seluruh bandar Selangor.", href: "/locations/selangor/digital-lock" },
+      { id: "digital-lock-area-shah-alam", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Shah Alam", description: "Pemasangan kunci pintar dan ujian kunci kecemasan di Shah Alam.", href: "/locations/shah-alam/digital-lock" },
+      { id: "digital-lock-area-kajang", label: "Kawasan perkhidmatan", title: "Pemasangan kunci digital Kajang", description: "Pemasangan kunci digital untuk rumah teres, berkembar dan kondo di Kajang.", href: "/locations/kajang/digital-lock" },
     ],
     renovation: [
       { id: "renovation-kl", label: "Kawasan perkhidmatan", title: "pengubahsuaian Kuala Lumpur", description: "Semak jenis hartanah, keperluan pengubahsuaian biasa dan liputan perkhidmatan di Kuala Lumpur.", href: "/locations/kuala-lumpur" },

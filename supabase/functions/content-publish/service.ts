@@ -1,6 +1,8 @@
 import { SHOP_OFFICE_SIX_FIELD_TARGETS } from "../_shared/shop-office-six-field-targets.ts";
 import { CONTENT_LINK_REPAIR_TARGETS, CONTENT_LINK_REPAIR_APPROVAL_ID } from "../_shared/content-link-repair-targets.ts";
-import { FAQ_START_TIMING_APPROVAL_ID, FAQ_START_TIMING_TARGET } from "../_shared/faq-start-timing-target.ts";
+import {
+  FAQ_START_TIMING_15_DAY_APPROVAL_ID, FAQ_START_TIMING_15_DAY_TARGET, FAQ_START_TIMING_APPROVAL_ID, FAQ_START_TIMING_TARGET,
+} from "../_shared/faq-start-timing-target.ts";
 import { publishMediaContent } from "./mediaPublishing.ts";
 import { cleanText, errorResult } from "./publishValues.ts";
 import { dispatchContentPublish } from "./dispatch.ts";
@@ -1883,13 +1885,19 @@ function isSparseNativeBodyPatch(target: ManagedTarget, record: Record<string, u
     && Boolean(target.baselineProjectionFields?.some((field) => !READONLY_FIELDS.has(field) && record[field] === undefined));
 }
 
+const faqStartTimingApproval = (target: ManagedTarget) => {
+  if (target === FAQ_START_TIMING_TARGET) return FAQ_START_TIMING_APPROVAL_ID;
+  if (target === FAQ_START_TIMING_15_DAY_TARGET) return FAQ_START_TIMING_15_DAY_APPROVAL_ID;
+  return undefined;
+};
+
 async function publishOrg020ExactPatch(
   input: ContentPublishRequest, client: ContentPublishClient, context: PublishContext,
   mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
 ): Promise<ContentPublishResult> {
   const record = input.record!;
   const operation = (input.managedPermit || input.managedCandidate)?.operation;
-  const isStartTimingFaq = target === FAQ_START_TIMING_TARGET;
+  const faqApprovalId = faqStartTimingApproval(target);
   const shopOfficeRestore = SHOP_OFFICE_SIX_FIELD_TARGETS.includes(target)
     && target.rollbackAllowed === true && operation === "rollback";
   if ((operation !== "publish" && !shopOfficeRestore)
@@ -1898,7 +1906,7 @@ async function publishOrg020ExactPatch(
   }
   const existing = await fetchRecordByField(client, target.table!, "id", target.id);
   if (!existing) return errorResult("The exact existing CMS row was not found.", 404);
-  if (isStartTimingFaq && (existing.page_key !== "general" || existing.sort_order !== 130)) {
+  if (faqApprovalId && (existing.page_key !== "general" || existing.sort_order !== 130)) {
     return errorResult("The existing FAQ does not match the reviewed general start-timing row.", 409);
   }
   const expected = String(input.expectedUpdatedAt || "");
@@ -1933,12 +1941,12 @@ async function publishOrg020ExactPatch(
     else if (target.contentType === "service_area") cleaned = cleanServiceAreaPayload(record, nextStatus).payload;
     else if (target.contentType === "blog") cleaned = cleanBlogPayload(validationRecord, nextStatus).payload;
     else if (target.contentType === "site_page") cleaned = cleanStandaloneSitePagePayload(record, nextStatus).payload;
-    else if (isStartTimingFaq) {
-      const fields = FAQ_START_TIMING_TARGET.changedFields;
-      if (fields.some(field => typeof record[field] !== "string" || cleanText(record[field]) !== record[field])) {
+    else if (faqApprovalId) {
+      const faqFields = target.changedFields!;
+      if (faqFields.some(field => typeof record[field] !== "string" || !record[field] || cleanText(record[field]) !== record[field])) {
         return errorResult("The reviewed FAQ questions and answers must be non-empty strings.", 400);
       }
-      cleaned = Object.fromEntries(fields.map(field => [field, cleanText(record[field])]));
+      cleaned = Object.fromEntries(faqFields.map(field => [field, cleanText(record[field])]));
     } else cleaned = Object.fromEntries(["answer_en", "answer_zh"].map((field) => [field, cleanText(record[field])]));
   } catch (error) {
     return errorResult(error instanceof Error ? error.message : "Invalid exact patch", 400);
@@ -1952,7 +1960,7 @@ async function publishOrg020ExactPatch(
     action: "update", slug: target.slug, existing_id: target.id, status: existing.status,
     warnings: [], auth_mode: context.authMode || "admin" };
   if (mode === "dry-run") return { body: { ...common, performed_write: false, payload_preview: patch } };
-  if (isStartTimingFaq && input.approvalId !== FAQ_START_TIMING_APPROVAL_ID) {
+  if (faqApprovalId && input.approvalId !== faqApprovalId) {
     return errorResult("This FAQ requires its own explicit owner approval reference.", 403);
   }
   if (!cleanText(input.approvalId, 180)) return errorResult("Publishing requires a non-empty approvalId.", 403);
@@ -2335,7 +2343,7 @@ export async function publishContent(
   if (exact && CONTACT_CMS_PAGE_TITLE_TARGETS.includes(exact)) return publishExactContactTitles(input, client, context, mode, nextStatus, exact);
   if (exact && CMS_SEO_TITLE_TARGETS.includes(exact)) return publishRegisteredSeoTitlePatch(input, client, context, mode, nextStatus, exact);
   if (protectedOriginalMaterial && exact) return publishOriginalMaterialBodies(input, client, context, mode, nextStatus, exact);
-  if (exact && (exact === FAQ_START_TIMING_TARGET || ORG020_V7_TARGETS.includes(exact) || SHOP_OFFICE_SIX_FIELD_TARGETS.includes(exact)
+  if (exact && (faqStartTimingApproval(exact) || ORG020_V7_TARGETS.includes(exact) || SHOP_OFFICE_SIX_FIELD_TARGETS.includes(exact)
       || isSparseNativeBodyPatch(exact, input.record, selection?.operation))) {
     return publishOrg020ExactPatch(input, client, context, mode, nextStatus, exact);
   }

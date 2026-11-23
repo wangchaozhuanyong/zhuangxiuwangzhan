@@ -32,3 +32,25 @@ export const FAQ_START_TIMING_TARGET = {
   rollbackFieldsSha256: "a2c0eae18e08855d37f992c68a21fec873eb175f5e846474ca85257bd3efffc7",
   rollbackAllowed: false,
 } as const satisfies ManagedTarget;
+
+export const FAQ_START_TIMING_15_DAY_APPROVAL_ID = "owner-approved-faq-15-day-start-20261122";
+export const FAQ_START_TIMING_15_DAY_TARGET_ID = "faq-start-timing-20261122-v3";
+
+const answerFields = ["answer_en", "answer_ms", "answer_zh"] as const;
+const retainedQuestionFields = [...retainedProjectionFields, "question_en", "question_ms", "question_zh"] as const;
+
+export const FAQ_START_TIMING_15_DAY_TARGET = {
+  ...FAQ_START_TIMING_TARGET,
+  taskId: FAQ_START_TIMING_15_DAY_TARGET_ID,
+  actionId: "publish-faq-130-15-day-three-language-answers-v3",
+  candidateVersion: FAQ_START_TIMING_15_DAY_TARGET_ID,
+  scope: `flashcast.com.my:faqs/${id}:${answerFields.join(",")}`,
+  changedFields: answerFields,
+  baselineProjectionFields: [...answerFields, ...retainedQuestionFields, "updated_at"],
+  retainedProjectionFields: retainedQuestionFields,
+  expectedUpdatedAt: "2026-11-21T10:43:34.833034+00:00",
+  baselineFieldsSha256: "3f797adccca33295423ce56b1f02917311f276258bc5487c87fe9a3ee45f35f9",
+  retainedFieldsSha256: "9bd8ed6187a19a13c0d0c295bd9d3362a435d32c10e343808d37b2f71527f180",
+  desiredFieldsSha256: "14192d94df2422b704d66c1590d61d219f8619941a5e9d1b350958bf37f22362",
+  rollbackFieldsSha256: "a3e1a66c4b82a8be0f2d4c4b83634e6e3cec9845e79e038e46a44f7ae17eecd7",
+} as const satisfies ManagedTarget;

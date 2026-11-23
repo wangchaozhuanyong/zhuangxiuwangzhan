@@ -20,6 +20,8 @@ button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{
 .site-nav{display:flex;gap:clamp(12px,2.7vw,43px);align-items:center;margin-inline:auto 0}
 .site-nav :is(a,button){min-height:44px;display:inline-flex;align-items:center;color:#454b3f;background:none;border:0;padding:0;text-decoration:none;font-size:13px;font-weight:600}
 .site-nav :is(a,button):hover,.site-footer a:hover{text-decoration:underline;text-underline-offset:4px}
+.mast-inner{reading-flow:source-order}
+.mast-inner>.lang-switch{reading-order:-1}
 .lang-switch{position:relative;display:inline-flex;align-items:center;border:0}
 .lang-switch .language-selector--header{
   display:inline-flex;
@@ -192,6 +194,13 @@ button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{
 .guide-pair figcaption>span{font:500 11px var(--mono);color:var(--brick)}
 .guide-pair figcaption strong{font-size:15px;font-weight:650}
 .guide-pair figcaption p{font-size:13px;color:var(--muted);margin:4px 0 0}
+.model-guide-photo{aspect-ratio:3/4;content-visibility:auto}
+.dir-card-photo,#model-details .dir-thumb,.lf-cover{content-visibility:auto}
+[data-lock-detail] #comparison{content-visibility:auto;contain-intrinsic-block-size:auto 64rem}
+[data-lock-category] .compare-samples{--category-photo-height:clamp(140px,13vw,205px)}
+.category-card-photo{block-size:var(--category-photo-height);content-visibility:auto}
+.compare-samples .category-card-photo img{height:100%}
+.compare-samples [data-category-model] strong{overflow-wrap:anywhere}
 .site-footer{border-top:1px solid var(--rule);background:#eaeade}
 .site-footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-block:18px;font-size:12px}
 .site-footer span{font:600 11px var(--mono)}.site-footer b{color:var(--brick)}
@@ -250,6 +259,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{
   .fit-copy .section-heading{align-items:end}
   .fit-copy h2,.compare-copy h2{font-size:clamp(24px,6.5vw,36px)}
   .compare-samples img{height:138px}.compare-samples figcaption{padding:10px 11px;gap:3px}
+  [data-lock-category] .compare-samples{--category-photo-height:138px}
   .fit-copy>p.fit-included{margin-top:13px;padding-top:12px}
   .guide-pair{gap:9px}.guide-pair figcaption{gap:5px}.guide-pair figcaption strong{font-size:13px}.guide-pair figcaption p{font-size:12px}
 }

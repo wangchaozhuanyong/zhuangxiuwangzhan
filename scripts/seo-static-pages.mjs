@@ -167,11 +167,11 @@ const digitalLockAreaPaths = [
 ];
 
 const staticDefs = [
-  ...digitalLockAreaPaths.flatMap(path => ["en", "zh"].map(lang => {
+  ...digitalLockAreaPaths.flatMap(path => ["en", "zh", "ms"].map(lang => {
     const { title, description, keywords, entityName } = serviceAreaCopy[path][lang];
     return page(lang, path, title, description, keywords, { schemaType: "Service", entityName });
   })),
-  // Batch 2: exact approved English and Chinese copy; Malay awaits translation.
+  // Batch 2: exact approved English, Chinese and Malay copy from serviceAreaPageText.json.
   {
     "lang": "en",
     "path": "/locations/kuala-lumpur/condo-renovation",
@@ -189,6 +189,15 @@ const staticDefs = [
     "keywords": "吉隆坡公寓装修, 公寓翻新, 公寓管理处审批",
     "schemaType": "Service",
     "entityName": "吉隆坡公寓装修"
+  },
+  {
+    "lang": "ms",
+    "path": "/locations/kuala-lumpur/condo-renovation",
+    "title": "Pengubahsuaian Kondominium Kuala Lumpur | FLASH CAST",
+    "description": "Pengubahsuaian kondominium di Kuala Lumpur untuk unit dari era 1990-an hingga bangunan semasa. Kerja susun atur, penyimpanan, elektrik dan penghawa dingin dirancang mengikut peraturan pengurusan dan had struktur.",
+    "keywords": "pengubahsuaian kondominium kuala lumpur, pengubahsuaian apartmen kl, kerja dalaman kondo",
+    "schemaType": "Service",
+    "entityName": "Pengubahsuaian Kondominium Kuala Lumpur"
   },
   {
     "lang": "en",
@@ -209,6 +218,15 @@ const staticDefs = [
     "entityName": "八打灵再也厨房装修"
   },
   {
+    "lang": "ms",
+    "path": "/locations/petaling-jaya/kitchen-renovation",
+    "title": "Pengubahsuaian Dapur Petaling Jaya | FLASH CAST",
+    "description": "Pengubahsuaian dapur di Petaling Jaya untuk apartmen dan teres lama. Susunan paip buangan dan kapasiti elektrik disemak dahulu, kemudian kabinet, permukaan kerja dan perancangan peralatan.",
+    "keywords": "pengubahsuaian dapur petaling jaya, kabinet dapur pj, kontraktor pengubahsuaian dapur pj",
+    "schemaType": "Service",
+    "entityName": "Pengubahsuaian Dapur Petaling Jaya"
+  },
+  {
     "lang": "en",
     "path": "/locations/cheras/condo-renovation",
     "title": "Condo Renovation Cheras | FLASH CAST",
@@ -227,6 +245,15 @@ const staticDefs = [
     "entityName": "蕉赖公寓装修"
   },
   {
+    "lang": "ms",
+    "path": "/locations/cheras/condo-renovation",
+    "title": "Pengubahsuaian Kondominium Cheras | FLASH CAST",
+    "description": "Pengubahsuaian kondominium di Cheras untuk blok lama sekitar Taman Maluri dan unit baharu menghala Sungai Besi. Semakan perkhidmatan untuk blok lama, susun atur dan penyimpanan dalam peraturan pengurusan untuk yang baharu.",
+    "keywords": "pengubahsuaian kondominium cheras, pengubahsuaian apartmen cheras, kontraktor pengubahsuaian kondo cheras",
+    "schemaType": "Service",
+    "entityName": "Pengubahsuaian Kondominium Cheras"
+  },
+  {
     "lang": "en",
     "path": "/locations/subang-jaya/landed-house-renovation",
     "title": "Landed House Renovation Subang Jaya | FLASH CAST",
@@ -243,6 +270,15 @@ const staticDefs = [
     "keywords": "梳邦再有地住宅装修, 排屋扩建, USJ 房屋翻新",
     "schemaType": "Service",
     "entityName": "梳邦再有地住宅装修"
+  },
+  {
+    "lang": "ms",
+    "path": "/locations/subang-jaya/landed-house-renovation",
+    "title": "Pengubahsuaian Rumah Bertanah Subang Jaya | FLASH CAST",
+    "description": "Pengubahsuaian rumah bertanah di Subang Jaya: pembesaran teres dan rumah separa berasingan, pendawaian semula, paip semula, kerja bumbung dan pengubahsuaian seluruh rumah dengan panduan penyerahan MBSJ.",
+    "keywords": "pengubahsuaian rumah bertanah subang jaya, pembesaran teres subang jaya, pengubahsuaian rumah usj",
+    "schemaType": "Service",
+    "entityName": "Pengubahsuaian Rumah Bertanah Subang Jaya"
   },
   ...Object.entries(serviceAreaCopy[klDigitalLockPath]).map(([lang, copy]) =>
     page(lang, klDigitalLockPath, copy.title, copy.description, copy.keywords, {
@@ -268,6 +304,15 @@ const staticDefs = [
     "entityName": "雪兰莪办公室装修"
   },
   {
+    "lang": "ms",
+    "path": "/locations/selangor/office-renovation",
+    "title": "Pengubahsuaian Pejabat Selangor | Kerja Ubah Suai | FLASH CAST",
+    "description": "Pengubahsuaian dan kerja ubah suai pejabat di seluruh Selangor, termasuk pejabat kedai, bangunan industri dan menara khusus. Penyerahan pihak berkuasa, keperluan bomba dan pengezonan dirancang lebih awal.",
+    "keywords": "pengubahsuaian pejabat selangor, kerja ubah suai pejabat selangor, pengubahsuaian pejabat kedai",
+    "schemaType": "Service",
+    "entityName": "Pengubahsuaian Pejabat Selangor"
+  },
+  {
     "lang": "en",
     "path": "/locations/petaling-jaya/landed-house-renovation",
     "title": "Landed House Renovation Petaling Jaya | FLASH CAST",
@@ -284,6 +329,15 @@ const staticDefs = [
     "keywords": "八打灵再有地住宅装修, 排屋翻新, 老屋改造 PJ",
     "schemaType": "Service",
     "entityName": "八打灵再有地住宅装修"
+  },
+  {
+    "lang": "ms",
+    "path": "/locations/petaling-jaya/landed-house-renovation",
+    "title": "Pengubahsuaian Rumah Bertanah Petaling Jaya | FLASH CAST",
+    "description": "Pengubahsuaian rumah bertanah di Petaling Jaya untuk teres dan rumah separa berasingan dari era 1960-an hingga 1980-an. Ubah suai sedia ada, struktur dan perkhidmatan disemak sebelum reka bentuk.",
+    "keywords": "pengubahsuaian rumah bertanah petaling jaya, pengubahsuaian rumah teres pj, pengubahsuaian rumah ss",
+    "schemaType": "Service",
+    "entityName": "Pengubahsuaian Rumah Bertanah Petaling Jaya"
   },
   // Five service-area combinations, each with its own English, Chinese and Malay metadata.
   {

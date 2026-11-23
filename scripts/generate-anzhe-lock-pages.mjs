@@ -54,6 +54,53 @@ async function readCopy(copyPath) {
   }
 }
 
+async function readCategoryBodyExtra() {
+  const file = join(root, "docs/seo/anzhe-lock-category-body.json");
+  try {
+    return JSON.parse((await readFile(file, "utf8")).replace(/^\uFEFF/, ""));
+  } catch (error) {
+    if (error.code === "ENOENT") return {};
+    throw error;
+  }
+}
+
+function getCategoryPointExtra(categoryExtra, slug, heading) {
+  const extra = categoryExtra?.zh?.[slug];
+  if (!extra) return "";
+  if (slug === "type/entrance-door") {
+    if (heading === "先量门厚与锁体位置") return extra.doorCheck || "";
+    if (heading === "按家人习惯选开锁方式") return extra.accessChoice || "";
+    if (heading === "比较把手与上锁方式") return extra.handleStyle || "";
+  } else if (slug === "type/interior-door") {
+    if (heading === "确认室内反锁的操作") return extra.whatSkip || "";
+    if (heading === "安排出租房间的权限") return extra.privacyUse || "";
+    if (heading === "核对原有把手孔与门边") return extra.doorCheck || "";
+  } else if (slug === "type/aluminium-door") {
+    if (heading === "量锁具所在的平面宽度") return extra.doorCheck || "";
+    if (heading === "确认锁体能放进铝型材") return extra.cutoutAndSwing || "";
+    if (heading === "确认开门后有没有干涉") return extra.glassFrame || "";
+  } else if (slug === "feature/face-recognition") {
+    if (heading === "确认平时站在哪里") return extra.doorCheck || "";
+    if (heading === "比较门口白天和晚上的光线") {
+      return (extra.whoFits || "") + (extra.privacyNote || "");
+    }
+    if (heading === "留一个常用的备用开锁方式") {
+      let text = extra.accessChoice || "";
+      if (text.startsWith("undefined")) text = text.slice(9);
+      return text;
+    }
+  } else if (slug === "feature/palm-vein") {
+    if (heading === "看手掌能否自然伸到感应区") return extra.doorCheck || "";
+    if (heading === "按家人的实际情况试用") return extra.whoFits || "";
+    if (heading === "区分识别方式与其他配置") return extra.enrolNote || "";
+  } else if (slug === "feature/video-intercom") {
+    if (heading === "先选室内查看还是远程接听") return extra.screenAndCamera || "";
+    if (heading === "在关门状态测试 Wi-Fi") return extra.remoteNote || "";
+    if (heading === "让镜头看得到访客站位") return extra.doorCheck || "";
+  }
+  return "";
+}
+
 function prices(model, formatPrice) {
   const amount = String(model.price);
   if (typeof model.price !== "number" || !/^\d+(?:\.\d{1,2})?$/.test(amount) || model.price <= 0) {
@@ -624,8 +671,31 @@ ${singleModelNote}      <ul class="model-peers">
   }).join("\n    ");
 }
 
-function img(image, alt, eager = false) {
-  return `<img src="${escape(image.path)}" width="${image.width}" height="${image.height}" alt="${escape(alt)}" loading="${eager ? "eager" : "lazy"}" decoding="async"${eager ? ' fetchpriority="high"' : ""}>`;
+const logoSizes = "(max-width: 700px) 128px, 148px";
+const guideSizes = "(max-width: 700px) calc(45vw - 8px), (max-width: 1536px) 24vw, 360px";
+const categoryCardSizes = "(max-width: 700px) calc(45vw - 22px), (max-width: 1536px) calc(45vw - 16px), 670px";
+
+function panelSizes(image) {
+  const ratio = image.width / image.height;
+  const scaled = (value, unit = "px") => (value * ratio).toFixed(2) + unit;
+  return [
+    `(orientation: landscape) and (max-height: 500px) and (min-width: 600px) ${scaled(140)}`,
+    `(max-width: 700px) min(76vw, clamp(${scaled(152)}, ${scaled(40, "vw")}, ${scaled(205)}))`,
+    `min(42vw, clamp(${scaled(245)}, ${scaled(22.5, "vw")}, ${scaled(356)}))`,
+  ].join(", ");
+}
+
+function img(image, alt, options = {}) {
+  if (typeof options === "boolean") {
+    options = { loading: options ? "eager" : "lazy", priority: options ? "high" : "low" };
+  }
+  const { sizes, loading = "lazy", priority = "low", smaller = image } = options;
+  if (!sizes) {
+    return `<img src="${escape(image.path)}" width="${image.width}" height="${image.height}" alt="${escape(alt)}" loading="${loading}" decoding="async"${priority !== "low" ? ` fetchpriority="${priority}"` : ""}>`;
+  }
+  const variants = smaller.width < image.width ? [smaller, image] : [smaller];
+  const srcset = variants.map(({ path, width }) => `${path} ${width}w`).join(", ");
+  return `<img src="${escape(image.path)}" srcset="${escape(srcset)}" sizes="${escape(sizes)}" width="${image.width}" height="${image.height}" alt="${escape(alt)}" loading="${loading}" decoding="async" fetchpriority="${priority}">`;
 }
 
 function renderLanguageSelector(slug, lang, words) {
@@ -657,7 +727,7 @@ function renderLanguageSelector(slug, lang, words) {
 function pageLanguageLinks(slug, lang) {
   return languages.map(code => {
     const { alternate, label, short } = locales[code];
-    return `<a class="studio-button light-button" href="${pagePath(code, slug)}" lang="${alternate}" aria-label="${label}"${code === lang ? ' aria-current="page"' : ""}>${short}</a>`;
+    return `<a class="studio-button light-button" href="${pagePath(code, slug)}" lang="${alternate}" aria-label="${label}"${code === lang ? ' aria-current="page"' : ""}>${code === "zh" ? short : label}</a>`;
   });
 }
 
@@ -797,7 +867,7 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   const robots = lang === "ms" ? '\n  <meta name="robots" content="noindex">' : "";
   return `<!doctype html>
 <!-- Generated by scripts/generate-anzhe-lock-pages.mjs. -->
-<html lang="${locale.tag}" data-anzhe-showroom>
+<html lang="${locale.tag}" data-anzhe-showroom data-lock-detail>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -826,7 +896,7 @@ ${renderSchema(model, copy, lang, words.title)}
   <header class="mast">
     <div class="wrap mast-inner">
       <div class="mast-brand-group">
-        <a href="${home}" class="brand" aria-label="${escape(ui.home)}">${img(shared.logo, "ANZHE", true)}</a>
+        <a href="${home}" class="brand" aria-label="${escape(ui.home)}">${img(shared.logo, "ANZHE", { sizes: logoSizes, loading: "eager", priority: "auto" })}</a>
       </div>
       <nav class="site-nav" aria-label="${escape(words.navigation)}">
         <a href="${home}#collection">${escape(words.catalog)}</a>
@@ -846,7 +916,7 @@ ${renderSchema(model, copy, lang, words.title)}
           <h1 id="model-title">${renderModelHeading(copy.h1, model)}</h1>
         </header>
         <figure class="model-plate">
-          <div class="model-plate-image">${img(model.imageInfo, imageAlt, true)}</div>${plateFact ? `
+          <div class="model-plate-image">${img(model.imageInfo, imageAlt, { sizes: panelSizes(model.imageInfo), loading: "eager", priority: "high", smaller: model.cardImage })}</div>${plateFact ? `
           <figcaption><span>${escape(plateFact.label)}</span><strong>${escape(plateFact.value)}</strong></figcaption>` : ""}
         </figure>
         <div class="model-buy">
@@ -908,7 +978,7 @@ ${renderSchema(model, copy, lang, words.title)}
 `;
 }
 
-function renderCategoryPage(category, lang, sources, shared, categories) {
+function renderCategoryPage(category, lang, sources, shared, categories, categoryExtra) {
   const { slug, models } = category;
   const words = sources.showroomWords[lang];
   const ui = categoryUi[lang];
@@ -922,18 +992,24 @@ function renderCategoryPage(category, lang, sources, shared, categories) {
   const robots = lang === "ms" ? '\n  <meta name="robots" content="noindex">' : "";
   const cards = models.map((model, index) => {
     const highlight = model.feature?.highlights[0]?.[lang] ?? model.copy[lang];
-    return `<a href="${pagePath(lang, model.id)}" data-category-model="${model.id}">
+    const label = `${model.name} ${highlight} ${model.prices.display} ${words.included}`;
+    return `<a href="${pagePath(lang, model.id)}" data-category-model="${model.id}" aria-label="${escape(label)}">
           <figure>
-            ${img(model.imageInfo, "", index === 0)}
+            <div class="category-card-photo">${img(model.cardImage, `${model.name} · ${copyTemplates[lang].photo}`, {
+              sizes: categoryCardSizes, loading: index < 2 ? "eager" : "lazy", priority: index < 2 ? "high" : "low",
+            })}</div>
             <figcaption>
-              <strong class="dir-index-model">${escape(model.name)}</strong>
+              <strong>${escape(model.name)}</strong>
               <span>${escape(highlight)}</span>
               <b>${escape(model.prices.display)} <small>${escape(words.included)}</small></b>
             </figcaption>
           </figure>
         </a>`;
   });
-  const points = copy.points.map(([heading, detail]) => `<h2>${escape(heading)}</h2>\n      <p>${escape(detail)}</p>`);
+  const points = copy.points.map(([heading, detail]) => {
+    const extra = lang === "zh" ? getCategoryPointExtra(categoryExtra, slug, heading) : "";
+    return `<h2>${escape(heading)}</h2>\n      <p>${escape(detail)}</p>${extra ? "\n      " + extra : ""}`;
+  });
   const faqs = copy.faqs.map(({ q, a }) => `<article><h3>${escape(q)}</h3><p>${escape(a)}</p></article>`);
   const related = categories.filter(entry => entry !== category).map(entry => categoryLink(entry, lang));
   const schema = jsonLd([
@@ -962,7 +1038,7 @@ function renderCategoryPage(category, lang, sources, shared, categories) {
   ]);
   return `<!doctype html>
 <!-- Generated by scripts/generate-anzhe-lock-pages.mjs. -->
-<html lang="${locale.tag}" data-anzhe-showroom>
+<html lang="${locale.tag}" data-anzhe-showroom data-lock-category>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -980,7 +1056,7 @@ function renderCategoryPage(category, lang, sources, shared, categories) {
   <meta property="og:description" content="${escape(copy.answer)}">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="ANZHE ${escape(models[0].name)}">
-  ${shared.styles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
+  ${shared.categoryStyles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script type="application/ld+json">
 ${schema}
@@ -991,7 +1067,7 @@ ${schema}
   <header class="mast">
     <div class="wrap mast-inner">
       <div class="mast-brand-group">
-        <a href="${home}" class="brand" aria-label="${escape(homeLabel)}">${img(shared.logo, "ANZHE", true)}</a>
+        <a href="${home}" class="brand" aria-label="${escape(homeLabel)}">${img(shared.logo, "ANZHE", { sizes: logoSizes, loading: "eager", priority: "auto" })}</a>
       </div>
       <nav class="site-nav" aria-label="${escape(words.navigation)}">
         <a href="#models">${escape(ui.models)}</a>
@@ -1046,13 +1122,14 @@ ${schema}
 `;
 }
 
+const indexedModelLanguages = ["zh", "en"];
 const indexedCategoryLanguages = ["zh", "en"];
 
 function renderSitemap(catalog, categories) {
-  const entriesFor = (slugs, includedLanguages) => slugs.flatMap(slug =>
+  const entriesFor = (slugs, includedLanguages, alternateLanguages = includedLanguages) => slugs.flatMap(slug =>
     includedLanguages.map(lang => {
       const links = alternates(slug)
-        .filter(([tag]) => tag === "x-default" || includedLanguages.some(code => locales[code].alternate === tag))
+        .filter(([tag]) => tag === "x-default" || alternateLanguages.some(code => locales[code].alternate === tag))
         .map(([tag, href]) => `<xhtml:link rel="alternate" hreflang="${tag}" href="${href}"/>`);
       return `  <url>
     <loc>${absolute(pagePath(lang, slug))}</loc>
@@ -1060,8 +1137,9 @@ function renderSitemap(catalog, categories) {
   </url>`;
     }));
   const entries = [
-    ...entriesFor([undefined, ...catalog.map(model => model.id)], languages),
-    ...entriesFor(categories.map(category => category.slug), indexedCategoryLanguages),
+    ...entriesFor([undefined], languages, languages),
+    ...entriesFor(catalog.map(model => model.id), indexedModelLanguages, languages),
+    ...entriesFor(categories.map(category => category.slug), indexedCategoryLanguages, indexedCategoryLanguages),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -1122,6 +1200,7 @@ async function syncOutputs(outputs, check) {
 export async function generateAnzheLockPages({ check = false, copy } = {}) {
   const sources = await readShowroomSources();
   const overrides = await readCopy(copy);
+  const categoryExtra = await readCategoryBodyExtra();
   const ids = sources.lockCatalog.map(model => model.id);
   if (ids.length !== 17 || new Set(ids).size !== 17 || ids.some(id => !/^[a-z\d]+(?:-[a-z\d]+)*$/.test(id))) {
     throw new Error("Expected the 17 distinct, URL-safe slugs in the showroom catalogue");
@@ -1137,6 +1216,7 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
       feature: sources.lockFeatures[model.id],
       imageInfo: await imageInfo(model.image),
       thumbnailInfo: await imageInfo(model.thumbnail),
+      cardImage: await imageInfo(`assets/card-${model.id}.webp`),
     };
   }));
   const categories = categoryDefinitions.map(definition => {
@@ -1144,13 +1224,18 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
     if (models.length === 0) throw new Error(`${definition.slug}: no models match the catalogue filter`);
     return { ...definition, models };
   });
+  const categoryStyles = await Promise.all([
+    versionedAsset("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
+    versionedAsset("/studio.css", join(showroom, "studio.css")),
+  ]);
   const shared = {
     updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
+    categoryStyles,
     modelStyle: await versionedAsset("/showroom-model.css", join(showroom, "showroom-model.css")),
-    styles: await Promise.all([
-      versionedAsset("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
-      ...["studio.css", "directory.css", "contact.css"].map(file => versionedAsset("/" + file, join(showroom, file))),
-    ]),
+    styles: [
+      ...categoryStyles,
+      ...await Promise.all(["directory.css", "contact.css"].map(file => versionedAsset("/" + file, join(showroom, file)))),
+    ],
     fitAssets: {
       "showroom-fit.css": await versionedAsset("/showroom-fit.css", join(showroom, "showroom-fit.css")),
       "strings.js": await versionedAsset("/strings.js", join(showroom, "strings.js")),
@@ -1169,11 +1254,11 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
     + short.map(page => `${page.path} ${page.length}`).join("\n"));
   const categoryPages = categories.flatMap(category => languages.map(lang => ({
     target: join(showroom, "." + pagePath(lang, category.slug), "index.html"),
-    html: renderCategoryPage(category, lang, sources, shared, categories),
+    html: renderCategoryPage(category, lang, sources, shared, categories, categoryExtra),
   })));
   const homePages = await Promise.all(languages.map(lang => renderHomePage(lang, catalog, sources, shared)));
   await syncOutputs([...pages, ...categoryPages, ...homePages, { target: join(showroom, "sitemap.xml"), html: renderSitemap(catalog, categories) }], check);
-  const sitemapCount = pages.length + languages.length + categories.length * indexedCategoryLanguages.length;
+  const sitemapCount = languages.length + catalog.length * indexedModelLanguages.length + categories.length * indexedCategoryLanguages.length;
   console.log(`${check ? "Checked" : "Generated"} ${homePages.length} home pages, ${pages.length} model pages (${Math.min(...pages.map(page => page.length))}+ visible characters), ${categoryPages.length} category pages and ${sitemapCount} sitemap URLs.`);
 }
 

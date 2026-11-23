@@ -158,6 +158,9 @@ const DEFAULT_TOUCH_ICON = "/apple-touch-icon-20260604.png";
 const DEFAULT_ADDRESS = "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia";
 const DEFAULT_PHONE = "+601128853888";
 const DEFAULT_EMAIL = "support@flashcast.com.my";
+const DEFAULT_SSM = "202501027419 (1628831-M)";
+const DEFAULT_CIDB = "0120260929-WP177947";
+const DEFAULT_CIDB_GRADE = "G3";
 const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_SITE_URL = "https://flashcast.com.my";
@@ -793,6 +796,11 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         sameAs: getSocialProfileUrls(siteSettings),
         logo,
         image,
+        taxID: DEFAULT_SSM,
+        identifier: [
+          { "@type": "PropertyValue", name: "SSM", value: DEFAULT_SSM },
+          { "@type": "PropertyValue", name: "CIDB", value: `${DEFAULT_CIDB} (Grade ${DEFAULT_CIDB_GRADE})` },
+        ],
         telephone: siteSettings?.phone_e164 || DEFAULT_PHONE,
         email: siteSettings?.email || DEFAULT_EMAIL,
         address: {
@@ -2471,10 +2479,10 @@ export const onRequest: PagesFunction = async (context) => {
       en: `${PUBLIC_SITE_URL}/en${listingPath}`, zh: `${PUBLIC_SITE_URL}/zh${listingPath}`, xDefault: `${PUBLIC_SITE_URL}/en${listingPath}`,
     } };
   }
-  const homeFaqs = shouldInjectHomeBundle && isHomePageKey(key)
-    ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
+  const homeFaqs = shouldInjectHomeBundle && isHomeDataPageKey(key)
+    ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : key === "/ms" ? "ms" : "en")
     : [];
-  if (shouldInjectHomeBundle && isHomePageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
+  if (shouldInjectHomeBundle && isHomeDataPageKey(key) && meta) meta = { ...meta, faqs: homeFaqs };
   let faqPageBody = "";
   if (meta && faqPageLanguage) {
     const published = faqPageRows?.ok ? faqPageRows.rows.filter((row) => row.status === "published") : [];
@@ -2496,7 +2504,7 @@ export const onRequest: PagesFunction = async (context) => {
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
   const expandedBody = readableBody || buildExpandedReadableBody(key, {
-    row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, processSteps,
+    row: dynamicRouteState?.row, services, materials, projects: projectSummaries, blogPosts, serviceAreas, processSteps,
     resolveMaterialLink: resolveReadableMaterialLink,
   });
   let transformed = meta ? injectSeo(html, meta, siteSettings, expandedBody, dynamicRouteState) : injectNoIndexNotFound(html, siteSettings, key);
