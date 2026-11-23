@@ -888,6 +888,7 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   ${[...shared.styles, shared.fitAssets["showroom-fit.css"], shared.modelStyle].map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script defer src="${shared.navScript}"></script>
+  <script defer src="${shared.track}"></script>
   <script type="application/ld+json">
 ${renderSchema(model, copy, lang, words.title)}
   </script>
@@ -1056,6 +1057,7 @@ function renderCategoryPage(category, lang, sources, shared, categories, categor
   ${shared.categoryStyles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script defer src="${shared.navScript}"></script>
+  <script defer src="${shared.track}"></script>
   <script type="application/ld+json">
 ${schema}
   </script>
@@ -1225,6 +1227,7 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
   const shared = {
     updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
     navScript: await versionedAsset("/showroom-nav.js", join(showroom, "showroom-nav.js")),
+    track: await versionedAsset("/conversion-track.js", join(showroom, "conversion-track.js")),
     categoryStyles,
     modelStyle: await versionedAsset("/showroom-model.css", join(showroom, "showroom-model.css")),
     styles: [
