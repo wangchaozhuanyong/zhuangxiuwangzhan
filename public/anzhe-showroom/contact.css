@@ -1,7 +1,6 @@
 .contact-symbols{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
 .ct-icon{width:20px;height:20px;flex:none;display:block}
 .mast-inner{column-gap:clamp(12px,2vw,32px)}
-.lang-switch button:focus-visible{outline:2px solid currentColor;outline-offset:-5px}
 .mast-contact,.ct-actions,.ct-panel-actions{display:flex;align-items:center;gap:8px}
 .mast-contact a,.ct-actions a,.ct-panel-actions a{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;text-decoration:none;font-size:14px;font-weight:630;line-height:1.25}
 .mast-contact a{padding:0 13px;white-space:nowrap;font-size:13px}
@@ -58,9 +57,6 @@
 }
 @media (max-width:700px){
   .mast-contact{display:none}
-  .mast-inner .lang-switch{border:0}
-  .mast-inner .lang-switch button{min-width:32px;height:44px;padding:0 5px;color:var(--muted)}
-  .mast-inner .lang-switch button[aria-pressed=true]{background:none;color:var(--olive);text-decoration:underline;text-underline-offset:4px}
   .mast-inner .site-nav{gap:4px}
   .mast-inner .site-nav :is(a,button){padding-inline:1px;text-align:center;line-height:1.16}
   .ct-layout{grid-template-columns:1fr;gap:22px}

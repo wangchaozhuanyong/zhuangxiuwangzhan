@@ -247,6 +247,16 @@
     document.querySelectorAll('[data-alt]').forEach(el => {el.alt = text(el.dataset.alt);});
     document.querySelectorAll('[data-aria]').forEach(el => el.setAttribute('aria-label', text(el.dataset.aria)));
     document.querySelectorAll('[data-lang]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.lang === lang)));
+    const triggerLabel = document.querySelector('.lang-current-label');
+    if (triggerLabel) {
+      const labels = { zh: '中文', en: 'EN', ms: 'BM' };
+      triggerLabel.textContent = labels[lang] || lang.toUpperCase();
+    }
+    const openSwitch = document.querySelector('.lang-switch.is-open');
+    if (openSwitch) {
+      openSwitch.classList.remove('is-open');
+      openSwitch.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
+    }
     document.querySelector('[data-hero-price]').textContent = formatPrice('v37j-p16');
     const samplePrices = [...document.querySelectorAll('[data-price-for]')].map(el => byModel.get(el.dataset.priceFor).price);
     document.querySelector('[data-example-gap]').textContent = window.formatShowroomPrice(Math.abs(samplePrices[0] - samplePrices[1]));
@@ -259,10 +269,32 @@
   }
 
   document.addEventListener('click', event => {
+    const trigger = event.target.closest('[data-lang-trigger]');
+    if (trigger) {
+      event.preventDefault();
+      const sw = trigger.closest('.lang-switch');
+      const willOpen = !sw.classList.contains('is-open');
+      sw.classList.toggle('is-open', willOpen);
+      trigger.setAttribute('aria-expanded', String(willOpen));
+      return;
+    }
+    const openSwitch = document.querySelector('.lang-switch.is-open');
+    if (openSwitch && !event.target.closest('.lang-switch')) {
+      openSwitch.classList.remove('is-open');
+      openSwitch.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
+    }
+
     const button = event.target.closest('button');
     if (!button) return;
     if (button.dataset.lang && supported(button.dataset.lang)) {
-      if (button.dataset.lang === lang) return;
+      if (button.dataset.lang === lang) {
+        const sw = button.closest('.lang-switch');
+        if (sw) {
+          sw.classList.remove('is-open');
+          sw.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
+        }
+        return;
+      }
       lang = button.dataset.lang;
       saveLanguage(lang);
       if (location.protocol !== 'file:') {
@@ -282,6 +314,15 @@
       window.lockPanels.example(button);
     } else if (button.matches('[data-enquire-current]')) {
       window.lockPanels.fit(button);
+    }
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      const openSwitch = document.querySelector('.lang-switch.is-open');
+      if (openSwitch) {
+        openSwitch.classList.remove('is-open');
+        openSwitch.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
+      }
     }
   });
   // Remember a customer's choices within this browser tab across reloads.

@@ -18,7 +18,6 @@ const locales = {
 const languages = Object.keys(locales);
 const groups = ["entrance", "room", "slim"]; // Catalogue groups for entrance, interior and aluminium doors.
 const minimumVisibleChars = 6000;
-const { values: args } = parseArgs({ options: { check: { type: "boolean" }, copy: { type: "string" } } });
 
 const escape = text => String(text).replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;",
@@ -45,12 +44,12 @@ async function readShowroomSources() {
   return source;
 }
 
-async function readCopy() {
-  const file = args.copy ? resolve(args.copy) : join(root, "docs/seo/anzhe-lock-page-copy.json");
+async function readCopy(copyPath) {
+  const file = copyPath ? resolve(copyPath) : join(root, "docs/seo/anzhe-lock-page-copy.json");
   try {
     return JSON.parse((await readFile(file, "utf8")).replace(/^\uFEFF/, ""));
   } catch (error) {
-    if (error.code === "ENOENT" && !args.copy) return {};
+    if (error.code === "ENOENT" && !copyPath) return {};
     throw error;
   }
 }
@@ -88,10 +87,10 @@ const copyTemplates = {
     specs: "型号规格",
     mechanism: "锁体类型",
     materials: "材质",
-    fit: "门型兼容与安装",
     faq: "常见问题",
     compare: "同类对比",
     guide: "从确认门型到安装交接",
+    guideTopics: ["门型与现场测量", "安装前的准备", "交接与保修"],
     ask: "WhatsApp 咨询这款锁",
     home: "返回电子锁展厅",
     comparisonIntro: "先看同门型的型号，再查看其他门型的选择。下列价格都含安装。规格中未列明的项目请按型号核实，不能仅凭价格或相似外观判断可否互换。",
@@ -131,11 +130,11 @@ const copyTemplates = {
     specs: "Model specifications",
     mechanism: "Lock mechanism",
     materials: "Materials",
-    fit: "Door fit and installation",
     faq: "Frequently asked questions",
     compare: "Compare by door type",
     guide: "From the door check to handover",
-    ask: "Ask about this lock on WhatsApp",
+    guideTopics: ["Door fit and measurements", "Before installation", "Handover and warranty"],
+    ask: "Enquire on WhatsApp",
     home: "Back to the lock showroom",
     comparisonIntro: "Start with locks intended for the same door type, then check the other groups if you are buying for several doors. All prices include installation. Confirm any unlisted specification for the exact model before assuming one lock can replace another.",
     singleModel: "This is the only slim aluminium model in the range. Models in the other groups are here for reference and should be checked separately against the door.",
@@ -175,11 +174,11 @@ const copyTemplates = {
     specs: "Spesifikasi model",
     mechanism: "Jenis mekanisme kunci",
     materials: "Bahan",
-    fit: "Kesesuaian pintu dan pemasangan",
     faq: "Soalan lazim",
     compare: "Bandingkan mengikut jenis pintu",
     guide: "Daripada semakan pintu hingga serahan",
-    ask: "Tanya tentang model ini di WhatsApp",
+    guideTopics: ["Kesesuaian dan ukuran pintu", "Sebelum pemasangan", "Serahan dan jaminan"],
+    ask: "Tanya di WhatsApp",
     home: "Kembali ke ruang pameran kunci",
     comparisonIntro: "Mulakan dengan model untuk jenis pintu yang sama. Jika anda membeli kunci untuk beberapa pintu, rujuk kumpulan lain di bawah. Harga yang tertera termasuk pemasangan. Semak spesifikasi yang belum dinyatakan sebelum memilih model ganti.",
     singleModel: "Ini satu-satunya model untuk bingkai aluminium sempit dalam katalog. Model kumpulan lain disenaraikan sebagai rujukan dan perlu disemak mengikut jenis pintu.",
@@ -601,22 +600,24 @@ function renderComparison(model, lang, catalog, words, labels) {
     const entries = peers.map(peer => {
       const rows = specRows(peer, lang, labels);
       const summary = comparisonFields.map(key => rows.find(row => row.key === key)).filter(Boolean);
-      const factList = items => items.map(({ label, value }) => `${escape(label)} · ${escape(value)}`).join(lang === "zh" ? "；" : " · ");
       const current = peer.id === model.id ? ' aria-current="page"' : "";
-      return `<li>
-          <article>
-            <h4><a href="${pagePath(lang, peer.id)}"${current}>${escape(peer.name)}</a> · ${escape(peer.prices.display)} · ${escape(words.included)}</h4>
-            <p>${escape(peer.copy[lang])}</p>
-            <p>${factList(summary.slice(0, coreFields.length))}</p>
-            <p>${factList(summary.slice(coreFields.length))}</p>
-          </article>
+      const facts = summary.map(({ label, value }) => `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`);
+      return `<li class="model-peer">
+          <a class="model-peer-link" href="${pagePath(lang, peer.id)}"${current}>
+            ${img(peer.thumbnailInfo, "")}
+            <span><strong>${escape(peer.name)}</strong><small>${escape(peer.prices.display)}</small></span>
+          </a>
+          <details class="model-peer-facts">
+            <summary aria-label="${escape(peer.name)} · ${escape(ui.specs)}">${escape(ui.specs)}</summary>
+            <div><p>${escape(peer.copy[lang])}</p><dl>${facts.join("")}</dl></div>
+          </details>
         </li>`;
     }).join("\n        ");
     const singleModelNote = group === model.group && peers.length === 1
       ? `      <p>${escape(ui.singleModel)}</p>\n` : "";
-    return `<section aria-label="${escape(words[group])}">
-      <h3>${escape(words[group])}</h3>
-${singleModelNote}      <ul>
+    return `<section class="model-peer-group" aria-label="${escape(words[group])}">
+      <h3>${escape(words[group])} <span>(${peers.length})</span></h3>
+${singleModelNote}      <ul class="model-peers">
         ${entries}
       </ul>
     </section>`;
@@ -625,6 +626,32 @@ ${singleModelNote}      <ul>
 
 function img(image, alt, eager = false) {
   return `<img src="${escape(image.path)}" width="${image.width}" height="${image.height}" alt="${escape(alt)}" loading="${eager ? "eager" : "lazy"}" decoding="async"${eager ? ' fetchpriority="high"' : ""}>`;
+}
+
+function renderLanguageSelector(slug, lang, words) {
+  const current = locales[lang];
+  const options = languages.map(code => {
+    const { alternate, label } = locales[code];
+    const isCurrent = code === lang;
+    const checkSvg = isCurrent
+      ? `<svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`
+      : "";
+    return `<a class="lang-option" href="${pagePath(code, slug)}" lang="${alternate}" aria-label="${label}"${isCurrent ? ' aria-current="page"' : ""}>
+          <span class="lang-code">${code.toUpperCase()}</span>
+          <span class="lang-name">${label}</span>
+          ${checkSvg}
+        </a>`;
+  });
+  return `<div class="lang-switch" role="group" aria-label="${escape(words.language)}">
+      <button type="button" class="language-selector language-selector--header" data-lang-trigger aria-label="${escape(words.language)}: ${escape(current.label)}" aria-haspopup="true" aria-expanded="false">
+        <svg class="globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        <span class="lang-current-label">${escape(current.short)}</span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="lang-dropdown" role="menu">
+        ${options.join("\n        ")}
+      </div>
+    </div>`;
 }
 
 function pageLanguageLinks(slug, lang) {
@@ -686,6 +713,58 @@ function renderSchema(model, copy, lang, homeLabel) {
 
 const whatsappLink = message => "https://wa.me/601128853888?text=" + encodeURIComponent(message);
 
+function renderDoorFitGuide(words, photos, { assetPrefix = "", contactHref } = {}) {
+  const text = key => {
+    const value = words[key];
+    if (typeof value !== "string" || !value.trim()) throw new Error(`Missing door fit copy: ${key}`);
+    return escape(value);
+  };
+  const examples = [
+    [photos.face, "fullDoor", "frontGuide"],
+    [photos.edge, "doorEdge", "edgeGuide"],
+  ].map(([image, title, instructions], index) => `<figure>
+          <img src="${escape(assetPrefix + image.path)}" data-alt="${instructions}" alt="${text(instructions)}" width="${image.width}" height="${image.height}" loading="lazy">
+          <figcaption><span aria-hidden="true">0${index + 1}</span><div><strong data-t="${title}">${text(title)}</strong><p data-t="${instructions}">${text(instructions)}</p></div></figcaption>
+        </figure>`);
+  const actionLabel = `<span data-t="consultFit">${text("consultFit")}</span><span aria-hidden="true">↗</span>`;
+  // The home page can consult about a selected model or comparison. Detail pages have a fixed model.
+  const action = contactHref
+    ? `<a class="studio-button" href="${escape(contactHref)}" target="_blank" rel="noopener noreferrer">${actionLabel}</a>`
+    : `<button class="studio-button" type="button" data-enquire-current="" aria-haspopup="dialog">${actionLabel}</button>`;
+  return `<section class="fit-section" id="installation" aria-labelledby="fit-title">
+    <div class="wrap fit-guide">
+      <header class="fit-guide__head">
+        <h2 id="fit-title" data-t="installTitle">${text("installTitle")}</h2>
+        <p class="fit-guide__area"><span data-t="serviceArea">${text("serviceArea")}</span><strong data-t="location">${text("location")}</strong></p>
+        <p data-t="fitCopy">${text("fitCopy")}</p>
+      </header>
+      <div class="fit-guide__photos">
+        ${examples.join("\n        ")}
+      </div>
+      <div class="fit-guide__footer">
+        <div class="fit-guide__notes">
+          <p data-t="grille">${text("grille")}</p>
+          <p data-t="priceNote">${text("priceNote")}</p>
+        </div>
+        ${action}
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderModelHeading(heading, model) {
+  // Keep the approved heading intact for readers and search, including its localized price wording.
+  const parts = heading.match(/^(.+?)(\s*[｜—]\s*)(.+)$/su);
+  if (!parts) return escape(heading);
+  const [, product, separator, offer] = parts;
+  const price = model.prices.display;
+  const priceStart = offer.indexOf(price);
+  if (!product.startsWith(model.name) || priceStart < 0) return escape(heading);
+  const before = offer.slice(0, priceStart);
+  const after = offer.slice(priceStart + price.length);
+  return `<span class="model-name">${escape(model.name)}</span><span class="model-kind">${escape(product.slice(model.name.length))}</span><span class="model-heading-divider">${escape(separator)}</span><span class="model-offer">${escape(before)}<b>${escape(price)}</b>${escape(after)}</span>`;
+}
+
 function renderPage(model, lang, sources, catalog, shared, overrides, categories) {
   const words = sources.showroomWords[lang];
   const labels = sources.lockSpecLabels;
@@ -697,13 +776,23 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   const imageAlt = `ANZHE ${model.name} · ${ui.photo}`;
   const contact = whatsappLink(ui.message({ name: model.name, price: model.prices.display }));
   const altLinks = alternates(model.id).map(([tag, href]) => `<link rel="alternate" hreflang="${tag}" href="${href}">`);
-  const langLinks = pageLanguageLinks(model.id, lang);
+  const langSelector = renderLanguageSelector(model.id, lang, words);
   const membership = categories.filter(category => category.models.includes(model)).map(category => categoryLink(category, lang));
-  const rows = specRows(model, lang, labels).map(({ key, label, value }) =>
-    `<tr data-spec="${key}"><th scope="row" class="dir-spec-model">${escape(label)}</th><td>${escape(value)}</td></tr>`);
-  const faq = copy.faqs.map(({ q, a }) => `<article><h3>${escape(q)}</h3><p>${escape(a)}</p></article>`);
-  const guide = [doorChecks[lang][model.group], ...fittingGuides[lang]].map(([heading, text]) =>
-    `<article><h3>${escape(heading)}</h3><p>${escape(text)}</p></article>`);
+  const rows = specRows(model, lang, labels);
+  const specifications = sources.lockSpecSheet.detail(rows, lang);
+  const plateFact = rows.find(row => (row.key === "dimensions" || row.key === "screen") && row.value !== ui.pending);
+  const serviceLabel = /安装|installation|pemasangan/iu.test(copy.h1) ? words.serviceArea : words.included;
+  const highlights = (model.feature?.highlights ?? []).map(point => `<li>${escape(point[lang])}</li>`);
+  const faq = copy.faqs.map(({ q, a }, index) =>
+    `<details class="model-disclosure"${index === 0 ? " open" : ""}><summary><h3>${escape(q)}</h3></summary><p>${escape(a)}</p></details>`);
+  const steps = fittingGuides[lang];
+  const guide = [
+    [doorChecks[lang][model.group], ...steps.slice(0, 4)],
+    steps.slice(4, 8),
+    steps.slice(8),
+  ].map((topic, index) => `<details class="model-disclosure"><summary><h3>${escape(ui.guideTopics[index])}</h3></summary>
+        ${topic.map(([heading, text]) => `<article><h4>${escape(heading)}</h4><p>${escape(text)}</p></article>`).join("\n        ")}
+      </details>`);
   // Malay fallback copy remains crawlable for review, with indexing withheld until native review.
   const robots = lang === "ms" ? '\n  <meta name="robots" content="noindex">' : "";
   return `<!doctype html>
@@ -726,13 +815,13 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   <meta property="og:description" content="${escape(copy.description)}">
   <meta property="og:image" content="${absolute(model.imageInfo.path)}">
   <meta property="og:image:alt" content="${escape(imageAlt)}">
-  ${shared.styles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
+  ${[...shared.styles, shared.fitAssets["showroom-fit.css"], shared.modelStyle].map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script type="application/ld+json">
 ${renderSchema(model, copy, lang, words.title)}
   </script>
 </head>
-<body id="top">
+<body class="model-page" id="top">
   <a class="skip" href="#main-content">${escape(words.skip)}</a>
   <header class="mast">
     <div class="wrap mast-inner">
@@ -745,72 +834,59 @@ ${renderSchema(model, copy, lang, words.title)}
         <a href="#comparison">${escape(ui.compare)}</a>
         <a href="#installation">${escape(words.install)}</a>
       </nav>
-      <nav class="lang-switch" aria-label="${escape(words.language)}">
-        ${langLinks.join("\n        ")}
-      </nav>
+      ${langSelector}
     </div>
   </header>
   <main id="main-content" tabindex="-1">
-    <section class="compare-section" aria-labelledby="model-title">
-      <div class="wrap hero-inner">
-        <div class="hero-copy">
-          <p class="kicker">${escape(words[model.group])}</p>
-          <h1 id="model-title" class="hero-headline">${escape(copy.h1)}</h1>
-          <p class="hero-summary">${escape(model.copy[lang])}</p>
-          <div class="hero-actions">
-            <a href="${escape(contact)}" class="studio-button" target="_blank" rel="noopener noreferrer">${escape(ui.ask)}</a>
-            <a href="#specifications" class="studio-link"><span>${escape(ui.specs)}</span></a>
-          </div>
-        </div>
-        <figure class="hero-board">
-          <div class="panel-view">${img(model.imageInfo, imageAlt, true)}</div>
-          <figcaption><strong>ANZHE / ${escape(model.name)}</strong><span>${escape(ui.photo)}</span></figcaption>
+    <section class="wrap model-intro" aria-labelledby="model-title">
+      <a class="model-back" href="${home}#model-details"><span aria-hidden="true">←</span> ${escape(words.modelDetailsTitle)}</a>
+      <div class="model-showcase">
+        <header class="model-heading">
+          <p class="model-door-type">${escape(words[model.group])}</p>
+          <h1 id="model-title">${renderModelHeading(copy.h1, model)}</h1>
+        </header>
+        <figure class="model-plate">
+          <div class="model-plate-image">${img(model.imageInfo, imageAlt, true)}</div>${plateFact ? `
+          <figcaption><span>${escape(plateFact.label)}</span><strong>${escape(plateFact.value)}</strong></figcaption>` : ""}
         </figure>
-      </div>
-    </section>
-    <section class="wrap collection" aria-labelledby="answer-title">
-      <h2 id="answer-title">${escape(answerHeadings[lang](model.name))}</h2>
-      <p>${escape(copy.answer)}</p>
-      <p><strong>${escape(labels.access[lang])}</strong> · ${escape(model.access[lang])}</p>
-    </section>
-    <section class="wrap collection" id="specifications" aria-labelledby="specifications-title">
-      <h2 id="specifications-title">${escape(ui.specs)}</h2>
-      <div class="ct-office">
-        <table aria-labelledby="specifications-title">
-          <tbody>
-            ${rows.join("\n            ")}
-          </tbody>
-        </table>
-      </div>
-    </section>
-    <section class="fit-section" id="installation" aria-labelledby="installation-title">
-      <div class="wrap fit-layout">
-        <div class="fit-copy">
-          <h2 id="installation-title">${escape(ui.fit)}</h2>
-          <p>${escape(copy.doorFit)}</p>
-          <p>${escape(words.installCopy)}</p>
-          <p class="fit-included">${escape(words.serviceArea)} · ${escape(words.location)}</p>
-        </div>
-        <div class="guide-pair">
-          <figure>${img(shared.face, "")}<figcaption><div><strong>${escape(words.fullDoor)}</strong><p>${escape(words.frontGuide)}</p></div></figcaption></figure>
-          <figure>${img(shared.edge, "")}<figcaption><div><strong>${escape(words.doorEdge)}</strong><p>${escape(words.edgeGuide)}</p></div></figcaption></figure>
+        <div class="model-buy">
+          <p class="model-summary">${escape(model.copy[lang])}</p>
+          ${highlights.length ? `<ul class="model-highlights">${highlights.join("")}</ul>` : ""}
+          <div class="model-actions">
+            <a href="${escape(contact)}" class="studio-button" target="_blank" rel="noopener noreferrer">${escape(ui.ask)} <span aria-hidden="true">↗</span></a>
+            <a href="#specifications" class="model-spec-link">${escape(ui.specs)} <span aria-hidden="true">↓</span></a>
+          </div>
+          <p class="model-service"><span>${escape(serviceLabel)}</span> ${escape(words.location)}</p>
         </div>
       </div>
     </section>
-    <section class="wrap collection" id="faq" aria-labelledby="faq-title">
+    <section class="wrap model-overview" aria-labelledby="answer-title">
+      <div class="model-overview-inner">
+        <div><h2 id="answer-title">${escape(answerHeadings[lang](model.name))}</h2><p>${escape(copy.answer)}</p></div>
+        <div><h3>${escape(labels.access[lang])}</h3><p>${escape(model.access[lang])}</p></div>
+      </div>
+    </section>
+    <section class="wrap collection model-specs" id="specifications" aria-labelledby="specifications-title">
+      <header class="model-specs-heading">
+        <h2 id="specifications-title">${escape(ui.specs)}</h2>
+        <span class="model-specs-id">ANZHE <b>${escape(model.name)}</b></span>
+      </header>
+      ${specifications}
+    </section>
+    ${renderDoorFitGuide(words, shared, { contactHref: contact }).replaceAll("\n", "\n  ")}
+    <section class="wrap model-reading" id="faq" aria-labelledby="faq-title">
       <h2 id="faq-title">${escape(ui.faq)}</h2>
-      ${faq.join("\n      ")}
+      <div class="model-disclosures">${faq.join("\n      ")}</div>
     </section>
-    <section class="wrap collection" aria-labelledby="guide-title">
-      <h2 id="guide-title">${escape(ui.guide)}</h2>
-      ${guide.join("\n      ")}
+    <section class="wrap model-reading" aria-labelledby="guide-title">
+      <div><h2 id="guide-title">${escape(ui.guide)}</h2><p>${escape(copy.doorFit)}</p></div>
+      <div class="model-disclosures">${guide.join("\n      ")}</div>
     </section>
-    <section class="wrap collection" id="comparison" aria-labelledby="comparison-title">
-      <h2 id="comparison-title">${escape(ui.compare)}</h2>
-      <p>${escape(ui.comparisonIntro)}</p>
+    <section class="wrap collection model-comparison" id="comparison" aria-labelledby="comparison-title">
+      <header><h2 id="comparison-title">${escape(ui.compare)}</h2><p>${escape(ui.comparisonIntro)}</p></header>
       ${renderComparison(model, lang, catalog, words, labels)}
     </section>
-    <section class="wrap collection" aria-labelledby="model-categories-title">
+    <section class="wrap model-categories" aria-labelledby="model-categories-title">
       <h2 id="model-categories-title">${escape(categoryUi[lang].membership)}</h2>
       <nav class="section-actions" data-model-categories aria-labelledby="model-categories-title">
         ${membership.join("\n        ")}
@@ -823,6 +899,10 @@ ${renderSchema(model, copy, lang, words.title)}
       <a href="#top">${escape(words.back)}</a>
     </div>
   </footer>
+  <script>
+    document.addEventListener("click",function(e){var t=e.target.closest("[data-lang-trigger]"),s=document.querySelector(".lang-switch.is-open");if(t){e.preventDefault();var c=t.closest(".lang-switch"),o=!c.classList.contains("is-open");c.classList.toggle("is-open",o);t.setAttribute("aria-expanded",String(o))}else if(s&&!e.target.closest(".lang-switch")){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"){var s=document.querySelector(".lang-switch.is-open");if(s){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}}});
+  </script>
 </body>
 </html>
 `;
@@ -918,9 +998,7 @@ ${schema}
         <a href="#selection">${escape(ui.selection)}</a>
         <a href="#faq">${escape(copyTemplates[lang].faq)}</a>
       </nav>
-      <nav class="lang-switch" aria-label="${escape(words.language)}">
-        ${pageLanguageLinks(slug, lang).join("\n        ")}
-      </nav>
+      ${renderLanguageSelector(slug, lang, words)}
     </div>
   </header>
   <main id="main-content" tabindex="-1">
@@ -959,6 +1037,10 @@ ${schema}
       <a href="#top">${escape(words.back)}</a>
     </div>
   </footer>
+  <script>
+    document.addEventListener("click",function(e){var t=e.target.closest("[data-lang-trigger]"),s=document.querySelector(".lang-switch.is-open");if(t){e.preventDefault();var c=t.closest(".lang-switch"),o=!c.classList.contains("is-open");c.classList.toggle("is-open",o);t.setAttribute("aria-expanded",String(o))}else if(s&&!e.target.closest(".lang-switch")){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"){var s=document.querySelector(".lang-switch.is-open");if(s){s.classList.remove("is-open");s.querySelector("[data-lang-trigger]")?.setAttribute("aria-expanded","false")}}});
+  </script>
 </body>
 </html>
 `;
@@ -998,7 +1080,28 @@ function visibleChars(html) {
   }
 }
 
-async function syncOutputs(outputs) {
+// Refresh the shared sections inside the existing, localized home documents.
+async function renderHomePage(lang, catalog, sources, shared) {
+  const target = join(showroom, lang, "index.html");
+  const template = lf(await readFile(target, "utf8"));
+  const seen = new Set();
+  const withSpecs = template.replace(/(<!-- lock-specs:([a-z\d-]+) -->)[\s\S]*?(<!-- \/lock-specs -->)/g,
+    (_, start, id, end) => {
+      const model = catalog.find(item => item.id === id);
+      if (!model) throw new Error(`${lang}: unknown catalogue sheet ${id}`);
+      seen.add(id);
+      return start + sources.lockSpecSheet.directory(model, lang) + end;
+    });
+  if (seen.size !== catalog.length) throw new Error(`${lang}: missing static catalogue specification sheets`);
+  const fitSlot = /(<!-- Generated door fit guide by scripts\/generate-anzhe-lock-pages\.mjs -->)[\s\S]*?(<!-- End generated door fit guide -->)/g;
+  if ([...withSpecs.matchAll(fitSlot)].length !== 1) throw new Error(`${lang}: expected one home door fit guide slot`);
+  const guide = renderDoorFitGuide(sources.showroomWords[lang], shared, { assetPrefix: ".." });
+  const html = withSpecs.replace(fitSlot, (_, start, end) => `${start}\n  ${guide}\n  ${end}`)
+    .replace(/"\.\.\/(showroom-fit\.css|strings\.js)\?v=[a-f0-9]+"/g, (_, file) => `"..${shared.fitAssets[file]}"`);
+  return { target, html };
+}
+
+async function syncOutputs(outputs, check) {
   const stale = [];
   for (const { target, html } of outputs) {
     const current = await readFile(target, "utf8").catch(error => {
@@ -1006,7 +1109,7 @@ async function syncOutputs(outputs) {
       throw error;
     });
     if (lf(current) === html) continue;
-    if (args.check) {
+    if (check) {
       stale.push(target);
     } else {
       await mkdir(dirname(target), { recursive: true });
@@ -1016,51 +1119,65 @@ async function syncOutputs(outputs) {
   if (stale.length) throw new Error("Regenerate outdated showroom files:\n" + stale.join("\n"));
 }
 
-const sources = await readShowroomSources();
-const overrides = await readCopy();
-const ids = sources.lockCatalog.map(model => model.id);
-if (ids.length !== 17 || new Set(ids).size !== 17 || ids.some(id => !/^[a-z\d]+(?:-[a-z\d]+)*$/.test(id))) {
-  throw new Error("Expected the 17 distinct, URL-safe slugs in the showroom catalogue");
-}
-const catalog = await Promise.all(sources.lockCatalog.map(async model => {
-  if (!groups.includes(model.group)) throw new Error(`Unknown door group: ${model.group}`);
-  for (const lang of languages) {
-    if (!model.access[lang] || !model.copy[lang]) throw new Error(`Missing ${lang} catalogue copy for ${model.id}`);
+export async function generateAnzheLockPages({ check = false, copy } = {}) {
+  const sources = await readShowroomSources();
+  const overrides = await readCopy(copy);
+  const ids = sources.lockCatalog.map(model => model.id);
+  if (ids.length !== 17 || new Set(ids).size !== 17 || ids.some(id => !/^[a-z\d]+(?:-[a-z\d]+)*$/.test(id))) {
+    throw new Error("Expected the 17 distinct, URL-safe slugs in the showroom catalogue");
   }
-  return {
-    ...model,
-    prices: prices(model, sources.formatShowroomPrice),
-    feature: sources.lockFeatures[model.id],
-    imageInfo: await imageInfo(model.image),
+  const catalog = await Promise.all(sources.lockCatalog.map(async model => {
+    if (!groups.includes(model.group)) throw new Error(`Unknown door group: ${model.group}`);
+    for (const lang of languages) {
+      if (!model.access[lang] || !model.copy[lang]) throw new Error(`Missing ${lang} catalogue copy for ${model.id}`);
+    }
+    return {
+      ...model,
+      prices: prices(model, sources.formatShowroomPrice),
+      feature: sources.lockFeatures[model.id],
+      imageInfo: await imageInfo(model.image),
+      thumbnailInfo: await imageInfo(model.thumbnail),
+    };
+  }));
+  const categories = categoryDefinitions.map(definition => {
+    const models = catalog.filter(definition.matches);
+    if (models.length === 0) throw new Error(`${definition.slug}: no models match the catalogue filter`);
+    return { ...definition, models };
+  });
+  const shared = {
+    updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
+    modelStyle: await versionedAsset("/showroom-model.css", join(showroom, "showroom-model.css")),
+    styles: await Promise.all([
+      versionedAsset("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
+      ...["studio.css", "directory.css", "contact.css"].map(file => versionedAsset("/" + file, join(showroom, file))),
+    ]),
+    fitAssets: {
+      "showroom-fit.css": await versionedAsset("/showroom-fit.css", join(showroom, "showroom-fit.css")),
+      "strings.js": await versionedAsset("/strings.js", join(showroom, "strings.js")),
+    },
+    logo: await imageInfo("assets/anzhe-logo.webp"),
+    face: await imageInfo("assets/guide-face.webp"),
+    edge: await imageInfo("assets/guide-edge.webp"),
   };
-}));
-const categories = categoryDefinitions.map(definition => {
-  const models = catalog.filter(definition.matches);
-  if (models.length === 0) throw new Error(`${definition.slug}: no models match the catalogue filter`);
-  return { ...definition, models };
-});
-const shared = {
-  updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
-  styles: await Promise.all([
-    versionedAsset("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
-    ...["studio.css", "directory.css", "contact.css"].map(file => versionedAsset("/" + file, join(showroom, file))),
-  ]),
-  logo: await imageInfo("assets/anzhe-logo.webp"),
-  face: await imageInfo("assets/guide-face.webp"),
-  edge: await imageInfo("assets/guide-edge.webp"),
-};
-const pages = catalog.flatMap(model => languages.map(lang => {
-  const path = pagePath(lang, model.id);
-  const html = renderPage(model, lang, sources, catalog, shared, overrides, categories);
-  return { path, target: join(showroom, "." + path, "index.html"), html, length: visibleChars(html) };
-}));
-const short = pages.filter(page => page.length < minimumVisibleChars);
-if (short.length) throw new Error(`Expected ${minimumVisibleChars} visible characters per page:\n`
-  + short.map(page => `${page.path} ${page.length}`).join("\n"));
-const categoryPages = categories.flatMap(category => languages.map(lang => ({
-  target: join(showroom, "." + pagePath(lang, category.slug), "index.html"),
-  html: renderCategoryPage(category, lang, sources, shared, categories),
-})));
-await syncOutputs([...pages, ...categoryPages, { target: join(showroom, "sitemap.xml"), html: renderSitemap(catalog, categories) }]);
-const sitemapCount = pages.length + languages.length + categories.length * indexedCategoryLanguages.length;
-console.log(`${args.check ? "Checked" : "Generated"} ${pages.length} model pages (${Math.min(...pages.map(page => page.length))}+ visible characters), ${categoryPages.length} category pages and ${sitemapCount} sitemap URLs.`);
+  const pages = catalog.flatMap(model => languages.map(lang => {
+    const path = pagePath(lang, model.id);
+    const html = renderPage(model, lang, sources, catalog, shared, overrides, categories);
+    return { path, target: join(showroom, "." + path, "index.html"), html, length: visibleChars(html) };
+  }));
+  const short = pages.filter(page => page.length < minimumVisibleChars);
+  if (short.length) throw new Error(`Expected ${minimumVisibleChars} visible characters per page:\n`
+    + short.map(page => `${page.path} ${page.length}`).join("\n"));
+  const categoryPages = categories.flatMap(category => languages.map(lang => ({
+    target: join(showroom, "." + pagePath(lang, category.slug), "index.html"),
+    html: renderCategoryPage(category, lang, sources, shared, categories),
+  })));
+  const homePages = await Promise.all(languages.map(lang => renderHomePage(lang, catalog, sources, shared)));
+  await syncOutputs([...pages, ...categoryPages, ...homePages, { target: join(showroom, "sitemap.xml"), html: renderSitemap(catalog, categories) }], check);
+  const sitemapCount = pages.length + languages.length + categories.length * indexedCategoryLanguages.length;
+  console.log(`${check ? "Checked" : "Generated"} ${homePages.length} home pages, ${pages.length} model pages (${Math.min(...pages.map(page => page.length))}+ visible characters), ${categoryPages.length} category pages and ${sitemapCount} sitemap URLs.`);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const { values } = parseArgs({ options: { check: { type: "boolean" }, copy: { type: "string" } } });
+  await generateAnzheLockPages(values);
+}
