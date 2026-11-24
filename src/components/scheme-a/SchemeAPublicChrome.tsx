@@ -165,7 +165,7 @@ const SchemeASocialLinks = ({ settings, placement }: {
   return (
     <div className={classes.group} role="group" aria-label={t.followUs}>
       <div className={classes.heading}>
-        <h3>{t.followUs}</h3>
+        <span>{t.followUs}</span>
         {placement === "directory" ? <span>{t.socialProfiles}</span> : null}
       </div>
       <div className={classes.links}>
@@ -735,6 +735,138 @@ export const SchemeAFooterPrelude = () => {
   );
 };
 
+const footerArchitecturalContent = {
+  zh: {
+    kicker: "INTERIOR DESIGN & RENOVATION STUDIO",
+    subBrand: "闪铸装饰 FLASH CAST · 吉隆坡与雪兰莪全案高端精装",
+    col1Title: "联系工作室 / STUDIO",
+    col1Office: "吉隆坡展厅与办公室",
+    col1Map: "在 Google 地图查看",
+    col1PhoneSub: "支持电话与 WhatsApp 直联",
+    col1Hours: "营业时间：每天 10:00 – 19:00",
+    col1HoursNote: "为保障接待与方案品质，到访前请提前联络预约。",
+    col2Title: "设计与工程 / SCOPE",
+    col2Links: [
+      { label: "全案室内设计 (Interior Design)", path: "/services/design" },
+      { label: "住宅与公寓装修 (Residential Fit-out)", path: "/services/renovation" },
+      { label: "商业与餐饮空间 (Commercial Fit-out)", path: "/services/office-renovation" },
+      { label: "旧屋全面翻新 (House Refurbishment)", path: "/services/old-house" },
+      { label: "家具定制与家装修复 (Cabinet & Restoration)", path: "/custom-cabinets" },
+      { label: "智能电子锁安装 (Smart Digital Locks)", path: "/services/digital-lock" },
+      { label: "选材库与工艺样本 (Materials Library)", path: "/materials" },
+    ],
+    col3Title: "品牌与案例 / EXPLORE",
+    col3Links: [
+      { label: "精选项目案例 (Projects)", path: "/projects" },
+      { label: "空间改造前后对比 (Before & After)", path: "/before-after" },
+      { label: "家具自由搭配 (Mix & Match)", path: "/furniture" },
+      { label: "透明施工流程 (Process & Standards)", path: "/process" },
+      { label: "常见装修问答 (FAQ)", path: "/faq" },
+      { label: "设计博客专栏 (Design Journal)", path: "/blog" },
+    ],
+    col3QuoteBtn: "获取专属报价 →",
+    col4Title: "服务地区 / COVERAGE",
+    col4Intro: "立足吉隆坡，全面覆盖巴生谷及雪兰莪重点社区：",
+    col4Areas: [
+      { name: "吉隆坡 KL", slug: "kuala-lumpur" },
+      { name: "八打灵再也 PJ", slug: "petaling-jaya" },
+      { name: "满家乐 Mont Kiara", slug: "mont-kiara" },
+      { name: "孟沙 Bangsar", slug: "bangsar" },
+      { name: "蕉赖 Cheras", slug: "cheras" },
+      { name: "梳邦再也 Subang", slug: "subang-jaya" },
+      { name: "蒲种 Puchong", slug: "puchong" },
+      { name: "雪兰莪全境", slug: "selangor" },
+    ],
+    col4Footnote: "亦承接其他跨区域特定别墅及商业全案项目。",
+  },
+  en: {
+    kicker: "INTERIOR DESIGN & RENOVATION STUDIO",
+    subBrand: "FLASH CAST SDN. BHD. · Premium Interior Design & Build in KL & Selangor",
+    col1Title: "CONTACT STUDIO / STUDIO",
+    col1Office: "KL Showroom & Studio Office",
+    col1Map: "View on Google Maps",
+    col1PhoneSub: "Phone & WhatsApp Support",
+    col1Hours: "Daily 10:00 AM – 7:00 PM (MYT)",
+    col1HoursNote: "Visits and consultations by prior arrangement.",
+    col2Title: "DESIGN & BUILD / SCOPE",
+    col2Links: [
+      { label: "Interior Design Services", path: "/services/design" },
+      { label: "Residential & Condo Fit-out", path: "/services/renovation" },
+      { label: "Commercial & Retail Spaces", path: "/services/office-renovation" },
+      { label: "Old House Refurbishment", path: "/services/old-house" },
+      { label: "Custom Cabinets & Restoration", path: "/custom-cabinets" },
+      { label: "Smart Digital Lock Installation", path: "/services/digital-lock" },
+      { label: "Materials Library & Samples", path: "/materials" },
+    ],
+    col3Title: "STUDIO & CASES / EXPLORE",
+    col3Links: [
+      { label: "Selected Projects", path: "/projects" },
+      { label: "Before & After Transformations", path: "/before-after" },
+      { label: "Mix & Match Furniture", path: "/furniture" },
+      { label: "Transparent Process & Standards", path: "/process" },
+      { label: "Frequently Asked Questions (FAQ)", path: "/faq" },
+      { label: "Design Journal & Blog", path: "/blog" },
+    ],
+    col3QuoteBtn: "Get Free Quote →",
+    col4Title: "SERVICE AREAS / COVERAGE",
+    col4Intro: "Based in Kuala Lumpur, serving Klang Valley and Selangor:",
+    col4Areas: [
+      { name: "Kuala Lumpur KL", slug: "kuala-lumpur" },
+      { name: "Petaling Jaya PJ", slug: "petaling-jaya" },
+      { name: "Mont Kiara", slug: "mont-kiara" },
+      { name: "Bangsar", slug: "bangsar" },
+      { name: "Cheras", slug: "cheras" },
+      { name: "Subang Jaya", slug: "subang-jaya" },
+      { name: "Puchong", slug: "puchong" },
+      { name: "Selangor State", slug: "selangor" },
+    ],
+    col4Footnote: "Bespoke residential & commercial projects across regions welcomed.",
+  },
+  ms: {
+    kicker: "STUDIO REKA BENTUK DALAMAN & PENGUBAHSUAIAN",
+    subBrand: "FLASH CAST SDN. BHD. · Reka Bentuk & Bina Premium di KL & Selangor",
+    col1Title: "HUBUNGI STUDIO / STUDIO",
+    col1Office: "Bilik Pameran & Pejabat KL",
+    col1Map: "Lihat di Peta Google",
+    col1PhoneSub: "Sokongan Telefon & WhatsApp",
+    col1Hours: "Setiap hari 10:00 PG – 7:00 PTG (MYT)",
+    col1HoursNote: "Lawatan dan perundingan dengan temu janji awal.",
+    col2Title: "REKA BENTUK & BINA / SKOP",
+    col2Links: [
+      { label: "Perkhidmatan Reka Bentuk Dalaman", path: "/services/design" },
+      { label: "Pengubahsuaian Kediaman & Kondo", path: "/services/renovation" },
+      { label: "Ruang Komersial & Kedai", path: "/services/office-renovation" },
+      { label: "Pengubahsuaian Rumah Lama", path: "/services/old-house" },
+      { label: "Kabinet Tersuai & Pembaikan", path: "/custom-cabinets" },
+      { label: "Pemasangan Kunci Digital Pintar", path: "/services/digital-lock" },
+      { label: "Perpustakaan Bahan & Sampel", path: "/materials" },
+    ],
+    col3Title: "STUDIO & KES / TEROKA",
+    col3Links: [
+      { label: "Projek Pilihan", path: "/projects" },
+      { label: "Perbandingan Sebelum & Selepas", path: "/before-after" },
+      { label: "Perabot Suai & Padan", path: "/furniture" },
+      { label: "Proses Telus & Piawaian", path: "/process" },
+      { label: "Soalan Lazim (FAQ)", path: "/faq" },
+      { label: "Jurnal Reka Bentuk & Blog", path: "/blog" },
+    ],
+    col3QuoteBtn: "Dapatkan Sebut Harga →",
+    col4Title: "KAWASAN / LIPUTAN",
+    col4Intro: "Berpusat di Kuala Lumpur, meliputi Lembah Klang dan Selangor:",
+    col4Areas: [
+      { name: "Kuala Lumpur KL", slug: "kuala-lumpur" },
+      { name: "Petaling Jaya PJ", slug: "petaling-jaya" },
+      { name: "Mont Kiara", slug: "mont-kiara" },
+      { name: "Bangsar", slug: "bangsar" },
+      { name: "Cheras", slug: "cheras" },
+      { name: "Subang Jaya", slug: "subang-jaya" },
+      { name: "Puchong", slug: "puchong" },
+      { name: "Seluruh Selangor", slug: "selangor" },
+    ],
+    col4Footnote: "Projek kediaman dan komersial khas merentasi kawasan dialu-alukan.",
+  },
+} as const;
+
 export const SchemeAFooter = () => {
   const location = useLocation();
   const { language } = useLanguage();
@@ -743,66 +875,126 @@ export const SchemeAFooter = () => {
   const t = schemeAChromeText[language];
   const footer = footerCopy[language];
   const navText = navbarText[language];
-  const areas = footerLocationLinks[language];
   const chineseBrandLine = getChineseBrandLine(settings, language);
+  const content = footerArchitecturalContent[language];
 
   return (
     <footer className="scheme-a-footer" id="site-footer">
       <div className="scheme-a-footer__surface">
         <div className="scheme-a-footer__wordmark scheme-a-frame" aria-hidden="true"><span>FLASH</span><em>CAST</em></div>
         <div className="scheme-a-footer__frame scheme-a-frame">
-          <div className="scheme-a-footer__grid">
-            <section className="scheme-a-footer__studio">
-              <p>{t.contactTitle}</p>
-              <strong>{settings.company_name}</strong>
-              {chineseBrandLine && <p className="scheme-a-footer__brand-names">{chineseBrandLine}</p>}
-              <div className="public-contact-list">
-                <address>
-                  <PublicContactRow icon={<MapPin />} value={settings.address} action={footer.openMap} asChild>
-                    <a href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer" />
-                  </PublicContactRow>
-                </address>
-                <PublicContactRow icon={<Phone />} value={settings.phone_display} action={footer.callAction} asChild>
-                  <a href={settings.phone_href} />
-                </PublicContactRow>
-                <PublicContactRow icon={<Mail />} value={settings.email} action={footer.emailAction} asChild>
-                  <a href={`mailto:${settings.email}`} />
-                </PublicContactRow>
-                <div className="scheme-a-footer__appointment">
-                  <PublicContactRow icon={<Clock />} value={footer.hours} />
-                  <Button variant="outline" size="sm" asChild className="scheme-a-footer__contact-entry">
-                    <LocalizedLink to="/contact">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
-                  </Button>
-                </div>
-              </div>
+          <div className="scheme-a-footer__top-row">
+            <div className="scheme-a-footer__brand-header scheme-a-footer__studio">
+              <p className="scheme-a-footer__brand-kicker">{content.kicker}</p>
+              <h2 className="scheme-a-footer__brand-name font-serif-brand">{settings.company_name}</h2>
+              {chineseBrandLine ? (
+                <p className="scheme-a-footer__brand-names scheme-a-footer__brand-sub">{chineseBrandLine}</p>
+              ) : (
+                language !== "zh" && <p className="scheme-a-footer__brand-sub">{content.subBrand}</p>
+              )}
+            </div>
+            <div className="scheme-a-footer__social-row">
               <SchemeASocialLinks settings={settings} placement="footer" />
+            </div>
+          </div>
+          <div className="scheme-a-footer__grid">
+            <section className="scheme-a-footer__col scheme-a-footer__col--contact">
+              <h3 className="scheme-a-footer__col-title">{content.col1Title}</h3>
+              <ul className="scheme-a-footer__contact-items">
+                <li className="scheme-a-footer__contact-item">
+                  <span className="scheme-a-footer__contact-icon" aria-hidden="true">📍</span>
+                  <div className="scheme-a-footer__contact-details">
+                    <p className="scheme-a-footer__office-title">{content.col1Office}</p>
+                    <p className="scheme-a-footer__address-line">{settings.address || "94, Jalan Mega Mendung, Taman United, 58200 KL"}</p>
+                    <a href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer" className="scheme-a-footer__map-link">
+                      {content.col1Map}
+                    </a>
+                  </div>
+                </li>
+                <li className="scheme-a-footer__contact-item">
+                  <span className="scheme-a-footer__contact-icon" aria-hidden="true">📞</span>
+                  <div className="scheme-a-footer__contact-details">
+                    <a href={settings.phone_href} className="scheme-a-footer__phone-link">{settings.phone_display || "+60 11-2885 3888"}</a>
+                    <span className="scheme-a-footer__phone-sub">{content.col1PhoneSub}</span>
+                  </div>
+                </li>
+                <li className="scheme-a-footer__contact-item">
+                  <span className="scheme-a-footer__contact-icon" aria-hidden="true">✉️</span>
+                  <div className="scheme-a-footer__contact-details">
+                    <a href={`mailto:${settings.email}`} className="scheme-a-footer__email-link">{settings.email || "support@flashcast.com.my"}</a>
+                  </div>
+                </li>
+                <li className="scheme-a-footer__contact-item scheme-a-footer__hours-card">
+                  <div className="scheme-a-footer__hours-title">
+                    <span className="scheme-a-footer__hours-dot" aria-hidden="true" />
+                    <span>{content.col1Hours}</span>
+                  </div>
+                  <p className="scheme-a-footer__hours-note">{content.col1HoursNote}</p>
+                </li>
+              </ul>
             </section>
-            <nav className="scheme-a-footer__directory" aria-label={t.navigationTitle}>
-              {footerNavigationGroups.map((group) => (
-                <section key={group.titleKey}>
-                  <p>{footer[group.titleKey]}</p>
-                  {group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight aria-hidden="true" /></LocalizedLink>)}
-                </section>
-              ))}
-            </nav>
-            <nav className="scheme-a-footer__mobile-directory" aria-label={t.navigationTitle}>
-              {publicNavigationGroups.map((group) => (
-                <details key={group.key}>
-                  <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
-                  <div>{group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
-                </details>
-              ))}
-            </nav>
-            <section className="scheme-a-footer__areas">
-              <p>{t.areasTitle}</p>
-              <div className="scheme-a-footer__area-links">{areas.map((area) => <LocalizedLink key={area.slug} to={`/locations/${area.slug}`}>{area.name}</LocalizedLink>)}</div>
-              <small className="scheme-a-footer__area-summary">{footer.areasSummary}</small>
+            <section className="scheme-a-footer__col scheme-a-footer__col--scope">
+              <h3 className="scheme-a-footer__col-title">{content.col2Title}</h3>
+              <ul className="scheme-a-footer__links">
+                {content.col2Links.map((item) => (
+                  <li key={item.path}>
+                    <LocalizedLink to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>
+                      {item.label}
+                    </LocalizedLink>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className="scheme-a-footer__col scheme-a-footer__col--explore">
+              <h3 className="scheme-a-footer__col-title">{content.col3Title}</h3>
+              <ul className="scheme-a-footer__links">
+                {content.col3Links.map((item) => (
+                  <li key={item.path}>
+                    <LocalizedLink to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>
+                      {item.label}
+                    </LocalizedLink>
+                  </li>
+                ))}
+                <li className="scheme-a-footer__quote-item">
+                  <LocalizedLink to={QUOTE_FORM_PATH} className="scheme-a-footer__quote-pill">
+                    <span>{content.col3QuoteBtn}</span>
+                  </LocalizedLink>
+                </li>
+              </ul>
+            </section>
+            <section className="scheme-a-footer__col scheme-a-footer__col--coverage">
+              <h3 className="scheme-a-footer__col-title">{content.col4Title}</h3>
+              <p className="scheme-a-footer__areas-intro">{content.col4Intro}</p>
+              <div className="scheme-a-footer__area-chips">
+                {content.col4Areas.map((area) => (
+                  <LocalizedLink key={area.slug} to={`/locations/${area.slug}`} className="scheme-a-footer__chip">
+                    {area.name}
+                  </LocalizedLink>
+                ))}
+              </div>
+              <p className="scheme-a-footer__areas-footnote">{content.col4Footnote}</p>
             </section>
           </div>
+          <nav className="scheme-a-footer__mobile-directory" aria-label={t.navigationTitle}>
+            {publicNavigationGroups.map((group) => (
+              <details key={group.key}>
+                <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
+                <div>{group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
+              </details>
+            ))}
+          </nav>
         </div>
         <div className="scheme-a-footer__legal scheme-a-frame">
           <span>{t.copyright} {footer.rights}</span>
-          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageSelector placement="footer" /><button type="button" onClick={() => scrollWindowToSmoothly(0)}>{t.backToTop}<ArrowUp /></button></nav>
+          <nav>
+            <LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink>
+            <LocalizedLink to="/terms">{footer.terms}</LocalizedLink>
+            <span className="scheme-a-footer__legal-sep" aria-hidden="true">|</span>
+            <LanguageSelector placement="footer" />
+            <button type="button" onClick={() => scrollWindowToSmoothly(0)}>
+              {t.backToTop}<ArrowUp aria-hidden="true" />
+            </button>
+          </nav>
         </div>
       </div>
     </footer>
