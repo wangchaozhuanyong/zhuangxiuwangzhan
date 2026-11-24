@@ -101,16 +101,22 @@ export interface BlogPost {
   id: string;                // unique identifier
   slug: string;              // URL slug
   title: string;             // article title
+  titleZh?: string;          // optional localized Chinese title
   excerpt: string;           // short excerpt for listing
+  excerptZh?: string;        // optional localized Chinese excerpt
   content: string;           // full article content (HTML or markdown)
+  contentZh?: string;        // optional localized Chinese content
   category: string;          // article category
+  categoryZh?: string;       // optional localized Chinese category
   date: string;              // publish date string
   readTime: string;          // estimated read time
   image: string;             // featured image URL
   imageAlt?: string;         // localized featured image alt text
   tags: string[];            // article tags
   seoTitle?: string;         // localized SEO title from CMS
+  seoTitleZh?: string;       // optional localized Chinese SEO title
   seoDescription?: string;   // localized SEO description from CMS
+  seoDescriptionZh?: string; // optional localized Chinese SEO description
   updatedAt?: string;        // last CMS update timestamp
 }
 

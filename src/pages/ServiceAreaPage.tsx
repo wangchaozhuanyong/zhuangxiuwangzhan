@@ -4,6 +4,7 @@ import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd"
 import Link from "@/components/LocalizedLink";
 import LandingQuoteForm from "@/components/landing/LandingQuoteForm";
 import PageMeta from "@/components/PageMeta";
+import SmartImage from "@/components/SmartImage";
 import { SchemeAFaqList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import pageText from "@/components/services/serviceAreaPageText.json";
 import { ANZHE_SHOWROOM_ORIGIN, anzheShowroomModelUrl } from "@/config/anzheShowroom";
@@ -56,9 +57,12 @@ export default function ServiceAreaPage() {
     location: page.area,
   });
 
+  const isDigitalLock = route.parentService === "digital-lock";
+  const ogImage = isDigitalLock ? "/images/services/digital-lock.webp" : undefined;
+
   return (
     <main className="fc-route-page">
-      <PageMeta title={page.title} description={page.description} canonicalPath={route.path} keywords={page.keywords} malayReady={"ms" in localizedCopy} />
+      <PageMeta title={page.title} description={page.description} canonicalPath={route.path} keywords={page.keywords} malayReady={"ms" in localizedCopy} ogImage={ogImage} />
       <JsonLdService name={page.entityName} description={page.description} areaServed={page.area} />
       <JsonLdFAQ faqs={faqs} />
       <JsonLdBreadcrumb items={breadcrumbs} />
@@ -111,7 +115,41 @@ export default function ServiceAreaPage() {
         <SchemeASection title={page.areasHeading} description={page.areasDescription}>
           <Link className="font-medium text-accent underline" to="/locations">{page.areasLink}</Link>
         </SchemeASection>
-      </> : <SchemeASection title={page.bodyHeading} description={page.body.map(stripHtml)} children={null} />}
+      </> : (
+        <SchemeASection title={page.bodyHeading}>
+          {isDigitalLock && (
+            <figure className="mb-8 overflow-hidden rounded-xl border border-border/60 bg-muted/20">
+              <SmartImage
+                src="/images/services/digital-lock.webp"
+                alt={page.heading}
+                width={800}
+                height={508}
+                loading="lazy"
+                className="w-full h-auto object-cover max-h-[460px]"
+              />
+              <figcaption className="px-4 py-2.5 text-xs text-muted-foreground text-center bg-card/60">
+                {language === "zh" ? "ANZHE 智能门锁服务与安装覆盖" : "ANZHE Digital Lock Supply & Installation"}
+              </figcaption>
+            </figure>
+          )}
+          <div className="fc-route-service-overview-copy fc-service-area-guide space-y-4">
+            {page.body.map((item, index) => {
+              if (item.startsWith("<h2")) {
+                return (
+                  <h3 key={index} className="text-xl font-bold mt-6 mb-2 text-foreground">
+                    {stripHtml(item)}
+                  </h3>
+                );
+              }
+              return (
+                <p key={index} className="leading-relaxed text-muted-foreground">
+                  {stripHtml(item)}
+                </p>
+              );
+            })}
+          </div>
+        </SchemeASection>
+      )}
       <SchemeASection title={copy.faqTitle(page.area)}>
         <SchemeAFaqList items={faqs} />
       </SchemeASection>

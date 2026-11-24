@@ -83,9 +83,11 @@ const BlogDetail = () => {
   const initialPosts = language === "zh"
     ? blogPosts.map((item) => ({
         ...item,
-        title: displayText(item.title),
-        excerpt: displayText(item.excerpt),
-        content: translateBlogContent(item.content, language),
+        title: item.titleZh || displayText(item.title),
+        excerpt: item.excerptZh || displayText(item.excerpt),
+        content: item.contentZh || translateBlogContent(item.content, language),
+        seoTitle: item.seoTitleZh || item.seoTitle,
+        seoDescription: item.seoDescriptionZh || item.seoDescription,
       }))
     : blogPosts;
   const fallbackPost = initialPosts.find((item) => item.slug === slug);
