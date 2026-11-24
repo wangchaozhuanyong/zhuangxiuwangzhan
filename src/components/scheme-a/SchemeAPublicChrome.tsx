@@ -8,21 +8,17 @@ import {
   Armchair,
   BadgePercent,
   ChevronDown,
-  Clock,
   Facebook,
   FolderOpen,
   Home,
   Instagram,
   Mail,
-  MapPin,
   Menu,
   PackageSearch,
   Phone,
   X,
 } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
-import PublicContactRow from "@/components/PublicContactRow";
-import { Button } from "@/components/ui/button";
 import LanguageSelector from "@/components/LanguageSelector";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -44,8 +40,9 @@ import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
 import { usePublishedCtaBlock } from "@/hooks/usePublishedCtaBlock";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
+import { footerCopy } from "@/i18n/footerText";
 import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
+import { footerArchitecturalContent } from "@/i18n/schemeAFooterArchitecturalText";
 import { schemeAChromeText } from "@/i18n/schemeAChromeText";
 import { getChineseBrandLine, getHeaderChineseBrandName, getPublicSiteName } from "@/i18n/brandIdentity";
 import { stripLanguagePrefix, type Language } from "@/i18n/routes";
@@ -66,31 +63,6 @@ const isActivePath = (pathname: string, itemPath: string) => {
 };
 
 const publicNavigationItems = publicNavigationGroups.flatMap((group) => group.items);
-
-const footerNavigationGroups = [
-  {
-    titleKey: "servicesTitle",
-    items: [
-      { labelKey: "nav.design", path: "/services/design" },
-      { labelKey: "nav.services", path: "/services" },
-      { labelKey: "nav.oldHouse", path: "/services/old-house" },
-      { labelKey: "nav.surfaceRepair", path: "/services/surface-repair" },
-      { labelKey: "nav.customCabinets", path: "/custom-cabinets" },
-      { labelKey: "nav.materials", path: "/materials" },
-    ],
-  },
-  {
-    titleKey: "companyTitle",
-    items: [
-      { labelKey: "nav.projects", path: "/projects" },
-      { labelKey: "nav.beforeAfter", path: "/before-after" },
-      { labelKey: "nav.process", path: "/process" },
-      { labelKey: "nav.blog", path: "/blog" },
-      { labelKey: "nav.faq", path: "/faq" },
-      { labelKey: "nav.quote", path: "/quote" },
-    ],
-  },
-] as const;
 
 const getCurrentNavigationItem = (pathname: string, items: readonly PublicNavItem[] = publicNavigationItems) =>
   items.find((item) => item.path === stripLanguagePrefix(pathname))
@@ -165,7 +137,7 @@ const SchemeASocialLinks = ({ settings, placement }: {
   return (
     <div className={classes.group} role="group" aria-label={t.followUs}>
       <div className={classes.heading}>
-        <h3>{t.followUs}</h3>
+        <span>{t.followUs}</span>
         {placement === "directory" ? <span>{t.socialProfiles}</span> : null}
       </div>
       <div className={classes.links}>
@@ -743,66 +715,126 @@ export const SchemeAFooter = () => {
   const t = schemeAChromeText[language];
   const footer = footerCopy[language];
   const navText = navbarText[language];
-  const areas = footerLocationLinks[language];
   const chineseBrandLine = getChineseBrandLine(settings, language);
+  const content = footerArchitecturalContent[language];
 
   return (
     <footer className="scheme-a-footer" id="site-footer">
       <div className="scheme-a-footer__surface">
         <div className="scheme-a-footer__wordmark scheme-a-frame" aria-hidden="true"><span>FLASH</span><em>CAST</em></div>
         <div className="scheme-a-footer__frame scheme-a-frame">
-          <div className="scheme-a-footer__grid">
-            <section className="scheme-a-footer__studio">
-              <p>{t.contactTitle}</p>
-              <strong>{settings.company_name}</strong>
-              {chineseBrandLine && <p className="scheme-a-footer__brand-names">{chineseBrandLine}</p>}
-              <div className="public-contact-list">
-                <address>
-                  <PublicContactRow icon={<MapPin />} value={settings.address} action={footer.openMap} asChild>
-                    <a href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer" />
-                  </PublicContactRow>
-                </address>
-                <PublicContactRow icon={<Phone />} value={settings.phone_display} action={footer.callAction} asChild>
-                  <a href={settings.phone_href} />
-                </PublicContactRow>
-                <PublicContactRow icon={<Mail />} value={settings.email} action={footer.emailAction} asChild>
-                  <a href={`mailto:${settings.email}`} />
-                </PublicContactRow>
-                <div className="scheme-a-footer__appointment">
-                  <PublicContactRow icon={<Clock />} value={footer.hours} />
-                  <Button variant="outline" size="sm" asChild className="scheme-a-footer__contact-entry">
-                    <LocalizedLink to="/contact">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
-                  </Button>
-                </div>
-              </div>
+          <div className="scheme-a-footer__top-row">
+            <div className="scheme-a-footer__brand-header scheme-a-footer__studio">
+              <p className="scheme-a-footer__brand-kicker">{content.kicker}</p>
+              <h2 className="scheme-a-footer__brand-name font-serif-brand">{settings.company_name}</h2>
+              {chineseBrandLine ? (
+                <p className="scheme-a-footer__brand-names scheme-a-footer__brand-sub">{chineseBrandLine}</p>
+              ) : (
+                language !== "zh" && <p className="scheme-a-footer__brand-sub">{content.subBrand}</p>
+              )}
+            </div>
+            <div className="scheme-a-footer__social-row">
               <SchemeASocialLinks settings={settings} placement="footer" />
+            </div>
+          </div>
+          <div className="scheme-a-footer__grid">
+            <section className="scheme-a-footer__col scheme-a-footer__col--contact">
+              <h3 className="scheme-a-footer__col-title">{content.col1Title}</h3>
+              <ul className="scheme-a-footer__contact-items">
+                <li className="scheme-a-footer__contact-item">
+                  <span className="scheme-a-footer__contact-icon" aria-hidden="true">📍</span>
+                  <div className="scheme-a-footer__contact-details">
+                    <p className="scheme-a-footer__office-title">{content.col1Office}</p>
+                    <p className="scheme-a-footer__address-line">{settings.address || "94, Jalan Mega Mendung, Taman United, 58200 KL"}</p>
+                    <a href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer" className="scheme-a-footer__map-link">
+                      {content.col1Map}
+                    </a>
+                  </div>
+                </li>
+                <li className="scheme-a-footer__contact-item">
+                  <span className="scheme-a-footer__contact-icon" aria-hidden="true">📞</span>
+                  <div className="scheme-a-footer__contact-details">
+                    <a href={settings.phone_href} className="scheme-a-footer__phone-link">{settings.phone_display || "+60 11-2885 3888"}</a>
+                    <span className="scheme-a-footer__phone-sub">{content.col1PhoneSub}</span>
+                  </div>
+                </li>
+                <li className="scheme-a-footer__contact-item">
+                  <span className="scheme-a-footer__contact-icon" aria-hidden="true">✉️</span>
+                  <div className="scheme-a-footer__contact-details">
+                    <a href={`mailto:${settings.email}`} className="scheme-a-footer__email-link">{settings.email || "support@flashcast.com.my"}</a>
+                  </div>
+                </li>
+                <li className="scheme-a-footer__contact-item scheme-a-footer__hours-card">
+                  <div className="scheme-a-footer__hours-title">
+                    <span className="scheme-a-footer__hours-dot" aria-hidden="true" />
+                    <span>{content.col1Hours}</span>
+                  </div>
+                  <p className="scheme-a-footer__hours-note">{content.col1HoursNote}</p>
+                </li>
+              </ul>
             </section>
-            <nav className="scheme-a-footer__directory" aria-label={t.navigationTitle}>
-              {footerNavigationGroups.map((group) => (
-                <section key={group.titleKey}>
-                  <p>{footer[group.titleKey]}</p>
-                  {group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight aria-hidden="true" /></LocalizedLink>)}
-                </section>
-              ))}
-            </nav>
-            <nav className="scheme-a-footer__mobile-directory" aria-label={t.navigationTitle}>
-              {publicNavigationGroups.map((group) => (
-                <details key={group.key}>
-                  <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
-                  <div>{group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
-                </details>
-              ))}
-            </nav>
-            <section className="scheme-a-footer__areas">
-              <p>{t.areasTitle}</p>
-              <div className="scheme-a-footer__area-links">{areas.map((area) => <LocalizedLink key={area.slug} to={`/locations/${area.slug}`}>{area.name}</LocalizedLink>)}</div>
-              <small className="scheme-a-footer__area-summary">{footer.areasSummary}</small>
+            <section className="scheme-a-footer__col scheme-a-footer__col--scope">
+              <h3 className="scheme-a-footer__col-title">{content.col2Title}</h3>
+              <ul className="scheme-a-footer__links">
+                {content.col2Links.map((item) => (
+                  <li key={item.path}>
+                    <LocalizedLink to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>
+                      {item.label}
+                    </LocalizedLink>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className="scheme-a-footer__col scheme-a-footer__col--explore">
+              <h3 className="scheme-a-footer__col-title">{content.col3Title}</h3>
+              <ul className="scheme-a-footer__links">
+                {content.col3Links.map((item) => (
+                  <li key={item.path}>
+                    <LocalizedLink to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>
+                      {item.label}
+                    </LocalizedLink>
+                  </li>
+                ))}
+                <li className="scheme-a-footer__quote-item">
+                  <LocalizedLink to={QUOTE_FORM_PATH} className="scheme-a-footer__quote-pill">
+                    <span>{content.col3QuoteBtn}</span>
+                  </LocalizedLink>
+                </li>
+              </ul>
+            </section>
+            <section className="scheme-a-footer__col scheme-a-footer__col--coverage">
+              <h3 className="scheme-a-footer__col-title">{content.col4Title}</h3>
+              <p className="scheme-a-footer__areas-intro">{content.col4Intro}</p>
+              <div className="scheme-a-footer__area-chips">
+                {content.col4Areas.map((area) => (
+                  <LocalizedLink key={area.slug} to={`/locations/${area.slug}`} className="scheme-a-footer__chip">
+                    {area.name}
+                  </LocalizedLink>
+                ))}
+              </div>
+              <p className="scheme-a-footer__areas-footnote">{content.col4Footnote}</p>
             </section>
           </div>
+          <nav className="scheme-a-footer__mobile-directory" aria-label={t.navigationTitle}>
+            {publicNavigationGroups.map((group) => (
+              <details key={group.key}>
+                <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
+                <div>{group.items.map((item) => <LocalizedLink key={item.path} to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
+              </details>
+            ))}
+          </nav>
         </div>
         <div className="scheme-a-footer__legal scheme-a-frame">
           <span>{t.copyright} {footer.rights}</span>
-          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageSelector placement="footer" /><button type="button" onClick={() => scrollWindowToSmoothly(0)}>{t.backToTop}<ArrowUp /></button></nav>
+          <nav>
+            <LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink>
+            <LocalizedLink to="/terms">{footer.terms}</LocalizedLink>
+            <span className="scheme-a-footer__legal-sep" aria-hidden="true">|</span>
+            <LanguageSelector placement="footer" />
+            <button type="button" onClick={() => scrollWindowToSmoothly(0)}>
+              {t.backToTop}<ArrowUp aria-hidden="true" />
+            </button>
+          </nav>
         </div>
       </div>
     </footer>

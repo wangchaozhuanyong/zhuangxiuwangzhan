@@ -233,44 +233,49 @@
   max-width: 58rem;
   margin-bottom: 36px;
   color: var(--public-text-secondary);
-  font-size: 16px;
+  font-size: 15.5px;
   line-height: 1.85;
 }
 
 /* Service Overview First Paragraph: Philosophy Quote Card */
 .fc-route-service-overview-copy > p:first-of-type {
-  font-size: clamp(15px, 1.15vw, 17px);
+  font-size: clamp(15px, 1.15vw, 16.5px);
   font-weight: 500;
   color: #1E2520;
-  line-height: 1.8;
-  padding: 18px 22px;
-  background: #FAF9F5;
+  line-height: 1.85;
+  padding: 22px 26px;
+  background: #FAF8F2;
   border-radius: 8px;
-  border: 1px solid #DDD7C9;
-  border-left: 4px solid #334437;
-  margin-bottom: 6px;
+  border: 1px solid #E6E1D6;
+  border-left: 4px solid #AA8A55;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 10px rgba(170, 138, 85, 0.04);
 }
 
-.fc-route-service-overview-copy h2,
-.fc-route-service-overview-copy h3 {
+.fc-route-service-overview-copy :is(h2, h3, h4),
+.fc-route-service-overview-copy > p:has(> strong:only-child),
+.fc-route-service-overview-copy > p > strong:only-child {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #1E231F;
-  font-family: var(--font-display);
-  font-size: 18px;
+  color: #243026;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 14.5px;
   font-weight: 600;
   line-height: 1.35;
-  margin-top: 18px;
+  margin-top: 22px;
   margin-bottom: 4px;
-  padding: 4px 12px 4px 10px;
-  background: #E8E4DA;
-  border-radius: 4px;
+  padding: 5px 14px;
+  background: #EFECE4;
+  border: 1px solid #DFDACF;
+  border-radius: 9999px;
   width: fit-content;
+  letter-spacing: 0.03em;
 }
-.fc-route-service-overview-copy h2::before,
-.fc-route-service-overview-copy h3::before {
+.fc-route-service-overview-copy :is(h2, h3, h4)::before,
+.fc-route-service-overview-copy > p:has(> strong:only-child)::before,
+.fc-route-service-overview-copy > p > strong:only-child::before {
   content: "";
   display: inline-block;
   position: static;
@@ -278,13 +283,86 @@
   height: 6px;
   background: #AA8A55;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 .fc-route-service-overview-copy p {
   line-height: 1.85;
-  color: #4A524A;
+  color: #4A544A;
 }
+
+/* Service Detail lists (such as related models & specs in digital locks) */
+.fc-route-service-overview-copy ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+.fc-route-service-overview-copy ul li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #FAF9F6;
+  border: 1px solid #E5E0D6;
+  border-radius: 6px;
+  color: #263228;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.fc-route-service-overview-copy ul li::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #AA8A55;
+  flex-shrink: 0;
+}
+.fc-route-service-overview-copy ul li:hover {
+  background: #FFFFFF;
+  border-color: #334437;
+  transform: translateY(-1px);
+}
+
 .fc-route-service-overview-copy a { color: #3F4E42; text-decoration: underline; text-underline-offset: 3px; }
 .fc-route-service-overview-copy a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+/* Service Project Guidance Cardification (Shop/Office stage guidance) */
+.fc-service-project-guidance {
+  background: #FAF9F6;
+  border: 1px solid #E4DFD5;
+  border-radius: 10px;
+  padding: clamp(24px, 3vw, 36px);
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+.fc-service-project-guidance .fc-route-section-head h2 {
+  font-size: clamp(20px, 1.8vw, 24px);
+  font-weight: 600;
+  color: #1A211B;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fc-service-project-guidance .fc-route-section-head h2::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: #AA8A55;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.fc-service-project-guidance .fc-route-section-head p {
+  color: #4A544A;
+  font-size: 15px;
+  line-height: 1.85;
+  margin-top: 14px;
+}
 
 /* Area guides can contain a checklist, supporting topics, or both. */
 .fc-route-section-frame > .fc-service-area-guide {
@@ -814,29 +892,78 @@ html[data-public-theme="warm-stone"] .scheme-a-public-shell input[type="range"] 
 }
 
 .fc-route-feature-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   width: 100%;
   padding: 0;
   list-style: none;
 }
-.fc-route-feature-list li {
+.fc-route-feature-list--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+.fc-route-feature-list--grid li {
   display: flex;
   min-width: 0;
   align-items: center;
-  justify-content: center;
-  padding: 18px 14px;
-  border-bottom: 1px solid rgb(123 135 117 / 0.16);
-  color: var(--public-text-primary);
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 18px 22px;
+  background: #FAF9F6;
+  border: 1px solid #E5E0D5;
+  border-radius: 8px;
+  color: #212822;
   font-size: 15px;
-  line-height: 1.7;
-  text-align: center;
+  font-weight: 500;
+  line-height: 1.55;
+  text-align: left;
   overflow-wrap: anywhere;
+  transition: all 0.22s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
-.fc-route-feature-list--grid li:nth-child(even) { border-left: 1px solid rgb(123 135 117 / 0.16); }
-.fc-route-feature-list--grid li:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.fc-route-feature-list--list { grid-template-columns: minmax(0, 1fr); }
-.fc-route-feature-list--list li { justify-content: flex-start; padding: 13px 0; text-align: left; }
+.fc-route-feature-list--grid li::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #AA8A55;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(170, 138, 85, 0.15);
+}
+.fc-route-feature-list--grid li:hover {
+  background: #FFFFFF;
+  border-color: #334437;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(51, 68, 55, 0.06);
+}
+.fc-route-feature-list--list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+.fc-route-feature-list--list li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(220, 214, 203, 0.6);
+  color: #3B463D;
+  font-size: 14.5px;
+  line-height: 1.6;
+  text-align: left;
+}
+.fc-route-feature-list--list li:last-child {
+  border-bottom: none;
+}
+.fc-route-feature-list--list li::before {
+  content: "✓";
+  color: #334437;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
 
 .fc-route-link-grid { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr); column-gap: 32px; }
 .fc-route-link-card {
@@ -1852,8 +1979,8 @@ html[data-public-theme="warm-stone"] .home-footer-prelude__button--secondary svg
     max-width: 64ch;
   }
   .fc-route-link-card { padding-block: 24px; }
-  .fc-route-feature-list li { padding: 22px 24px; font-size: 16px; }
-  .fc-route-feature-list--list li { padding: 14px 0; }
+  .fc-route-feature-list--grid li { padding: 20px 24px; font-size: 15.5px; }
+  .fc-route-feature-list--list li { padding: 12px 0; }
   .fc-route-budget-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .fc-route-form-page :is(.fc-route-contact-layout, .fc-route-quote-layout) { grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr) !important; gap: clamp(34px, 6vw, 86px); align-items: start; }
   .fc-route-form-page .fc-route-quote-layout { grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr) !important; }
