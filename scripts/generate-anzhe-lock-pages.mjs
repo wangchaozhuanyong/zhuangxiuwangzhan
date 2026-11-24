@@ -988,6 +988,30 @@ function renderCategoryPage(category, lang, sources, shared, categories, categor
   const image = absolute(models[0].imageInfo.path);
   const altLinks = alternates(slug).map(([tag, href]) => `<link rel="alternate" hreflang="${tag}" href="${href}">`);
   const robots = lang === "ms" ? '\n  <meta name="robots" content="noindex">' : "";
+  const badges = {
+    zh: ["吉隆坡·雪兰莪上门包安装", "现货直发", "2年官方质保", "原厂正品保证"],
+    en: ["On-site Installation (KL & Selangor)", "In Stock Ready to Ship", "2-Year Official Warranty", "100% Genuine Guarantee"],
+    ms: ["Pemasangan Di Rumah (KL & Selangor)", "Stok Sedia Ada", "Waranti Rasmi 2 Tahun", "100% Tulen Dijamin"],
+  }[lang] || ["吉隆坡·雪兰莪上门包安装", "现货直发", "2年官方质保", "原厂正品保证"];
+
+  const viewDetailsLabel = {
+    zh: "查看规格与功能",
+    en: "View Details & Specs",
+    ms: "Lihat Spesifikasi Penuh",
+  }[lang] || "查看规格与功能";
+
+  const modelsSubtitle = {
+    zh: `精选 ${models.length} 款智能锁型号，适配不同门型厚度与开锁需求，点击进入单品可查看安装参数及下定安装。`,
+    en: `Carefully curated ${models.length} digital lock models. Click any model to view full technical specs, dimensions, and schedule installation.`,
+    ms: `${models.length} model kunci pintar pilihan. Klik setiap model untuk melihat spesifikasi teknikal, dimensi dan tempahan pemasangan.`,
+  }[lang] || `精选 ${models.length} 款智能锁型号`;
+
+  const selectionSubtitle = {
+    zh: "在预约安装前，建议您花 1 分钟快速核对以下 3 项要点，确保锁体与开门方向完全匹配：",
+    en: "Before booking installation, review these 3 quick checks to ensure perfect door and lock compatibility:",
+    ms: "Sebelum menempah pemasangan, semak 3 panduan ringkas ini untuk memastikan keserasian pintu dan kunci:",
+  }[lang] || "选购指南";
+
   const cards = models.map((model, index) => {
     const highlight = model.feature?.highlights[0]?.[lang] ?? model.copy[lang];
     const label = `${model.name} ${highlight} ${model.prices.display} ${words.included}`;
@@ -1000,15 +1024,24 @@ function renderCategoryPage(category, lang, sources, shared, categories, categor
               <strong>${escape(model.name)}</strong>
               <span>${escape(highlight)}</span>
               <b>${escape(model.prices.display)} <small>${escape(words.included)}</small></b>
+              <span class="category-card-action">${escape(viewDetailsLabel)} ↗</span>
             </figcaption>
           </figure>
         </a>`;
   });
-  const points = copy.points.map(([heading, detail]) => {
+  const points = copy.points.map(([heading, detail], index) => {
     const extra = lang === "zh" ? getCategoryPointExtra(categoryExtra, slug, heading) : "";
-    return `<h2>${escape(heading)}</h2>\n      <p>${escape(detail)}</p>${extra ? "\n      " + extra : ""}`;
+    const extraBox = extra ? `<div class="guide-extra-box">${extra}</div>` : "";
+    return `<div class="guide-card">
+        <div class="guide-card-head">
+          <span class="guide-step-badge">0${index + 1}</span>
+          <h2>${escape(heading)}</h2>
+        </div>
+        <p>${escape(detail)}</p>
+        ${extraBox}
+      </div>`;
   });
-  const faqs = copy.faqs.map(({ q, a }) => `<article><h3>${escape(q)}</h3><p>${escape(a)}</p></article>`);
+  const faqs = copy.faqs.map(({ q, a }) => `<article class="category-faq-item"><h3>${escape(q)}</h3><p>${escape(a)}</p></article>`);
   const related = categories.filter(entry => entry !== category).map(entry => categoryLink(entry, lang));
   const schema = jsonLd([
     {
@@ -1079,29 +1112,57 @@ ${schema}
   </header>
   <main id="main-content" tabindex="-1">
     <section class="compare-section" aria-labelledby="category-title">
-      <div class="wrap collection">
+      <div class="wrap collection category-hero-inner">
+        <nav class="category-breadcrumbs" aria-label="Breadcrumb">
+          <a href="${home}">${escape(homeLabel)}</a>
+          <span aria-hidden="true">/</span>
+          <span>${escape(copy.h1)}</span>
+        </nav>
         <h1 class="hero-headline" id="category-title">${escape(copy.h1)}</h1>
         <p data-category-answer>${escape(copy.answer)}</p>
+        <div class="category-badges">
+          ${badges.map(b => `<span class="category-badge"><span class="category-badge-dot"></span>${escape(b)}</span>`).join("\n          ")}
+        </div>
         <div class="hero-actions">
           <a class="studio-button" href="${escape(whatsappLink(ui.message(copy.h1)))}" target="_blank" rel="noopener noreferrer">${escape(ui.ask)}</a>
+          <div class="category-nav-pills">
+            <a class="category-nav-pill" href="#models"><span>${escape(ui.models)}</span> (${models.length})</a>
+            <a class="category-nav-pill" href="#selection"><span>${escape(ui.selection)}</span></a>
+            <a class="category-nav-pill" href="#faq"><span>${escape(copyTemplates[lang].faq)}</span></a>
+          </div>
         </div>
       </div>
     </section>
     <section class="wrap collection" id="models" aria-labelledby="category-models-title">
-      <h2 id="category-models-title">${escape(ui.models)}</h2>
+      <div class="category-section-header">
+        <h2 id="category-models-title">${escape(ui.models)}</h2>
+        <p class="category-section-subtitle">${escape(modelsSubtitle)}</p>
+      </div>
       <div class="compare-samples">
         ${cards.join("\n        ")}
       </div>
     </section>
     <div class="wrap collection" id="selection">
-      ${points.join("\n      ")}
+      <div class="category-section-header">
+        <span class="category-section-kicker">${escape(ui.selection)}</span>
+        <p class="category-section-subtitle">${escape(selectionSubtitle)}</p>
+      </div>
+      <div class="guide-cards-grid">
+        ${points.join("\n        ")}
+      </div>
     </div>
     <section class="wrap collection" id="faq" aria-labelledby="faq-title">
-      <h2 id="faq-title">${escape(copyTemplates[lang].faq)}</h2>
-      ${faqs.join("\n      ")}
+      <div class="category-section-header">
+        <h2 id="faq-title">${escape(copyTemplates[lang].faq)}</h2>
+      </div>
+      <div class="category-faq-list">
+        ${faqs.join("\n        ")}
+      </div>
     </section>
     <section class="wrap collection" aria-labelledby="related-title">
-      <h2 id="related-title">${escape(ui.related)}</h2>
+      <div class="category-section-header">
+        <h2 id="related-title">${escape(ui.related)}</h2>
+      </div>
       <nav class="section-actions" aria-labelledby="related-title">
         ${related.join("\n        ")}
       </nav>
@@ -1171,7 +1232,8 @@ async function renderHomePage(lang, catalog, sources, shared) {
   if ([...withSpecs.matchAll(fitSlot)].length !== 1) throw new Error(`${lang}: expected one home door fit guide slot`);
   const guide = renderDoorFitGuide(sources.showroomWords[lang], shared, { assetPrefix: ".." });
   const html = withSpecs.replace(fitSlot, (_, start, end) => `${start}\n  ${guide}\n  ${end}`)
-    .replace(/"\.\.\/(showroom-fit\.css|strings\.js)\?v=[a-f0-9]+"/g, (_, file) => `"..${shared.fitAssets[file]}"`);
+    .replace(/"\.\.\/(showroom-fit\.css|strings\.js)\?v=[a-f0-9]+"/g, (_, file) => `"..${shared.fitAssets[file]}"`)
+    .replace(/"\.\.\/directory\.css\?v=[a-f0-9]+"/g, `"..${shared.directoryStyle}"`);
   return { target, html };
 }
 
@@ -1220,19 +1282,26 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
     if (models.length === 0) throw new Error(`${definition.slug}: no models match the catalogue filter`);
     return { ...definition, models };
   });
-  const categoryStyles = await Promise.all([
+  const baseStyles = await Promise.all([
     versionedAsset("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
     versionedAsset("/studio.css", join(showroom, "studio.css")),
   ]);
+  const categoryStyles = [
+    ...baseStyles,
+    await versionedAsset("/showroom-category.css", join(showroom, "showroom-category.css")),
+  ];
+  const directoryStyle = await versionedAsset("/directory.css", join(showroom, "directory.css"));
   const shared = {
     updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
     navScript: await versionedAsset("/showroom-nav.js", join(showroom, "showroom-nav.js")),
     track: await versionedAsset("/conversion-track.js", join(showroom, "conversion-track.js")),
     categoryStyles,
+    directoryStyle,
     modelStyle: await versionedAsset("/showroom-model.css", join(showroom, "showroom-model.css")),
     styles: [
-      ...categoryStyles,
-      ...await Promise.all(["directory.css", "contact.css"].map(file => versionedAsset("/" + file, join(showroom, file)))),
+      ...baseStyles,
+      directoryStyle,
+      await versionedAsset("/contact.css", join(showroom, "contact.css")),
     ],
     fitAssets: {
       "showroom-fit.css": await versionedAsset("/showroom-fit.css", join(showroom, "showroom-fit.css")),
