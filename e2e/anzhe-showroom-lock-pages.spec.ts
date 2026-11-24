@@ -385,7 +385,7 @@ test("canonicalizes only valid category paths and keeps Malay categories out of 
   const sitemap = await page.goto(origin + "/sitemap.xml");
   expect(sitemap?.status()).toBe(200);
   const xml = await sitemap!.text();
-  expect(xml.match(/<loc>/g)).toHaveLength(66);
+  expect(xml.match(/<loc>/g)).toHaveLength(49);
   for (const { slug } of categories) {
     for (const lang of ["zh", "en"]) expect(xml).toContain(`<loc>${origin}/${lang}/lock/${slug}/</loc>`);
     expect(xml).not.toContain(`${origin}/ms/lock/${slug}/`);

@@ -107,6 +107,7 @@ describe("ANZHE showroom on the independent hostname", () => {
     ["/showroom-catalog.css", "/anzhe-showroom/showroom-catalog.css"],
     ["/showroom-fit.css", "/anzhe-showroom/showroom-fit.css"],
     ["/showroom-model.css", "/anzhe-showroom/showroom-model.css"],
+    ["/showroom-category.css", "/anzhe-showroom/showroom-category.css"],
   ])("only caches %s as immutable when its content matches its fingerprint", async (path, assetPath) => {
     const body = "body{}";
     const hash = createHash("sha256").update(body).digest("hex").slice(0, 12);
