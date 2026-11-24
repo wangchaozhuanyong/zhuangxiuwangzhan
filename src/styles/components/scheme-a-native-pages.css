@@ -150,6 +150,82 @@
   .forest-map-heading > button { justify-self: end; }
 }
 
+/* Scheme A Anchored Section Header (方案一: 建筑双核平衡) */
+.scheme-a-heading--anchored {
+  text-align: left;
+  display: block;
+  margin-bottom: clamp(32px, 4vw, 48px);
+}
+
+.scheme-a-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #556253;
+  margin-bottom: 10px;
+}
+
+.scheme-a-eyebrow__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #AA8A55;
+  display: inline-block;
+}
+
+.scheme-a-heading-badge {
+  margin-top: 14px;
+}
+
+.fc-route-brand-credential {
+  padding: 12px 16px;
+  background: #FAF9F5;
+  border: 1px solid #DDD7C8;
+  border-radius: 8px;
+  max-width: 380px;
+}
+
+.fc-route-brand-credential__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #181D1A;
+}
+
+.fc-route-brand-credential__ssm {
+  font-size: 10px;
+  font-weight: 500;
+  color: #636D60;
+  padding: 2px 6px;
+  background: #EAE6DB;
+  border-radius: 4px;
+}
+
+.fc-route-brand-credential__desc {
+  font-size: 11.5px;
+  color: #636D60;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.fc-route-service-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #E4DFD2;
+  border: 1px solid #D4CEBF;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #3B473C;
+}
+
 .fc-route-service-overview-copy {
   display: flex;
   flex-direction: column;
@@ -161,28 +237,47 @@
   line-height: 1.85;
 }
 
+/* Service Overview First Paragraph: Philosophy Quote Card */
+.fc-route-service-overview-copy > p:first-of-type {
+  font-size: clamp(15px, 1.15vw, 17px);
+  font-weight: 500;
+  color: #1E2520;
+  line-height: 1.8;
+  padding: 18px 22px;
+  background: #FAF9F5;
+  border-radius: 8px;
+  border: 1px solid #DDD7C9;
+  border-left: 4px solid #334437;
+  margin-bottom: 6px;
+}
+
 .fc-route-service-overview-copy h2,
 .fc-route-service-overview-copy h3 {
   position: relative;
-  color: #292E29;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #1E231F;
   font-family: var(--font-display);
-  font-size: clamp(21px, 2vw, 26px);
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   line-height: 1.35;
-  margin-top: 24px;
+  margin-top: 18px;
   margin-bottom: 4px;
-  padding-left: 14px;
+  padding: 4px 12px 4px 10px;
+  background: #E8E4DA;
+  border-radius: 4px;
+  width: fit-content;
 }
 .fc-route-service-overview-copy h2::before,
 .fc-route-service-overview-copy h3::before {
   content: "";
-  position: absolute;
-  left: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 3px;
+  display: inline-block;
+  position: static;
+  width: 6px;
+  height: 6px;
   background: #AA8A55;
-  border-radius: 2px;
+  border-radius: 50%;
 }
 .fc-route-service-overview-copy p {
   line-height: 1.85;
@@ -690,7 +785,33 @@ html[data-public-theme="warm-stone"] .scheme-a-public-shell input[type="range"] 
 
 .fc-route-scope-grid { display: grid; gap: 42px; }
 .fc-route-scope-grid > :only-child { grid-column: 1 / -1; }
-.fc-route-scope-group h3 { margin-bottom: 14px; color: #3F4E42; font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.fc-route-scope-group {
+  background: #FAF9F5;
+  border: 1px solid #DDD7C9;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+.fc-route-scope-group h3 {
+  margin-bottom: 14px;
+  color: #242D26;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ECE7DC;
+}
+.fc-route-scope-group h3::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: #AA8A55;
+  border-radius: 2px;
+}
 
 .fc-route-feature-list {
   display: grid;
@@ -1792,7 +1913,41 @@ html[data-public-theme="warm-stone"] .home-footer-prelude__button--secondary svg
   }
   .fc-route-detail-columns > .fc-route-service-overview-copy { margin: 0 auto; min-width: 0; }
   .fc-route-detail-columns > .fc-route-service-overview-copy:only-child { width: min(100%, 76ch); }
-  .fc-route-detail-columns .fc-route-scope-grid { gap: 24px; }
+  .scheme-a-heading--anchored {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(36px, 5vw, 64px);
+    align-items: start;
+    text-align: left;
+  }
+  .scheme-a-heading--anchored .fc-route-section-head__left {
+    position: sticky;
+    top: 100px;
+  }
+  .scheme-a-heading--anchored .fc-route-section-head__right {
+    border-left: 1px solid #DDD7C8;
+    padding-left: clamp(24px, 4vw, 44px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .scheme-a-heading--anchored .fc-route-section-head__right p {
+    margin-top: 0;
+    max-width: 100%;
+    color: #4A544A;
+    line-height: 1.85;
+  }
+  .scheme-a-heading--anchored .fc-route-section-head__right p.fc-route-section-lead {
+    font-size: 16.5px;
+    font-weight: 500;
+    color: #1E231F;
+    line-height: 1.8;
+  }
+  .fc-route-detail-columns .fc-route-scope-grid {
+    gap: 24px;
+    position: sticky;
+    top: 100px;
+  }
   .fc-route-detail-columns:has(> :nth-child(2)) .fc-route-number-list > li { flex-basis: 100%; }
   .scheme-a-public-shell :is(.scheme-a-home, .fc-route-page) .scheme-a-heading--split > :is(h1, h2, p) {
     margin-inline: 0;

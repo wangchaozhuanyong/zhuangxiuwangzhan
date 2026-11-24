@@ -114,10 +114,57 @@
 .fc-design .fcd-material-link { margin-top: 24px; }
 
 /* Text sections share one introduction column and one structured content column. */
-.fc-design .fcd-text-module { display: grid; grid-template-columns: minmax(0,.38fr) minmax(0,1fr); gap: clamp(32px,5vw,72px); border-top: 1px solid var(--fcd-line); }
+.fc-design .fcd-text-module { display: grid; grid-template-columns: minmax(0,.38fr) minmax(0,1fr); gap: clamp(32px,5vw,72px); border-top: 1px solid var(--fcd-line); padding-top: clamp(36px, 5vw, 64px); }
 .fc-design .fcd-text-module > .fcd-section-heading { margin-bottom: 0; }
 .fc-design .fcd-text-module > .fcd-section-heading p { max-width: 28ch; }
-.fc-design [aria-labelledby="fcd-overview-title"] > .fcd-section-heading { position: sticky; top: 120px; align-self: start; }
+.fc-design [aria-labelledby="fcd-overview-title"] > :is(.fcd-section-heading, .fcd-text-module__header) { position: sticky; top: 120px; align-self: start; }
+
+.fcd-text-module__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #556253;
+  margin-bottom: 10px;
+}
+.fcd-text-module__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fcd-gold, #AA8A55);
+  display: inline-block;
+}
+.fcd-anchor-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.fcd-anchor-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: #E2DDCF;
+  color: #334437;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid #D0C9B9;
+}
+.fcd-anchor-hint {
+  font-size: 11.5px;
+  color: #717C6F;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+@media (min-width: 1024px) {
+  .fc-design [aria-labelledby="fcd-overview-title"] .fc-route-service-overview-copy {
+    border-left: 1px solid var(--fcd-line);
+    padding-left: clamp(28px, 4vw, 52px);
+  }
+}
 .fc-design .fcd-service-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; background: var(--fcd-line); border: 1px solid var(--fcd-line); }
 .fc-design .fcd-service-grid article { min-width: 0; padding: 28px; background: #F7F6F2; }
 .fc-design .fcd-service-grid h3 { font-size: 22px; }

@@ -465,7 +465,20 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     </div>
     </section>
     {overviewHtml && <section data-cinematic-section aria-labelledby="fcd-overview-title" className="fcd-text-module fcd-page-gutter fcd-section-space">
-      <DesignSectionHeading id="fcd-overview-title" title={serviceCopy.overview} />
+      <div className="fcd-text-module__header">
+        <span className="fcd-text-module__kicker">
+          <span className="fcd-text-module__dot" aria-hidden="true" />
+          {language === "zh" ? "方案方向 · 效果图概念" : (language === "ms" ? "Hala Tuju Konsep" : "Concept Direction")}
+        </span>
+        <DesignSectionHeading id="fcd-overview-title" title={serviceCopy.overview} />
+        <div className="fcd-anchor-badge-group">
+          <span className="fcd-anchor-badge">{language === "zh" ? "3D 效果图概念" : (language === "ms" ? "Konsep 3D" : "3D Concept")}</span>
+          <span className="fcd-anchor-badge">{language === "zh" ? "空间专项推演" : (language === "ms" ? "Kajian Ruang" : "Spatial Study")}</span>
+        </div>
+        <p className="fcd-anchor-hint">
+          {language === "zh" ? "用于视觉风格与动线推演，非实景交付承诺" : (language === "ms" ? "Untuk perbincangan konsep dan susun atur" : "For visual style and layout discussion")}
+        </p>
+      </div>
       <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: overviewHtml }} />
     </section>}
     <section data-cinematic-section aria-labelledby="fcd-services-title" className="fcd-services fcd-text-module fcd-page-gutter fcd-section-space" id="fcd-services">

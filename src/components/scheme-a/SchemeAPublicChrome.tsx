@@ -69,17 +69,26 @@ const publicNavigationItems = publicNavigationGroups.flatMap((group) => group.it
 
 const footerNavigationGroups = [
   {
-    titleKey: "spaceServicesTitle",
-    items: publicNavigationGroups
-      .filter((group) => group.key === "spaces" || group.key === "services")
-      .flatMap((group) => group.items),
+    titleKey: "servicesTitle",
+    items: [
+      { labelKey: "nav.design", path: "/services/design" },
+      { labelKey: "nav.services", path: "/services" },
+      { labelKey: "nav.oldHouse", path: "/services/old-house" },
+      { labelKey: "nav.surfaceRepair", path: "/services/surface-repair" },
+      { labelKey: "nav.customCabinets", path: "/custom-cabinets" },
+      { labelKey: "nav.materials", path: "/materials" },
+    ],
   },
   {
-    titleKey: "brandContactTitle",
-    items: publicNavigationGroups
-      .filter((group) => group.key === "studio" || group.key === "contact")
-      .flatMap((group) => group.items)
-      .filter((item) => item.path !== "/contact"),
+    titleKey: "companyTitle",
+    items: [
+      { labelKey: "nav.projects", path: "/projects" },
+      { labelKey: "nav.beforeAfter", path: "/before-after" },
+      { labelKey: "nav.process", path: "/process" },
+      { labelKey: "nav.blog", path: "/blog" },
+      { labelKey: "nav.faq", path: "/faq" },
+      { labelKey: "nav.quote", path: "/quote" },
+    ],
   },
 ] as const;
 

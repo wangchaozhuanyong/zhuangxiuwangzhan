@@ -121,7 +121,13 @@ export default function ServiceDetail() {
           <Link className="font-medium text-accent underline" to="/blog/malaysia-renovation-budget-guide">{residential.budgetGuide}</Link>
         </SchemeASection>
       </>}
-      <SchemeASection title={copy.overview} description={richDescription ? undefined : display(rawDescription)} className="fc-route-service-overview">
+      <SchemeASection
+        title={copy.overview}
+        eyebrow={language === "zh" ? "工艺标准 · 施工原则" : (language === "ms" ? "Piawaian & Prinsip" : "Overview & Craft Standards")}
+        badge={<span className="fc-route-service-badge">{language === "zh" ? "吉隆坡与雪兰莪全案施工" : "KL & Selangor Execution"}</span>}
+        description={richDescription ? undefined : display(rawDescription)}
+        className="fc-route-service-overview"
+      >
         <div className="fc-route-detail-columns">
           {richDescription ? <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: richDescription }} /> : null}
           {(suitable.length > 0 || offered.length > 0) && (
