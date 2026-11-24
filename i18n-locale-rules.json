@@ -89,6 +89,7 @@
     "src/i18n/furnitureText.ts",
     "src/i18n/furnitureShopText.ts",
     "src/i18n/schemeAText.ts",
+    "src/i18n/schemeAFooterArchitecturalText.ts",
     "src/i18n/quoteOptions.ts",
     "src/i18n/publicUtilityText.ts",
     "src/i18n/cabinetPaletteText.json",
