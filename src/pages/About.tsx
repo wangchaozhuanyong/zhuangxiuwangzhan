@@ -70,7 +70,20 @@ const About = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={heroSection?.subtitle || heroSection?.content || t.description} />
 
-      <SchemeASection title={introSection?.title || t.introTitle} description={[...introParagraphs, getChineseBrandAssociation(settings, language)].filter(Boolean)}>
+      <SchemeASection
+        title={introSection?.title || t.introTitle}
+        eyebrow={language === "zh" ? "品牌背景 · 始于2015" : (language === "ms" ? "Latar Belakang · Sejak 2015" : "Who We Are · Since 2015")}
+        badge={
+          <div className="fc-route-brand-credential">
+            <div className="fc-route-brand-credential__title">
+              <span>FLASH CAST SDN. BHD.</span>
+              <span className="fc-route-brand-credential__ssm">{language === "zh" ? "马来西亚 SSM 注册" : "SSM Registered"}</span>
+            </div>
+            <p className="fc-route-brand-credential__desc">{language === "zh" ? "吉隆坡与雪兰莪全案设计施工团队" : "Full-scope design & build team in KL & Selangor"}</p>
+          </div>
+        }
+        description={[...introParagraphs, getChineseBrandAssociation(settings, language)].filter(Boolean)}
+      >
         <SchemeAFacts items={stats} />
         <div className="fc-route-tagline" aria-label={t.label}>{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
       </SchemeASection>
