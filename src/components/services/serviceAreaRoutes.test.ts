@@ -148,4 +148,33 @@ describe("C1 service and area routes", () => {
   it("rejects existing area and service slugs in an unapproved combination", () => {
     expect(findServiceAreaRoute("selangor", "kitchen-renovation")).toBeNull();
   });
+
+  it("verifies the 10 digital lock area routes and 6 digital lock static blogs", async () => {
+    const { blogPosts } = await import("@/data/blog");
+    const lockSlugs = [
+      "digital-lock-price-kl-selangor",
+      "condo-door-digital-lock-check",
+      "fingerprint-face-palm-vein-which",
+      "aluminium-door-narrow-frame-lock",
+      "tenant-changeover-digital-lock",
+      "digital-lock-power-failure",
+    ];
+
+    expect(blogPosts.length).toBeGreaterThanOrEqual(18);
+    for (const slug of lockSlugs) {
+      const post = blogPosts.find((p) => p.slug === slug);
+      expect(post).toBeDefined();
+      expect(post?.image).toBeTruthy();
+      expect(post?.titleZh).toBeTruthy();
+      expect(post?.content).toContain("<img");
+      expect(post?.contentZh).toContain("<img");
+    }
+
+    const areas = ["kuala-lumpur", "petaling-jaya", "cheras", "subang-jaya", "mont-kiara", "bangsar", "puchong", "selangor", "shah-alam", "kajang"];
+    for (const area of areas) {
+      const route = findServiceAreaRoute(area, "digital-lock");
+      expect(route).not.toBeNull();
+      expect(route?.parentService).toBe("digital-lock");
+    }
+  });
 });

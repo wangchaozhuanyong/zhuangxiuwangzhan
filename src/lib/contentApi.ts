@@ -156,10 +156,10 @@ const getFallbackBlogPosts = async (language: Language = "en") => {
 
   return blogPosts.map((post) => ({
     ...post,
-    title: localize(post.title || ""),
-    excerpt: localize(post.excerpt || ""),
-    content: translateBlogContent(post.content || "", language),
-    category: localize(post.category || ""),
+    title: post.titleZh || localize(post.title || ""),
+    excerpt: post.excerptZh || localize(post.excerpt || ""),
+    content: post.contentZh || translateBlogContent(post.content || "", language),
+    category: post.categoryZh || localize(post.category || ""),
     tags: (post.tags || []).map((tag: string) => localize(tag)),
   }));
 };
