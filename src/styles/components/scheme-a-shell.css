@@ -1308,13 +1308,17 @@
   .scheme-a-footer__social-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    flex-shrink: 0;
+    max-width: 100%;
   }
 
   .scheme-a-footer .scheme-a-footer__social-group {
+    container-type: normal;
+    width: auto;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
+    gap: 10px 14px;
     margin: 0;
     padding: 0;
     border: none;
@@ -1323,8 +1327,10 @@
   .scheme-a-footer .scheme-a-footer__social-heading {
     margin: 0;
     font-size: 12px;
-    font-weight: 500;
-    color: #7A8577;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #5E685C;
+    text-align: left;
     white-space: nowrap;
   }
 
@@ -1338,15 +1344,19 @@
   .scheme-a-footer .scheme-a-footer__socials a {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
     gap: 7px;
+    min-height: 36px;
     height: 36px;
     padding: 0 14px;
-    background: #E3DFD5;
-    border: 1px solid #CFC9BC;
+    background: #F4F1EA;
+    border: 1px solid #D2CBC0;
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 500;
     color: #29342B;
+    white-space: nowrap;
     text-decoration: none;
     transition: all 0.2s ease;
   }
@@ -1537,25 +1547,48 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 2px;
     width: 100%;
   }
 
-  .scheme-a-footer__links a {
-    display: inline-block;
+  .scheme-a-footer__links a:not(.scheme-a-footer__quote-pill) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 6px 0;
     font-size: 13px;
     color: #4F594D;
     text-decoration: none;
+    border-bottom: 1px dashed rgba(123, 135, 117, 0.25);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .scheme-a-footer__links li:last-child a:not(.scheme-a-footer__quote-pill) {
+    border-bottom: 0;
+  }
+
+  .scheme-a-footer__link-arrow {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #8C968A;
     transition: transform 0.2s ease, color 0.2s ease;
   }
 
-  .scheme-a-footer__links a:hover {
+  .scheme-a-footer__links a:not(.scheme-a-footer__quote-pill):hover {
     color: #181D1A;
-    transform: translateX(3px);
+    border-bottom-color: #7B8775;
+  }
+
+  .scheme-a-footer__links a:not(.scheme-a-footer__quote-pill):hover .scheme-a-footer__link-arrow {
+    color: #334437;
+    transform: translate(2px, -2px);
   }
 
   .scheme-a-footer__quote-item {
-    margin-top: 4px;
+    margin-top: 12px;
   }
 
   .scheme-a-footer__quote-pill {
