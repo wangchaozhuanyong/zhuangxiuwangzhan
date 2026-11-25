@@ -779,7 +779,8 @@ export const SchemeAFooter = () => {
                 {content.col2Links.map((item) => (
                   <li key={item.path}>
                     <LocalizedLink to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>
-                      {item.label}
+                      <span>{item.label}</span>
+                      <ArrowUpRight className="scheme-a-footer__link-arrow" aria-hidden="true" />
                     </LocalizedLink>
                   </li>
                 ))}
@@ -791,7 +792,8 @@ export const SchemeAFooter = () => {
                 {content.col3Links.map((item) => (
                   <li key={item.path}>
                     <LocalizedLink to={getPublicNavigationTarget(item.path, language, { ...location, hash: "#site-footer" })}>
-                      {item.label}
+                      <span>{item.label}</span>
+                      <ArrowUpRight className="scheme-a-footer__link-arrow" aria-hidden="true" />
                     </LocalizedLink>
                   </li>
                 ))}
