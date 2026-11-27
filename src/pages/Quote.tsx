@@ -225,7 +225,7 @@ const Quote = () => {
   if (status === "success") {
     return (
       <main className="fc-route-page fc-route-form-page fc-route-quote-page" data-route-pending={pageLoading || undefined}>
-        <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined} title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
+        <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined} title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" noIndex={searchParams.toString().length > 0} />
         <section className="fc-route-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
             <div id="quote-success-status" role="status" aria-live="polite" tabIndex={-1} className="subpage-form-panel p-6 md:p-8 focus:outline-none">
@@ -292,6 +292,7 @@ const Quote = () => {
         description={pageContent?.seo_description || t.metaDescription}
         keywords={pageContent?.seo_keywords || t.metaKeywords}
         canonicalPath="/quote"
+        noIndex={searchParams.toString().length > 0}
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/quote" }]} />
 

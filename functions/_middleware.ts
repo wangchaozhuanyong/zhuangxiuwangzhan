@@ -1724,6 +1724,41 @@ const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
   "/en/blog/kl-condo-renovation-approval": "/en/blog/condo-renovation-management-approval-malaysia",
   "/zh/blog/kl-condo-renovation-approval": "/zh/blog/condo-renovation-management-approval-malaysia",
   "/ms/blog/kl-condo-renovation-approval": "/ms/blog/condo-renovation-management-approval-malaysia",
+  "/ms/materials/acrylic-high-gloss-white": "/ms/materials/acrylic-cabinet-gloss-white",
+  "/ms/materials/melamine-grey-oak": "/ms/materials/melamine-cabinet-grey-oak",
+  "/en/materials/anti-slip-bathroom-tile": "/en/materials/category/bathroom/anti-slip-tile",
+  "/zh/materials/anti-slip-bathroom-tile": "/zh/materials/category/bathroom/anti-slip-tile",
+  "/ms/materials/anti-slip-bathroom-tile": "/ms/materials/category/bathroom/anti-slip-tile",
+  "/en/materials/kitchen-acrylic-cabinets": "/en/materials/category/kitchen-cabinets/acrylic-cabinets",
+  "/zh/materials/kitchen-acrylic-cabinets": "/zh/materials/category/kitchen-cabinets/acrylic-cabinets",
+  "/ms/materials/kitchen-acrylic-cabinets": "/ms/materials/category/kitchen-cabinets/acrylic-cabinets",
+  "/en/materials/kitchen-solid-wood-cabinets": "/en/materials/category/kitchen-cabinets/solid-wood-cabinets",
+  "/zh/materials/kitchen-solid-wood-cabinets": "/zh/materials/category/kitchen-cabinets/solid-wood-cabinets",
+  "/ms/materials/kitchen-solid-wood-cabinets": "/ms/materials/category/kitchen-cabinets/solid-wood-cabinets",
+  "/en/materials/melamine-cabinet-board": "/en/materials/melamine-cabinet-grey-oak",
+  "/zh/materials/melamine-cabinet-board": "/zh/materials/melamine-cabinet-grey-oak",
+  "/ms/materials/melamine-cabinet-board": "/ms/materials/melamine-cabinet-grey-oak",
+  "/en/materials/category-doors-windows": "/en/materials/category/doors-windows",
+  "/zh/materials/category-doors-windows": "/zh/materials/category/doors-windows",
+  "/ms/materials/category-doors-windows": "/ms/materials/category/doors-windows",
+  "/en/materials/category-bathroom": "/en/materials/category/bathroom",
+  "/zh/materials/category-bathroom": "/zh/materials/category/bathroom",
+  "/ms/materials/category-bathroom": "/ms/materials/category/bathroom",
+  "/en/materials/category": "/en/materials",
+  "/zh/materials/category": "/zh/materials",
+  "/ms/materials/category": "/ms/materials",
+  "/services/office": "/en/services/office-renovation",
+  "/services/shoplot": "/en/services/shop-renovation",
+  "/products": "/en/furniture",
+  "/en/furniture/product": "/en/furniture",
+  "/zh/furniture/product": "/zh/furniture",
+  "/ms/furniture/product": "/ms/furniture",
+  "/en/landing": "/en",
+  "/zh/landing": "/zh",
+  "/ms/landing": "/ms",
+  "/ms/services/pejabat-renovation": "/ms/services/office-renovation",
+  "/ms/blog/pejabat-fit-out-me-it-planning-checklist-malaysia": "/ms/blog/office-renovation-checklist-malaysia",
+  "/zh/projects/kota-白沙罗-clinic-装修施工": "/zh/projects/kota-damansara-clinic-fit-out",
 };
 
 const permanentRedirect = (to: URL) =>
@@ -1772,7 +1807,13 @@ const getRequestLanguage = (request: Request) =>
 
 const getExactLegacyRedirectPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
-  return EXACT_LEGACY_REDIRECTS[cleaned] || getLegacyFurnitureProductRedirectPath(cleaned);
+  let decoded = cleaned;
+  try {
+    decoded = decodeURIComponent(cleaned);
+  } catch {
+    decoded = cleaned;
+  }
+  return EXACT_LEGACY_REDIRECTS[cleaned] || EXACT_LEGACY_REDIRECTS[decoded] || getLegacyFurnitureProductRedirectPath(cleaned);
 };
 
 const resolveReadableMaterialLink = (href: string) => {
@@ -2291,12 +2332,13 @@ export const onRequest: PagesFunction = async (context) => {
     : undefined;
   const staticMeta = (manifest as Record<string, SeoEntry>)[key] || (englishMeta ? { ...localizeMalayMaterialFallback(englishMeta, key), lang: "ms", canonical: `${PUBLIC_SITE_URL}${key}`, noIndex: true } : undefined);
   const isPublicLanguagePath = /^\/(?:en|zh|ms)(?:\/|$)/.test(key);
-  const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;
+  const isParameterizedQuote = /^\/(?:en|zh|ms)\/quote$/.test(key) && url.search.length > 1;
+  const edgeCache = request.method === "GET" && isPublicLanguagePath && !isParameterizedQuote ? getEdgeCache() : null;
   const timing = createPublicServerTiming();
   const stringEnv = env as Record<string, string | undefined>;
   const background = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
   const knownRevision = publicSettingsReader.peek(settingsReadKey(stringEnv))?.revision;
-  const preparationKey = `${request.method}:${settingsReadKey(stringEnv)}:${getPublicHtmlCacheRequest(request, env, knownRevision).url}`;
+  const preparationKey = `${request.method}:${settingsReadKey(stringEnv)}:${getPublicHtmlCacheRequest(request, env, knownRevision).url}${isParameterizedQuote ? ":quote-query" : ""}`;
   let acceptingSpeculation = true;
   let preparation: PublicHtmlPreparation | undefined;
   const footerCtaBlockKey = getPathWithoutLanguage(key) === "/about" ? "about_final" : "home_final";
@@ -2370,6 +2412,9 @@ export const onRequest: PagesFunction = async (context) => {
           ? dynamicRouteState.row[`faqs_${oldHouseLanguage}`]
           : oldHouseRenovationPageText[oldHouseLanguage].faqs) }
       : resolvedMeta;
+    if (meta && isParameterizedQuote) {
+      meta = { ...meta, noIndex: true };
+    }
 
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) {
