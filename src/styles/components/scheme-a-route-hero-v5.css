@@ -441,3 +441,22 @@ html[data-public-theme] #root .fc-route-page .fc-route-hero-actions a.fc-route-h
     transform: none;
   }
 }
+
+.scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-offer] .fc-route-hero-copy > .fc-route-hero-offer {
+  order: 2;
+  margin-top: 12px;
+  color: var(--public-text-primary);
+  line-height: 1.45;
+}
+
+@media (max-width: 1023px) {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-offer] .fc-route-hero-media {
+    height: clamp(150px, 29svh, 280px);
+  }
+}
+
+@media (max-width: 767px) {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-offer] .fc-route-hero-actions {
+    order: 3;
+  }
+}
