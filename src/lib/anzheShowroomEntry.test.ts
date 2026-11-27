@@ -6,14 +6,16 @@ import { describe, expect, it } from "vitest";
 import { ANZHE_SHOWROOM_ORIGIN, getAnzheShowroomEntry } from "@/config/anzheShowroom";
 
 const folder = join(process.cwd(), "public", "anzhe-showroom");
-const html = readFileSync(join(folder, "zh/index.html"), "utf8");
-const scripts = ["strings.js", "catalog.js", "studio.js"].map(file =>
+const scripts = ["strings.js", "catalog.js", "studio.js", "showroom-updates.js"].map(file =>
   new Script(readFileSync(join(folder, file), "utf8"), { filename: file }),
 );
 
-function open(url: string, state?: unknown) {
+function open(url: string, state?: unknown, offline = false) {
+  const lang = new URL(url).pathname.split("/")[1] || "zh";
+  const html = readFileSync(join(folder, lang, "index.html"), "utf8");
   const dom = new JSDOM(html, { url, runScripts: "outside-only" });
   const { window } = dom;
+  if (offline) window.document.body.insertAdjacentHTML("afterbegin", '<script type="application/json" id="offline-images">{}</script>');
   window.history.replaceState(state ?? null, "");
   window.directory = { refresh() {}, syncCompare() {} };
   window.lockPanels = { refresh() {}, count: () => 0 };
@@ -39,17 +41,36 @@ describe("showroom entry and return", () => {
       expect(link.hidden).toBe(false);
       expect(window.document.querySelector(".brand")?.getAttribute("href")).toBe("#top");
       expect(window.location.hash).toBe("");
-      window.document.querySelector<HTMLButtonElement>('[data-lang="ms"]')!.click();
-      expect(link.getAttribute("aria-label")).toBe("Kembali ke FLASH CAST");
-      expect(window.document.querySelector<HTMLImageElement>(".brand img")?.alt).toBe("ANZHE 安哲");
-      expect(link.querySelector("span")?.textContent).toBe("Laman utama");
-      expect(link.href).toBe(expected);
       window.history.pushState(null, "", "#contact");
       window.dispatchEvent(new window.HashChangeEvent("hashchange"));
-      const reloaded = open(window.location.href, window.history.state);
+      const malayUrl = window.document.querySelector<HTMLAnchorElement>('[data-lang="ms"]')!.href;
+      expect(new URL(malayUrl).search).toBe("");
+      expect(new URL(malayUrl).pathname).toBe("/ms/");
+      const malay = open(malayUrl);
       try {
-        expect(reloaded.window.document.querySelector<HTMLAnchorElement>("[data-main-return]")!.href).toBe(expected);
-      } finally { reloaded.window.close(); }
+        const back = malay.window.document.querySelector<HTMLAnchorElement>("[data-main-return]")!;
+        expect(back.href).toBe(expected);
+        expect(back.getAttribute("aria-label")).toBe("Kembali ke FLASH CAST");
+        expect(back.textContent).toBe("Laman utama");
+        expect(malay.window.location.hash).toBe("#contact");
+        const reloaded = open(malay.window.location.href, malay.window.history.state);
+        try {
+          expect(reloaded.window.document.querySelector<HTMLAnchorElement>("[data-main-return]")!.href).toBe(expected);
+        } finally { reloaded.window.close(); }
+      } finally { malay.window.close(); }
+    } finally { dom.window.close(); }
+  });
+
+  it("keeps the single-file catalogue usable without navigating to another document", () => {
+    const dom = open(ANZHE_SHOWROOM_ORIGIN + "/zh/", null, true);
+    try {
+      const doc = dom.window.document;
+      doc.querySelector<HTMLElement>("[data-lang-trigger]")!.click();
+      doc.querySelector<HTMLAnchorElement>('[data-lang="en"]')!.click();
+      expect(doc.querySelector("h1")?.textContent).toBe("ANZHE smart locks");
+      expect(doc.querySelector("details.lang-switch")?.hasAttribute("open")).toBe(false);
+      expect(doc.querySelector("[data-lang][aria-current]")?.getAttribute("data-lang")).toBe("en");
+      expect(doc.querySelector(".lang-current-label")?.textContent).toBe("EN");
     } finally { dom.window.close(); }
   });
 

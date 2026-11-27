@@ -20,11 +20,12 @@
   const supported = value => Object.hasOwn(words, value) ? value : null;
   function languageFromURL() {
     const url = new URL(location.href);
-    return url.pathname.split('/').reverse().find(supported) || supported(url.searchParams.get('lang'));
+    const queryLanguage = supported(url.searchParams.get('lang'));
+    if (offlineImages && queryLanguage) return queryLanguage;
+    return url.pathname.split('/').reverse().find(supported) || queryLanguage;
   }
   const initialPreference = window.showroomPolicy?.getDefaultLanguage() || (offlineImages ? 'zh' : 'en');
   let lang = languageFromURL() || initialPreference;
-  const saveLanguage = value => window.showroomPolicy?.rememberLanguage(value);
   let intent = {kind:'none'};
   const text = key => words[lang][key];
   const formatPrice = id => window.formatShowroomPrice(byModel.get(id).price);
@@ -78,12 +79,6 @@
     }
   }
   window.addEventListener('popstate', () => {
-    const nextLanguage = languageFromURL() || initialPreference;
-    if (!offlineImages && nextLanguage !== lang) {
-      lang = nextLanguage;
-      saveLanguage(lang);
-      render();
-    }
     if (historyPending) {
       historyPending = false;
       reconcileHistory();
@@ -133,8 +128,11 @@
     } catch {}
     if (entering) {
       const clean = new URL(location.href);
-      clean.hash = '';
+      const section = fragment.get('section');
+      const target = section && document.getElementById(section);
+      clean.hash = target ? section : '';
       history.replaceState({ ...history.state, showroomReturn: destination ? raw : null }, '', clean);
+      if (target) target.scrollIntoView?.();
     }
     return destination?.href;
   }
@@ -166,6 +164,7 @@
   }
   window.showroom = {
     get lang(){ return lang; }, get intent(){ return intent; },
+    setOfflineLanguage: offlineImages ? next => { lang = next; render(); } : undefined,
     get lastModel(){ return intent.kind === 'model' ? intent.id : null; },
     asset: value => offlineImages ? offlineImages[value] : base + value, layers, syncCompare,
     isCompared: id => window.lockPanels.isCompared(id),
@@ -246,17 +245,6 @@
     document.querySelectorAll('[data-t]').forEach(el => {el.textContent = text(el.dataset.t);});
     document.querySelectorAll('[data-alt]').forEach(el => {el.alt = text(el.dataset.alt);});
     document.querySelectorAll('[data-aria]').forEach(el => el.setAttribute('aria-label', text(el.dataset.aria)));
-    document.querySelectorAll('[data-lang]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.lang === lang)));
-    const triggerLabel = document.querySelector('.lang-current-label');
-    if (triggerLabel) {
-      const labels = { zh: '中文', en: 'EN', ms: 'BM' };
-      triggerLabel.textContent = labels[lang] || lang.toUpperCase();
-    }
-    const openSwitch = document.querySelector('.lang-switch.is-open');
-    if (openSwitch) {
-      openSwitch.classList.remove('is-open');
-      openSwitch.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
-    }
     document.querySelector('[data-hero-price]').textContent = formatPrice('v37j-p16');
     const samplePrices = [...document.querySelectorAll('[data-price-for]')].map(el => byModel.get(el.dataset.priceFor).price);
     document.querySelector('[data-example-gap]').textContent = window.formatShowroomPrice(Math.abs(samplePrices[0] - samplePrices[1]));
@@ -269,44 +257,9 @@
   }
 
   document.addEventListener('click', event => {
-    const trigger = event.target.closest('[data-lang-trigger]');
-    if (trigger) {
-      event.preventDefault();
-      const sw = trigger.closest('.lang-switch');
-      const willOpen = !sw.classList.contains('is-open');
-      sw.classList.toggle('is-open', willOpen);
-      trigger.setAttribute('aria-expanded', String(willOpen));
-      return;
-    }
-    const openSwitch = document.querySelector('.lang-switch.is-open');
-    if (openSwitch && !event.target.closest('.lang-switch')) {
-      openSwitch.classList.remove('is-open');
-      openSwitch.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
-    }
-
     const button = event.target.closest('button');
     if (!button) return;
-    if (button.dataset.lang && supported(button.dataset.lang)) {
-      if (button.dataset.lang === lang) {
-        const sw = button.closest('.lang-switch');
-        if (sw) {
-          sw.classList.remove('is-open');
-          sw.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
-        }
-        return;
-      }
-      lang = button.dataset.lang;
-      saveLanguage(lang);
-      if (location.protocol !== 'file:') {
-        const target = new URL(location.href);
-        if (/\/(zh|ms|en)\/(index\.html)?$/.test(target.pathname)) {
-          target.pathname = target.pathname.replace(/\/(zh|ms|en)\/(index\.html)?$/, '/' + lang + '/');
-          target.searchParams.delete('lang');
-        } else target.searchParams.set('lang', lang);
-        history.replaceState(history.state, '', target);
-      }
-      render();
-    } else if (button.matches('[data-show-featured]')) {
+    if (button.matches('[data-show-featured]')) {
       window.directory.show('v37j-p16', button, event.detail>0);
     } else if (button.matches('[data-nav-comparison],[data-choose-compare]')) {
       window.lockPanels.resume(button);
@@ -314,15 +267,6 @@
       window.lockPanels.example(button);
     } else if (button.matches('[data-enquire-current]')) {
       window.lockPanels.fit(button);
-    }
-  });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      const openSwitch = document.querySelector('.lang-switch.is-open');
-      if (openSwitch) {
-        openSwitch.classList.remove('is-open');
-        openSwitch.querySelector('[data-lang-trigger]')?.setAttribute('aria-expanded', 'false');
-      }
     }
   });
   // Remember a customer's choices within this browser tab across reloads.

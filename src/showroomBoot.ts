@@ -1,6 +1,6 @@
 import markup from "./components/publicBootTemplate.html?raw";
 import styles from "./styles/components/public-boot.css?raw";
-import { getDefaultLanguage, getLanguageFromPath, rememberLanguage } from "./i18n/routes";
+import { getDefaultLanguage, rememberLanguage } from "./i18n/routes";
 import { languageTag } from "./i18n/languageDetection";
 import { contactEntryTriggerText } from "./i18n/contactEntryText";
 import { observeFixedFloatingEntry } from "./lib/floatingOcclusion";
@@ -112,8 +112,6 @@ async function handOff() {
   if (!continued) await boot.complete(results.some(result => result.status === "rejected"));
 }
 
-const pageLanguage = getLanguageFromPath();
-if (pageLanguage) rememberLanguage(pageLanguage);
 window.addEventListener("showroom:ready", handOff);
 window.addEventListener("public-assets-change", handOff);
 void handOff();
