@@ -17,7 +17,7 @@ import { fallbackServiceAreas } from "./serviceAreasFallback";
 import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { materialsData } from "../src/data/materials";
-import { getServiceProjectGuidance, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
+import { digitalLockLandingText, getServiceProjectGuidance, serviceDetailPageText } from "../src/i18n/serviceDetailPageText";
 import { materialDetailPageText } from "../src/i18n/materialDetailPageText";
 import { projectDetailPageText } from "../src/i18n/projectDetailPageText";
 import { mediaLabels } from "../src/i18n/mediaLabels";
@@ -512,6 +512,7 @@ export function buildExpandedReadableBody(key: string, sources: Sources) {
     const content = text(row[`content_${lang}`]) || text(row[`excerpt_${lang}`]);
     if (!title || !content.trim() || content.length > 131072) return "";
     let body = `<h1>${escape(title)}</h1>`;
+    if (kind === "services" && row.slug === "digital-lock") body += paragraph(digitalLockLandingText[lang].offer);
     if (kind === "projects" && isRenderingConceptProject({ ...row, images: records(row.project_images).map(image => text(image.image_url)) })) body += paragraph(mediaLabels[lang].renderingConcept);
     if (field("excerpt")) body += paragraph(field("excerpt"));
     // Project and material pages display plain paragraphs; preserve that same
