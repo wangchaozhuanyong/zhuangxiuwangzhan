@@ -6,14 +6,15 @@ import { parseArgs } from "node:util";
 import { createContext, runInContext } from "node:vm";
 import { JSDOM } from "jsdom";
 import sharp from "sharp";
+import languageSelectorText from "../src/i18n/languageSelectorText.json" with { type: "json" };
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const showroom = join(root, "public/anzhe-showroom");
 const origin = "https://locks.flashcast.com.my";
 const locales = {
-  zh: { tag: "zh-CN", alternate: "zh-Hans", label: "简体中文", short: "中文", og: "zh_MY" },
-  en: { tag: "en", alternate: "en", label: "English", short: "EN", og: "en_MY" },
-  ms: { tag: "ms-MY", alternate: "ms-MY", label: "Bahasa Melayu", short: "BM", og: "ms_MY" },
+  zh: { tag: "zh-CN", alternate: "zh-Hans", og: "zh_MY" },
+  en: { tag: "en", alternate: "en", og: "en_MY" },
+  ms: { tag: "ms-MY", alternate: "ms-MY", og: "ms_MY" },
 };
 const languages = Object.keys(locales);
 const groups = ["entrance", "room", "slim"]; // Catalogue groups for entrance, interior and aluminium doors.
@@ -698,37 +699,24 @@ function img(image, alt, options = {}) {
   return `<img src="${escape(image.path)}" srcset="${escape(srcset)}" sizes="${escape(sizes)}" width="${image.width}" height="${image.height}" alt="${escape(alt)}" loading="${loading}" decoding="async" fetchpriority="${priority}">`;
 }
 
-function renderLanguageSelector(slug, lang, words) {
-  const current = locales[lang];
-  const options = languages.map(code => {
-    const { alternate, label } = locales[code];
-    const isCurrent = code === lang;
-    const checkSvg = isCurrent
-      ? `<svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`
-      : "";
-    return `<a class="lang-option" href="${pagePath(code, slug)}" lang="${alternate}" aria-label="${label}"${isCurrent ? ' aria-current="page"' : ""}>
-          <span class="lang-code">${code.toUpperCase()}</span>
-          <span class="lang-name">${label}</span>
-          ${checkSvg}
-        </a>`;
-  });
-  return `<div class="lang-switch" role="group" aria-label="${escape(words.language)}">
-      <button type="button" class="language-selector language-selector--header" data-lang-trigger aria-label="${escape(words.language)}: ${escape(current.label)}" aria-haspopup="true" aria-expanded="false">
+function renderLanguageSelector(slug, lang) {
+  const text = languageSelectorText[lang];
+  const options = Object.keys(languageSelectorText).map(code =>
+    `<a class="lang-option" data-lang="${code}" href="${pagePath(code, slug)}" hreflang="${locales[code].alternate}"${code === lang ? ' aria-current="page"' : ""}>
+          <span class="lang-code" aria-hidden="true">${escape(text.shortNames[code])}</span>
+          <span class="lang-name">${escape(text.names[code])}</span>
+          <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        </a>`);
+  return `<details class="lang-switch">
+      <summary class="language-selector language-selector--header" data-lang-trigger aria-label="${escape(text.trigger)}: ${escape(text.names[lang])}">
         <svg class="globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-        <span class="lang-current-label">${escape(current.short)}</span>
+        <span class="lang-current-label">${escape(text.shortNames[lang])}</span>
         <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <div class="lang-dropdown" role="menu">
+      </summary>
+      <nav class="lang-dropdown" aria-label="${escape(text.title)}">
         ${options.join("\n        ")}
-      </div>
-    </div>`;
-}
-
-function pageLanguageLinks(slug, lang) {
-  return languages.map(code => {
-    const { alternate, label, short } = locales[code];
-    return `<a class="studio-button light-button" href="${pagePath(code, slug)}" lang="${alternate}" aria-label="${label}"${code === lang ? ' aria-current="page"' : ""}>${code === "zh" ? short : label}</a>`;
-  });
+      </nav>
+    </details>`;
 }
 
 function categoryLink(category, lang) {
@@ -846,7 +834,7 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   const imageAlt = `ANZHE ${model.name} · ${ui.photo}`;
   const contact = whatsappLink(ui.message({ name: model.name, price: model.prices.display }));
   const altLinks = alternates(model.id).map(([tag, href]) => `<link rel="alternate" hreflang="${tag}" href="${href}">`);
-  const langSelector = renderLanguageSelector(model.id, lang, words);
+  const langSelector = renderLanguageSelector(model.id, lang);
   const membership = categories.filter(category => category.models.includes(model)).map(category => categoryLink(category, lang));
   const rows = specRows(model, lang, labels);
   const specifications = sources.lockSpecSheet.detail(rows, lang);
@@ -887,7 +875,6 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   <meta property="og:image:alt" content="${escape(imageAlt)}">
   ${[...shared.styles, shared.fitAssets["showroom-fit.css"], shared.modelStyle].map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
-  <script defer src="${shared.navScript}"></script>
   <script defer src="${shared.track}"></script>
   <script type="application/ld+json">
 ${renderSchema(model, copy, lang, words.title)}
@@ -1089,7 +1076,6 @@ function renderCategoryPage(category, lang, sources, shared, categories, categor
   <meta property="og:image:alt" content="ANZHE ${escape(models[0].name)}">
   ${shared.categoryStyles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
-  <script defer src="${shared.navScript}"></script>
   <script defer src="${shared.track}"></script>
   <script type="application/ld+json">
 ${schema}
@@ -1107,7 +1093,7 @@ ${schema}
         <a href="#selection">${escape(ui.selection)}</a>
         <a href="#faq">${escape(copyTemplates[lang].faq)}</a>
       </nav>
-      ${renderLanguageSelector(slug, lang, words)}
+      ${renderLanguageSelector(slug, lang)}
     </div>
   </header>
   <main id="main-content" tabindex="-1">
@@ -1231,7 +1217,10 @@ async function renderHomePage(lang, catalog, sources, shared) {
   const fitSlot = /(<!-- Generated door fit guide by scripts\/generate-anzhe-lock-pages\.mjs -->)[\s\S]*?(<!-- End generated door fit guide -->)/g;
   if ([...withSpecs.matchAll(fitSlot)].length !== 1) throw new Error(`${lang}: expected one home door fit guide slot`);
   const guide = renderDoorFitGuide(sources.showroomWords[lang], shared, { assetPrefix: ".." });
+  const menuSlot = /(<!-- Generated language selector -->)[\s\S]*?(<!-- End generated language selector -->)/g;
+  if ([...withSpecs.matchAll(menuSlot)].length !== 1) throw new Error(`${lang}: expected one home language selector slot`);
   const html = withSpecs.replace(fitSlot, (_, start, end) => `${start}\n  ${guide}\n  ${end}`)
+    .replace(menuSlot, (_, start, end) => `${start}\n    ${renderLanguageSelector("", lang)}\n    ${end}`)
     .replace(/"\.\.\/(showroom-fit\.css|strings\.js)\?v=[a-f0-9]+"/g, (_, file) => `"..${shared.fitAssets[file]}"`)
     .replace(/"\.\.\/directory\.css\?v=[a-f0-9]+"/g, `"..${shared.directoryStyle}"`);
   return { target, html };
@@ -1293,7 +1282,6 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
   const directoryStyle = await versionedAsset("/directory.css", join(showroom, "directory.css"));
   const shared = {
     updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
-    navScript: await versionedAsset("/showroom-nav.js", join(showroom, "showroom-nav.js")),
     track: await versionedAsset("/conversion-track.js", join(showroom, "conversion-track.js")),
     categoryStyles,
     directoryStyle,

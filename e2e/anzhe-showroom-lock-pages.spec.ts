@@ -129,18 +129,98 @@ test("renders one model heading and switches language on the same model", async 
   await page.screenshot({ path: testInfo.outputPath("v37j-p16-desktop-category-footer.png") });
 
   await page.locator("[data-lang-trigger]").click();
-  await page.getByRole("link", { name: "English", exact: true }).click();
+  await page.getByRole("link", { name: "英语", exact: true }).click();
   await expect(page).toHaveURL(origin + "/en/lock/v37j-p16/");
   await expect(heading).toHaveText("V37J-P16 Palm Vein Digital Lock — RM2,360");
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", page.url());
   await page.locator("[data-lang-trigger]").click();
-  await page.getByRole("link", { name: "Bahasa Melayu", exact: true }).click();
+  await page.getByRole("link", { name: "Malay", exact: true }).click();
   await expect(page).toHaveURL(origin + "/ms/lock/v37j-p16/");
   await expect(page.locator("meta[name=robots]")).toHaveAttribute("content", "noindex");
 });
 
+const homeCopy = {
+  en: ["en", "ANZHE smart locks", "View all models", "Model index", "Will it fit your door?"],
+  ms: ["ms-MY", "Kunci digital ANZHE", "Lihat semua model", "Indeks model", "Sesuai untuk pintu anda?"],
+  zh: ["zh-CN", "ANZHE 智能门锁", "查看全部型号", "型号索引", "你的门能装吗？"],
+};
+
+for (const width of [1440, 390]) {
+  test(`switches the entire home document and remembers the selected language at ${width}px`, async ({ page, context }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(origin + "/zh/?source=catalog&lang=zh#collection");
+    const filter = page.locator('[data-dir-filter="room"]');
+    await filter.click();
+    const menu = page.locator(".lang-switch");
+    for (const lang of ["en", "ms", "zh"] as const) {
+      await menu.locator("summary").click();
+      await menu.locator(`[data-lang="${lang}"]`).click();
+      await expect(page).toHaveURL(`${origin}/${lang}/?source=catalog#collection`);
+      const [tag, heading, allModels, index, doorFit] = homeCopy[lang];
+      await expect(page.locator("html")).toHaveAttribute("lang", tag);
+      await expect(page.locator("h1")).toHaveText(heading);
+      await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", `${origin}/${lang}/`);
+      await expect(page.locator("#model-details h2")).toHaveText(index);
+      await expect(page.locator("#installation h2")).toHaveText(doorFit);
+      const category = page.locator("[data-lock-category-links]");
+      await expect(category.locator("a").first()).toHaveText(allModels);
+      await expect(category.locator("a").nth(1)).toHaveAttribute("href", `/${lang}/lock/type/entrance-door/`);
+      await expect(page.locator(`#model-details a[href^="/${lang}/lock/"]`)).toHaveCount(17);
+      await expect(filter).toHaveAttribute("aria-pressed", "true");
+      await expect(menu.locator("[aria-current]")).toHaveCount(1);
+      await expect(menu.locator("[aria-current]")).toHaveAttribute("data-lang", lang);
+      await expect(menu.locator("nav")).toBeHidden();
+      expect((await context.cookies("https://flashcast.com.my")).find(cookie => cookie.name === "flashcast_site_lang")?.value).toBe(lang);
+    }
+    await page.goBack();
+    await expect(page.locator("h1")).toHaveText(homeCopy.ms[1]);
+    await expect(menu.locator("nav")).toBeHidden();
+    await page.goForward();
+    await expect(page.locator("[data-lock-category-links] a").first()).toHaveText(homeCopy.zh[2]);
+    await expect(menu.locator("nav")).toBeHidden();
+  });
+}
+
+test("dismisses the menu on selection, Escape and outside clicks on a category page", async ({ page }) => {
+  await page.goto(origin + "/en/lock/type/entrance-door/#models");
+  const menu = page.locator(".lang-switch");
+  const trigger = menu.locator("summary");
+  const choices = menu.locator("nav");
+  await trigger.click();
+  await choices.getByRole("link", { name: "English", exact: true }).click();
+  await expect(choices).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await trigger.hover();
+  await expect(choices).toBeHidden();
+  await trigger.press("Enter");
+  await choices.getByRole("link", { name: "Malay", exact: true }).focus();
+  await page.keyboard.press("Escape");
+  await expect(choices).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await page.locator("h1").click();
+  await expect(choices).toBeHidden();
+  await trigger.click();
+  await choices.getByRole("link", { name: "Malay", exact: true }).click();
+  await expect(page).toHaveURL(origin + "/ms/lock/type/entrance-door/#models");
+  await expect(page.locator("h1")).toHaveText("Kunci Digital Pintu Utama");
+  await expect(page.locator('[data-category-model="f8"]')).toHaveAttribute("href", "/ms/lock/f8/");
+  await expect(choices).toBeHidden();
+});
+
 test.describe("without JavaScript at mobile widths", () => {
   test.use({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, hasTouch: true });
+
+  test("opens the native language menu and follows the matching document", async ({ page }) => {
+    for (const path of ["/", "/lock/f8/", "/lock/feature/palm-vein/"]) {
+      await page.goto(origin + "/zh" + path);
+      await page.locator("[data-lang-trigger]").click();
+      await page.getByRole("link", { name: "英语", exact: true }).click();
+      await expect(page).toHaveURL(origin + "/en" + path);
+      await expect(page.locator(".lang-dropdown")).toBeHidden();
+      await expect(page.locator('html')).toHaveAttribute("lang", "en");
+    }
+  });
 
   test("opens an indexed model, expands its information and returns to the index", async ({ page }) => {
     for (const lang of languages) {
