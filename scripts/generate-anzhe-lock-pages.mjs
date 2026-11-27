@@ -876,6 +876,7 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   ${[...shared.styles, shared.fitAssets["showroom-fit.css"], shared.modelStyle].map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script defer src="${shared.track}"></script>
+  <script defer src="${shared.contact}"></script>
   <script type="application/ld+json">
 ${renderSchema(model, copy, lang, words.title)}
   </script>
@@ -958,6 +959,7 @@ ${renderSchema(model, copy, lang, words.title)}
       <a href="#top">${escape(words.back)}</a>
     </div>
   </footer>
+  <div id="quick-contact" class="fc-contact-stack" hidden></div>
 </body>
 </html>
 `;
@@ -1078,6 +1080,7 @@ function renderCategoryPage(category, lang, sources, shared, categories, categor
   ${shared.categoryStyles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script defer src="${shared.track}"></script>
+  <script defer src="${shared.contact}"></script>
   <script type="application/ld+json">
 ${schema}
   </script>
@@ -1161,6 +1164,7 @@ ${schema}
       <a href="#top">${escape(words.back)}</a>
     </div>
   </footer>
+  <div id="quick-contact" class="fc-contact-stack" hidden></div>
 </body>
 </html>
 `;
@@ -1275,6 +1279,7 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
   const baseStyles = await Promise.all([
     versionedAsset("/public-section-spacing.css", join(root, "public/public-section-spacing.css")),
     versionedAsset("/studio.css", join(showroom, "studio.css")),
+    versionedAsset("/public-contact-entry.css", join(root, "public/public-contact-entry.css")),
   ]);
   const categoryStyles = [
     ...baseStyles,
@@ -1284,6 +1289,7 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
   const shared = {
     menu: await versionedAsset("/showroom-menu.js", join(showroom, "showroom-menu.js")),
     updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
+    contact: await versionedAsset("/contact-float.js", join(showroom, "contact-float.js")),
     track: await versionedAsset("/conversion-track.js", join(showroom, "conversion-track.js")),
     categoryStyles,
     directoryStyle,

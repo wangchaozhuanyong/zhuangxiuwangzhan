@@ -1,3 +1,4 @@
+import wechatContact from "../src/config/wechatContact.json";
 import { ANZHE_SHOWROOM_ORIGIN } from "../src/config/anzheShowroom";
 import { isSupportedLanguage, type Language } from "../src/i18n/languageDetection";
 import {
@@ -9,7 +10,8 @@ export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
 const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|menu|updates|films|nav)\.js|showroom-(?:intro|fit|films|catalog|model|category)\.css|conversion-track\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
-const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
+const sharedFiles = new Set(["/public-section-spacing.css", "/public-contact-entry.css",
+  wechatContact.wechatQrUrl, wechatContact.wechatQrDownloadUrl.split("?")[0]]);
 const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
 const TYPE_SLUGS = "entrance-door|interior-door|aluminium-door";
 const FEATURE_SLUGS = "face-recognition|palm-vein|video-intercom";
@@ -54,6 +56,7 @@ function expectedContentType(path: string) {
   if (path.endsWith(".xml")) return "xml";
   if (path.endsWith(".txt")) return "text/plain";
   if (path.endsWith(".woff2")) return "font/woff2";
+  if (path.endsWith(".png")) return "image/png";
   return "image/webp";
 }
 
@@ -162,8 +165,8 @@ async function serveFilm(request: Request, binding: AssetBinding, target: URL) {
 
 async function serveStaticFile(request: Request, binding: AssetBinding, target: URL) {
   const path = target.pathname;
-  // Shared stylesheets are served from the root asset directory on both hosts.
-  if (!sharedStylesheets.has(path)) target.pathname = ANZHE_ASSET_PREFIX + path;
+  // Shared stylesheets and WeChat images are served from the root asset directory on both hosts.
+  if (!sharedFiles.has(path)) target.pathname = ANZHE_ASSET_PREFIX + path;
   const requestedVersion = target.searchParams.get("v");
   target.search = "";
   if (path.endsWith(".mp4")) return serveFilm(request, binding, target);
@@ -229,7 +232,7 @@ export async function serveAnzheShowroom(
       if (document) return document;
     }
   }
-  if (assetBinding && (staticFiles.test(url.pathname) || sharedStylesheets.has(url.pathname))) {
+  if (assetBinding && (staticFiles.test(url.pathname) || sharedFiles.has(url.pathname))) {
     const file = await serveStaticFile(request, assetBinding, url);
     if (file) return file;
   }

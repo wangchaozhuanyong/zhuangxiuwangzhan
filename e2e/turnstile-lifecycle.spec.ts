@@ -454,6 +454,9 @@ for (const [language, width] of [["zh", 1440], ["en", 390], ["ms", 390]] as cons
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     expect(servedPanelRequests).toBe(1);
+    await expect(dialog.locator('[data-qc="wa"]')).toBeFocused();
+    expect(servedQrRequests).toBe(0);
+    await dialog.locator(".fc-contact-panel__qr summary").click();
     await expect.poll(() => servedQrRequests).toBe(1);
     await expect(dialog).toContainText(contactEntryText[language].title);
     await page.screenshot({ path: info.outputPath("contact-panel-open.png") });

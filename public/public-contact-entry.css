@@ -57,3 +57,74 @@
   .fc-contact-entry__icon { width: 34px; height: 34px; }
   .fc-contact-entry__icon::before { width: 18px; height: 18px; }
 }
+
+/* The native showroom dialog and the main site's dialog use the same sheet. */
+.fc-contact-panel:is(dialog, [role="dialog"]) {
+  position: fixed; inset: auto 24px 24px auto; transform: none; margin: 0;
+  width: min(380px, calc(100vw - 48px)); max-width: none; max-height: calc(100vh - 48px); max-height: calc(100dvh - 48px);
+  padding: 0; gap: 0; overflow-y: auto; overscroll-behavior: contain; scroll-padding-block: 12px;
+  box-sizing: border-box; border: 1px solid #cbd2c8; border-radius: 18px; color: #25362d;
+  background: #fffefa; box-shadow: 0 14px 54px #162a202b; text-align: start; font-family: inherit;
+}
+.fc-contact-panel[role="dialog"], dialog.fc-contact-panel[open] { display: block; }
+dialog.fc-contact-panel:not([open]) { display: none; }
+dialog.fc-contact-panel::backdrop, .fc-contact-overlay[data-state] { background: rgb(21 36 27 / .36); }
+.fc-contact-panel[role="dialog"][data-state], .fc-contact-overlay[data-state] { animation: none; }
+.fc-contact-panel__header { padding: 18px 20px 14px; }
+.fc-contact-panel h2.fc-contact-panel__title { margin: 0; padding-inline-end: 42px; font-size: 20px; font-weight: 650; line-height: 1.35; letter-spacing: -.025em; color: inherit; }
+.fc-contact-panel__description { margin: 6px 0 0; padding-inline-end: 16px; font-size: 13px; line-height: 1.5; color: #566159; }
+.fc-contact-panel__body { display: grid; gap: 6px; padding: 0 16px; }
+.fc-contact-panel__body > *, .fc-contact-panel__footer { min-width: 0; }
+.fc-contact-panel .fc-contact-panel__close, .fc-contact-panel > button[data-ui="button"] {
+  position: absolute; inset: 6px 8px auto auto; width: 44px; height: 44px; margin: 0; padding: 0;
+  display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: #45544a; cursor: pointer;
+}
+.fc-contact-panel__close span { font: 26px/1 system-ui,sans-serif; }
+.fc-contact-panel :is(a, button, summary) { -webkit-tap-highlight-color: transparent; }
+.fc-contact-panel :is(a, summary):is(.fc-contact-panel__primary, .fc-contact-panel__row, .fc-contact-panel__quote),
+.fc-contact-panel__qr summary {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; margin: 0; padding: 10px 13px;
+  box-sizing: border-box; border-radius: 10px; color: inherit; text-decoration: none; font: inherit; font-size: 14px; line-height: 1.4;
+}
+.fc-contact-panel a.fc-contact-panel__primary { background: #146443; color: #fff; font-weight: 650; min-height: 50px; }
+.fc-contact-panel__label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.fc-contact-panel__label small { display: block; margin-top: 2px; font-size: 12px; line-height: 1.35; color: #526057; }
+.fc-contact-panel .fc-contact-panel__body svg, .fc-contact-panel__footer svg { flex: none; display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; }
+.fc-contact-panel__row > :last-child, .fc-contact-panel__quote > :last-child { color: #637267; }
+.fc-contact-panel__qr { border: 1px solid #d8dfd7; border-radius: 11px; background: #f8faf6; }
+.fc-contact-panel__qr summary { list-style: none; cursor: pointer; font-weight: 600; }
+.fc-contact-panel__qr summary::-webkit-details-marker { display: none; }
+.fc-contact-panel__qr summary .fc-contact-panel__chevron { width: 16px; height: 16px; }
+.fc-contact-panel__qr[open] .fc-contact-panel__chevron { transform: rotate(180deg); }
+.fc-contact-panel__wechat { margin: 0 12px; padding: 6px 0 12px; border-top: 1px solid #d8dfd7; }
+.fc-contact-panel__account { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.fc-contact-panel__wechat-id { color: #203e2d; font-size: 15px; font-weight: 650; overflow-wrap: anywhere; user-select: all; }
+.fc-contact-panel__copy, .fc-contact-panel__qr-actions a {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 8px;
+  padding: 6px 10px; font: inherit; font-size: 13px; line-height: 1.3; text-align: center; cursor: pointer; text-decoration: none;
+}
+.fc-contact-panel__copy { border: 0; background: transparent; color: #215d40; font-weight: 600; }
+.fc-contact-panel__qr figure { display: grid; justify-items: center; gap: 6px; margin: 0; }
+.fc-contact-panel__qr-image { display: block; width: min(156px, 100%); height: auto; border-radius: 6px; background: white; }
+.fc-contact-panel__qr figcaption, .fc-contact-panel__note { color: #526057; font-size: 12px; line-height: 1.45; }
+.fc-contact-panel__qr figcaption { text-align: center; }
+.fc-contact-panel__note { margin: 5px 0 0; }
+.fc-contact-panel__note:empty { display: none; }
+.fc-contact-panel__qr-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.fc-contact-panel__qr-actions .fc-contact-panel__qr-save { gap: 6px; background: #e3eee4; color: #1c4f35; font-weight: 650; }
+.fc-contact-panel__qr-actions .fc-contact-panel__qr-original { border: 1px solid #c9d3c8; color: #364d3f; }
+.fc-contact-panel__qr-actions .fc-contact-panel__qr-save svg { width: 16px; height: 16px; }
+.fc-contact-panel__qr-save[aria-disabled="true"], .fc-contact-panel__copy:disabled { opacity: .65; cursor: wait; }
+.fc-contact-panel__footer { margin: 4px 16px 0; padding: 4px 0 10px; border-top: 1px solid #d8dfd7; }
+.fc-contact-panel :is(a,summary,button):focus-visible { outline: 2px solid #986829; outline-offset: -2px; }
+@media (hover: hover) {
+  .fc-contact-panel a.fc-contact-panel__primary:hover { background: #0d5337; }
+  .fc-contact-panel :is(.fc-contact-panel__row,.fc-contact-panel__quote,.fc-contact-panel__copy,summary):hover { background: #ecf1e9; }
+}
+@media (max-width: 767px) {
+  .fc-contact-panel:is(dialog, [role="dialog"]) {
+    inset: auto 0 0; width: 100%; max-height: calc(100vh - 16px); max-height: calc(100dvh - 16px - env(safe-area-inset-top, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px); border-radius: 18px 18px 0 0;
+  }
+}
+@media print { .fc-contact-stack, .fc-contact-panel { display: none !important; } }

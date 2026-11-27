@@ -19,7 +19,7 @@ export default function FurnitureFloatingLink() {
   const entryRef = useRef<HTMLButtonElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const [owner] = useState(() => crypto.randomUUID());
-  const [message, setMessage] = useState("");
+  const [enquiry, setEnquiry] = useState<{ message: string; service?: string }>({ message: "" });
   const [returnFocus, setReturnFocus] = useState(false);
   const openedPath = useRef("");
   const currentPath = useRef("");
@@ -61,7 +61,7 @@ export default function FurnitureFloatingLink() {
           openedPath.current = path;
           const title = document.querySelector("main h1")?.textContent?.trim();
           const service = location.pathname.includes("/services/") ? title : undefined;
-          setMessage(pageWhatsAppMessage || text.message(service || text.genericService));
+          setEnquiry({ message: pageWhatsAppMessage || text.message(service || text.genericService), service });
           void navigate(`${location.pathname}${location.search}${location.hash}`, {
             state: { ...location.state, contactEntry: owner }, preventScrollReset: true,
           });
@@ -83,7 +83,7 @@ export default function FurnitureFloatingLink() {
       <span className="fc-contact-entry__label" aria-live="polite">{loading ? text.loading : loadError ? text.loadError : text.trigger}</span>
     </button>
     </div>
-    {open && ContactPanel && <ContactPanel message={message} onClose={close}
+    {open && ContactPanel && <ContactPanel {...enquiry} onClose={close}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           setReturnFocus(openedPath.current === currentPath.current);

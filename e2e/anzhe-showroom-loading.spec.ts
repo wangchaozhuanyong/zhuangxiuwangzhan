@@ -17,7 +17,7 @@ async function serveShowroom(page: Page, beforeAsset?: (path: string) => Promise
   await page.route(origin + "/**", async route => {
     const path = new URL(route.request().url()).pathname;
     await beforeAsset?.(path);
-    const file = ["/public-section-spacing.css", "/public-contact-entry.css"].includes(path) ? resolve("public", "." + path)
+    const file = ["/public-section-spacing.css", "/public-contact-entry.css", wechatContact.wechatQrUrl, wechatContact.wechatQrDownloadUrl.split("?")[0]].includes(path) ? resolve("public", "." + path)
       : resolve(showroom, "." + path + (path.endsWith("/") ? "index.html" : ""));
     await route.fulfill({ path: file });
   });
@@ -150,7 +150,7 @@ test("keeps contact available through the model index and footer, yielding to an
     expect(stayedAtCorner, section).toBe(true);
     if (section === "#contact") {
       await contact.tap();
-      await expect(page.locator("#quick-contact [data-copy-wechat]")).toBeFocused();
+      await expect(page.locator('#qc-options [data-qc="wa"]')).toBeFocused();
       await page.keyboard.press("Escape");
       await expect(contact).toBeFocused();
       await expect(contact).toHaveAttribute("aria-expanded", "false");
@@ -178,10 +178,13 @@ for (const lang of ["zh", "en", "ms"]) {
     });
     await page.goto(origin + "/" + lang + "/#collection");
     await page.locator("#quick-contact .fc-contact-entry").tap();
-    const qr = page.locator("#qc-options .qc-wechat");
+    const panel = page.locator("#qc-options");
+    await expect(panel.locator('[data-qc="wa"]')).toBeFocused();
+    const qr = panel.locator(".fc-contact-panel__wechat");
+    await expect(qr).toBeHidden();
+    await panel.locator("summary").tap();
     await expect(qr).toBeVisible();
     await expect(qr.locator("img")).toBeInViewport({ ratio: 1 });
-    await expect(qr.locator("[data-copy-wechat]")).toBeFocused();
     await expect(qr.locator("[data-contact-wechat]")).toHaveText(wechatContact.wechatId);
     await expect(page).toHaveURL(origin + "/" + lang + "/#collection");
     const digest = await qr.locator("img").evaluate(async node => {
@@ -193,6 +196,17 @@ for (const lang of ["zh", "en", "ms"]) {
     });
     const sharedQr = readFileSync(resolve("public", "." + wechatContact.wechatQrUrl));
     expect(digest).toBe(createHash("sha256").update(sharedQr).digest("hex"));
+    const [download] = await Promise.all([page.waitForEvent("download"), qr.locator("a[download]").tap()]);
+    expect(download.suggestedFilename()).toBe("FLASH-CAST-WeChat.png");
+    const png = readFileSync(resolve("public", "." + wechatContact.wechatQrDownloadUrl.split("?")[0]));
+    // This fixture intercepts browser requests. Chromium delegates the final file transfer
+    // outside the intercepted page, so read the same URL through the page to verify bytes.
+    const savedDigest = await qr.locator("a[download]").evaluate(async anchor => {
+      const response = await fetch((anchor as HTMLAnchorElement).href);
+      const hash = await crypto.subtle.digest("SHA-256", await response.arrayBuffer());
+      return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, "0")).join("");
+    });
+    expect(savedDigest).toBe(createHash("sha256").update(png).digest("hex"));
     const copy = qr.locator("[data-copy-wechat]");
     await copy.tap();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(wechatContact.wechatId);
@@ -206,6 +220,36 @@ for (const lang of ["zh", "en", "ms"]) {
     await page.goBack();
     await expect(qr).toBeHidden();
     await expect(page).toHaveURL(origin + "/" + lang + "/#collection");
+    await page.locator("#quick-contact button").tap();
+    await expect(qr).toBeHidden();
+    await expect(panel.locator('[data-qc="wa"]')).toBeFocused();
+    await page.keyboard.press("Escape");
+    const wechatEntry = page.locator("#contact .ct-wechat summary");
+    await wechatEntry.tap();
+    await expect(qr.locator("[data-copy-wechat]")).toBeFocused();
+    await expect(qr.locator("a[download]")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(wechatEntry).toBeFocused();
+  });
+  test(`keeps the selected model or category in the ${lang} floating enquiry`, async ({ page }) => {
+    await serveShowroom(page);
+    for (const slug of ["f8", "type/entrance-door"]) {
+      await page.goto(origin + "/" + lang + "/lock/" + slug + "/");
+      const enquiry = page.locator('.model-actions a[href^="https://wa.me/"], .hero-actions a[href^="https://wa.me/"]');
+      const expected = await enquiry.first().evaluate(a => (a as HTMLAnchorElement).href);
+      await page.locator("footer").scrollIntoViewIfNeeded();
+      const trigger = page.locator("#quick-contact button");
+      await trigger.tap();
+      const panel = page.getByRole("dialog");
+      await expect(panel.locator('[data-qc="wa"]')).toHaveAttribute("href", expected!);
+      await expect(panel.locator("[data-qc=visit]")).toHaveAttribute("href", "/" + lang + "/#contact");
+      await expect(panel.locator("details")).not.toHaveAttribute("open", "");
+      await page.goBack();
+      await expect(panel).toBeHidden();
+      await expect(trigger).toBeFocused();
+      await page.goForward();
+      await expect(panel).toBeVisible();
+    }
   });
 }
 
