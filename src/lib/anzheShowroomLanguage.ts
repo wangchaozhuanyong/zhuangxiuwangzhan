@@ -3,7 +3,10 @@ import { getLanguageFromPath, isLanguage, rememberLanguage, type Language } from
 
 declare global {
   interface Window {
-    showroom?: { lang: Language; setOfflineLanguage?: (language: Language) => void };
+    showroom?: { lang: Language; setOfflineLanguage?: (language: Language) => void; layers?: {
+      enter: (key: string, onBack: () => void, onForward: () => boolean) => void;
+      leave: (key: string) => void;
+    } };
   }
 }
 

@@ -14,7 +14,7 @@ function sync(target, content) {
     if (!readFileSync(target).equals(Buffer.from(content))) throw Error("Run node scripts/generate-anzhe-boot.mjs to update " + path.relative(root, target));
   } else writeFileSync(target, content);
 }
-for (const [entry, file] of [["showroomBoot", "showroom-boot.js"], ["showroomMenu", "showroom-menu.js"], ["showroomUpdates", "showroom-updates.js"]]) {
+for (const [entry, file] of [["showroomBoot", "showroom-boot.js"], ["showroomMenu", "showroom-menu.js"], ["showroomUpdates", "showroom-updates.js"], ["showroomContact", "contact-float.js"]]) {
   const source = `src/${entry}.ts`;
   const output = await build({
     absWorkingDir: root, entryPoints: [source], bundle: true, write: false,
@@ -37,8 +37,8 @@ for (const lang of ["zh", "en", "ms"]) {
   if (!current.includes("../showroom-boot.js?v=")) throw Error("Missing showroom boot in " + lang);
   const idSlot = /(<span data-contact-wechat(?:="")?>)[^<]*(<\/span>)/g;
   const qrSlot = /src="\.\.\/assets\/contact-wechat-qr\.webp(?:\?v=[a-f0-9]+)?"/g;
-  // Both the footer and the floating panel are present in the static document.
-  if ([...current.matchAll(idSlot)].length !== 2 || [...current.matchAll(qrSlot)].length !== 2) {
+  // The footer is static. The floating panel reads the same account at runtime.
+  if ([...current.matchAll(idSlot)].length !== 1 || [...current.matchAll(qrSlot)].length !== 1) {
     throw Error("Missing WeChat contact markup in " + lang);
   }
   const withContact = current.replace(idSlot, (_, open, close) => open + idText + close)

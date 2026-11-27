@@ -4,6 +4,7 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import FurnitureFloatingLink from "./FurnitureFloatingLink";
 import { siteConfig } from "@/config/site";
+import { whatsappOpeningText } from "@/i18n/whatsappOpeningText";
 import { contactEntryText } from "@/i18n/contactEntryText";
 import { wechatContactText } from "@/i18n/wechatContactText";
 import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
@@ -42,11 +43,13 @@ for (const language of ["zh", "en", "ms"] as const) {
         await act(async () => { root.render(<RouterProvider router={router} />); await vi.dynamicImportSettled(); });
         await act(async () => { container.querySelector<HTMLButtonElement>(".fc-contact-entry")!.click(); await vi.dynamicImportSettled(); });
         const row = document.querySelector(".fc-contact-panel__wechat")!;
-        expect(row).toHaveTextContent(text.wechat);
+        expect(document.querySelector(".fc-contact-panel__qr summary")).toHaveTextContent(text.wechat);
         expect(row).toHaveTextContent("fixture_wechat_only");
         const qr = document.querySelector<HTMLDetailsElement>(".fc-contact-panel__qr")!;
-        expect(qr).toHaveAttribute("open");
-        expect(qr.querySelector("summary")).toHaveTextContent(text.showWechatQr);
+        expect(qr).not.toHaveAttribute("open");
+        expect(qr.querySelector("img")).not.toHaveAttribute("src");
+        await act(async () => qr.querySelector<HTMLElement>("summary")!.click());
+        await vi.waitFor(() => expect(qr.querySelector("img")).toHaveAttribute("src"));
         expect(qr.querySelector("img")).toHaveAttribute("src", siteConfig.wechatQrUrl);
         const save = qr.querySelector<HTMLAnchorElement>(".fc-contact-panel__qr-save")!;
         expect(save).toHaveTextContent(text.saveQr);
@@ -162,7 +165,7 @@ for (const language of ["zh", "en", "ms"] as const) {
         expect(dialog).toHaveTextContent(contactEntryText[language].title);
         const whatsapp = dialog.querySelector<HTMLAnchorElement>('a[href^="https://wa.me/"]')!;
         expect(new URL(whatsapp.href).pathname).toBe("/601128853888");
-        expect(new URL(whatsapp.href).searchParams.get("text")).toBe(contactEntryText[language].message("Kitchen"));
+        expect(new URL(whatsapp.href).searchParams.get("text")).toBe(whatsappOpeningText(language, "unknown") + "\n\nKitchen");
         expect(dialog.querySelector('a[href^="tel:"]')).toHaveAttribute("href", "tel:+601128853888");
         expect(dialog).not.toHaveTextContent(/微信|WeChat/);
         expect(router.state.location.search).toBe("?keep=yes");
@@ -210,6 +213,8 @@ it.each(["shared", "cancelled", "denied", "unsupported", "prepare-failed", "fine
     try {
       await act(async () => { root.render(<RouterProvider router={router} />); await vi.dynamicImportSettled(); });
       await act(async () => { container.querySelector<HTMLButtonElement>(".fc-contact-entry")!.click(); await vi.dynamicImportSettled(); });
+      await act(async () => document.querySelector<HTMLElement>(".fc-contact-panel__qr summary")!.click());
+      await vi.waitFor(() => expect(document.querySelector(".fc-contact-panel__qr-image")).toHaveAttribute("src"));
       const save = document.querySelector<HTMLAnchorElement>(".fc-contact-panel__qr-save")!;
       const status = document.querySelector(".fc-contact-panel__save-status")!;
       // Let React handle the action while preventing jsdom from attempting an actual navigation.

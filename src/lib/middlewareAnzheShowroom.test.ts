@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
+import wechatContact from "../config/wechatContact.json";
 import { ANZHE_SHOWROOM_ORIGIN } from "../config/anzheShowroom";
 
 const requestPage = (request: Request, fetch = vi.fn(), version = "anzhe-verified-source") => onRequest({
@@ -161,6 +162,22 @@ describe("ANZHE showroom on the independent hostname", () => {
     expect(response.headers.get("content-range")).toBe("bytes 1-2/4");
     expect(await response.text()).toBe("bc");
   });
+
+  it.each([[wechatContact.wechatQrUrl, "image/webp"], [wechatContact.wechatQrDownloadUrl, "image/png"]])(
+    "serves the exact shared contact image %s on the showroom origin", async (path, contentType) => {
+      const asset = vi.fn(async (request: Request) => {
+        expect(new URL(request.url).pathname).toBe(path.split("?")[0]);
+        return new Response("image bytes", { headers: { "content-type": contentType } });
+      });
+      const response = await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + path), asset);
+      expect(response.status).toBe(200);
+      expect(response.headers.get("content-type")).toBe(contentType);
+      expect(await response.text()).toBe("image bytes");
+      const other = await requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/downloads/other.png"), asset);
+      expect(other.status).toBe(404);
+      expect(asset).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it("only serves showroom routes, and rejects a fallback shell for missing assets", async () => {
     const fetch = vi.fn(async () => new Response("<h1>Parent site</h1>", { headers: { "content-type": "text/html" } }));

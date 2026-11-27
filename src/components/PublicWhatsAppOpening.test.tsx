@@ -60,17 +60,16 @@ describe("all automatic public contact components share one opening", () => {
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
     try {
       await render("zh", "?utm_source=chatgpt&utm_medium=cpc");
-      const copy = document.querySelector<HTMLButtonElement>('[aria-label="复制微信号"]')!;
+      const qr = document.querySelector<HTMLDetailsElement>("details.fc-contact-panel__qr")!;
+      expect(qr.open).toBe(false);
+      expect(trackCtaClick).not.toHaveBeenCalledWith("wechat_qr_open", "contact_panel", { destination: "wechat" });
+      await act(async () => { qr.open = true; qr.dispatchEvent(new Event("toggle")); });
+      expect(trackCtaClick).toHaveBeenCalledWith("wechat_qr_open", "contact_panel", { destination: "wechat" });
+      const copy = qr.querySelector<HTMLButtonElement>("[data-copy-wechat]")!;
       expect(copy).not.toBeNull();
       await act(async () => copy.click());
       expect(writeText).toHaveBeenCalledOnce();
       expect(trackCtaClick).toHaveBeenCalledWith("wechat_copy", "contact_panel", { destination: "wechat" });
-      const qr = document.querySelector<HTMLDetailsElement>("details.fc-contact-panel__qr")!;
-      expect(qr.open).toBe(true);
-      expect(trackCtaClick).not.toHaveBeenCalledWith("wechat_qr_open", "contact_panel", { destination: "wechat" });
-      await act(async () => { qr.open = false; qr.dispatchEvent(new Event("toggle")); });
-      await act(async () => { qr.open = true; qr.dispatchEvent(new Event("toggle")); });
-      expect(trackCtaClick).toHaveBeenCalledWith("wechat_qr_open", "contact_panel", { destination: "wechat" });
     } finally {
       if (clipboard) Object.defineProperty(navigator, "clipboard", clipboard);
       else Reflect.deleteProperty(navigator, "clipboard");
