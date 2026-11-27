@@ -810,17 +810,17 @@ function renderDoorFitGuide(words, photos, { assetPrefix = "", contactHref } = {
   </section>`;
 }
 
-function renderModelHeading(heading, model) {
-  // Keep the approved heading intact for readers and search, including its localized price wording.
+function renderModelHeading(heading, model, lang, included) {
+  // The product name and kind are editorial. The price and installation label come from the catalogue.
   const parts = heading.match(/^(.+?)(\s*[｜—]\s*)(.+)$/su);
-  if (!parts) return escape(heading);
-  const [, product, separator, offer] = parts;
   const price = model.prices.display;
-  const priceStart = offer.indexOf(price);
-  if (!product.startsWith(model.name) || priceStart < 0) return escape(heading);
-  const before = offer.slice(0, priceStart);
-  const after = offer.slice(priceStart + price.length);
-  return `<span class="model-name">${escape(model.name)}</span><span class="model-kind">${escape(product.slice(model.name.length))}</span><span class="model-heading-divider">${escape(separator)}</span><span class="model-offer">${escape(before)}<b>${escape(price)}</b>${escape(after)}</span>`;
+  if (!parts || !parts[1].startsWith(model.name) || !parts[3].includes(price)) {
+    return escape(/安装|installation|pemasangan/iu.test(heading) ? heading : `${heading} ${included}`);
+  }
+  const [, product, separator] = parts;
+  const amount = `<b>${escape(price)}</b>`;
+  const offer = lang === "zh" ? `${escape(included)} ${amount}` : `${amount} ${escape(included)}`;
+  return `<span class="model-name">${escape(model.name)}</span><span class="model-kind">${escape(product.slice(model.name.length))}</span><span class="model-heading-divider">${escape(separator)}</span><span class="model-offer">${offer}</span>`;
 }
 
 function renderPage(model, lang, sources, catalog, shared, overrides, categories) {
@@ -839,7 +839,6 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   const rows = specRows(model, lang, labels);
   const specifications = sources.lockSpecSheet.detail(rows, lang);
   const plateFact = rows.find(row => (row.key === "dimensions" || row.key === "screen") && row.value !== ui.pending);
-  const serviceLabel = /安装|installation|pemasangan/iu.test(copy.h1) ? words.serviceArea : words.included;
   const highlights = (model.feature?.highlights ?? []).map(point => `<li>${escape(point[lang])}</li>`);
   const faq = copy.faqs.map(({ q, a }, index) =>
     `<details class="model-disclosure"${index === 0 ? " open" : ""}><summary><h3>${escape(q)}</h3></summary><p>${escape(a)}</p></details>`);
@@ -873,6 +872,7 @@ function renderPage(model, lang, sources, catalog, shared, overrides, categories
   <meta property="og:description" content="${escape(copy.description)}">
   <meta property="og:image" content="${absolute(model.imageInfo.path)}">
   <meta property="og:image:alt" content="${escape(imageAlt)}">
+  <script fetchpriority="high" src="${shared.menu}"></script>
   ${[...shared.styles, shared.fitAssets["showroom-fit.css"], shared.modelStyle].map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script defer src="${shared.track}"></script>
@@ -902,7 +902,7 @@ ${renderSchema(model, copy, lang, words.title)}
       <div class="model-showcase">
         <header class="model-heading">
           <p class="model-door-type">${escape(words[model.group])}</p>
-          <h1 id="model-title">${renderModelHeading(copy.h1, model)}</h1>
+          <h1 id="model-title">${renderModelHeading(copy.h1, model, lang, words.included)}</h1>
         </header>
         <figure class="model-plate">
           <div class="model-plate-image">${img(model.imageInfo, imageAlt, { sizes: panelSizes(model.imageInfo), loading: "eager", priority: "high", smaller: model.cardImage })}</div>${plateFact ? `
@@ -915,7 +915,7 @@ ${renderSchema(model, copy, lang, words.title)}
             <a href="${escape(contact)}" class="studio-button" target="_blank" rel="noopener noreferrer">${escape(ui.ask)} <span aria-hidden="true">↗</span></a>
             <a href="#specifications" class="model-spec-link">${escape(ui.specs)} <span aria-hidden="true">↓</span></a>
           </div>
-          <p class="model-service"><span>${escape(serviceLabel)}</span> ${escape(words.location)}</p>
+          <p class="model-service"><span>${escape(words.serviceArea)}</span> ${escape(words.location)}</p>
         </div>
       </div>
     </section>
@@ -1074,6 +1074,7 @@ function renderCategoryPage(category, lang, sources, shared, categories, categor
   <meta property="og:description" content="${escape(copy.answer)}">
   <meta property="og:image" content="${image}">
   <meta property="og:image:alt" content="ANZHE ${escape(models[0].name)}">
+  <script fetchpriority="high" src="${shared.menu}"></script>
   ${shared.categoryStyles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
   <script defer src="${shared.updates}"></script>
   <script defer src="${shared.track}"></script>
@@ -1281,6 +1282,7 @@ export async function generateAnzheLockPages({ check = false, copy } = {}) {
   ];
   const directoryStyle = await versionedAsset("/directory.css", join(showroom, "directory.css"));
   const shared = {
+    menu: await versionedAsset("/showroom-menu.js", join(showroom, "showroom-menu.js")),
     updates: await versionedAsset("/showroom-updates.js", join(showroom, "showroom-updates.js")),
     track: await versionedAsset("/conversion-track.js", join(showroom, "conversion-track.js")),
     categoryStyles,

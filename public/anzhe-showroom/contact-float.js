@@ -83,7 +83,7 @@
     } else {
       delete root.dataset.obstructed;
     }
-  });
+  }, document.querySelector('.hero-actions'));
   window.quickContact = {refresh};
   refresh();
 })();

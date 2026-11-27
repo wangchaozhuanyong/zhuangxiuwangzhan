@@ -1,3 +1,4 @@
+import "./showroomMenu";
 import markup from "./components/publicBootTemplate.html?raw";
 import styles from "./styles/components/public-boot.css?raw";
 import { getDefaultLanguage, rememberLanguage } from "./i18n/routes";

@@ -14,7 +14,7 @@ function sync(target, content) {
     if (!readFileSync(target).equals(Buffer.from(content))) throw Error("Run node scripts/generate-anzhe-boot.mjs to update " + path.relative(root, target));
   } else writeFileSync(target, content);
 }
-for (const [entry, file] of [["showroomBoot", "showroom-boot.js"], ["showroomUpdates", "showroom-updates.js"]]) {
+for (const [entry, file] of [["showroomBoot", "showroom-boot.js"], ["showroomMenu", "showroom-menu.js"], ["showroomUpdates", "showroom-updates.js"]]) {
   const source = `src/${entry}.ts`;
   const output = await build({
     absWorkingDir: root, entryPoints: [source], bundle: true, write: false,

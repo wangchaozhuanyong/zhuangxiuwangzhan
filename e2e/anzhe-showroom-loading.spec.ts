@@ -101,6 +101,30 @@ test("keeps the contact launcher in place while mobile visitors scroll past cata
   expect(Math.max(...samples) - Math.min(...samples), JSON.stringify(samples)).toBeLessThan(1);
 });
 
+test("lets visitors tap the featured lock when the action row reaches the floating contact entry", async ({ page }) => {
+  await serveShowroom(page);
+  await page.goto(origin + "/en/");
+  await expect(page.locator("#root")).not.toHaveAttribute("inert", "");
+  const featured = page.locator("[data-show-featured]");
+  const contact = page.locator("#quick-contact .fc-contact-entry");
+  await expect(contact).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  const button = (await featured.boundingBox())!;
+  const launcher = (await contact.boundingBox())!;
+  const point = { x: button.x + button.width / 2, y: button.y + button.height / 2 };
+  const bottomInset = page.viewportSize()!.height - launcher.y - launcher.height;
+  await page.setViewportSize({ width: 390, height: Math.round(point.y + launcher.height / 2 + bottomInset) });
+  await expect(contact).toBeHidden();
+  await page.touchscreen.tap(point.x, point.y);
+  await expect(page.locator("#details")).toBeVisible();
+  await expect(page.locator("#qc-options")).toBeHidden();
+  await page.locator("#details [data-dir-back]").tap();
+  await page.evaluate(() => window.scrollBy({ top: 140, behavior: "instant" }));
+  await expect(contact).toBeVisible();
+  await contact.tap();
+  await expect(page.locator("#qc-options")).toBeVisible();
+});
+
 test("keeps contact available through the model index and footer, yielding to an open detail dialog", async ({ page }) => {
   await serveShowroom(page);
   await page.goto(origin + "/zh/");

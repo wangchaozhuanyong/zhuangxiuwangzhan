@@ -131,11 +131,12 @@ test("renders one model heading and switches language on the same model", async 
   await page.locator("[data-lang-trigger]").click();
   await page.getByRole("link", { name: "英语", exact: true }).click();
   await expect(page).toHaveURL(origin + "/en/lock/v37j-p16/");
-  await expect(heading).toHaveText("V37J-P16 Palm Vein Digital Lock — RM2,360");
+  await expect(heading).toHaveText("V37J-P16 Palm Vein Digital Lock — RM2,360 Installation included");
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", page.url());
   await page.locator("[data-lang-trigger]").click();
   await page.getByRole("link", { name: "Malay", exact: true }).click();
   await expect(page).toHaveURL(origin + "/ms/lock/v37j-p16/");
+  await expect(heading.locator(".model-offer")).toHaveText("RM2,360 Termasuk pemasangan");
   await expect(page.locator("meta[name=robots]")).toHaveAttribute("content", "noindex");
 });
 
@@ -180,6 +181,30 @@ for (const width of [1440, 390]) {
     await expect(menu.locator("nav")).toBeHidden();
   });
 }
+
+test("dismisses the native menu while the deferred language script is still pending", async ({ page }) => {
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => { release = resolve; });
+  await page.route("**/showroom-updates.js*", async route => { await pending; await route.fallback(); });
+  try {
+    await page.goto(origin + "/en/lock/f8/", { waitUntil: "commit" });
+    const trigger = page.locator("[data-lang-trigger]");
+    const choices = page.locator(".lang-dropdown");
+    await trigger.press("Enter");
+    await expect(choices).toBeVisible();
+    await choices.getByRole("link").first().focus();
+    await page.keyboard.press("Escape");
+    await expect(choices).toBeHidden();
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    await expect(choices).toBeVisible();
+    await page.locator("h1").click();
+    await expect(choices).toBeHidden();
+  } finally {
+    release();
+    await page.waitForLoadState("domcontentloaded");
+  }
+});
 
 test("dismisses the menu on selection, Escape and outside clicks on a category page", async ({ page }) => {
   await page.goto(origin + "/en/lock/type/entrance-door/#models");

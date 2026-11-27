@@ -114,12 +114,14 @@ function observeChanges(entry: HTMLElement, check: () => void) {
   };
 }
 
-/** Ordinary page content never hides or moves the site's fixed contact launcher. */
-export function observeFixedFloatingEntry(entry: HTMLElement, onChange: (obstructed: boolean) => void) {
+/** Keep the launcher fixed, yielding to priority UI and an explicitly protected action row. */
+export function observeFixedFloatingEntry(entry: HTMLElement, onChange: (obstructed: boolean) => void, protectedActions?: HTMLElement | null) {
   return observeChanges(entry, () => {
     const bounds = entry.getBoundingClientRect();
     const cache = new WeakMap<HTMLElement, boolean>();
-    onChange(priorityInteractionObstructs(entry, rect => intersects(bounds, rect),
+    const coversActions = protectedActions && intersects(bounds, protectedActions.getBoundingClientRect())
+      && isVisibleElement(protectedActions, cache);
+    onChange(Boolean(coversActions) || priorityInteractionObstructs(entry, rect => intersects(bounds, rect),
       element => isVisibleElement(element, cache), true));
   });
 }
