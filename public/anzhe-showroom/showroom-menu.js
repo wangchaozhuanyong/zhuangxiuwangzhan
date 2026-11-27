@@ -1,0 +1,2 @@
+// Generated from src/showroomMenu.ts by scripts/generate-anzhe-boot.mjs.
+(()=>{document.addEventListener("keydown",t=>{var n;if(t.key!=="Escape"||t.defaultPrevented)return;let e=document.querySelector("details.lang-switch[open]");e&&(e.open=!1,t.preventDefault(),(n=e.querySelector("[data-lang-trigger]"))==null||n.focus({preventScroll:!0}))});document.addEventListener("click",t=>{let e=document.querySelector("details.lang-switch[open]");e&&t.target instanceof Node&&!e.contains(t.target)&&(e.open=!1)});})();

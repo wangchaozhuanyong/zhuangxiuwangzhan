@@ -44,15 +44,18 @@ describe("ANZHE showroom on the independent hostname", () => {
     expect(response.headers.get("location")).toBe(ANZHE_SHOWROOM_ORIGIN + "/" + language + "/");
   });
 
-  it("delivers the approved early boot with the HTML and reuses its exact CSP hash", async () => {
+  it.each([
+    ["boot", "../", "/zh/"],
+    ["menu", "/", "/en/lock/f8/"],
+  ])("delivers the approved %s script with the HTML and reuses its exact CSP hash", async (entry, prefix, path) => {
     const source = "window.booted=true;";
     const bytes = createHash("sha256").update(source).digest();
-    const tag = `<script fetchpriority="high" src="../showroom-boot.js?v=${bytes.toString("hex").slice(0,12)}"></script>`;
-    const fetchPage = (asset: string) => requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + "/zh/"), vi.fn(async (request: Request) =>
+    const tag = `<script fetchpriority="high" src="${prefix}showroom-${entry}.js?v=${bytes.toString("hex").slice(0,12)}"></script>`;
+    const fetchPage = (asset: string) => requestPage(new Request(ANZHE_SHOWROOM_ORIGIN + path), vi.fn(async (request: Request) =>
       request.url.endsWith(".js") ? new Response(asset, { headers: { "content-type": "text/javascript" } })
         : new Response("<html><head>" + tag + "</head></html>", { headers: { "content-type": "text/html" } })));
     const response = await fetchPage(source);
-    expect(await response.text()).toContain(`<script data-showroom-boot>${source}</script>`);
+    expect(await response.text()).toContain(`<script data-showroom-${entry}>${source}</script>`);
     expect(response.headers.get("content-security-policy")).toContain(`'sha256-${bytes.toString("base64")}'`);
     const different = await fetchPage("window.different=true;");
     expect(await different.text()).toContain(tag);

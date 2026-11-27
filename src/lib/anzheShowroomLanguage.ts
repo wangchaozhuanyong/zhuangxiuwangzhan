@@ -66,11 +66,7 @@ export function initializeShowroomLanguageSelector() {
     updateDestinations();
   });
   document.addEventListener("click", event => {
-    if (!(event.target instanceof Element)) return;
-    if (!menu.contains(event.target)) {
-      menu.open = false;
-      return;
-    }
+    if (!(event.target instanceof Element) || !menu.contains(event.target)) return;
     const link = event.target.closest<HTMLAnchorElement>("a[data-lang]");
     if (!link) return;
     updateDestinations();
@@ -87,11 +83,6 @@ export function initializeShowroomLanguageSelector() {
       event.preventDefault();
     }
     if (event.defaultPrevented) trigger.focus({ preventScroll: true });
-  });
-  document.addEventListener("keydown", event => {
-    if (event.key !== "Escape" || !menu.open) return;
-    menu.open = false;
-    trigger.focus({ preventScroll: true });
   });
   menu.addEventListener("focusout", event => {
     if (event.relatedTarget instanceof Node && !menu.contains(event.relatedTarget)) menu.open = false;

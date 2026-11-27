@@ -8,7 +8,7 @@ import {
 export const ANZHE_ASSET_PREFIX = "/anzhe-showroom";
 type AssetBinding = { fetch: (request: Request) => Promise<Response> };
 
-const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|updates|films|nav)\.js|showroom-(?:intro|fit|films|catalog|model|category)\.css|conversion-track\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
+const staticFiles = /^\/(?:assets\/[a-z\d][a-z\d-]*\.(?:webp|woff2)|assets\/film-0(?:37[7-9]|38[0-4])\.mp4|showroom-(?:boot|menu|updates|films|nav)\.js|showroom-(?:intro|fit|films|catalog|model|category)\.css|conversion-track\.js|catalog\.js|features\.js|strings\.js|(?:studio|directory|panels|contact|contact-float)\.(?:js|css)|robots\.txt|sitemap\.xml|llms\.txt|[a-fA-F0-9]{32}\.txt)$/;
 const sharedStylesheets = new Set(["/public-section-spacing.css", "/public-contact-entry.css"]);
 const LOCK_SLUGS = "v37j-p16|p59j-pro|k16j-k19|q58j-k19|k19j|q8j|r10j-22|k26j-pro|t06j|a88-face-id|gp08|f8|g53-pro|g86f-pro|g5|g13|d10b";
 const TYPE_SLUGS = "entrance-door|interior-door|aluminium-door";
@@ -67,19 +67,20 @@ const nonCacheableHeaders = {
 // source keeps its external entry for file previews. Only the pinned, site-owned
 // asset may be inlined and authorised by this document's script policy.
 async function inlineDocumentBoot(html: string, binding: AssetBinding) {
-  const tag = /<script fetchpriority="high" src="\.\.\/showroom-boot\.js\?v=([a-f0-9]{12})"><\/script>/.exec(html);
+  const tag = /<script fetchpriority="high" src="(?:\.\.)?\/showroom-(boot|menu)\.js\?v=([a-f0-9]{12})"><\/script>/.exec(html);
   const fallback = { html, hash: "" };
   if (!tag) return fallback;
-  const file = new URL(ANZHE_ASSET_PREFIX + "/showroom-boot.js", ANZHE_SHOWROOM_ORIGIN);
+  const [, entry, fingerprint] = tag;
+  const file = new URL(`${ANZHE_ASSET_PREFIX}/showroom-${entry}.js`, ANZHE_SHOWROOM_ORIGIN);
   const asset = await binding.fetch(new Request(file)).catch(() => null);
   if (!asset?.ok || !asset.headers.get("content-type")?.includes("javascript")) return fallback;
   const source = await asset.text();
   if (/<\/script/i.test(source)) return fallback;
   const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(source)));
   const version = Array.from(digest.subarray(0, 6), byte => byte.toString(16).padStart(2, "0")).join("");
-  if (version !== tag[1]) return fallback;
+  if (version !== fingerprint) return fallback;
   const hash = "'sha256-" + btoa(String.fromCharCode(...digest)) + "'";
-  return { html: html.replace(tag[0], () => `<script data-showroom-boot>${source}</script>`), hash };
+  return { html: html.replace(tag[0], () => `<script data-showroom-${entry}>${source}</script>`), hash };
 }
 
 function addHomeCategoryLinks(html: string, locale: Language) {
