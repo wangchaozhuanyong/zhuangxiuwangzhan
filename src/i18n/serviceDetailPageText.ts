@@ -1,5 +1,20 @@
 import type { Language } from "@/i18n/routes";
 
+export const digitalLockLandingText = {
+  en: {
+    offer: "From RM635.20 installed for the G13 interior door lock",
+    whatsapp: "Ask about digital locks on WhatsApp",
+  },
+  zh: {
+    offer: "G13 室内门电子锁含安装 RM635.20 起",
+    whatsapp: "WhatsApp 咨询电子锁",
+  },
+  ms: {
+    offer: "Kunci pintu dalaman G13 dari RM635.20 termasuk pemasangan",
+    whatsapp: "Tanya tentang kunci digital di WhatsApp",
+  },
+} satisfies Record<Language, { offer: string; whatsapp: string }>;
+
 export const serviceDetailPageText = {
   en: {
     notFound: "Service Not Found",

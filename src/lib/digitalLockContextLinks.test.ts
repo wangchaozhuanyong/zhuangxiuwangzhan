@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getServiceContextLinks } from '@/i18n/serviceContextLinks';
 import { loadMalayContent } from '@/i18n/malayContentRuntime';
+import { digitalLockLandingText } from '@/i18n/serviceDetailPageText';
 import { buildExpandedReadableBody } from '../../functions/expandedReadableBody';
 
 describe('digital-lock service context links and readable body', () => {
@@ -43,6 +44,7 @@ describe('digital-lock service context links and readable body', () => {
     };
     const body = buildExpandedReadableBody(`/${lang}/services/digital-lock`, { row: mockRow });
     expect(body).toContain('data-flashcast-readable-body');
+    expect(body).toContain(`<p>${digitalLockLandingText[lang].offer}</p>`);
     expect(body).toContain(`https://locks.flashcast.com.my/${lang}/lock/type/entrance-door/`);
     expect(body).toContain(`/${lang}/locations/kuala-lumpur/digital-lock`);
     expect(body).toContain(`/${lang}/locations/cheras/digital-lock`);

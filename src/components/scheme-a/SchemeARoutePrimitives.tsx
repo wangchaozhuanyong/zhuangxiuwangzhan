@@ -89,6 +89,7 @@ export function SchemeARouteHero({
   label,
   title,
   description,
+  offer,
   actions,
   showIntro = true,
 }: {
@@ -106,6 +107,7 @@ export function SchemeARouteHero({
   label: string;
   title: string;
   description: string;
+  offer?: string;
   actions?: ReactNode;
   showIntro?: boolean;
 }) {
@@ -136,7 +138,7 @@ export function SchemeARouteHero({
   );
 
   return (
-    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout={showIntro ? "framed-split" : "media-only"}>
+    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout={showIntro ? "framed-split" : "media-only"} data-route-hero-offer={offer ? "" : undefined}>
       <div className="scheme-a-frame fc-route-hero-frame">
         {!showIntro ? <h1 className="sr-only">{title}</h1> : null}
         {image || mobileImage ? (
@@ -153,6 +155,7 @@ export function SchemeARouteHero({
           <span className="fc-route-hero-label sr-only">{label}</span>
           {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
           <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
+          {offer ? <p className="fc-route-hero-offer"><strong>{offer}</strong></p> : null}
           <p>{description}</p>
           {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
           {kind !== "legal" ? <SchemeARouteHeroSupport /> : null}

@@ -13,7 +13,7 @@ import { servicesData } from "@/data/services";
 import { usePublishedServiceBySlug, usePublishedServices } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "@/i18n/serviceDetailPageText";
+import { digitalLockLandingText, getServiceProjectGuidance, residentialLandingText, serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
@@ -89,7 +89,8 @@ export default function ServiceDetail() {
   const contextLinks = getServiceContextLinks(service.slug, language);
   const projectGuidance = getServiceProjectGuidance(service.slug, language);
   const residential = service.slug === "renovation" ? residentialLandingText[language] : null;
-  const hasDirectConsultation = ["kitchen", "builtin", "renovation"].includes(service.slug);
+  const digitalLock = service.slug === "digital-lock" ? digitalLockLandingText[language] : null;
+  const hasDirectConsultation = Boolean(digitalLock) || ["kitchen", "builtin", "renovation"].includes(service.slug);
   const quotePath = buildQuotePath({
     source: "service",
     title,
@@ -110,7 +111,11 @@ export default function ServiceDetail() {
         label={[copy.services, conceptLabel].filter(Boolean).join(" · ")}
         title={title}
         description={summary}
-        actions={<>{hasDirectConsultation && <PhotoEnquiryLink source="service_hero" label={residential?.photoCta} />}<Link to={quotePath} className={hasDirectConsultation ? "fc-route-hero-action-secondary" : undefined}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link></>}
+        offer={digitalLock?.offer}
+        actions={<>
+          {hasDirectConsultation && <PhotoEnquiryLink source={digitalLock ? "digital_lock_hero" : "service_hero"} label={digitalLock?.whatsapp || residential?.photoCta} />}
+          <Link to={quotePath} className={hasDirectConsultation ? "fc-route-hero-action-secondary" : undefined}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link>
+        </>}
       />
       <SchemeAFacts items={copy.facts} />
       {residential && <>
