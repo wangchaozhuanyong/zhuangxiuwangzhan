@@ -147,7 +147,9 @@ export const prefetchPublishedRouteContent = async (
       staleTime: STALE_TIME,
       gcTime: GC_TIME,
     });
-    if (task.queryKey[1] === "site_page" && task.queryKey[3] === publicRouteHeroPageKey(pathname)
+    // Projects and services load their hero when the destination renders.
+    if (task.queryKey[1] === "site_page" && task.queryKey[3] === "materials"
+      && publicRouteHeroPageKey(pathname) === "materials"
       && queryClient.getQueryState(task.queryKey)?.status === "success") {
       prefetchPublicRouteHero(pathname, queryClient.getQueryData<{ image_url?: string | null } | null>(task.queryKey));
     }

@@ -119,16 +119,41 @@ describe("intended route hero transfer", () => {
     }
   });
 
-  it("starts the CMS hero transfer when configuration finishes while the services listing is still pending", async () => {
+  it.each(["projects", "services"] as const)("warms %s data without transferring its hero before navigation", async directory => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const pageKey = ["published", "site_page", "zh", directory];
+    const listQuery = directory === "projects" ? "projectSummaries" : "services";
+    const listKey = publicContentQueries[listQuery]("zh").queryKey;
+    const page = mapSitePageRows({ site_pages: [{ image_url: remote }] }, "zh");
+    const readPage = vi.fn().mockResolvedValue(page);
+    const readList = vi.fn().mockResolvedValue([]);
+    vi.spyOn(publicContentQueries, "sitePage").mockReturnValue({ queryKey: pageKey, queryFn: readPage });
+    vi.spyOn(publicContentQueries, listQuery).mockReturnValue({ queryKey: listKey, queryFn: readList });
+    try {
+      await prefetchPublishedRouteContent(client, `/zh/${directory}`, "zh");
+      expect(client.getQueryData(pageKey)).toEqual(page);
+      expect(client.getQueryData(listKey)).toEqual([]);
+      expect(prefetchLinks()).toHaveLength(0);
+
+      await prefetchPublishedRouteContent(client, `/zh/${directory}`, "zh");
+      expect(prefetchLinks()).toHaveLength(0);
+      expect(readPage).toHaveBeenCalledOnce();
+      expect(readList).toHaveBeenCalledOnce();
+    } finally {
+      client.clear();
+    }
+  });
+
+  it("starts the CMS hero transfer when configuration finishes while the materials listing is still pending", async () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     let finishPage!: (value: ReturnType<typeof mapSitePageRows>) => void;
     let finishList!: (value: []) => void;
     const page = new Promise<ReturnType<typeof mapSitePageRows>>(resolve => { finishPage = resolve; });
     const list = new Promise<[]>(resolve => { finishList = resolve; });
-    vi.spyOn(publicContentQueries, "sitePage").mockReturnValue({ queryKey: ["published", "site_page", "zh", "services"], queryFn: () => page });
-    vi.spyOn(publicContentQueries, "services").mockReturnValue({ queryKey: ["published", "services", "zh"], queryFn: () => list });
+    vi.spyOn(publicContentQueries, "sitePage").mockReturnValue({ queryKey: ["published", "site_page", "zh", "materials"], queryFn: () => page });
+    vi.spyOn(publicContentQueries, "materials").mockReturnValue({ queryKey: ["published", "materials", "zh"], queryFn: () => list });
     const completed = vi.fn();
-    const prefetch = prefetchPublishedRouteContent(client, "/zh/services", "zh").then(completed);
+    const prefetch = prefetchPublishedRouteContent(client, "/zh/materials", "zh").then(completed);
     try {
       expect(prefetchLinks()).toHaveLength(0);
       finishPage(mapSitePageRows({ site_pages: [{ image_url: remote }] }, "zh"));
@@ -144,15 +169,15 @@ describe("intended route hero transfer", () => {
 
   it("uses successful cached configuration but never preloads a guessed fallback after a failed configuration read", async () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    const pageKey = ["published", "site_page", "en", "services"];
+    const pageKey = ["published", "site_page", "en", "materials"];
     const pageRead = vi.fn().mockRejectedValue(new Error("Unavailable"));
     vi.spyOn(publicContentQueries, "sitePage").mockReturnValue({ queryKey: pageKey, queryFn: pageRead });
-    vi.spyOn(publicContentQueries, "services").mockReturnValue({ queryKey: ["published", "services", "en"], queryFn: async () => [] });
+    vi.spyOn(publicContentQueries, "materials").mockReturnValue({ queryKey: ["published", "materials", "en"], queryFn: async () => [] });
     try {
-      await prefetchPublishedRouteContent(client, "/en/services", "en");
+      await prefetchPublishedRouteContent(client, "/en/materials", "en");
       expect(prefetchLinks()).toHaveLength(0);
       client.setQueryData(pageKey, mapSitePageRows({ site_pages: [{ image_url: remote }] }, "en"));
-      await prefetchPublishedRouteContent(client, "/en/services", "en");
+      await prefetchPublishedRouteContent(client, "/en/materials", "en");
       expect(prefetchLinks()).toHaveLength(3);
       expect(pageRead).toHaveBeenCalledOnce();
     } finally {
