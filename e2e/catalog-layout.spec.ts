@@ -84,9 +84,17 @@ test("cabinet filters, partial rows and saved designs stay aligned", async ({ pa
   await page.goto("/ms/custom-cabinets?limit=13&fc_test=1");
   const gallery = page.locator(".studio-gallery");
   await expect(gallery.locator("article")).toHaveCount(13, { timeout: 30_000 });
+  const labels = page.locator(".studio-filter label");
+  await expect(labels).toHaveCount(2);
   for (const width of widths) {
     await page.setViewportSize({ width, height: 900 });
     await checkRows(gallery, width <= 600 ? 1 : width < 1180 ? 2 : 3);
+    for (const label of await labels.all()) {
+      const select = await label.getByRole("combobox").boundingBox();
+      const caption = await label.locator("span").boundingBox();
+      expect(caption!.x).toBeGreaterThan(select!.x + select!.width);
+      expect(Math.abs((caption!.y + caption!.height / 2) - (select!.y + select!.height / 2))).toBeLessThan(1);
+    }
   }
   const filters = page.locator(".studio-filter select");
   await filters.first().selectOption("living");

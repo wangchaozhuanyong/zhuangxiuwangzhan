@@ -18,7 +18,7 @@ export const servicesPageText = {
     more: "more",
     details: "View Full Details",
     directoryTitle: "Filter by project type",
-    directoryText: "Browse services by project type so you can quickly decide whether to start with residential renovation, kitchen or bathroom planning, commercial fit-out, custom storage, or approval support.",
+    directoryText: "Home, business & specialist work.",
     groupKicker: "Service Category",
     groupCount: "{count} services",
     allServices: "All services",
@@ -104,7 +104,7 @@ export const servicesPageText = {
       },
     },
     selectorTitle: "Not Sure Which Service to Choose?",
-    selectorText: "Start with the problem you need to solve. This helps you choose the most relevant service page before requesting a quotation.",
+    selectorText: "Find a service for your project.",
     selectorItems: [
       {
         title: "Whole home or multiple rooms",
@@ -126,7 +126,7 @@ export const servicesPageText = {
     conceptTitle: "Planning and Rendering Concepts",
     conceptText: "Design concepts and rendering concepts can be used as planning examples, but they must be clearly labelled and not presented as completed project proof, customer reviews, or before-and-after evidence.",
     resourceTitle: "Continue planning beyond the service list",
-    resourceText: "Use project references, local service-area information, material options, and practical guides to prepare a clearer renovation enquiry.",
+    resourceText: "Projects, materials and guides.",
     resourceAction: "Explore",
     resources: [
       { id: "service-projects", label: "Project references", title: "Renovation projects", description: "Review published project scope and check each page's completed-project or concept classification.", href: "/projects" },
@@ -186,7 +186,7 @@ export const servicesPageText = {
     more: "更多",
     details: "查看详情",
     directoryTitle: "按空间筛选",
-    directoryText: "先按住宅、厨房浴室、商业空间、定制收纳和专项支持分类，方便你快速进入最相关的服务页。",
+    directoryText: "查看住宅、商业与专项服务。",
     groupKicker: "服务分类",
     groupCount: "{count} 项服务",
     allServices: "全部服务",
@@ -272,7 +272,7 @@ export const servicesPageText = {
       },
     },
     selectorTitle: "不知道选哪个服务？先按问题判断",
-    selectorText: "先判断你要解决的问题，再进入对应服务页，这样提交报价资料时更清楚。",
+    selectorText: "按装修需求找到对应服务。",
     selectorItems: [
       {
         title: "整套房或多个空间翻新",
@@ -294,7 +294,7 @@ export const servicesPageText = {
     conceptTitle: "设计方案与效果图方案",
     conceptText: "页面可以使用明确标注的设计方案、效果图方案、概念设计或规划示例，但不能写成真实完工案例、客户评价或 before/after 证明。",
     resourceTitle: "从服务列表继续规划装修",
-    resourceText: "结合项目参考、当地服务范围、材料选择和实用指南，准备更清楚的装修咨询资料。",
+    resourceText: "查看项目、材料与装修指南。",
     resourceAction: "继续查看",
     resources: [
       { id: "service-projects", label: "项目参考", title: "装修项目", description: "查看已发布项目范围，并确认每个页面属于真实完工内容还是已标注概念。", href: "/projects" },
@@ -355,7 +355,7 @@ export const servicesPageText = {
     more: "lebih",
     details: "Lihat Butiran Penuh",
     directoryTitle: "Tapis mengikut jenis projek",
-    directoryText: "Semak imbas perkhidmatan mengikut jenis projek supaya anda boleh memutuskan dengan cepat sama ada untuk memulakan dengan pengubahsuaian kediaman, perancangan dapur atau bilik mandi, pemasangan komersial, storan tersuai atau sokongan kelulusan.",
+    directoryText: "Servis rumah, komersial dan khusus.",
     groupKicker: "Kategori Perkhidmatan",
     groupCount: "{count} perkhidmatan",
     allServices: "Semua perkhidmatan",
@@ -441,7 +441,7 @@ export const servicesPageText = {
       },
     },
     selectorTitle: "Tidak Pasti Perkhidmatan Mana yang Perlu Dipilih?",
-    selectorText: "Mulakan dengan masalah yang perlu anda selesaikan. Ini membantu anda memilih halaman perkhidmatan yang paling berkaitan sebelum meminta sebut harga.",
+    selectorText: "Pilih servis mengikut keperluan.",
     selectorItems: [
       {
         title: "Seluruh rumah atau beberapa bilik",
@@ -463,7 +463,7 @@ export const servicesPageText = {
     conceptTitle: "Konsep Perancangan dan Penyampaian",
     conceptText: "Konsep reka bentuk dan konsep rendering boleh digunakan sebagai contoh perancangan, tetapi ia mesti dilabel dengan jelas dan tidak dibentangkan sebagai bukti projek yang telah siap, ulasan pelanggan atau bukti sebelum dan selepas.",
     resourceTitle: "Teruskan perancangan di luar senarai perkhidmatan",
-    resourceText: "Gunakan rujukan projek, maklumat kawasan perkhidmatan tempatan, pilihan bahan dan panduan praktikal untuk menyediakan pertanyaan pengubahsuaian yang lebih jelas.",
+    resourceText: "Terokai projek, bahan dan panduan.",
     resourceAction: "Teroka",
     resources: [
       { id: "service-projects", label: "Rujukan projek", title: "Projek pengubahsuaian", description: "Semak skop projek yang diterbitkan dan semak klasifikasi projek atau konsep setiap halaman yang telah disiapkan.", href: "/projects" },

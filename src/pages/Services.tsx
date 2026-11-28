@@ -79,7 +79,7 @@ export default function Services() {
         title={pageContent?.title || copy.title}
         description={pageContent?.description || copy.intro}
       />
-      <SchemeASection title={copy.directoryTitle} description={copy.directoryText}>
+      <SchemeASection title={copy.directoryTitle} description={copy.directoryText} className="fc-route-section--directory">
         <SchemeAFilter
           items={[
             { value: "all", label: copy.allServices },
@@ -95,12 +95,12 @@ export default function Services() {
           <SchemeAListingGrid items={items} actionLabel={copy.details} />
         </PublicResultsBoundary>
       </SchemeASection>
-      <SchemeASection title={copy.selectorTitle} description={copy.selectorText}>
+      <SchemeASection title={copy.selectorTitle} description={copy.selectorText} className="fc-route-section--directory">
         <ol className="fc-route-number-list">
           {copy.selectorItems.map((item, index) => <li key={item.title}><b>{String(index + 1).padStart(2, "0")}</b><div><strong>{item.title}</strong><span>{item.desc}</span></div></li>)}
         </ol>
       </SchemeASection>
-      <SchemeASection title={copy.resourceTitle} description={copy.resourceText}>
+      <SchemeASection title={copy.resourceTitle} description={copy.resourceText} className="fc-route-section--directory">
         <SchemeALinkGrid items={copy.resources} actionLabel={copy.resourceAction} />
       </SchemeASection>
       <SchemeASection title={copy.faqTitle}>

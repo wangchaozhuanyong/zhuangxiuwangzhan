@@ -149,66 +149,60 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("desktop home hero keeps a two-line headline and an image-led split", async ({ page }) => {
-    const viewports = [
-      { width: 1280, height: 720 },
-      { width: 1440, height: 900 },
-      { width: 1920, height: 1000 },
-      { width: 2560, height: 1164 },
-    ];
+  test("desktop home hero copy stays on the daylight wall", async ({ page }) => {
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    const hero = page.locator('.scheme-a-hero[data-hero-art="daylight"]');
+    await expect(hero.locator("h1")).toBeVisible();
+    await expect(hero.locator(".scheme-a-hero__lead")).toBeVisible();
+    await expect(hero.locator(".scheme-a-actions a").first()).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
 
-    for (const viewport of viewports) {
-      await page.setViewportSize(viewport);
-      await page.goto("/zh", { waitUntil: "domcontentloaded" });
-
-      const hero = page.locator(".scheme-a-hero");
-      const title = hero.locator("h1");
-      await expect(hero).toBeVisible();
-      await expect(title).toBeVisible();
-
-      const layout = await hero.evaluate((element) => {
-        const copy = element.querySelector<HTMLElement>(".scheme-a-hero__copy");
-        const title = element.querySelector<HTMLElement>("h1");
-        const eyebrow = element.querySelector<HTMLElement>(".scheme-a-eyebrow");
-        const metrics = element.querySelector<HTMLElement>(".scheme-a-hero__metrics");
-        const disciplines = element.querySelector<HTMLElement>(".scheme-a-hero__disciplines");
-        const primaryAction = element.querySelector<HTMLElement>(".scheme-a-actions a");
-        if (!copy || !title || !eyebrow || !metrics || !disciplines || !primaryAction) {
-          throw new Error("Missing home hero layout regions");
-        }
-
-        const heroRect = element.getBoundingClientRect();
-        const copyRect = copy.getBoundingClientRect();
-        const titleRect = title.getBoundingClientRect();
-        const eyebrowRect = eyebrow.getBoundingClientRect();
-        const actionRect = primaryAction.getBoundingClientRect();
-        const lineTops = new Set<number>();
-        title.querySelectorAll("span").forEach((span) => {
+    for (const width of [1024, 1440, 1920, 2240, 2560]) {
+      await page.setViewportSize({ width, height: 900 });
+      const image = hero.locator(".scheme-a-hero__media img:not([aria-hidden])");
+      await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.currentSrc)).toContain("home-daylight-desktop");
+      await expect(image).toHaveCSS("object-fit", "cover");
+      await expect(image).toHaveCSS("object-position", "0% 50%");
+      const clearance = await hero.evaluate((element) => {
+        const photo = element.querySelector<HTMLImageElement>(".scheme-a-hero__media img:not([aria-hidden])")!;
+        const bounds = photo.getBoundingClientRect();
+        // The left-aligned desktop artwork has a vertical wall edge at x=647 of 1672.
+        const scale = Math.max(bounds.width / 1672, bounds.height / 941);
+        const wallEdge = bounds.left + 647 * scale;
+        const rightEdges: number[] = [];
+        for (const text of element.querySelectorAll("h1 span, .scheme-a-hero__service, .scheme-a-hero__lead")) {
           const range = document.createRange();
-          range.selectNodeContents(span);
-          Array.from(range.getClientRects()).forEach((rect) => lineTops.add(Math.round(rect.top)));
-        });
-
-        return {
-          copyRatio: copyRect.width / heroRect.width,
-          eyebrowOffset: Math.round(eyebrowRect.top - heroRect.top),
-          titleLines: lineTops.size,
-          titleOverflow: Math.round(titleRect.right - copyRect.right),
-          actionBottom: Math.round(actionRect.bottom),
-          metricsBottomGap: Math.round(heroRect.bottom - metrics.getBoundingClientRect().bottom),
-          justifyContent: getComputedStyle(copy).justifyContent,
-        };
+          range.selectNodeContents(text);
+          for (const line of range.getClientRects()) if (line.width) rightEdges.push(line.right);
+        }
+        for (const action of element.querySelectorAll(".scheme-a-actions a, .scheme-a-home-furniture-entry__card")) {
+          rightEdges.push(action.getBoundingClientRect().right);
+        }
+        return wallEdge - Math.max(...rightEdges);
       });
+      expect(clearance, `hero at ${width}px`).toBeGreaterThanOrEqual(16);
+    }
+  });
 
-      expect(layout.copyRatio, JSON.stringify(viewport)).toBeGreaterThanOrEqual(0.44);
-      expect(layout.copyRatio, JSON.stringify(viewport)).toBeLessThanOrEqual(0.49);
-      expect(layout.eyebrowOffset, JSON.stringify(viewport)).toBeLessThanOrEqual(150);
-      expect(layout.titleLines, JSON.stringify(viewport)).toBe(2);
-      expect(layout.titleOverflow, JSON.stringify(viewport)).toBeLessThanOrEqual(0);
-      expect(layout.actionBottom, JSON.stringify(viewport)).toBeLessThanOrEqual(viewport.height);
-      expect(layout.metricsBottomGap, JSON.stringify(viewport)).toBeGreaterThanOrEqual(24);
-      expect(layout.metricsBottomGap, JSON.stringify(viewport)).toBeLessThanOrEqual(64);
-      expect(layout.justifyContent, JSON.stringify(viewport)).toBe("flex-start");
+  test("the final single-column home FAQ stays aligned when toggled", async ({ page }) => {
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    const list = page.locator(".scheme-a-home-faq .fc-route-faq");
+    const buttons = list.getByRole("button");
+    const last = buttons.last();
+    await expect(last).toBeVisible();
+    for (const width of [390, 1440, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      await last.scrollIntoViewIfNeeded();
+      await last.focus();
+      const initiallyExpanded = await last.getAttribute("aria-expanded") === "true";
+      for (const expanded of [!initiallyExpanded, initiallyExpanded]) {
+        await page.keyboard.press("Enter");
+        await expect(last).toHaveAttribute("aria-expanded", String(expanded));
+        const firstBox = await buttons.first().boundingBox();
+        const lastBox = await last.boundingBox();
+        expect(Math.abs(firstBox!.x - lastBox!.x)).toBeLessThan(1);
+        expect(Math.abs(firstBox!.width - lastBox!.width)).toBeLessThan(1);
+      }
     }
   });
 
@@ -509,8 +503,8 @@ test.describe("public responsive layout", () => {
     const footer = page.locator(".scheme-a-footer");
     await footer.scrollIntoViewIfNeeded();
     await expect(footer.locator(".scheme-a-footer__wordmark")).toContainText("FLASH");
-    await expect(footer.locator(".scheme-a-footer__mobile-directory details")).toHaveCount(4);
-    await expect(page.locator(".scheme-a-mobile-dock a")).toHaveCount(5);
+    await expect(footer.locator(".scheme-a-footer__mobile-directory details")).toHaveCount(3);
+    await expect(page.locator(".scheme-a-mobile-dock a")).toHaveCount(6);
     await expect(page.locator('.scheme-a-mobile-dock a[aria-current="page"]')).toHaveAttribute("href", "/zh");
   });
 

@@ -123,6 +123,13 @@
   text-align: start;
 }
 
+/* Directory captions stay on one line even under the shared paragraph wrapping rule. */
+html[data-public-theme] #root :is(.fc-route-section--directory .scheme-a-heading--row, .home-section-heading) > h2 + p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+}
+
 .scheme-a-heading--reading > p {
   width: min(100%, 68ch);
 }
@@ -998,16 +1005,20 @@ html[data-public-theme="warm-stone"] .scheme-a-public-shell input[type="range"] 
 .fc-route-gallery-media img { object-fit: cover; filter: none !important; }
 
 .fc-route-faq {
+  container: route-faq / inline-size;
   display: grid;
   width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, max(27rem, (100% - 32px) / 2)), 1fr));
   column-gap: 32px;
   align-items: start;
 }
-.fc-route-faq > :where(.fc-route-faq-item:last-child:nth-child(odd)) {
-  grid-column: 1 / -1;
-  width: min(100%, 82ch);
-  justify-self: center;
+/* Center the unpaired question only when two 27rem columns and their gap fit. */
+@container route-faq (min-width: calc(54rem + 32px)) {
+  .fc-route-faq > :where(.fc-route-faq-item:last-child:nth-child(odd)) {
+    grid-column: 1 / -1;
+    width: min(100%, 82ch);
+    justify-self: center;
+  }
 }
 .fc-route-faq > div {
   border-bottom: 1px solid rgb(123 135 117 / 0.16);

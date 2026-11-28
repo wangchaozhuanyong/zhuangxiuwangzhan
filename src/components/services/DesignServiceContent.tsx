@@ -14,7 +14,7 @@ import { designServicePageText } from "@/i18n/designServicePageText";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 import { buildQuotePath } from "@/lib/quoteContext";
 import type { PublishedServiceSummary } from "@/lib/contentApi";
-import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
+import DesignServiceOverview from "./DesignServiceOverview";
 import { stripHtml } from "@/lib/text";
 import "@/styles/design-service.css";
 type Study = "concept" | "plan" | "detail";
@@ -39,7 +39,6 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     const serviceSummary = stripHtml(service.summary);
     const seoTitle = stripHtml(service.seoTitle || service.title);
     const seoDescription = stripHtml(service.seoDescription || service.summary);
-    const overviewHtml = sanitizeServiceOverviewHtml(service.description || service.summary, language);
     const [study, setStudy] = useState<Study>("concept");
     const [material, setMaterial] = useState<Material>("wood");
     const [materialTouched, setMaterialTouched] = useState(false);
@@ -464,23 +463,7 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     </div>
     </div>
     </section>
-    {overviewHtml && <section data-cinematic-section aria-labelledby="fcd-overview-title" className="fcd-text-module fcd-page-gutter fcd-section-space">
-      <div className="fcd-text-module__header">
-        <span className="fcd-text-module__kicker">
-          <span className="fcd-text-module__dot" aria-hidden="true" />
-          {language === "zh" ? "方案方向 · 效果图概念" : (language === "ms" ? "Hala Tuju Konsep" : "Concept Direction")}
-        </span>
-        <DesignSectionHeading id="fcd-overview-title" title={serviceCopy.overview} />
-        <div className="fcd-anchor-badge-group">
-          <span className="fcd-anchor-badge">{language === "zh" ? "3D 效果图概念" : (language === "ms" ? "Konsep 3D" : "3D Concept")}</span>
-          <span className="fcd-anchor-badge">{language === "zh" ? "空间专项推演" : (language === "ms" ? "Kajian Ruang" : "Spatial Study")}</span>
-        </div>
-        <p className="fcd-anchor-hint">
-          {language === "zh" ? "用于视觉风格与动线推演，非实景交付承诺" : (language === "ms" ? "Untuk perbincangan konsep dan susun atur" : "For visual style and layout discussion")}
-        </p>
-      </div>
-      <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: overviewHtml }} />
-    </section>}
+    <DesignServiceOverview content={service.description || service.summary} language={language} title={serviceCopy.overview} />
     <section data-cinematic-section aria-labelledby="fcd-services-title" className="fcd-services fcd-text-module fcd-page-gutter fcd-section-space" id="fcd-services">
     <DesignSectionHeading id="fcd-services-title" title={copy.servicesTitle} description={copy.servicesSummary} />
     <div className="fcd-service-grid">

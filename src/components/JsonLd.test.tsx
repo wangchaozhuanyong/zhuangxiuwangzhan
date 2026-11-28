@@ -11,7 +11,7 @@ import { footerCopy } from "@/i18n/footerText";
 import { getChineseBrandAssociation, getPublicBrandAliases, getPublicSiteName, withChineseBrandMetadata } from "@/i18n/brandIdentity";
 
 vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); });
-const languageState = vi.hoisted(() => ({ language: "en" as "en" | "zh" }));
+const languageState = vi.hoisted(() => ({ language: "en" as "en" | "zh" | "ms" }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: languageState.language }) }));
 beforeEach(() => { languageState.language = "en"; });
 
@@ -139,7 +139,7 @@ describe("JsonLdLocalBusiness", () => {
     }
   });
 
-  it.each(["en", "zh"] as const)("renders the Chinese brand association as ordinary footer text only in Chinese (%s)", (language) => {
+  it.each(["en", "zh", "ms"] as const)("shows a single public wordmark and the legal company in the %s footer", (language) => {
     languageState.language = language;
     const route = `/${language}/`;
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -148,18 +148,11 @@ describe("JsonLdLocalBusiness", () => {
       <PublicChromeProvider isAdminRoute={false} routeKey={route}><SchemeAFooter /></PublicChromeProvider>
     </QueryClientProvider></MemoryRouter>);
     const document = new DOMParser().parseFromString(html, "text/html");
-    const footer = document.querySelector(".scheme-a-footer__studio")!;
-    const line = "闪铸装饰 FLASH CAST · FLASH CAST SDN. BHD.";
-    expect(footer).not.toBeNull();
-    if (language === "zh") {
-      const brandText = Array.from(footer.querySelectorAll("*")).find((element) => element.textContent === line);
-      expect(brandText).not.toBeUndefined();
-      expect(brandText?.closest('[aria-hidden="true"], [hidden], .sr-only, script, noscript')).toBeNull();
-      expect(footer.textContent).toContain(line);
-    } else {
-      for (const name of ["闪铸装饰", "闪铸设计", "闪铸装修"]) expect(footer.textContent).not.toContain(name);
-      expect(footer.textContent).not.toContain("中文品牌");
-    }
+    const identity = document.querySelector(".scheme-a-footer__identity")!;
+    expect(identity.querySelector("h2")?.textContent).toBe("FLASH CAST");
+    expect(identity.querySelector(".scheme-a-footer__signature")?.textContent).toBe(language === "zh" ? "闪铸装饰" : undefined);
+    expect(identity.textContent).not.toContain(fallbackSiteSettings.company_name);
+    expect(document.querySelector(".scheme-a-footer__legal")?.textContent).toContain(fallbackSiteSettings.company_name);
   });
 
   it("does not assign FLASH CAST Chinese names to another configured company", () => {

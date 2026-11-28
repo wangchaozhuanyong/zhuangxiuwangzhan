@@ -115,8 +115,7 @@ export const oldHouseRenovationPageText = {
       { type: "Full Planning", range: "Assessment needed", desc: "Whole-house planning where repair priorities, layout, materials, and phasing are reviewed together." },
     ],
     resourceTitle: "Plan your old-house renovation enquiry",
-    resourceDescription:
-      "Continue with relevant service areas, project references, practical guides, and material options. Project pages retain their published completion or concept classification.",
+    resourceDescription: "Projects, materials and guides.",
     resourceAction: "Open resource",
     planningAnswers: [
       {
@@ -275,7 +274,7 @@ export const oldHouseRenovationPageText = {
       { type: "完整规划", range: "需现场评估", desc: "把维修优先级、格局、材料和分阶段施工一起整理。" },
     ],
     resourceTitle: "继续规划旧屋翻新咨询",
-    resourceDescription: "继续查看相关服务地区、项目参考、实用指南和材料选择。项目页会保留已发布的完工或概念内容分类。",
+    resourceDescription: "查看项目、材料与装修指南。",
     resourceAction: "查看内容",
     planningAnswers: [
       {
@@ -435,8 +434,7 @@ export const oldHouseRenovationPageText = {
       { type: "Full Planning", range: "Penilaian diperlukan", desc: "Perancangan keseluruhan rumah di mana keutamaan pembaikan, susun atur, bahan dan fasa disemak bersama." },
     ],
     resourceTitle: "Rancang pertanyaan pengubahsuaian rumah lama anda",
-    resourceDescription:
-      "Teruskan dengan bidang perkhidmatan yang berkaitan, rujukan projek, panduan praktikal dan pilihan bahan. Halaman projek mengekalkan penyiapan yang diterbitkan atau klasifikasi konsep.",
+    resourceDescription: "Terokai projek, bahan dan panduan.",
     resourceAction: "Sumber terbuka",
     planningAnswers: [
       {

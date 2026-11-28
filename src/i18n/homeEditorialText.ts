@@ -1,7 +1,7 @@
 export const homeEditorialText = {
   zh: {
     servicesTitle: "为每一种生活，规划合适的空间。",
-    servicesIntro: "住宅、商业空间与全屋定制，从日常使用出发，把布局、材料和施工范围逐项理清。",
+    servicesIntro: "浏览住宅、商业与定制柜服务。",
     servicesAll: "查看全部服务",
     servicesDetails: "查看服务范围与说明",
     services: [
@@ -11,7 +11,7 @@ export const homeEditorialText = {
     ],
     materialsLabel: "材料与细节",
     materialsTitle: "质感，在细节里。",
-    materialsIntro: "从木饰面、台面到柜体收口，结合实体样板、使用习惯与维护需求，选择适合空间的材料。",
+    materialsIntro: "比较木饰面、台面与柜体样板。",
     materialsSpaceAlt: "厨房柜体、木饰面与台面搭配设计效果图",
     materialsDetailAlt: "柜体板材、台面与五金搭配示意",
     materialsPaletteAlt: "木材、石材与饰面样板搭配示意",
@@ -24,7 +24,7 @@ export const homeEditorialText = {
   },
   en: {
     servicesTitle: "Spaces shaped around your life.",
-    servicesIntro: "Homes, commercial interiors and custom built-ins. A considered plan connects everyday use, materials and the agreed work scope.",
+    servicesIntro: "Homes, businesses and built-ins.",
     servicesAll: "Explore all services",
     servicesDetails: "View service scopes and details",
     services: [
@@ -34,7 +34,7 @@ export const homeEditorialText = {
     ],
     materialsLabel: "MATERIALS & DETAILS",
     materialsTitle: "Details define a space.",
-    materialsIntro: "Timber, worktops and cabinetry finishes, considered through physical samples, everyday use and long-term care.",
+    materialsIntro: "Compare timber, worktops and finishes.",
     materialsSpaceAlt: "Design rendering of kitchen cabinetry, timber and worktop finishes",
     materialsDetailAlt: "Material palette study of cabinet boards, worktops and hardware",
     materialsPaletteAlt: "Material palette study of timber, stone and finish samples",
@@ -48,7 +48,7 @@ export const homeEditorialText = {
 
   ms: {
     servicesTitle: "Ruang yang dibentuk di sekeliling hidup anda.",
-    servicesIntro: "Rumah, dalaman komersial dan terbina dalam tersuai. Pelan yang dipertimbangkan menghubungkan penggunaan harian, bahan dan skop kerja yang dipersetujui.",
+    servicesIntro: "Kediaman, perniagaan dan kabinet.",
     servicesAll: "Terokai semua perkhidmatan",
     servicesDetails: "Lihat skop perkhidmatan dan butiran",
     services: [
@@ -58,7 +58,7 @@ export const homeEditorialText = {
     ],
     materialsLabel: "BAHAN & BUTIRAN",
     materialsTitle: "Butiran mentakrifkan ruang.",
-    materialsIntro: "Kayu, bahagian atas kerja dan kemasan kabinet, dipertimbangkan melalui sampel fizikal, penggunaan harian dan penjagaan jangka panjang.",
+    materialsIntro: "Bandingkan sampel dan kemasan.",
     materialsSpaceAlt: "Reka bentuk reka bentuk kabinet dapur, kayu dan kemasan atas kerja",
     materialsDetailAlt: "Kajian palet bahan papan kabinet, atas kerja dan perkakasan",
     materialsPaletteAlt: "Kajian palet bahan sampel kayu, batu dan kemasan",

@@ -53,6 +53,13 @@
     padding: clamp(150px, 26svh, 320px) 0 100px clamp(32px, 4vw, 88px);
   }
 
+  @media (min-width: 1024px) {
+    /* The wall ends at x=647 in the 1672px desktop photo. The intro padding leaves a gutter. */
+    .scheme-a-hero[data-hero-art="daylight"] .scheme-a-hero__copy {
+      width: 38.5%;
+    }
+  }
+
   .scheme-a-hero__intro {
     position: relative;
     display: block;
