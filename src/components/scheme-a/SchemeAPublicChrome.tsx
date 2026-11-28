@@ -718,10 +718,9 @@ export const SchemeAFooter = () => {
   const t = schemeAChromeText[language];
   const footer = footerCopy[language];
   const content = footerArchitecturalContent[language];
-  const brand = getPublicSiteName(settings);
+  const brand = (language === "zh" ? getHeaderChineseBrandName(settings) : null) ?? getPublicSiteName(settings);
   const address = settings.address || siteConfig.address;
   const email = settings.email || siteConfig.email;
-  const signature = language === "zh" ? getHeaderChineseBrandName(settings) : null;
   const groups = [
     { key: "scope", title: content.col2Title, links: content.col2Links, navigation: ["services"] },
     { key: "explore", title: content.col3Title, links: content.col3Links, navigation: ["spaces", "studio"] },
@@ -738,10 +737,9 @@ export const SchemeAFooter = () => {
       <div className="scheme-a-footer__surface">
         <div className="scheme-a-footer__frame scheme-a-frame">
           <div className="scheme-a-footer__identity">
-            <h2 className="scheme-a-footer__wordmark">
+            <h2 className="scheme-a-footer__wordmark" lang={brand === "FLASH CAST" ? "en" : languageTag(language)}>
               {brand === "FLASH CAST" ? <><span>FLASH</span>{" "}<em>CAST</em></> : brand}
             </h2>
-            {signature && <p className="scheme-a-footer__signature">{signature}</p>}
           </div>
           <div className="scheme-a-footer__grid">
             <section className="scheme-a-footer__contact">

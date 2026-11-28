@@ -502,7 +502,7 @@ test.describe("public responsive layout", () => {
 
     const footer = page.locator(".scheme-a-footer");
     await footer.scrollIntoViewIfNeeded();
-    await expect(footer.locator(".scheme-a-footer__wordmark")).toContainText("FLASH");
+    await expect(footer.locator(".scheme-a-footer__wordmark")).toHaveText("闪铸装饰");
     await expect(footer.locator(".scheme-a-footer__mobile-directory details")).toHaveCount(3);
     await expect(page.locator(".scheme-a-mobile-dock a")).toHaveCount(6);
     await expect(page.locator('.scheme-a-mobile-dock a[aria-current="page"]')).toHaveAttribute("href", "/zh");

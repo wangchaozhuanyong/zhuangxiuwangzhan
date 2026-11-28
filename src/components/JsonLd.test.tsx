@@ -149,8 +149,9 @@ describe("JsonLdLocalBusiness", () => {
     </QueryClientProvider></MemoryRouter>);
     const document = new DOMParser().parseFromString(html, "text/html");
     const identity = document.querySelector(".scheme-a-footer__identity")!;
-    expect(identity.querySelector("h2")?.textContent).toBe("FLASH CAST");
-    expect(identity.querySelector(".scheme-a-footer__signature")?.textContent).toBe(language === "zh" ? "闪铸装饰" : undefined);
+    const expectedName = language === "zh" ? "闪铸装饰" : "FLASH CAST";
+    expect(identity.querySelector("h2")?.textContent).toBe(expectedName);
+    expect(identity.textContent).toBe(expectedName);
     expect(identity.textContent).not.toContain(fallbackSiteSettings.company_name);
     expect(document.querySelector(".scheme-a-footer__legal")?.textContent).toContain(fallbackSiteSettings.company_name);
   });
@@ -164,6 +165,7 @@ describe("JsonLdLocalBusiness", () => {
     </QueryClientProvider></MemoryRouter>);
     for (const name of ["闪铸装饰", "闪铸设计", "闪铸装修"]) expect(html).not.toContain(name);
     const document = new DOMParser().parseFromString(html, "text/html");
+    expect(document.querySelector(".scheme-a-footer__identity")?.textContent).toBe("Different company");
     for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
       const identity = JSON.parse(script.textContent || "{}");
       expect(identity.name).toBe("Different company");
