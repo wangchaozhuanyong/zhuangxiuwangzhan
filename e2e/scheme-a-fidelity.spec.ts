@@ -433,12 +433,16 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(footer).toHaveCount(1);
     await footer.scrollIntoViewIfNeeded();
 
-    await expect(footer.locator(".scheme-a-footer__mobile-directory details")).toHaveCount(4);
-    await expect(footer.locator(".scheme-a-footer__studio")).toBeVisible();
-    await expect(page.locator(".scheme-a-mobile-dock a")).toHaveCount(5);
+    const groups = footer.locator(".scheme-a-footer__mobile-directory details");
+    await expect(groups).toHaveCount(3);
+    await expect(page.locator(".scheme-a-mobile-dock a")).toHaveCount(6);
+    await expect(footer.locator(".scheme-a-footer__mobile-directory details[open]")).toHaveCount(0);
+    await expect(footer.locator(".scheme-a-footer__contact .scheme-a-footer__quote-pill")).toBeVisible();
+    await groups.last().locator("summary").click();
+    await expect(groups.last().getByRole("link", { name: "吉隆坡", exact: true })).toBeVisible();
     const footerMetrics = await footer.evaluate((element) => {
       const wordmark = element.querySelector<HTMLElement>(".scheme-a-footer__wordmark");
-      const areaLinks = Array.from(element.querySelectorAll<HTMLElement>(".scheme-a-footer__areas a"));
+      const areaLinks = Array.from(element.querySelectorAll<HTMLElement>(".scheme-a-footer__mobile-directory details[open] a"));
       if (!wordmark) throw new Error("Missing footer wordmark");
       return {
         wordmarkOverflow: wordmark.scrollWidth - wordmark.clientWidth,

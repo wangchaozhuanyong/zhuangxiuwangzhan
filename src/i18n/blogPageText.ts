@@ -25,7 +25,7 @@ export const blogCategoryFilters = [
 export const blogTopicText = {
   en: {
     heading: "Explore by renovation decision",
-    description: "Start with the part of the project you need to decide next. Each topic connects practical guides with the relevant FLASH CAST service.",
+    description: "Find guides and services by topic.",
     serviceLabel: "Related service",
     articlesLabel: "Featured guides",
     topics: {
@@ -39,7 +39,7 @@ export const blogTopicText = {
   },
   zh: {
     heading: "按装修决策查找内容",
-    description: "从你下一步需要决定的问题开始，每个主题都会连接实用指南与对应的 FLASH CAST 服务。",
+    description: "按主题查看指南和相关服务。",
     serviceLabel: "相关服务",
     articlesLabel: "精选指南",
     topics: {
@@ -54,7 +54,7 @@ export const blogTopicText = {
 
   ms: {
     heading: "Teroka melalui keputusan pengubahsuaian",
-    description: "Mulakan dengan bahagian projek yang perlu anda putuskan seterusnya. Setiap topik menghubungkan panduan praktikal dengan perkhidmatan FLASH CAST yang berkaitan.",
+    description: "Cari panduan dan servis ikut topik.",
     serviceLabel: "Perkhidmatan berkaitan",
     articlesLabel: "Panduan pilihan",
     topics: {

@@ -180,7 +180,7 @@ export default function LocationPage() {
       {location.constructionNotes ? <SchemeASection title={copy.permitNotes} description={display(location.constructionNotes)}><SchemeAFeatureList items={location.propertyTypes.map(display)} /></SchemeASection> : null}
       {projectItems.length ? <SchemeASection title={location.slug === "bangsar" ? copy.bangsarReferences : copy.featuredProjects(location.name)}><SchemeAListingGrid items={projectItems} actionLabel={copy.internalProjects} /></SchemeASection> : null}
       {contextLinks.length ? (
-        <SchemeASection title={copy.resourceTitle(location.name)} description={copy.resourceDescription}>
+        <SchemeASection title={copy.resourceTitle(location.name)} description={copy.resourceDescription} className="fc-route-section--directory">
           <SchemeALinkGrid items={contextLinks} actionLabel={copy.resourceAction} />
         </SchemeASection>
       ) : null}

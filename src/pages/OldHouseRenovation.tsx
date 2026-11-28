@@ -158,7 +158,7 @@ const OldHouseRenovation = () => {
         </div>
       </SchemeASection>
 
-      <SchemeASection title={t.resourceTitle} description={t.resourceDescription}>
+      <SchemeASection title={t.resourceTitle} description={t.resourceDescription} className="fc-route-section--directory">
         <SchemeALinkGrid items={contextLinks} actionLabel={t.resourceAction} />
       </SchemeASection>
 

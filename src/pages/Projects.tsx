@@ -81,7 +81,7 @@ export default function Projects() {
         title={pageContent?.title || copy.title}
         description={pageContent?.description || copy.intro}
       />
-      <SchemeASection title={indexCopy.title} description={indexCopy.description}>
+      <SchemeASection title={indexCopy.title} description={indexCopy.description} className="fc-route-section--directory">
         <SchemeAFilter
           items={categories.map((category) => ({ value: category, label: categoryLabels[language][category] }))}
           value={filter}

@@ -209,7 +209,7 @@ export const getMaterialSubcategoryGuidance = (
         },
       ],
       relatedTitle: `${subcategoryName} 的下一步规划`,
-      relatedDescription: "从父分类、相关装修服务和实用指南继续核对；资料准备齐全后，再提交现场情况和需求获取针对性建议。",
+      relatedDescription: "查看材料分类、服务与指南。",
       relatedLinks: [
         { id: "parent-category", label: "材料分类", title: `查看全部 ${categoryName}`, description: `返回 ${categoryName} 分类，比较其他子分类和已发布材料选项。`, href: `/materials/category/${categorySlug}` },
         { id: "related-service", label: "相关服务", ...context.service },
@@ -238,7 +238,7 @@ export const getMaterialSubcategoryGuidance = (
         },
       ],
       relatedTitle: `Rancang langkah seterusnya untuk ${subcategoryName}`,
-      relatedDescription: "Teruskan semakan melalui kategori utama, perkhidmatan pengubahsuaian berkaitan dan panduan praktikal. Apabila maklumat projek sudah tersedia, kongsikan keadaan tapak dan kegunaan yang dirancang untuk semakan yang lebih khusus.",
+      relatedDescription: "Lihat kategori, servis dan panduan.",
       relatedLinks: [
         { id: "parent-category", label: "Kategori bahan", title: `Lihat semua ${categoryName}`, description: `Kembali ke kategori ${categoryName.toLowerCase()} untuk membandingkan subkategori lain dan pilihan bahan yang telah diterbitkan.`, href: `/materials/category/${categorySlug}` },
         { id: "related-service", label: "Perkhidmatan berkaitan", ...context.service },
@@ -266,7 +266,7 @@ export const getMaterialSubcategoryGuidance = (
       },
     ],
     relatedTitle: `Plan the next step for ${subcategoryName}`,
-    relatedDescription: "Continue through the parent category, relevant renovation service and practical guide. When the project information is ready, share the site conditions and intended use for a more specific review.",
+    relatedDescription: "Categories, services and guides.",
     relatedLinks: [
       { id: "parent-category", label: "Material category", title: `Browse all ${categoryName}`, description: `Return to the ${categoryName.toLowerCase()} category to compare other subcategories and published material options.`, href: `/materials/category/${categorySlug}` },
       { id: "related-service", label: "Related service", ...context.service },

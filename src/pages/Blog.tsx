@@ -57,7 +57,7 @@ export default function Blog() {
       <PageMeta malayReady={pageContent?.malayIndexable === true} ogImage={pageContent?.seoImage || undefined} title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/blog" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbBlog, url: "/blog" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.heroAlt} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
-      <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText} className="fc-blog-articles">
+      <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText} className="fc-blog-articles fc-route-section--directory">
         <div id="blog-articles" tabIndex={-1} role="region" aria-label={routeText.blogLatest}>
           <SchemeAFilter items={blogCategoryFilters.map((category) => ({ value: category.value, label: category[language] }))} value={filter} onChange={setFilter} ariaLabel={copy.breadcrumbBlog} />
           <PublicResultsBoundary query={resultsQuery} loading={routeText.blogLoading} error={routeText.blogError} isEmpty={!items.length} empty={routeText.blogEmpty}>
@@ -66,7 +66,7 @@ export default function Blog() {
         </PublicResultsBoundary>
         </div>
       </SchemeASection>
-      <SchemeASection title={topicCopy.heading} description={topicCopy.description} className="fc-blog-topics">
+      <SchemeASection title={topicCopy.heading} description={topicCopy.description} className="fc-blog-topics fc-route-section--directory">
         <div className="fc-blog-topics__grid">
           {BLOG_TOPIC_KEYS.map((topicKey) => {
             const topicPosts = getBlogTopicGuides(posts, topicKey);

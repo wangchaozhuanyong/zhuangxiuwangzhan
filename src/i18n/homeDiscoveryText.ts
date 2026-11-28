@@ -3,7 +3,7 @@ export const homeDiscoveryText = {
     journal: {
       label: "装修知识",
       title: "装修之前，先了解更多。",
-      description: "从空间规划到材料选择，为下一步决定积累实用想法。",
+      description: "了解空间规划与材料选择。",
       read: "阅读文章",
       viewAll: "查看全部装修知识",
       loading: "正在加载装修知识…",
@@ -13,7 +13,7 @@ export const homeDiscoveryText = {
     areas: {
       label: "服务地区",
       title: "找到你所在地区的装修服务。",
-      description: "查看地区服务介绍，结合你的房屋类型与现场条件了解装修需求。",
+      description: "查看当地物业与施工条件。",
       viewAll: "查看全部服务地区",
       loading: "正在加载服务地区…",
       error: "暂时无法加载服务地区，请稍后重试。",
@@ -24,7 +24,7 @@ export const homeDiscoveryText = {
     journal: {
       label: "Journal",
       title: "Ideas for your next space.",
-      description: "Practical reading on space planning, materials and the decisions that shape your renovation.",
+      description: "Explore space planning and materials.",
       read: "Read article",
       viewAll: "Explore the journal",
       loading: "Loading renovation articles…",
@@ -34,7 +34,7 @@ export const homeDiscoveryText = {
     areas: {
       label: "Service areas",
       title: "Explore renovation services near you.",
-      description: "Browse local service guides and consider what your property and site conditions may need.",
+      description: "Check local site conditions.",
       viewAll: "View all service areas",
       loading: "Loading service areas…",
       error: "Service areas could not be loaded. Please try again.",
@@ -46,7 +46,7 @@ export const homeDiscoveryText = {
     journal: {
       label: "Jurnal",
       title: "Idea untuk ruang seterusnya anda.",
-      description: "Bacaan praktikal tentang perancangan ruang, bahan dan keputusan yang membentuk pengubahsuaian anda.",
+      description: "Terokai perancangan ruang dan bahan.",
       read: "Baca artikel",
       viewAll: "Terokai jurnal",
       loading: "Memuatkan artikel pengubahsuaian…",
@@ -56,7 +56,7 @@ export const homeDiscoveryText = {
     areas: {
       label: "Kawasan perkhidmatan",
       title: "Terokai perkhidmatan pengubahsuaian berhampiran anda.",
-      description: "Semak imbas panduan perkhidmatan tempatan dan pertimbangkan perkara yang mungkin diperlukan oleh harta tanah dan tapak anda.",
+      description: "Semak keadaan hartanah dan tapak.",
       viewAll: "Lihat semua kawasan perkhidmatan",
       loading: "Memuatkan kawasan perkhidmatan…",
       error: "Kawasan perkhidmatan tidak dapat dimuatkan. Sila cuba lagi.",

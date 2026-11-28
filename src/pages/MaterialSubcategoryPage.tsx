@@ -37,7 +37,7 @@ export default function MaterialSubcategoryPage() {
       <SchemeANumberList items={guidance.checklist} />
     </SchemeASection>
     <SchemeASection title={copy.products(name)} description={description}>{items.length ? <SchemeAListingGrid items={items} actionLabel={copy.view} /> : <SchemeAContentState action={<Link to="/quote#quote-form">{copy.quote}</Link>}>{copy.comingSoon}</SchemeAContentState>}</SchemeASection>
-    <SchemeASection title={guidance.relatedTitle} description={guidance.relatedDescription}>
+    <SchemeASection title={guidance.relatedTitle} description={guidance.relatedDescription} className="fc-route-section--directory">
       <SchemeALinkGrid items={guidance.relatedLinks} actionLabel={copy.view} />
     </SchemeASection>
   </main>;

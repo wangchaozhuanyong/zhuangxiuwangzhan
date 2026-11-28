@@ -29,7 +29,6 @@ export const schemeAChromeText = {
     dockMaterials: "材料",
     dockPromotions: "优惠",
     dockContact: "联系",
-    copyright: "© 2026 FLASH CAST SDN. BHD.",
   },
   en: {
     quote: "Get a free quote",
@@ -61,7 +60,6 @@ export const schemeAChromeText = {
     dockMaterials: "Materials",
     dockPromotions: "Offers",
     dockContact: "Contact",
-    copyright: "© 2026 FLASH CAST SDN. BHD.",
   },
 
   ms: {
@@ -94,6 +92,5 @@ export const schemeAChromeText = {
     dockMaterials: "Bahan",
     dockPromotions: "Tawaran",
     dockContact: "Hubungi",
-    copyright: "© 2026 FLASH CAST SDN. BHD.",
   },
 } as const;

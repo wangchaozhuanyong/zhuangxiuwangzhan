@@ -2,7 +2,7 @@ export const homeRenovationText = {
   zh: {
     eyebrow: "旧屋翻新",
     title: "旧空间，新的生活。",
-    intro: "从熟悉的客餐厅出发，重新安排光线、通行与收纳，让旧屋更适合今天的生活。",
+    intro: "对比客餐厅的采光、动线与收纳。",
     before: "现状示意",
     after: "翻新方案效果图",
     imageAlt: "保留原有门窗位置，以暖色照明、木质收纳和简洁家具重新规划的客餐厅设计效果图",
@@ -21,7 +21,7 @@ export const homeRenovationText = {
   en: {
     eyebrow: "Old house renovation",
     title: "A familiar space. A fresh beginning.",
-    intro: "Reimagine light, circulation and storage in a familiar living and dining room, with space for the way you live today.",
+    intro: "Compare light, flow and storage.",
     before: "Existing layout study",
     after: "Proposed design rendering",
     imageAlt: "Living and dining room design rendering with the original door and window positions, warm lighting, timber storage and simple furniture",
@@ -41,7 +41,7 @@ export const homeRenovationText = {
   ms: {
     eyebrow: "Ubahsuai rumah lama",
     title: "Ruang yang biasa. Permulaan yang baru.",
-    intro: "Bayangkan semula cahaya, peredaran dan penyimpanan di ruang tamu dan ruang makan yang biasa, dengan ruang untuk cara hidup anda hari ini.",
+    intro: "Bandingkan cahaya, laluan dan storan.",
     before: "Kajian susun atur sedia ada",
     after: "Cadangan reka bentuk",
     imageAlt: "Reka bentuk ruang tamu dan ruang makan dengan kedudukan pintu dan tingkap asal, pencahayaan hangat, penyimpanan kayu dan perabot ringkas",

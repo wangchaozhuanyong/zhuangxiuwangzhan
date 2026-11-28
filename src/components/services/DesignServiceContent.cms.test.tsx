@@ -106,6 +106,48 @@ describe("Design service consumes published CMS through its existing route", () 
     expect(overview.querySelector('a[href="/zh/quote"]')).not.toBeNull();
   });
 
+  it("builds the directory from CMS headings, retaining linked introductions and nested topics", async () => {
+    state.language = "en";
+    state.service = { ...fixture("en"), description: [
+      '<p>Before <a href="/en/quote">a scope check</a>.</p>',
+      '<h2>Interior design services and space planning</h2><h3>Material samples</h3>',
+      '<h2><em>New CMS topic</em></h2><ul><li>Measure the room</li></ul>',
+      '<h2>New CMS topic</h2>',
+    ].join("") };
+    await renderRoute();
+    const overview = container.querySelector<HTMLElement>('[aria-labelledby="fcd-overview-title"]')!;
+    const links = Array.from(overview.querySelectorAll("nav a"));
+    expect(links.map(link => link.textContent)).toEqual(["Space planning", "New CMS topic", "New CMS topic"]);
+    const destinations = links.map(link => overview.querySelector(link.getAttribute("href")!)!);
+    expect(new Set(destinations).size).toBe(3);
+    expect(destinations.every(item => item.tagName === "H3")).toBe(true);
+    expect(overview.querySelector("article > p:first-child a")).toHaveAttribute("href", "/en/quote");
+    expect(overview.querySelector("article h4")).toHaveTextContent("Material samples");
+    expect(overview.querySelector("article li")).toHaveTextContent("Measure the room");
+    expect(overview.querySelector("article h3 em")).toHaveTextContent("New CMS topic");
+
+    state.service = { ...state.service, description: "<p>A plain overview.</p>" };
+    await act(async () => { root.render(tree()); });
+    expect(overview.querySelector("nav, button")).toBeNull();
+    expect(overview.querySelector("article")).toHaveTextContent("A plain overview.");
+  });
+
+  it("places the recognized plain introduction beside its topics and leaves a linked introduction intact", async () => {
+    const planning = "室内设计不是只挑颜色或摆家具。";
+    const preparation = "如果同时考虑室内设计与装修，请先提供平面图。";
+    const sections = "<h2>室内设计服务与空间规划方向</h2><p>空间要求</p><h2>开始设计咨询前，建议准备这些资料</h2>";
+    state.language = "zh";
+    state.service = { ...fixture("zh"), description: `<p>${planning} ${preparation}</p>${sections}` };
+    await renderRoute();
+    const article = container.querySelector(".fcd-overview__body")!;
+    expect(Array.from(article.querySelectorAll("h3 + p"), node => node.textContent)).toEqual([planning, preparation]);
+
+    state.service = { ...state.service, description: `<p>${planning} <a href="/zh/quote">${preparation}</a></p>${sections}` };
+    await act(async () => { root.render(tree()); });
+    expect(article.firstElementChild?.tagName).toBe("P");
+    expect(article.querySelector("p:first-child a")).toHaveAttribute("href", "/zh/quote");
+  });
+
   it("does not replace an empty published FAQ list with the four local draft questions", async () => {
     state.language = "en"; state.service = { ...fixture("en"), faqs: [], seoTitle: undefined, seoDescription: undefined };
     await renderRoute();
