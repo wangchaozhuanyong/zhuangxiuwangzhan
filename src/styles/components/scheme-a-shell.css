@@ -1277,11 +1277,10 @@
     white-space: normal;
     overflow-wrap: anywhere;
   }
-  .scheme-a-footer__signature {
-    margin: 10px 0 0;
-    color: var(--public-accent);
-    font-size: 15px;
-    letter-spacing: .18em;
+  .scheme-a-footer__identity .scheme-a-footer__wordmark:lang(zh) {
+    font-size: clamp(36px, 4vw, 58px);
+    letter-spacing: .035em;
+    line-height: 1.2;
   }
 
   .scheme-a-footer .scheme-a-footer__social-group {
@@ -1630,7 +1629,6 @@
       grid-template-areas: "identity" "columns" "directory" "social";
     }
     .scheme-a-footer__identity .scheme-a-footer__wordmark { font-size: clamp(40px, 11.6vw, 54px); }
-    .scheme-a-footer__signature { margin-top: 8px; font-size: 14px; }
     .scheme-a-footer__frame .scheme-a-footer__grid {
       grid-template-columns: minmax(0, 1fr);
       margin-top: 24px;
